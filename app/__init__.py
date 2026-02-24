@@ -4,10 +4,11 @@ import os
 
 from flask import Flask, request
 from flask_admin_tabler import TablerTheme
+from flask_security import SQLAlchemyUserDatastore
 
 from config import config
-from app.admin import AuthAdminIndexView, init_admin
-from app.extensions import admin, babel, db, limiter, migrate
+from app.admin import SecureAdminIndexView, init_admin
+from app.extensions import admin, babel, db, limiter, migrate, security
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -39,11 +40,17 @@ def _init_extensions(app: Flask) -> None:
     # the configured ADMIN_LOCALE value.
     def _locale_selector():
         return request.accept_languages.best_match(
-            ["en", "es", "fr", "de", "pt", "zh_Hans_CN"],
-            default=app.config.get("ADMIN_LOCALE", "en"),
+            ["en_US", "es_CL", "pt_BR"],
+            default=app.config.get("ADMIN_LOCALE", "en_US"),
         )
 
     babel.init_app(app, locale_selector=_locale_selector)
+
+    # Flask-Security: set up user datastore and initialise extension.
+    from app.models import Role, User
+
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    security.init_app(app, user_datastore)
 
     # Apply Tabler theme before creating the Admin instance.
     theme = TablerTheme()
@@ -51,7 +58,7 @@ def _init_extensions(app: Flask) -> None:
 
     admin.name = app.config.get("ADMIN_NAME", "Fonotarot Admin")
     admin.theme = theme
-    admin.init_app(app, index_view=AuthAdminIndexView())
+    admin.init_app(app, index_view=SecureAdminIndexView())
 
     init_admin(app, admin)
 

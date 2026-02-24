@@ -26,8 +26,14 @@ class Config:
     # Flask-Limiter
     RATELIMIT_STORAGE_URI: str = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
+    # Flask-Security
+    SECURITY_PASSWORD_SALT: str = os.environ.get(
+        "SECURITY_PASSWORD_SALT", "dev-password-salt-change-me"
+    )
+    SECURITY_PASSWORD_HASH: str = "bcrypt"
+
     # Flask-Admin locale
-    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en")
+    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
 
 
 class DevelopmentConfig(Config):
@@ -42,6 +48,7 @@ class TestingConfig(Config):
     TESTING: bool = True
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///:memory:"
     WTF_CSRF_ENABLED: bool = False
+    SECURITY_WTF_CSRF_ENABLED: bool = False
 
 
 config: dict = {
