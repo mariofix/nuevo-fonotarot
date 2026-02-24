@@ -10,5 +10,5 @@ dependencies = [
 start = "nuevo_fonotarot:create_app"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
