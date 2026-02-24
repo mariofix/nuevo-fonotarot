@@ -15,6 +15,7 @@ dependencies = [
     "flask-admin>=2.0",
     "flask-admin-tabler>=2026.2",
     "flask-babel>=4.0",
+    "flask-security>=5.5",
     "python-dotenv>=1.0",
 ]
 
