@@ -1,0 +1,14 @@
+[project]
+name = "nuevo-fonotarot"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "flask>=3.0",
+]
+
+[project.scripts]
+start = "nuevo_fonotarot:create_app"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
