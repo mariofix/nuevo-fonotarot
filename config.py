@@ -1,0 +1,58 @@
+"""Application configuration loaded from environment variables.
+
+Usage:
+    Copy ``file.env`` to ``.env`` and edit the values, then run the app.
+    The ``.env`` file is loaded automatically by the app factory.
+"""
+
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+class Config:
+    """Base configuration shared across all environments."""
+
+    SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
+
+    # SQLAlchemy
+    SQLALCHEMY_DATABASE_URI: str = os.environ.get(
+        "DATABASE_URL", "sqlite:///fonotarot.db"
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+
+    # Flask-Limiter
+    RATELIMIT_STORAGE_URI: str = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+
+    # Flask-Security
+    SECURITY_PASSWORD_SALT: str = os.environ.get(
+        "SECURITY_PASSWORD_SALT", "dev-password-salt-change-me"
+    )
+    SECURITY_PASSWORD_HASH: str = "bcrypt"
+
+    # Flask-Admin locale
+    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
+
+
+class DevelopmentConfig(Config):
+    DEBUG: bool = True
+
+
+class ProductionConfig(Config):
+    DEBUG: bool = False
+
+
+class TestingConfig(Config):
+    TESTING: bool = True
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///:memory:"
+    WTF_CSRF_ENABLED: bool = False
+    SECURITY_WTF_CSRF_ENABLED: bool = False
+
+
+config: dict = {
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "testing": TestingConfig,
+}
