@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-25 07:50+0000\n"
+"POT-Creation-Date: 2026-02-25 08:13+0000\n"
 "PO-Revision-Date: 2026-02-25 07:31+0000\n"
 "Last-Translator: Mario Fix <admin@fonotarot.cl>\n"
 "Language: pt_BR\n"
@@ -16,7 +16,61 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: nuevo_fonotarot/admin.py:155
+msgid "Users"
+msgstr "Usuários"
+
+#: nuevo_fonotarot/admin.py:155 nuevo_fonotarot/admin.py:156
+msgid "Auth"
+msgstr "Autenticação"
+
+#: nuevo_fonotarot/admin.py:156
+msgid "Roles"
+msgstr "Funções"
+
+#: nuevo_fonotarot/admin.py:158
+msgid "Pages"
+msgstr "Páginas"
+
+#: nuevo_fonotarot/admin.py:158 nuevo_fonotarot/admin.py:161
+msgid "Content"
+msgstr "Conteúdo"
+
+#: nuevo_fonotarot/admin.py:161
+msgid "Blog Posts"
+msgstr "Postagens"
+
+#: nuevo_fonotarot/admin.py:164
+msgid "Packs de Minutos"
+msgstr "Pacotes de Minutos"
+
+#: nuevo_fonotarot/admin.py:164 nuevo_fonotarot/admin.py:167
+#: nuevo_fonotarot/admin.py:170 nuevo_fonotarot/admin.py:173
+#: nuevo_fonotarot/templates/base.html:213
+msgid "Tienda"
+msgstr "Loja"
+
+#: nuevo_fonotarot/admin.py:167
+msgid "Suscripciones"
+msgstr "Assinaturas"
+
+#: nuevo_fonotarot/admin.py:170
+msgid "Productos"
+msgstr "Produtos"
+
+#: nuevo_fonotarot/admin.py:173
+msgid "Órdenes"
+msgstr "Pedidos"
+
+#: nuevo_fonotarot/admin.py:176
+msgid "Configuración"
+msgstr "Configurações"
+
+#: nuevo_fonotarot/admin.py:176
+msgid "Sitio"
+msgstr "Site"
 
 #: nuevo_fonotarot/templates/base.html:10
 #: nuevo_fonotarot/templates/base.html:34
@@ -71,10 +125,6 @@ msgstr "Comprar Minutos"
 #: nuevo_fonotarot/templates/base.html:207
 msgid "Servicio de consulta esotérica telefónica · Chile"
 msgstr "Serviço de consulta esotérica por telefone · Chile"
-
-#: nuevo_fonotarot/templates/base.html:213
-msgid "Tienda"
-msgstr "Loja"
 
 #: nuevo_fonotarot/templates/macros/lang_switcher.html:24
 msgid "Seleccionar idioma"

@@ -47,6 +47,8 @@ def _extract_pot() -> None:
     _run(
         "extract",
         "-F", _babel_cfg(),
+        "-k", "_l",
+        "-k", "lazy_gettext",
         "-o", _pot_file(),
         ".",
     )

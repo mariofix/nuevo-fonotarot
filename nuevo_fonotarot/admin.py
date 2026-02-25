@@ -3,6 +3,7 @@
 from flask import redirect, request, url_for
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
 from .extensions import db
@@ -151,26 +152,26 @@ def init_admin(app, admin_ext):
         SiteSettings, StaticPage, SubscriptionPlan, User,
     )
 
-    admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
-    admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
+    admin_ext.add_view(UserAdminView(User, db.session, name=_l("Users"), category=_l("Auth")))
+    admin_ext.add_view(RoleAdminView(Role, db.session, name=_l("Roles"), category=_l("Auth")))
     admin_ext.add_view(
-        StaticPageAdminView(StaticPage, db.session, name="Pages", category="Content")
+        StaticPageAdminView(StaticPage, db.session, name=_l("Pages"), category=_l("Content"))
     )
     admin_ext.add_view(
-        BlogPostAdminView(BlogPost, db.session, name="Blog Posts", category="Content")
+        BlogPostAdminView(BlogPost, db.session, name=_l("Blog Posts"), category=_l("Content"))
     )
     admin_ext.add_view(
-        MinutePackAdminView(MinutePack, db.session, name="Packs de Minutos", category="Tienda")
+        MinutePackAdminView(MinutePack, db.session, name=_l("Packs de Minutos"), category=_l("Tienda"))
     )
     admin_ext.add_view(
-        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name="Suscripciones", category="Tienda")
+        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name=_l("Suscripciones"), category=_l("Tienda"))
     )
     admin_ext.add_view(
-        ProductAdminView(Product, db.session, name="Productos", category="Tienda")
+        ProductAdminView(Product, db.session, name=_l("Productos"), category=_l("Tienda"))
     )
     admin_ext.add_view(
-        OrderAdminView(Order, db.session, name="Órdenes", category="Tienda")
+        OrderAdminView(Order, db.session, name=_l("Órdenes"), category=_l("Tienda"))
     )
     admin_ext.add_view(
-        SiteSettingsAdminView(SiteSettings, db.session, name="Configuración", category="Sitio")
+        SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"))
     )

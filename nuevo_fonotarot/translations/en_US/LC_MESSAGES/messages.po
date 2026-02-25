@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-25 07:50+0000\n"
+"POT-Creation-Date: 2026-02-25 08:13+0000\n"
 "PO-Revision-Date: 2026-02-25 07:31+0000\n"
 "Last-Translator: Mario Fix <admin@fonotarot.cl>\n"
 "Language: en_US\n"
@@ -16,7 +16,61 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: nuevo_fonotarot/admin.py:155
+msgid "Users"
+msgstr "Users"
+
+#: nuevo_fonotarot/admin.py:155 nuevo_fonotarot/admin.py:156
+msgid "Auth"
+msgstr "Auth"
+
+#: nuevo_fonotarot/admin.py:156
+msgid "Roles"
+msgstr "Roles"
+
+#: nuevo_fonotarot/admin.py:158
+msgid "Pages"
+msgstr "Pages"
+
+#: nuevo_fonotarot/admin.py:158 nuevo_fonotarot/admin.py:161
+msgid "Content"
+msgstr "Content"
+
+#: nuevo_fonotarot/admin.py:161
+msgid "Blog Posts"
+msgstr "Blog Posts"
+
+#: nuevo_fonotarot/admin.py:164
+msgid "Packs de Minutos"
+msgstr "Minute Packs"
+
+#: nuevo_fonotarot/admin.py:164 nuevo_fonotarot/admin.py:167
+#: nuevo_fonotarot/admin.py:170 nuevo_fonotarot/admin.py:173
+#: nuevo_fonotarot/templates/base.html:213
+msgid "Tienda"
+msgstr "Shop"
+
+#: nuevo_fonotarot/admin.py:167
+msgid "Suscripciones"
+msgstr "Subscriptions"
+
+#: nuevo_fonotarot/admin.py:170
+msgid "Productos"
+msgstr "Products"
+
+#: nuevo_fonotarot/admin.py:173
+msgid "Órdenes"
+msgstr "Orders"
+
+#: nuevo_fonotarot/admin.py:176
+msgid "Configuración"
+msgstr "Settings"
+
+#: nuevo_fonotarot/admin.py:176
+msgid "Sitio"
+msgstr "Site"
 
 #: nuevo_fonotarot/templates/base.html:10
 #: nuevo_fonotarot/templates/base.html:34
@@ -71,10 +125,6 @@ msgstr "Buy Minutes"
 #: nuevo_fonotarot/templates/base.html:207
 msgid "Servicio de consulta esotérica telefónica · Chile"
 msgstr "Esoteric phone consultation service · Chile"
-
-#: nuevo_fonotarot/templates/base.html:213
-msgid "Tienda"
-msgstr "Shop"
 
 #: nuevo_fonotarot/templates/macros/lang_switcher.html:24
 msgid "Seleccionar idioma"
