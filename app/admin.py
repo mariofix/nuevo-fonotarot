@@ -47,20 +47,59 @@ class RoleAdminView(SecureModelView):
 
 
 class StaticPageAdminView(SecureModelView):
-    """Admin view for the StaticPage model."""
+    """Admin view for the StaticPage model.
+
+    Uses a GrapesJS visual editor for the HTML content field.
+    The path is automatically normalised (slugified) on save.
+    """
 
     column_list = ("path", "title", "is_active", "created_at", "updated_at")
     column_searchable_list = ("path", "title")
     column_filters = ("is_active",)
     form_excluded_columns = ("created_at", "updated_at")
+    edit_template = "admin/staticpage/edit.html"
+    create_template = "admin/staticpage/create.html"
+
+    def on_model_change(self, form, model, is_created):
+        from app.models import StaticPage
+
+        model.path = StaticPage.normalize_path(model.path)
+
+
+class BlogPostAdminView(SecureModelView):
+    """Admin view for the BlogPost model.
+
+    Uses a standard textarea for HTML content (no visual editor).
+    The slug is automatically generated from the title when not provided.
+    """
+
+    column_list = ("slug", "title", "published", "published_at", "created_at")
+    column_searchable_list = ("slug", "title")
+    column_filters = ("published",)
+    form_excluded_columns = ("created_at", "updated_at")
+
+    def on_model_change(self, form, model, is_created):
+        from app.models import BlogPost
+
+        if not model.slug and model.title:
+            model.slug = BlogPost.make_slug(model.title)
+        elif model.slug:
+            model.slug = BlogPost.make_slug(model.slug)
+        if model.published and model.published_at is None:
+            from datetime import datetime, timezone
+
+            model.published_at = datetime.now(timezone.utc)
 
 
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
-    from app.models import Role, StaticPage, User
+    from app.models import BlogPost, Role, StaticPage, User
 
     admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
     admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
     admin_ext.add_view(
         StaticPageAdminView(StaticPage, db.session, name="Pages", category="Content")
+    )
+    admin_ext.add_view(
+        BlogPostAdminView(BlogPost, db.session, name="Blog Posts", category="Content")
     )

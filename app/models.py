@@ -89,3 +89,34 @@ class StaticPage(db.Model):
         """
         segments = [s for s in raw_path.strip("/").split("/") if s]
         return "/".join(slugify(seg) for seg in segments)
+
+
+class BlogPost(db.Model):
+    """A blog post with a URL-friendly slug."""
+
+    __tablename__ = "blog_posts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    title = db.Column(db.String(255), nullable=False)
+    excerpt = db.Column(db.Text, nullable=True)
+    content = db.Column(db.Text, nullable=False, default="")
+    published = db.Column(db.Boolean, default=False, nullable=False)
+    published_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<BlogPost {self.slug}>"
+
+    @staticmethod
+    def make_slug(title: str) -> str:
+        """Return a URL-safe slug from *title*."""
+        return slugify(title)

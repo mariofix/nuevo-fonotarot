@@ -1,6 +1,6 @@
 """Views for the pages blueprint."""
 
-from flask import abort, make_response
+from flask import abort, make_response, render_template
 
 from app.models import StaticPage
 
@@ -20,7 +20,6 @@ def static_page(page_path: str):
     page = StaticPage.query.filter_by(path=normalised, is_active=True).first()
     if page is None:
         abort(404)
-    response = make_response(page.content)
-    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    response = make_response(render_template("pages/page.html", page=page))
     response.headers["Cache-Control"] = "no-store"
     return response

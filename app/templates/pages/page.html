@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} – Fonotarot{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10">
+    <div class="card mt-4">
+      <div class="card-body">
+        {{ page.content | safe }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
