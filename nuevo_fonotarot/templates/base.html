@@ -1,29 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Fonotarot{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
-  {% block extra_css %}{% endblock %}
-</head>
-<body class="antialiased">
-  <div class="page">
-    <header class="navbar navbar-expand-md sticky-top d-print-none">
-      <div class="container-xl">
-        <a class="navbar-brand" href="/">Fonotarot</a>
-      </div>
-    </header>
-    <div class="page-wrapper">
-      <div class="page-body">
-        <div class="container-xl">
-          {% block body %}{% endblock %}
+{% from "macros/lang_switcher.html" import lang_switcher %}
+<!doctype html>
+<html lang="{{ get_locale() | replace('_', '-') }}" prefix="og: https://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <!-- ── Primary meta ──────────────────────────────────────────── -->
+    <title>{% block title %}{{ _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+    <meta name="keywords" content="{% block keywords %}{{ _("tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
+    <meta name="author" content="Fonotarot" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="revisit-after" content="7 days" />
+    <meta name="language" content="Spanish" />
+    <meta name="geo.region" content="CL" />
+    <meta name="geo.country" content="Chile" />
+    <meta name="geo.placename" content="Chile" />
+    <meta name="distribution" content="global" />
+    <meta name="rating" content="general" />
+    <meta name="copyright" content="Fonotarot" />
+    <link rel="canonical" href="https://www.fonotarot.cl{{ request.path }}" />
+    <link rel="alternate" hreflang="es-CL" href="https://www.fonotarot.cl{{ request.path }}" />
+    <link rel="alternate" hreflang="x-default" href="https://www.fonotarot.cl{{ request.path }}" />
+
+    <!-- ── Open Graph / Facebook ──────────────────────────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://www.fonotarot.cl{{ request.path }}" />
+    <meta property="og:site_name"   content="Fonotarot" />
+    <meta property="og:locale"      content="{{ get_locale() }}" />
+    <meta property="og:title"       content="{% block og_title %}{{ _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+    <meta property="og:image"       content="https://www.fonotarot.cl/static/og-image.jpg" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- ── Twitter / X Card ──────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@fonotarot" />
+    <meta name="twitter:creator"     content="@fonotarot" />
+    <meta name="twitter:title"       content="{{ _("Fonotarot - Tarot por Teléfono con Personas Reales") }}" />
+    <meta name="twitter:description" content="{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
+    <meta name="twitter:image"       content="https://www.fonotarot.cl/static/og-image.jpg" />
+
+    <!-- ── Apple / Mobile ────────────────────────────────────────── -->
+    <meta name="apple-mobile-web-app-capable"          content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title"            content="Fonotarot" />
+    <meta name="theme-color"                           content="#1a1a2e" />
+    <meta name="msapplication-TileColor"               content="#1a1a2e" />
+    <meta name="msapplication-navbutton-color"         content="#7c3aed" />
+    <meta name="format-detection" content="telephone=yes" />
+
+    <!-- ── Favicons ──────────────────────────────────────────────── -->
+    <link rel="icon"             href="/static/favicon.ico" sizes="any" />
+    <link rel="icon"             href="/static/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
+    <link rel="manifest"         href="/static/site.webmanifest" />
+
+    <!-- ── Per-page extra head elements ──────────────────────────── -->
+    {% block extra_head %}{% endblock %}
+
+    <!-- ── Base styles ───────────────────────────────────────────── -->
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-flags.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap");
+
+      :root {
+        --deep:   #0d0d1a;
+        --void:   #13132b;
+        --cosmic: #1e1e40;
+        --gold:   #c9a84c;
+        --gold-lt:#f0d080;
+        --violet: #7c3aed;
+        --star:   #e8e0ff;
+        --muted:  #9090b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: 'Lato', sans-serif;
+        background: var(--deep);
+        color: var(--star);
+        margin: 0;
+      }
+
+      /* ─── Stars canvas ─────────────────────────────── */
+      #stars-bg {
+        position: fixed; inset: 0; z-index: 0;
+        background: radial-gradient(ellipse at 20% 30%, #1e1e50 0%, #0d0d1a 60%);
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .star-dot {
+        position: absolute; border-radius: 50%;
+        background: #fff; animation: twinkle 3s infinite;
+      }
+      @keyframes twinkle {
+        0%,100% { opacity:.2; } 50% { opacity:1; }
+      }
+
+      /* ─── Navbar ───────────────────────────────────── */
+      .site-nav {
+        position: sticky; top: 0; z-index: 100;
+        background: rgba(13,13,26,.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(201,168,76,.25);
+        padding: .75rem 0;
+      }
+      .site-nav .brand {
+        font-family: 'Cinzel', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--gold);
+        text-decoration: none;
+        letter-spacing: .05em;
+      }
+      .site-nav .nav-link {
+        color: var(--star); opacity: .8;
+        transition: opacity .2s;
+        text-decoration: none;
+      }
+      .site-nav .nav-link:hover { opacity: 1; color: var(--gold); }
+      .btn-gold {
+        background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+        color: #1a1000 !important;
+        font-weight: 700;
+        border: none;
+        border-radius: 30px;
+        padding: .45rem 1.4rem;
+        transition: box-shadow .2s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-gold:hover { box-shadow: 0 0 18px rgba(201,168,76,.6); }
+
+      /* ─── Language switcher ────────────────────────── */
+      .lang-switcher { display: flex; align-items: center; gap: .35rem; }
+      .lang-flag {
+        display: inline-flex;
+        align-items: center;
+        opacity: .5;
+        transition: opacity .2s, transform .15s;
+        border-radius: 2px;
+        outline-offset: 2px;
+      }
+      .lang-flag:hover { opacity: 1; transform: scale(1.18); }
+      .lang-flag.active { opacity: 1; box-shadow: 0 0 0 1.5px var(--gold); border-radius: 2px; }
+
+      /* ─── Page content wrapper ──────────────────────── */
+      .page-content { position: relative; z-index: 1; }
+
+      /* ─── Footer ───────────────────────────────────── */
+      footer.site-footer {
+        position: relative; z-index: 1;
+        background: #08080f;
+        border-top: 1px solid rgba(201,168,76,.15);
+        padding: 2.5rem 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: .85rem;
+      }
+      footer.site-footer .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); }
+      footer.site-footer a { color: var(--muted); }
+      footer.site-footer a:hover { color: var(--gold); }
+    </style>
+
+    <!-- ── Per-page extra CSS ─────────────────────────────────────── -->
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+
+    <!-- Stars background -->
+    <div id="stars-bg"></div>
+
+    <!-- ── NAVBAR ──────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🔮 Fonotarot</a>
+        <div class="d-flex align-items-center gap-3">
+          {% block nav_links %}
+          <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
+          <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
+          <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
+          <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
+          {% endblock %}
+          <a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>
+          {{ lang_switcher(get_locale(), site_languages) }}
         </div>
       </div>
+    </nav>
+
+    <!-- ── PAGE CONTENT ────────────────────────────── -->
+    <div class="page-content">
+      {% block content %}{% endblock %}
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
-  {% block extra_js %}{% endblock %}
-</body>
+
+    <!-- ── FOOTER ───────────────────────────────────── -->
+    {% block footer %}
+    <footer class="site-footer">
+      <div class="container">
+        <div class="brand mb-2">🔮 Fonotarot</div>
+        <p class="mb-1">{{ _("Servicio de consulta esotérica telefónica · Chile") }}</p>
+        <p class="mb-0">
+          <a href="/blog/">{{ _("Blog") }}</a>
+          <span class="mx-2">·</span>
+          <a href="/#faq">{{ _("Ayuda") }}</a>
+          <span class="mx-2">·</span>
+          <a href="{{ url_for('tienda.index') }}">{{ _("Tienda") }}</a>
+        </p>
+      </div>
+    </footer>
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      // Generate stars background
+      (function () {
+        var bg = document.getElementById('stars-bg');
+        if (!bg) return;
+        for (var i = 0; i < 120; i++) {
+          var s = document.createElement('div');
+          s.className = 'star-dot';
+          var size = Math.random() * 2.5 + .5;
+          s.style.cssText = 'width:' + size + 'px;height:' + size + 'px;' +
+            'left:' + (Math.random() * 100) + '%;top:' + (Math.random() * 100) + '%;' +
+            'animation-delay:' + (Math.random() * 4) + 's;' +
+            'animation-duration:' + (2 + Math.random() * 4) + 's;' +
+            'opacity:' + (Math.random() * .5) + ';';
+          bg.appendChild(s);
+        }
+      })();
+    </script>
+    <!-- ── Per-page extra JS ──────────────────────────────────────── -->
+    {% block extra_js %}{% endblock %}
+  </body>
 </html>
