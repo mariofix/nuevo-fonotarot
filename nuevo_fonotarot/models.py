@@ -322,6 +322,21 @@ class SiteSettings(db.Model):
 
     Settings are grouped by *module* (e.g. ``"general"``, ``"tienda"``,
     ``"blog"``) so the admin panel can display them in logical sections.
+
+    Notable built-in keys
+    ---------------------
+    ``available_lang``
+        JSON array of available public languages used by the language
+        switcher.  Each element is a three-item list::
+
+            [short_code, locale, label]
+
+        Example value::
+
+            [["es","es_CL","Español"],["en","en_US","English"],["pt","pt_BR","Português"]]
+
+        The Tabler flag CSS class is derived automatically from the locale's
+        territory code (e.g. ``es_CL`` → ``flag-country-cl``).
     """
 
     __tablename__ = "site_settings"
@@ -340,27 +355,3 @@ class SiteSettings(db.Model):
         """Return the value for *key*, or *default* when not found."""
         row = cls.query.filter_by(key=key).first()
         return row.value if row else default
-
-
-class SiteLanguage(db.Model):
-    """A language available in the public-facing language switcher.
-
-    ``locale``     – BCP-47 / Babel locale code, e.g. ``es_CL``
-    ``flag_class`` – Tabler CSS class for the country flag sprite,
-                     e.g. ``flag-country-cl``
-    ``label``      – Human-readable name shown as tooltip, e.g. ``Español``
-    ``is_active``  – When False the language is hidden from the switcher.
-    ``sort_order`` – Lower numbers appear first.
-    """
-
-    __tablename__ = "site_languages"
-
-    id = db.Column(db.Integer, primary_key=True)
-    locale = db.Column(db.String(10), unique=True, nullable=False, index=True)
-    flag_class = db.Column(db.String(50), nullable=False)
-    label = db.Column(db.String(50), nullable=False)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    sort_order = db.Column(db.Integer, default=0, nullable=False)
-
-    def __repr__(self) -> str:
-        return f"<SiteLanguage {self.locale}>"

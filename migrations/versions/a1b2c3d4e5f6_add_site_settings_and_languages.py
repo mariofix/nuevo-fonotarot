@@ -1,4 +1,4 @@
-"""add site_settings and site_languages tables
+"""add site_settings table with available_lang seed
 
 Revision ID: a1b2c3d4e5f6
 Revises: 260a0a1f4766
@@ -15,6 +15,14 @@ down_revision = '260a0a1f4766'
 branch_labels = None
 depends_on = None
 
+# Default available languages stored as a JSON value.
+# Format per entry: [short_code, locale, label]
+_AVAILABLE_LANG_VALUE = (
+    '[["es","es_CL","Español"],'
+    '["en","en_US","English"],'
+    '["pt","pt_BR","Português"]]'
+)
+
 
 def upgrade():
     op.create_table(
@@ -29,42 +37,31 @@ def upgrade():
     with op.batch_alter_table('site_settings', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_site_settings_key'), ['key'], unique=True)
 
-    op.create_table(
-        'site_languages',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('locale', sa.String(length=10), nullable=False),
-        sa.Column('flag_class', sa.String(length=50), nullable=False),
-        sa.Column('label', sa.String(length=50), nullable=False),
-        sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.true()),
-        sa.Column('sort_order', sa.Integer(), nullable=False, server_default='0'),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    with op.batch_alter_table('site_languages', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_site_languages_locale'), ['locale'], unique=True)
-
-    # Seed the three default languages so the switcher works immediately.
+    # Seed the available languages setting.
     op.bulk_insert(
         sa.table(
-            'site_languages',
-            sa.column('locale', sa.String),
-            sa.column('flag_class', sa.String),
-            sa.column('label', sa.String),
-            sa.column('is_active', sa.Boolean),
-            sa.column('sort_order', sa.Integer),
+            'site_settings',
+            sa.column('key', sa.String),
+            sa.column('value', sa.Text),
+            sa.column('description', sa.String),
+            sa.column('module', sa.String),
         ),
         [
-            {'locale': 'es_CL', 'flag_class': 'flag-country-cl', 'label': 'Español',   'is_active': True, 'sort_order': 0},
-            {'locale': 'en_US', 'flag_class': 'flag-country-us', 'label': 'English',   'is_active': True, 'sort_order': 1},
-            {'locale': 'pt_BR', 'flag_class': 'flag-country-br', 'label': 'Português', 'is_active': True, 'sort_order': 2},
+            {
+                'key': 'available_lang',
+                'value': _AVAILABLE_LANG_VALUE,
+                'description': (
+                    'Available languages for the public language switcher. '
+                    'JSON array of [short_code, locale, label] entries, '
+                    'e.g. [["es","es_CL","Español"],["en","en_US","English"]]'
+                ),
+                'module': 'general',
+            },
         ],
     )
 
 
 def downgrade():
-    with op.batch_alter_table('site_languages', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_site_languages_locale'))
-    op.drop_table('site_languages')
-
     with op.batch_alter_table('site_settings', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_site_settings_key'))
     op.drop_table('site_settings')

@@ -135,15 +135,6 @@ class SiteSettingsAdminView(SecureModelView):
     column_editable_list = ("value",)
 
 
-class SiteLanguageAdminView(SecureModelView):
-    """Admin view for the language switcher entries."""
-
-    column_list = ("locale", "flag_class", "label", "is_active", "sort_order")
-    column_sortable_list = ("locale", "sort_order")
-    column_editable_list = ("is_active", "sort_order", "flag_class", "label")
-    column_filters = ("is_active",)
-
-
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -156,7 +147,7 @@ class OrderAdminView(SecureModelView):
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
     from .models import (
-        BlogPost, MinutePack, Order, Product, Role, SiteLanguage,
+        BlogPost, MinutePack, Order, Product, Role,
         SiteSettings, StaticPage, SubscriptionPlan, User,
     )
 
@@ -182,7 +173,4 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         SiteSettingsAdminView(SiteSettings, db.session, name="Configuración", category="Sitio")
-    )
-    admin_ext.add_view(
-        SiteLanguageAdminView(SiteLanguage, db.session, name="Idiomas", category="Sitio")
     )
