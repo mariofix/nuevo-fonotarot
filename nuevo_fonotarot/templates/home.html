@@ -378,24 +378,32 @@
     <!-- ── HERO ────────────────────────────────────── -->
     <section class="hero">
       <div class="container">
-        <div class="hero-label">✦ El universo marca un camino, descúbrelo! ✦</div>
+        <div class="hero-label"><i class="ti ti-sparkles me-1"></i>{{ _("El universo marca un camino, ¡descúbrelo!") }}<i class="ti ti-sparkles ms-1"></i></div>
         <h1>
-          Las respuestas que buscas<br>
-          <em>a una llamada</em>
+          {{ _("Las respuestas que buscas") }}<br>
+          <em>{{ _("a una llamada") }}</em>
         </h1>
         <p>
-          Conecta en segundos con nuestras especialistas en tarot.
-          Consulta sobre amor, trabajo, salud y caminos de vida.
+          {{ _("Conecta en segundos con nuestras especialistas en tarot. Consulta sobre amor, trabajo, salud y caminos de vida.") }}
         </p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
           <a href="tel:+56222301515" class="btn btn-lg btn-call px-5">
-            <i class="ti ti-phone me-2"></i>Llama Ahora
+            <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }}
           </a>
           <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="border-radius:30px;">
-            <i class="ti ti-wallet me-2"></i>Carga Minutos
+            <i class="ti ti-wallet me-2"></i>{{ _("Carga Minutos") }}
           </a>
         </div>
-        <div class="hero-orb">🔮</div>
+        <div class="hero-orb">
+          <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M19 5v14a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2" />
+            <path d="M8 6h.01" />
+            <path d="M16 18h.01" />
+            <path d="M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+            <path d="M12 8v1M12 15v1M8 12h1M15 12h1M9.5 9.5l.71.71M14.5 9.5l-.71.71M9.5 14.5l.71-.71M14.5 14.5l-.71-.71" />
+          </svg>
+        </div>
       </div>
     </section>
 
@@ -405,19 +413,19 @@
         <div class="row g-3 text-center">
           <div class="col-6 col-md-3">
             <div class="stat-num">+50.000</div>
-            <div class="stat-lbl">Consultas realizadas</div>
+            <div class="stat-lbl">{{ _("Consultas realizadas") }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-num">98%</div>
-            <div class="stat-lbl">Clientes satisfechos</div>
+            <div class="stat-lbl">{{ _("Clientes satisfechos") }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-num">+20</div>
-            <div class="stat-lbl">Especialistas activas</div>
+            <div class="stat-lbl">{{ _("Especialistas activas") }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-num">24/7</div>
-            <div class="stat-lbl">Siempre disponible</div>
+            <div class="stat-lbl">{{ _("Siempre disponible") }}</div>
           </div>
         </div>
       </div>
@@ -447,10 +455,10 @@
     <section id="tarotistas" class="agents-section">
       <div class="container">
         <div class="text-center mb-5">
-          <div class="section-tag">✦ Nuestro Equipo</div>
-          <h2 class="section-title">Nuestras Tarotistas</h2>
+          <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Nuestro Equipo") }}</div>
+          <h2 class="section-title">{{ _("Nuestras Tarotistas") }}</h2>
           <div class="divider-gold"></div>
-          <p class="section-subtitle">Especialistas con años de experiencia preparadas para orientarte</p>
+          <p class="section-subtitle">{{ _("Especialistas con años de experiencia preparadas para orientarte") }}</p>
         </div>
         <div class="row g-4">
           {% for agent in agents %}
@@ -461,20 +469,20 @@
               <div class="agent-spec">{{ agent.specialty }}</div>
               <div class="mb-2">
                 {% if agent.status == 'online' %}
-                <span class="badge-online">● Disponible</span>
+                <span class="badge-online">● {{ _("Disponible") }}</span>
                 {% elif agent.status == 'busy' %}
-                <span class="badge-busy">● En consulta</span>
+                <span class="badge-busy">● {{ _("En consulta") }}</span>
                 {% else %}
-                <span class="badge-offline">● No disponible</span>
+                <span class="badge-offline">● {{ _("No disponible") }}</span>
                 {% endif %}
               </div>
               {% if agent.status == 'online' %}
               <a href="tel:+56222301515" class="btn btn-call mt-auto">
-                <i class="ti ti-phone me-1"></i>Llama Ahora
+                <i class="ti ti-phone me-1"></i>{{ _("Llama Ahora") }}
               </a>
               {% elif agent.status == 'busy' %}
               <button class="btn btn-busy mt-auto" disabled>
-                <i class="ti ti-clock me-1"></i>En consulta
+                <i class="ti ti-clock me-1"></i>{{ _("En consulta") }}
               </button>
               {% endif %}
             </div>
@@ -483,7 +491,7 @@
         </div>
         <div class="text-center mt-5">
           <a href="tel:+56222301515" class="btn btn-lg btn-call px-5">
-            <i class="ti ti-phone me-2"></i>Llama Ahora - +56 22230 1515
+            <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }} - +56 22230 1515
           </a>
         </div>
       </div>
@@ -493,23 +501,23 @@
     <section id="planes" class="plans-section">
       <div class="container">
         <div class="text-center mb-5">
-          <div class="section-tag">✦ Tarifas</div>
-          <h2 class="section-title">Elige tu Plan</h2>
+          <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Tarifas") }}</div>
+          <h2 class="section-title">{{ _("Elige tu Plan") }}</h2>
           <div class="divider-gold"></div>
-          <p class="section-subtitle">Carga los minutos que necesitas y consulta cuando quieras</p>
+          <p class="section-subtitle">{{ _("Carga los minutos que necesitas y consulta cuando quieras") }}</p>
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
           <div class="col-sm-6 col-lg-3">
             <div class="plan-card {% if plan.featured %}featured{% endif %}">
               {% if plan.featured %}
-              <div><span class="plan-badge">Más Popular</span></div>
+              <div><span class="plan-badge">{{ _("Más Popular") }}</span></div>
               {% endif %}
               <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <div class="plan-price">${{ plan.price }} CLP<span> {{ _("/ sesión") }}</span></div>
               <p class="plan-desc">{{ plan.description }}</p>
               <a href="#" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
+                <i class="ti ti-wallet me-1"></i>{{ _("Carga Minutos") }}
               </a>
             </div>
           </div>
@@ -522,8 +530,8 @@
     <section id="testimonios" class="testimonials-section">
       <div class="container">
         <div class="text-center mb-5">
-          <div class="section-tag">✦ Testimonios</div>
-          <h2 class="section-title">Lo que dicen nuestras consultantes</h2>
+          <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Testimonios") }}</div>
+          <h2 class="section-title">{{ _("Lo que dicen nuestras consultantes") }}</h2>
           <div class="divider-gold"></div>
         </div>
         <div id="testiCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
@@ -541,11 +549,11 @@
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#testiCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Anterior</span>
+            <span class="visually-hidden">{{ _("Anterior") }}</span>
           </button>
           <button class="carousel-control-next" type="button" data-bs-target="#testiCarousel" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Siguiente</span>
+            <span class="visually-hidden">{{ _("Siguiente") }}</span>
           </button>
           <div class="carousel-indicators" style="position:static; margin-top:2rem;">
             {% for t in testimonials %}
@@ -563,8 +571,8 @@
         <div class="row justify-content-center">
           <div class="col-lg-8">
             <div class="text-center mb-5">
-              <div class="section-tag">✦ Preguntas frecuentes</div>
-              <h2 class="section-title">¿Tienes dudas?</h2>
+              <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Preguntas frecuentes") }}</div>
+              <h2 class="section-title">{{ _("¿Tienes dudas?") }}</h2>
               <div class="divider-gold"></div>
             </div>
             <div class="faq-item">
@@ -600,30 +608,30 @@
     <section class="help-section">
       <div class="container">
         <div class="text-center mb-5">
-          <div class="section-tag">✦ Cómo Funciona</div>
-          <h2 class="section-title">Comenzar es muy fácil</h2>
+          <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Cómo Funciona") }}</div>
+          <h2 class="section-title">{{ _("Comenzar es muy fácil") }}</h2>
           <div class="divider-gold"></div>
         </div>
         <div class="row g-4">
           <div class="col-md-4">
             <div class="help-card">
-              <span class="help-icon">①</span>
-              <div class="help-title">Elige tu plan</div>
-              <p class="help-text">Selecciona la cantidad de minutos que mejor se adapte a tu consulta y carga tu saldo de forma rápida y segura.</p>
+              <span class="help-icon"><i class="ti ti-circle-number-1"></i></span>
+              <div class="help-title">{{ _("Elige tu plan") }}</div>
+              <p class="help-text">{{ _("Selecciona la cantidad de minutos que mejor se adapte a tu consulta y carga tu saldo de forma rápida y segura.") }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="help-card">
-              <span class="help-icon">②</span>
-              <div class="help-title">Elige tu especialista</div>
-              <p class="help-text">Revisa quiénes están disponibles en este momento y elige la especialista con quien sientas más afinidad.</p>
+              <span class="help-icon"><i class="ti ti-circle-number-2"></i></span>
+              <div class="help-title">{{ _("Elige tu especialista") }}</div>
+              <p class="help-text">{{ _("Revisa quiénes están disponibles en este momento y elige la especialista con quien sientas más afinidad.") }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="help-card">
-              <span class="help-icon">③</span>
-              <div class="help-title">Llama y consulta</div>
-              <p class="help-text">Marca el 600 XXX XXX y conéctate. Tu consulta es privada, personalizada y sin compromisos adicionales.</p>
+              <span class="help-icon"><i class="ti ti-circle-number-3"></i></span>
+              <div class="help-title">{{ _("Llama y consulta") }}</div>
+              <p class="help-text">{{ _("Marca el número y conéctate. Tu consulta es privada, personalizada y sin compromisos adicionales.") }}</p>
             </div>
           </div>
         </div>
@@ -633,14 +641,14 @@
     <!-- ── CTA ──────────────────────────────────────── -->
     <section class="cta-banner">
       <div class="container">
-        <h2>¿Lista/o para dar el primer paso?</h2>
-        <p>Nuestras especialistas están esperando tu llamada ahora mismo.</p>
+        <h2>{{ _("¿Lista/o para dar el primer paso?") }}</h2>
+        <p>{{ _("Nuestras especialistas están esperando tu llamada ahora mismo.") }}</p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
           <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5">
-            <i class="ti ti-phone me-2"></i>Llama Ahora
+            <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }}
           </a>
           <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="border-radius:30px;">
-            <i class="ti ti-wallet me-2"></i>Carga Minutos
+            <i class="ti ti-wallet me-2"></i>{{ _("Carga Minutos") }}
           </a>
         </div>
       </div>

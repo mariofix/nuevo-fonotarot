@@ -89,9 +89,14 @@ def _init_extensions(app: Flask) -> None:
     def _locale_selector() -> str:
         lang = session.get("lang") or request.args.get("lang")
         active = _active_locales()
-        if lang and lang in active:
-            session["lang"] = lang
-            return lang
+        if lang:
+            if lang in active:
+                session["lang"] = lang
+                return lang
+            # Explicit lang code requested but not available → clear stale
+            # session value and show the site in Spanish (primary language).
+            session.pop("lang", None)
+            return default_lang
         return request.accept_languages.best_match(active, default=default_lang)
 
     babel.init_app(app, locale_selector=_locale_selector)

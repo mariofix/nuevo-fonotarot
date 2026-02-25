@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Blog – Fonotarot{% endblock %}
+{% block title %}{{ _("Blog") }} – Fonotarot{% endblock %}
 
 {% block content %}
 <div class="row mt-4">
   <div class="col-12">
-    <h1 class="page-title mb-4">Blog</h1>
+    <h1 class="page-title mb-4">{{ _("Blog") }}</h1>
   </div>
   {% if posts %}
     {% for post in posts %}
@@ -23,12 +23,12 @@
           <div class="mt-auto pt-3">
             <small class="text-muted">
               {% if post.published_at %}
-                {{ post.published_at.strftime('%B %d, %Y') }}
+                {{ post.published_at.strftime('%d/%m/%Y') }}
               {% endif %}
             </small>
             <a href="{{ url_for('blog.detail', slug=post.slug) }}"
                class="btn btn-sm btn-primary float-end">
-              Read more
+              {{ _("Leer más") }}
             </a>
           </div>
         </div>
@@ -38,8 +38,8 @@
   {% else %}
   <div class="col-12">
     <div class="empty">
-      <p class="empty-title">No posts yet</p>
-      <p class="empty-subtitle text-muted">Check back soon!</p>
+      <p class="empty-title">{{ _("Aún no hay publicaciones") }}</p>
+      <p class="empty-subtitle text-muted">{{ _("¡Vuelve pronto!") }}</p>
     </div>
   </div>
   {% endif %}
