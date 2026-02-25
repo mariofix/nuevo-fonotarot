@@ -62,4 +62,6 @@ def _init_extensions(app: Flask) -> None:
 
 
 def _register_blueprints(app: Flask) -> None:
-    pass
+    from app.pages import pages_bp
+
+    app.register_blueprint(pages_bp)

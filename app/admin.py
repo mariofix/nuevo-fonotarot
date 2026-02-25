@@ -46,9 +46,21 @@ class RoleAdminView(SecureModelView):
     column_searchable_list = ("name",)
 
 
+class StaticPageAdminView(SecureModelView):
+    """Admin view for the StaticPage model."""
+
+    column_list = ("path", "title", "is_active", "created_at", "updated_at")
+    column_searchable_list = ("path", "title")
+    column_filters = ("is_active",)
+    form_excluded_columns = ("created_at", "updated_at")
+
+
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
-    from app.models import Role, User
+    from app.models import Role, StaticPage, User
 
     admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
     admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
+    admin_ext.add_view(
+        StaticPageAdminView(StaticPage, db.session, name="Pages", category="Content")
+    )
