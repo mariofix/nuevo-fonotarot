@@ -1,0 +1,88 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+  <style>
+    #gjs-editor-wrapper { height: 550px; border: 1px solid #dee2e6; border-radius: 4px; }
+    #gjs { height: 100%; }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a href="{{ return_url }}" class="nav-link">{{ _gettext('List') }}</a>
+    </li>
+    <li class="nav-item">
+      <a href="javascript:void(0)" class="nav-link active">{{ _gettext('Create') }}</a>
+    </li>
+  </ul>
+
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data">
+    <fieldset>
+      {% if form.hidden_tag is defined %}{{ form.hidden_tag() }}{% endif %}
+
+      <div class="mb-3">
+        {{ form.path.label(class="form-label") }}
+        {{ form.path(class="form-control") }}
+        {% for error in form.path.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+        {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3 form-check">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label") }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">{{ form.content.label.text }}</label>
+        {# Hidden textarea — GrapesJS syncs its HTML here before submit #}
+        {{ form.content(id="content-field", style="display:none;") }}
+        <div id="gjs-editor-wrapper">
+          <div id="gjs"></div>
+        </div>
+        {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <hr>
+      <div class="mb-3 submit-row">
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}">
+        <a href="{{ return_url }}" class="btn btn-danger">{{ _gettext('Cancel') }}</a>
+      </div>
+    </fieldset>
+  </form>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+  <script src="https://unpkg.com/grapesjs"></script>
+  <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+  <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+  <script>
+    const contentField = document.getElementById('content-field');
+    const editor = grapesjs.init({
+      container: '#gjs',
+      height: '100%',
+      width: 'auto',
+      storageManager: false,
+      canvas: {
+        styles: ['https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css'],
+        scripts: ['https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js'],
+      },
+      plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
+    });
+
+    document.querySelector('.admin-form').addEventListener('submit', function () {
+      contentField.value = editor.getHtml();
+    });
+  </script>
+{% endblock %}

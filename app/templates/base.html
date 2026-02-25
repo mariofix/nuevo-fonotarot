@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Fonotarot{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="antialiased">
+  <div class="page">
+    <header class="navbar navbar-expand-md sticky-top d-print-none">
+      <div class="container-xl">
+        <a class="navbar-brand" href="/">Fonotarot</a>
+      </div>
+    </header>
+    <div class="page-wrapper">
+      <div class="page-body">
+        <div class="container-xl">
+          {% block body %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
