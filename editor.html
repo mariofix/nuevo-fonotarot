@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>GrapesJS + Bootswatch</title>
+        <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --ui-bg: #0a0a0f;
+                --ui-surface: #111118;
+                --ui-border: #1e1e2e;
+                --ui-accent: #7c3aed;
+                --ui-accent2: #a78bfa;
+                --ui-text: #e2e8f0;
+                --ui-muted: #64748b;
+                --ui-panel-w: 260px;
+                --ui-top-h: 52px;
+            }
+
+            body,
+            html {
+                height: 100%;
+                background: var(--ui-bg);
+                color: var(--ui-text);
+                font-family: 'Syne', sans-serif;
+                overflow: hidden;
+            }
+
+            /* ─── TOP BAR ─────────────────────────────────────── */
+            #topbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: var(--ui-top-h);
+                background: var(--ui-surface);
+                border-bottom: 1px solid var(--ui-border);
+                display: flex;
+                align-items: center;
+                padding: 0 16px;
+                gap: 16px;
+                z-index: 9999;
+            }
+
+            #topbar .logo {
+                font-size: 13px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ui-accent2);
+                white-space: nowrap;
+                margin-right: 8px;
+            }
+
+            #topbar .sep {
+                width: 1px;
+                height: 24px;
+                background: var(--ui-border);
+            }
+
+            /* Theme picker */
+            #theme-picker {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+            }
+
+            #theme-picker label {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--ui-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                white-space: nowrap;
+            }
+
+            #theme-select {
+                background: var(--ui-bg);
+                border: 1px solid var(--ui-border);
+                color: var(--ui-text);
+                padding: 5px 10px;
+                border-radius: 6px;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 12px;
+                cursor: pointer;
+                outline: none;
+                transition: border-color 0.15s;
+            }
+
+            #theme-select:hover,
+            #theme-select:focus {
+                border-color: var(--ui-accent);
+            }
+
+            /* Swatch preview dot */
+            #swatch-preview {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: var(--ui-accent);
+                flex-shrink: 0;
+                transition: background 0.3s;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Action buttons */
+            .tb-btn {
+                background: transparent;
+                border: 1px solid var(--ui-border);
+                color: var(--ui-text);
+                padding: 6px 14px;
+                border-radius: 6px;
+                font-family: 'Syne', sans-serif;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s;
+                white-space: nowrap;
+            }
+
+            .tb-btn:hover {
+                border-color: var(--ui-accent2);
+                color: var(--ui-accent2);
+            }
+
+            .tb-btn.accent {
+                background: var(--ui-accent);
+                border-color: var(--ui-accent);
+                color: #fff;
+            }
+
+            .tb-btn.accent:hover {
+                background: #6d28d9;
+                border-color: #6d28d9;
+            }
+
+            /* ─── EDITOR WRAPPER ──────────────────────────────── */
+            #gjs-wrapper {
+                position: fixed;
+                top: var(--ui-top-h);
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+
+            #gjs {
+                height: 100%;
+            }
+
+            /* ─── GRAPESJS OVERRIDES ──────────────────────────── */
+            .gjs-pn-panels {
+                background: var(--ui-surface) !important;
+            }
+
+            .gjs-pn-panel {
+                background: var(--ui-surface) !important;
+                border-color: var(--ui-border) !important;
+            }
+
+            .gjs-pn-btn {
+                color: var(--ui-muted) !important;
+                transition: color 0.15s !important;
+            }
+
+            .gjs-pn-btn:hover,
+            .gjs-pn-btn.gjs-pn-active {
+                color: var(--ui-accent2) !important;
+            }
+
+            .gjs-block-categories,
+            .gjs-block-category {
+                background: var(--ui-surface) !important;
+            }
+
+            .gjs-block-category__label {
+                color: var(--ui-muted) !important;
+                font-size: 10px !important;
+                letter-spacing: 0.1em !important;
+                text-transform: uppercase !important;
+            }
+
+            .gjs-block {
+                background: var(--ui-bg) !important;
+                border-color: var(--ui-border) !important;
+                color: var(--ui-text) !important;
+                border-radius: 6px !important;
+                transition: border-color 0.15s !important;
+            }
+
+            .gjs-block:hover {
+                border-color: var(--ui-accent) !important;
+            }
+
+            .gjs-block__label {
+                color: var(--ui-text) !important;
+                font-size: 10px !important;
+            }
+
+            .gjs-sm-sector {
+                background: var(--ui-bg) !important;
+                border-color: var(--ui-border) !important;
+            }
+
+            .gjs-sm-sector-title {
+                background: var(--ui-surface) !important;
+                color: var(--ui-text) !important;
+                border-color: var(--ui-border) !important;
+                font-size: 11px !important;
+            }
+
+            .gjs-field {
+                background: var(--ui-bg) !important;
+                color: var(--ui-text) !important;
+                border-color: var(--ui-border) !important;
+            }
+
+            .gjs-field input,
+            .gjs-field select {
+                color: var(--ui-text) !important;
+                background: transparent !important;
+            }
+
+            .gjs-layer {
+                background: var(--ui-surface) !important;
+                border-color: var(--ui-border) !important;
+                color: var(--ui-text) !important;
+            }
+
+            .gjs-layer.gjs-selected {
+                background: var(--ui-bg) !important;
+            }
+
+            .gjs-layer__name {
+                color: var(--ui-text) !important;
+            }
+
+            .gjs-cv-canvas {
+                background: #1a1a2e !important;
+            }
+
+            .gjs-toolbar {
+                background: var(--ui-accent) !important;
+                border-radius: 4px !important;
+            }
+
+            .gjs-toolbar-item {
+                color: #fff !important;
+            }
+
+            .gjs-resizer-h {
+                border-color: var(--ui-accent) !important;
+            }
+
+            .gjs-selected {
+                outline-color: var(--ui-accent) !important;
+            }
+
+            /* Traits panel */
+            .gjs-trt-trait__wrp {
+                background: var(--ui-bg) !important;
+            }
+
+            .gjs-trt-trait {
+                border-color: var(--ui-border) !important;
+            }
+
+            .gjs-label-wrp {
+                color: var(--ui-muted) !important;
+                font-size: 11px !important;
+            }
+
+            /* ─── EXPORT MODAL ────────────────────────────────── */
+            #export-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(4px);
+                z-index: 99999;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #export-modal.open {
+                display: flex;
+            }
+
+            .modal-box {
+                background: var(--ui-surface);
+                border: 1px solid var(--ui-border);
+                border-radius: 12px;
+                width: 90%;
+                max-width: 760px;
+                max-height: 80vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .modal-header {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--ui-border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .modal-header h3 {
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--ui-accent2);
+            }
+
+            .modal-meta {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 11px;
+                color: var(--ui-muted);
+                padding: 8px 20px;
+                border-bottom: 1px solid var(--ui-border);
+                background: var(--ui-bg);
+            }
+
+            .modal-meta span {
+                color: var(--ui-accent2);
+            }
+
+            .modal-body {
+                flex: 1;
+                overflow: auto;
+                padding: 16px 20px;
+            }
+
+            .modal-body pre {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 11px;
+                line-height: 1.7;
+                color: #a5f3fc;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+
+            .modal-footer {
+                padding: 12px 20px;
+                border-top: 1px solid var(--ui-border);
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+            }
+
+            .close-btn {
+                background: none;
+                border: none;
+                color: var(--ui-muted);
+                font-size: 18px;
+                cursor: pointer;
+                line-height: 1;
+                padding: 2px 6px;
+            }
+
+            .close-btn:hover {
+                color: var(--ui-text);
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <!-- TOP BAR -->
+        <div id="topbar">
+            <div class="logo">⬡ GrapesJS</div>
+            <div class="sep"></div>
+
+            <div id="theme-picker">
+                <label>Bootswatch</label>
+                <div id="swatch-preview"></div>
+                <select id="theme-select">
+                    <option value="default">Bootstrap (Default)</option>
+                    <optgroup label="── Dark ──">
+                        <option value="cyborg">Cyborg</option>
+                        <option value="darkly">Darkly</option>
+                        <option value="slate">Slate</option>
+                        <option value="solar">Solar</option>
+                        <option value="superhero">Superhero</option>
+                        <option value="vapor">Vapor</option>
+                    </optgroup>
+                    <optgroup label="── Light ──">
+                        <option value="cerulean">Cerulean</option>
+                        <option value="cosmo">Cosmo</option>
+                        <option value="flatly">Flatly</option>
+                        <option value="journal">Journal</option>
+                        <option value="litera">Litera</option>
+                        <option value="lumen">Lumen</option>
+                        <option value="lux">Lux</option>
+                        <option value="materia">Materia</option>
+                        <option value="minty">Minty</option>
+                        <option value="morph">Morph</option>
+                        <option value="pulse">Pulse</option>
+                        <option value="quartz">Quartz</option>
+                        <option value="sandstone">Sandstone</option>
+                        <option value="simplex">Simplex</option>
+                        <option value="sketchy">Sketchy</option>
+                        <option value="spacelab">Spacelab</option>
+                        <option value="united">United</option>
+                        <option value="yeti">Yeti</option>
+                        <option value="zephyr">Zephyr</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="sep"></div>
+            <button class="tb-btn" onclick="previewPage()">Preview</button>
+            <button class="tb-btn accent" onclick="exportPage()">Export HTML</button>
+        </div>
+
+        <!-- EDITOR -->
+        <div id="gjs-wrapper">
+            <div id="gjs"></div>
+        </div>
+
+        <!-- EXPORT MODAL -->
+        <div id="export-modal">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3>Exported HTML</h3>
+                    <button class="close-btn" onclick="closeModal()">✕</button>
+                </div>
+                <div class="modal-meta">
+                    Theme: <span id="modal-theme-name">default</span> &nbsp;|&nbsp;
+                    Bootstrap CDN baked in &nbsp;|&nbsp;
+                    Ready to deploy
+                </div>
+                <div class="modal-body">
+                    <pre id="export-output"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="tb-btn" onclick="copyExport()">Copy to Clipboard</button>
+                    <button class="tb-btn accent" onclick="downloadExport()">Download .html</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCRIPTS -->
+        <script src="https://unpkg.com/grapesjs"></script>
+        <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+        <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+
+        <script>
+            // ─── THEME CONFIG ──────────────────────────────────────────────
+            const BOOTSWATCH_VERSION = '5.3.2';
+            const BS_VERSION = '5.3.0';
+
+            const SWATCH_COLORS = {
+                default: '#0d6efd',
+                cyborg: '#2a9fd6',
+                darkly: '#375a7f',
+                slate: '#3a3f44',
+                solar: '#b58900',
+                superhero: '#df6919',
+                vapor: '#6f42c1',
+                cerulean: '#2fa4e7',
+                cosmo: '#2780e3',
+                flatly: '#18bc9c',
+                journal: '#eb6864',
+                litera: '#4582ec',
+                lumen: '#158cba',
+                lux: '#1a1a1a',
+                materia: '#2196F3',
+                minty: '#78c2ad',
+                morph: '#378dfc',
+                pulse: '#593196',
+                quartz: '#6610f2',
+                sandstone: '#325d88',
+                simplex: '#d9230f',
+                sketchy: '#333333',
+                spacelab: '#446e9b',
+                united: '#e95420',
+                yeti: '#008cba',
+                zephyr: '#3459e6',
+            };
+
+            function getThemeUrl(theme) {
+                if (theme === 'default') {
+                    return `https://cdn.jsdelivr.net/npm/bootstrap@${BS_VERSION}/dist/css/bootstrap.min.css`;
+                }
+                return `https://cdn.jsdelivr.net/npm/bootswatch@${BOOTSWATCH_VERSION}/dist/${theme}/bootstrap.min.css`;
+            }
+
+            // ─── STATE ─────────────────────────────────────────────────────
+            let currentTheme = 'default';
+            let exportedHtml = '';
+
+            // ─── EDITOR INIT ───────────────────────────────────────────────
+            const editor = grapesjs.init({
+                container: '#gjs',
+                height: '100%',
+                width: 'auto',
+                storageManager: false,
+                canvas: {
+                    styles: [getThemeUrl('default')],
+                    scripts: [
+                        `https://cdn.jsdelivr.net/npm/bootstrap@${BS_VERSION}/dist/js/bootstrap.bundle.min.js`
+                    ]
+                },
+                plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
+                pluginsOpts: {
+                    'gjs-preset-webpage': {},
+                    'gjs-blocks-basic': {}
+                }
+            });
+
+            // ═══════════════════════════════════════════════════════════════
+            // 15 EXTRA GRAPESJS BOOTSTRAP 5 BLOCKS
+            // Paste this after your editor is initialized (after grapesjs.init)
+            // ═══════════════════════════════════════════════════════════════
+
+            const bm = editor.BlockManager;
+
+            function addBlock(id, label, category, content, icon) {
+                bm.add(id, {
+                    label, category, content,
+                    media: `<div style="font-size:22px;text-align:center;padding:4px">${icon}</div>`
+                });
+            }
+
+            // 1. DASHBOARD STAT CARDS
+            addBlock('dash-stats', 'Dashboard Stats', 'Dashboard', `
+<div class="container my-4">
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><p class="text-muted small mb-1">Total Revenue</p><h3 class="fw-bold mb-0">$84,254</h3><small class="text-success">↑ 12.5% this month</small></div>
+          <div class="bg-success bg-opacity-10 rounded p-2 fs-4">💰</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><p class="text-muted small mb-1">Active Users</p><h3 class="fw-bold mb-0">3,842</h3><small class="text-success">↑ 8.2% this month</small></div>
+          <div class="bg-primary bg-opacity-10 rounded p-2 fs-4">👥</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><p class="text-muted small mb-1">Open Tickets</p><h3 class="fw-bold mb-0">27</h3><small class="text-danger">↑ 3 since yesterday</small></div>
+          <div class="bg-warning bg-opacity-10 rounded p-2 fs-4">🎫</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div><p class="text-muted small mb-1">Conversion Rate</p><h3 class="fw-bold mb-0">4.6%</h3><small class="text-danger">↓ 0.4% this month</small></div>
+          <div class="bg-danger bg-opacity-10 rounded p-2 fs-4">📉</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`, '📊');
+
+            // 2. SIDEBAR LAYOUT (admin-style)
+            addBlock('sidebar-layout', 'Sidebar Layout', 'Dashboard', `
+<div class="d-flex" style="min-height:500px">
+  <div class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style="width:220px">
+    <a href="#" class="d-flex align-items-center mb-3 text-white text-decoration-none fw-bold">⬡ Dashboard</a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto gap-1">
+      <li><a href="#" class="nav-link text-white active">🏠 Home</a></li>
+      <li><a href="#" class="nav-link text-secondary">📦 Products</a></li>
+      <li><a href="#" class="nav-link text-secondary">👥 Customers</a></li>
+      <li><a href="#" class="nav-link text-secondary">📊 Reports</a></li>
+      <li><a href="#" class="nav-link text-secondary">⚙️ Settings</a></li>
+    </ul>
+    <hr>
+    <div class="d-flex align-items-center gap-2">
+      <img src="https://placehold.co/32x32/6c757d/fff?text=U" class="rounded-circle" width="32" height="32" alt="">
+      <small>Admin User</small>
+    </div>
+  </div>
+  <div class="flex-grow-1 p-4">
+    <h4 class="fw-bold mb-4">Main Content Area</h4>
+    <p class="text-muted">Drop your dashboard blocks here.</p>
+  </div>
+</div>`, '🗂️');
+
+            // 3. NOTIFICATION / ACTIVITY FEED
+            addBlock('activity-feed', 'Activity Feed', 'Dashboard', `
+<div class="container my-4" style="max-width:480px">
+  <div class="card">
+    <div class="card-header fw-bold">Recent Activity</div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item d-flex align-items-center gap-3 py-3">
+        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width:36px;height:36px;flex-shrink:0">✓</div>
+        <div><strong>Deployment successful</strong><br><small class="text-muted">2 minutes ago · production</small></div>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-3 py-3">
+        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width:36px;height:36px;flex-shrink:0">👤</div>
+        <div><strong>New user registered</strong><br><small class="text-muted">14 minutes ago · alice@example.com</small></div>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-3 py-3">
+        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center text-white" style="width:36px;height:36px;flex-shrink:0">⚠</div>
+        <div><strong>High CPU usage detected</strong><br><small class="text-muted">1 hour ago · server-03</small></div>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-3 py-3">
+        <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center text-white" style="width:36px;height:36px;flex-shrink:0">✕</div>
+        <div><strong>Payment failed</strong><br><small class="text-muted">3 hours ago · Order #4821</small></div>
+      </li>
+    </ul>
+    <div class="card-footer text-center"><a href="#" class="text-decoration-none small">View all activity →</a></div>
+  </div>
+</div>`, '🔔');
+
+            // 4. STEP INDICATOR / WIZARD
+            addBlock('step-indicator', 'Step Wizard', 'UI Components', `
+<div class="container my-5">
+  <div class="d-flex align-items-center justify-content-center gap-0 mb-5">
+    <div class="text-center">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto" style="width:44px;height:44px">1</div>
+      <small class="d-block mt-1 fw-bold">Account</small>
+    </div>
+    <div class="flex-grow-1 border-top border-primary border-2 mx-2" style="max-width:80px"></div>
+    <div class="text-center">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto" style="width:44px;height:44px">2</div>
+      <small class="d-block mt-1 fw-bold">Profile</small>
+    </div>
+    <div class="flex-grow-1 border-top border-2 mx-2 border-secondary" style="max-width:80px"></div>
+    <div class="text-center">
+      <div class="border border-2 border-secondary text-muted rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto" style="width:44px;height:44px">3</div>
+      <small class="d-block mt-1 text-muted">Payment</small>
+    </div>
+    <div class="flex-grow-1 border-top border-2 mx-2 border-secondary" style="max-width:80px"></div>
+    <div class="text-center">
+      <div class="border border-2 border-secondary text-muted rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto" style="width:44px;height:44px">4</div>
+      <small class="d-block mt-1 text-muted">Confirm</small>
+    </div>
+  </div>
+  <div class="card p-4 col-md-8 mx-auto">
+    <h5 class="fw-bold mb-3">Step 2: Complete Your Profile</h5>
+    <form>
+      <div class="mb-3"><label class="form-label">Display Name</label><input type="text" class="form-control" placeholder="How should we call you?"></div>
+      <div class="mb-3"><label class="form-label">Bio</label><textarea class="form-control" rows="3" placeholder="Tell us a bit about yourself..."></textarea></div>
+      <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-outline-secondary">← Back</button>
+        <button type="button" class="btn btn-primary">Continue →</button>
+      </div>
+    </form>
+  </div>
+</div>`, '🧭');
+
+            // 5. PRICING TOGGLE (Monthly / Annual)
+            addBlock('pricing-toggle', 'Pricing Toggle', 'Pricing', `
+<section class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Choose Your Plan</h2>
+    <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
+      <span class="fw-bold">Monthly</span>
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" id="billingToggle" style="width:48px;height:24px;cursor:pointer"
+          onchange="
+            const isAnnual = this.checked;
+            document.querySelectorAll('.price-monthly').forEach(el => el.style.display = isAnnual ? 'none' : 'block');
+            document.querySelectorAll('.price-annual').forEach(el => el.style.display = isAnnual ? 'block' : 'none');
+          ">
+      </div>
+      <span class="fw-bold">Annual <span class="badge bg-success ms-1">Save 20%</span></span>
+    </div>
+  </div>
+  <div class="row g-4 justify-content-center">
+    <div class="col-md-4">
+      <div class="card h-100 text-center p-4">
+        <h4 class="fw-bold">Pro</h4>
+        <div class="price-monthly"><div class="display-4 fw-bold my-3">$29<small class="fs-6 fw-normal text-muted">/mo</small></div></div>
+        <div class="price-annual" style="display:none"><div class="display-4 fw-bold my-3">$23<small class="fs-6 fw-normal text-muted">/mo</small></div><small class="text-muted">Billed $276/year</small></div>
+        <ul class="list-unstyled text-start my-3">
+          <li class="mb-2">✓ Unlimited projects</li>
+          <li class="mb-2">✓ 100GB storage</li>
+          <li class="mb-2">✓ Priority support</li>
+        </ul>
+        <a href="#" class="btn btn-primary mt-auto">Get Started</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 text-center p-4 border-primary border-2">
+        <span class="badge bg-primary mb-2 align-self-center">Most Popular</span>
+        <h4 class="fw-bold">Enterprise</h4>
+        <div class="price-monthly"><div class="display-4 fw-bold my-3">$99<small class="fs-6 fw-normal text-muted">/mo</small></div></div>
+        <div class="price-annual" style="display:none"><div class="display-4 fw-bold my-3">$79<small class="fs-6 fw-normal text-muted">/mo</small></div><small class="text-muted">Billed $948/year</small></div>
+        <ul class="list-unstyled text-start my-3">
+          <li class="mb-2">✓ Unlimited everything</li>
+          <li class="mb-2">✓ 1TB storage</li>
+          <li class="mb-2">✓ 24/7 phone support</li>
+          <li class="mb-2">✓ Custom SLA</li>
+        </ul>
+        <a href="#" class="btn btn-primary mt-auto">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>`, '💸');
+
+            // 6. COOKIE CONSENT BANNER
+            addBlock('cookie-banner', 'Cookie Banner', 'UI Components', `
+<div class="fixed-bottom bg-dark text-white p-3" id="cookieBanner">
+  <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+    <p class="mb-0 small">🍪 We use cookies to improve your experience. By continuing, you agree to our <a href="#" class="text-warning">Cookie Policy</a>.</p>
+    <div class="d-flex gap-2 flex-shrink-0">
+      <button class="btn btn-sm btn-outline-light" onclick="document.getElementById('cookieBanner').style.display='none'">Decline</button>
+      <button class="btn btn-sm btn-warning" onclick="document.getElementById('cookieBanner').style.display='none'">Accept All</button>
+    </div>
+  </div>
+</div>`, '🍪');
+
+            // 7. IMAGE WITH OVERLAY
+            addBlock('image-overlay', 'Image Overlay', 'Media', `
+<div class="container my-4">
+  <div class="position-relative rounded overflow-hidden" style="max-width:600px">
+    <img src="https://placehold.co/600x350/333/fff?text=Background+Image" class="img-fluid w-100" alt="">
+    <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background:linear-gradient(transparent,rgba(0,0,0,0.8))">
+      <h4 class="fw-bold mb-1">Overlay Title</h4>
+      <p class="mb-2 small opacity-75">A short description that sits on top of the image with a gradient fade.</p>
+      <a href="#" class="btn btn-sm btn-light">Read More →</a>
+    </div>
+  </div>
+</div>`, '🌄');
+
+            // 8. RATING / REVIEW WIDGET
+            addBlock('rating-widget', 'Rating Summary', 'UI Components', `
+<div class="container my-4" style="max-width:500px">
+  <div class="card p-4">
+    <h5 class="fw-bold mb-3">Customer Reviews</h5>
+    <div class="d-flex align-items-center gap-4 mb-4">
+      <div class="text-center"><div class="display-4 fw-bold">4.6</div><div class="text-warning fs-5">★★★★½</div><small class="text-muted">128 reviews</small></div>
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center gap-2 mb-1"><small>5★</small><div class="progress flex-grow-1" style="height:8px"><div class="progress-bar bg-warning" style="width:70%"></div></div><small class="text-muted">70%</small></div>
+        <div class="d-flex align-items-center gap-2 mb-1"><small>4★</small><div class="progress flex-grow-1" style="height:8px"><div class="progress-bar bg-warning" style="width:20%"></div></div><small class="text-muted">20%</small></div>
+        <div class="d-flex align-items-center gap-2 mb-1"><small>3★</small><div class="progress flex-grow-1" style="height:8px"><div class="progress-bar bg-warning" style="width:6%"></div></div><small class="text-muted">6%</small></div>
+        <div class="d-flex align-items-center gap-2 mb-1"><small>2★</small><div class="progress flex-grow-1" style="height:8px"><div class="progress-bar bg-warning" style="width:3%"></div></div><small class="text-muted">3%</small></div>
+        <div class="d-flex align-items-center gap-2"><small>1★</small><div class="progress flex-grow-1" style="height:8px"><div class="progress-bar bg-warning" style="width:1%"></div></div><small class="text-muted">1%</small></div>
+      </div>
+    </div>
+    <a href="#" class="btn btn-outline-primary w-100">Write a Review</a>
+  </div>
+</div>`, '⭐');
+
+            // 9. EMPTY STATE
+            addBlock('empty-state', 'Empty State', 'UI Components', `
+<div class="container my-5 text-center py-5">
+  <div class="fs-1 mb-3">📭</div>
+  <h4 class="fw-bold">Nothing here yet</h4>
+  <p class="text-muted col-md-5 mx-auto mt-2">Once you add some items they'll show up here. Get started by creating your first one.</p>
+  <a href="#" class="btn btn-primary mt-3">Create Your First Item</a>
+</div>`, '🫙');
+
+            // 10. CHAT / MESSAGE BUBBLES
+            addBlock('chat-bubbles', 'Chat Bubbles', 'UI Components', `
+<div class="container my-4" style="max-width:480px">
+  <div class="card">
+    <div class="card-header d-flex align-items-center gap-2 fw-bold">
+      <div class="bg-success rounded-circle" style="width:10px;height:10px"></div> Support Chat
+    </div>
+    <div class="card-body d-flex flex-column gap-3 py-4">
+      <div class="d-flex gap-2">
+        <img src="https://placehold.co/36x36/6c757d/fff?text=S" class="rounded-circle flex-shrink-0" width="36" height="36" alt="">
+        <div><div class="bg-body-secondary rounded p-3" style="max-width:280px"><p class="mb-0 small">Hi there! How can I help you today?</p></div><small class="text-muted ms-1">10:02 AM</small></div>
+      </div>
+      <div class="d-flex gap-2 flex-row-reverse">
+        <img src="https://placehold.co/36x36/0d6efd/fff?text=U" class="rounded-circle flex-shrink-0" width="36" height="36" alt="">
+        <div class="text-end"><div class="bg-primary text-white rounded p-3" style="max-width:280px"><p class="mb-0 small">I have a question about my recent order.</p></div><small class="text-muted me-1">10:03 AM</small></div>
+      </div>
+      <div class="d-flex gap-2">
+        <img src="https://placehold.co/36x36/6c757d/fff?text=S" class="rounded-circle flex-shrink-0" width="36" height="36" alt="">
+        <div><div class="bg-body-secondary rounded p-3" style="max-width:280px"><p class="mb-0 small">Of course! Could you share your order number?</p></div><small class="text-muted ms-1">10:03 AM</small></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="input-group"><input type="text" class="form-control" placeholder="Type a message..."><button class="btn btn-primary">Send</button></div>
+    </div>
+  </div>
+</div>`, '💬');
+
+            // 11. COMPARISON TABLE
+            addBlock('comparison-table', 'Feature Comparison', 'Pricing', `
+<section class="container my-5">
+  <h2 class="fw-bold text-center mb-5">Compare Plans</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="text-start" style="width:35%">Feature</th>
+          <th>Starter<br><small class="fw-normal text-muted">$9/mo</small></th>
+          <th class="table-primary">Pro<br><small class="fw-normal">$29/mo</small></th>
+          <th>Enterprise<br><small class="fw-normal text-muted">$99/mo</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="text-start">Projects</td><td>5</td><td class="table-primary fw-bold">Unlimited</td><td>Unlimited</td></tr>
+        <tr><td class="text-start">Storage</td><td>10 GB</td><td class="table-primary fw-bold">100 GB</td><td>1 TB</td></tr>
+        <tr><td class="text-start">Custom Domain</td><td>✗</td><td class="table-primary">✓</td><td>✓</td></tr>
+        <tr><td class="text-start">API Access</td><td>✗</td><td class="table-primary">✓</td><td>✓</td></tr>
+        <tr><td class="text-start">Priority Support</td><td>✗</td><td class="table-primary">✓</td><td>✓</td></tr>
+        <tr><td class="text-start">SLA Guarantee</td><td>✗</td><td class="table-primary">✗</td><td>✓</td></tr>
+        <tr><td class="text-start">SSO / SAML</td><td>✗</td><td class="table-primary">✗</td><td>✓</td></tr>
+        <tr>
+          <td></td>
+          <td><a href="#" class="btn btn-sm btn-outline-primary">Start</a></td>
+          <td class="table-primary"><a href="#" class="btn btn-sm btn-primary">Start</a></td>
+          <td><a href="#" class="btn btn-sm btn-outline-primary">Contact</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>`, '📐');
+
+            // 12. CODE BLOCK (for docs/dev sites)
+            addBlock('code-block', 'Code Block', 'UI Components', `
+<div class="container my-4">
+  <div class="card border-0" style="background:#1e1e2e">
+    <div class="card-header border-0 d-flex justify-content-between align-items-center py-2 px-4" style="background:#2a2a3e">
+      <div class="d-flex gap-2">
+        <div class="rounded-circle bg-danger" style="width:12px;height:12px"></div>
+        <div class="rounded-circle bg-warning" style="width:12px;height:12px"></div>
+        <div class="rounded-circle bg-success" style="width:12px;height:12px"></div>
+      </div>
+      <small style="color:#6c7086">app.py</small>
+      <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:11px;color:#a6adc8;border-color:#313244">Copy</button>
+    </div>
+    <div class="card-body px-4 py-3">
+      <pre style="color:#cdd6f4;font-family:'JetBrains Mono',monospace;font-size:13px;margin:0;line-height:1.7"><span style="color:#cba6f7">from</span> <span style="color:#89dceb">flask</span> <span style="color:#cba6f7">import</span> Flask, render_template
+<span style="color:#cba6f7">from</span> <span style="color:#89dceb">models</span> <span style="color:#cba6f7">import</span> Page
+
+app = Flask(<span style="color:#f38ba8">__name__</span>)
+
+<span style="color:#a6e3a1">@app.route</span>(<span style="color:#a6e3a1">'/page/&lt;slug&gt;'</span>)
+<span style="color:#cba6f7">def</span> <span style="color:#89b4fa">serve_page</span>(slug):
+    page = Page.query.<span style="color:#89dceb">filter_by</span>(slug=slug).<span style="color:#89dceb">first_or_404</span>()
+    <span style="color:#cba6f7">return</span> <span style="color:#89dceb">render_template</span>(<span style="color:#a6e3a1">'page.html'</span>, page=page)</pre>
+    </div>
+  </div>
+</div>`, '💻');
+
+            // 13. BACK TO TOP BUTTON
+            addBlock('back-to-top', 'Back to Top', 'UI Components', `
+<div style="position:fixed;bottom:24px;right:24px;z-index:999">
+  <a href="#" class="btn btn-primary rounded-circle shadow d-flex align-items-center justify-content-center" style="width:44px;height:44px;font-size:18px" title="Back to top">↑</a>
+</div>`, '⬆️');
+
+            // 14. NEWSLETTER WITH IMAGE
+            addBlock('newsletter-split', 'Newsletter Split', 'Sections', `
+<section class="container my-5">
+  <div class="row align-items-center g-0 rounded overflow-hidden shadow">
+    <div class="col-md-5">
+      <img src="https://placehold.co/500x320/375a7f/fff?text=Newsletter" class="img-fluid w-100 h-100" style="object-fit:cover;min-height:240px" alt="">
+    </div>
+    <div class="col-md-7 p-5 bg-body-tertiary">
+      <h3 class="fw-bold">Weekly Digest</h3>
+      <p class="text-muted mt-2">Curated insights, tutorials, and news delivered every Friday. Join 5,000+ readers.</p>
+      <form class="mt-4">
+        <div class="mb-3"><input type="email" class="form-control form-control-lg" placeholder="your@email.com"></div>
+        <button type="submit" class="btn btn-primary btn-lg w-100">Subscribe Free →</button>
+        <p class="text-muted small text-center mt-2 mb-0">No spam. Unsubscribe anytime.</p>
+      </form>
+    </div>
+  </div>
+</section>`, '📰');
+
+            // 15. 404 / ERROR PAGE BLOCK
+            addBlock('error-404', '404 Error Block', 'UI Components', `
+<section class="container my-5 py-5 text-center">
+  <div class="display-1 fw-bold text-primary mb-0">404</div>
+  <h2 class="fw-bold mt-2">Page Not Found</h2>
+  <p class="text-muted col-md-5 mx-auto mt-3">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+  <div class="d-flex justify-content-center gap-3 mt-4">
+    <a href="/" class="btn btn-primary btn-lg">← Go Home</a>
+    <a href="#" class="btn btn-outline-secondary btn-lg">Contact Support</a>
+  </div>
+</section>`, '🔍');
+
+            // ─── THEME SWITCHER ────────────────────────────────────────────
+            function applyTheme(theme) {
+                const canvasDoc = editor.Canvas.getDocument();
+                const existing = canvasDoc.querySelector('#bootswatch-css');
+                if (existing) existing.remove();
+
+                const link = canvasDoc.createElement('link');
+                link.id = 'bootswatch-css';
+                link.rel = 'stylesheet';
+                link.href = getThemeUrl(theme);
+                canvasDoc.head.appendChild(link);
+
+                currentTheme = theme;
+
+                // Update swatch dot color
+                document.getElementById('swatch-preview').style.background =
+                    SWATCH_COLORS[theme] || '#0d6efd';
+            }
+
+            document.getElementById('theme-select').addEventListener('change', e => {
+                applyTheme(e.target.value);
+            });
+
+            // Set initial dot color
+            document.getElementById('swatch-preview').style.background = SWATCH_COLORS['default'];
+
+            // ─── BUILD FULL PAGE OUTPUT ────────────────────────────────────
+            function buildFullPage() {
+                const html = editor.getHtml();
+                const css = editor.getCss();
+                const themeUrl = getThemeUrl(currentTheme);
+                const themeName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
+
+                return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Page</title>
+  <!-- Bootswatch: ${themeName} -->
+  <link rel="stylesheet" href="${themeUrl}">
+  <style>
+${css}
+  </style>
+</head>
+<body>
+${html}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@${BS_VERSION}/dist/js/bootstrap.bundle.min.js"><\/script>
+</body>
+</html>`;
+            }
+
+            // ─── EXPORT ────────────────────────────────────────────────────
+            function exportPage() {
+                exportedHtml = buildFullPage();
+                const themeName = currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1);
+                document.getElementById('modal-theme-name').textContent = themeName;
+                document.getElementById('export-output').textContent = exportedHtml;
+                document.getElementById('export-modal').classList.add('open');
+            }
+
+            function closeModal() {
+                document.getElementById('export-modal').classList.remove('open');
+            }
+
+            function copyExport() {
+                navigator.clipboard.writeText(exportedHtml).then(() => {
+                    const btn = event.target;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+                });
+            }
+
+            function downloadExport() {
+                const blob = new Blob([exportedHtml], { type: 'text/html' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `page-${currentTheme}.html`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            }
+
+            // ─── PREVIEW ───────────────────────────────────────────────────
+            function previewPage() {
+                const html = buildFullPage();
+                const blob = new Blob([html], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+            }
+
+            // Close modal on backdrop click
+            document.getElementById('export-modal').addEventListener('click', e => {
+                if (e.target === e.currentTarget) closeModal();
+            });
+        </script>
+
+    </body>
+
+</html>
