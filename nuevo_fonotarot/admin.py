@@ -5,7 +5,7 @@ from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_security import current_user
 
-from app.extensions import db
+from .extensions import db
 
 
 class SecureAdminIndexView(AdminIndexView):
@@ -91,9 +91,53 @@ class BlogPostAdminView(SecureModelView):
             model.published_at = datetime.now(timezone.utc)
 
 
+class MinutePackAdminView(SecureModelView):
+    """Admin view for prepaid tarot minute packs."""
+
+    column_list = ("minutes", "price", "is_featured", "is_active", "created_at")
+    column_searchable_list = ("description",)
+    column_filters = ("is_active", "is_featured")
+    form_excluded_columns = ("created_at",)
+
+
+class SubscriptionPlanAdminView(SecureModelView):
+    """Admin view for subscription plans."""
+
+    column_list = ("name", "minutes_per_month", "price", "is_featured", "is_active")
+    column_searchable_list = ("name",)
+    column_filters = ("is_active", "is_featured")
+    form_excluded_columns = ("created_at",)
+
+
+class ProductAdminView(SecureModelView):
+    """Admin view for physical products."""
+
+    column_list = ("name", "category", "price", "stock", "is_active", "is_featured")
+    column_searchable_list = ("name", "slug")
+    column_filters = ("is_active", "is_featured", "category")
+    form_excluded_columns = ("created_at", "updated_at")
+
+    def on_model_change(self, form, model, is_created):
+        from .models import Product
+
+        if not model.slug and model.name:
+            model.slug = Product.make_slug(model.name)
+        elif model.slug:
+            model.slug = Product.make_slug(model.slug)
+
+
+class OrderAdminView(SecureModelView):
+    """Admin view for customer orders."""
+
+    column_list = ("id", "status", "total", "payment_method", "anonymous_shipping", "created_at")
+    column_filters = ("status", "payment_method", "anonymous_shipping")
+    can_create = False
+    form_excluded_columns = ("created_at", "updated_at", "items")
+
+
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
-    from .models import BlogPost, Role, StaticPage, User
+    from .models import BlogPost, MinutePack, Order, Product, Role, StaticPage, SubscriptionPlan, User
 
     admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
     admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
@@ -102,4 +146,16 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         BlogPostAdminView(BlogPost, db.session, name="Blog Posts", category="Content")
+    )
+    admin_ext.add_view(
+        MinutePackAdminView(MinutePack, db.session, name="Packs de Minutos", category="Tienda")
+    )
+    admin_ext.add_view(
+        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name="Suscripciones", category="Tienda")
+    )
+    admin_ext.add_view(
+        ProductAdminView(Product, db.session, name="Productos", category="Tienda")
+    )
+    admin_ext.add_view(
+        OrderAdminView(Order, db.session, name="Órdenes", category="Tienda")
     )

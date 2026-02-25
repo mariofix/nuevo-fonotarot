@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Minutos de Tarot Prepagados – Fonotarot</title>
+  <meta name="description" content="Compra minutos de tarot prepagados. Los minutos nunca vencen. Disponibles desde $5.000 CLP."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .card-featured { border-color:#6d28d9; box-shadow:0 0 24px rgba(109,40,217,.35); transform:scale(1.03); }
+    .price-tag { font-size:2.2rem; font-weight:800; color:#a78bfa; }
+    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
+    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
+    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
+    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
+    .badge-pop { background:#d97706; color:#000; font-size:.7rem; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .never-expire { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="{{ url_for('tienda.index') }}" class="text-secondary text-decoration-none">Tienda</a>
+        <a href="{{ url_for('tienda.suscripciones') }}" class="text-secondary text-decoration-none d-none d-md-inline">Suscripciones</a>
+        <a href="{{ url_for('tienda.productos') }}" class="text-secondary text-decoration-none d-none d-md-inline">Productos</a>
+        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
+          <i class="ti ti-shopping-cart"></i>
+          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <div class="text-center mb-5">
+          <h1 class="fw-bold text-white">Minutos de Tarot Prepagados</h1>
+          <p class="text-secondary fs-5 mt-2">Recarga tu cuenta y consulta cuando quieras</p>
+          <span class="never-expire"><i class="ti ti-infinity me-1"></i>Los minutos <strong>nunca vencen</strong> — úsalos a tu ritmo</span>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+          {% for pack in packs %}
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card h-100 text-center p-4 {% if pack.is_featured %}card-featured{% endif %}">
+              {% if pack.is_featured %}
+              <div class="mb-2"><span class="badge badge-pop">⭐ Más popular</span></div>
+              {% endif %}
+              <div class="mb-3">
+                <i class="ti ti-clock" style="font-size:2.5rem;color:#a78bfa"></i>
+              </div>
+              <h2 class="text-white fw-bold mb-0">{{ pack.minutes }}</h2>
+              <p class="text-secondary">minutos</p>
+              <div class="price-tag">${{ pack.price_display }}</div>
+              <p class="text-secondary small mb-0">CLP · pago único</p>
+              {% if pack.description %}
+              <p class="text-secondary small mt-2">{{ pack.description }}</p>
+              {% endif %}
+              <div class="mt-3">
+                <div class="text-secondary small mb-2">
+                  <i class="ti ti-check text-success me-1"></i>Nunca vencen<br/>
+                  <i class="ti ti-check text-success me-1"></i>Se acumulan<br/>
+                  <i class="ti ti-check text-success me-1"></i>Sin suscripción
+                </div>
+              </div>
+              <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="mt-auto">
+                <input type="hidden" name="item_type" value="minute_pack"/>
+                <input type="hidden" name="item_id" value="{{ pack.id }}"/>
+                <input type="hidden" name="quantity" value="1"/>
+                <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                <button type="submit" class="btn btn-primary w-100">Agregar al carrito</button>
+              </form>
+            </div>
+          </div>
+          {% else %}
+          <div class="col-12 text-center text-secondary py-5">
+            <i class="ti ti-clock-off" style="font-size:3rem"></i>
+            <p class="mt-2">No hay packs disponibles por el momento.</p>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- FAQ-style info -->
+        <div class="row g-3 mt-5">
+          <div class="col-md-4">
+            <div class="card p-3 text-center h-100">
+              <i class="ti ti-infinity" style="font-size:2rem;color:#a78bfa"></i>
+              <h6 class="text-white mt-2">Sin vencimiento</h6>
+              <p class="text-secondary small mb-0">Los minutos que compras quedan en tu cuenta para siempre.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3 text-center h-100">
+              <i class="ti ti-layers-linked" style="font-size:2rem;color:#a78bfa"></i>
+              <h6 class="text-white mt-2">Acumulables</h6>
+              <p class="text-secondary small mb-0">Puedes comprar varias veces y los minutos se suman.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3 text-center h-100">
+              <i class="ti ti-shield-lock" style="font-size:2rem;color:#a78bfa"></i>
+              <h6 class="text-white mt-2">100% anónimo</h6>
+              <p class="text-secondary small mb-0">Pagos discretos. Sin suscripciones ni cargos automáticos.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>

@@ -35,6 +35,14 @@ class Config:
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
 
+    # Flow payment gateway
+    FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
+    FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
+    FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
+
+    # Khipu payment gateway
+    KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
+
 
 class DevelopmentConfig(Config):
     DEBUG: bool = True

@@ -11,6 +11,8 @@ dependencies = [
     "python-dotenv (>=1.2.1,<2.0.0)",
     "flask-limiter (>=4.1.1,<5.0.0)",
     "flask-migrate (>=4.1.0,<5.0.0)",
+    "pyflowcl (>=2025.2.0,<2026.0.0)",
+    "khipu-tools (>=2025.1.0,<2026.0.0)",
 ]
 
 [project.scripts]

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ product.name }} – Fonotarot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .price { color:#a78bfa; font-weight:800; font-size:2rem; }
+    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
+    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
+    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
+    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="{{ url_for('tienda.productos') }}" class="text-secondary text-decoration-none">← Volver</a>
+        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
+          <i class="ti ti-shopping-cart"></i>
+          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <div class="row g-4">
+          <div class="col-md-5">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="img-fluid rounded" style="width:100%;max-height:400px;object-fit:cover"/>
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center rounded" style="height:300px;background:#2d2d4e">
+              <i class="ti ti-package text-secondary" style="font-size:5rem"></i>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md-7">
+            <div class="text-secondary small mb-1">{{ product.category|title }}</div>
+            <h1 class="text-white fw-bold">{{ product.name }}</h1>
+            <div class="price my-3">${{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
+            {% if product.description %}
+            <p class="text-secondary">{{ product.description }}</p>
+            {% endif %}
+            {% if product.stock > 0 %}
+            <p class="text-success"><i class="ti ti-check me-1"></i>En stock ({{ product.stock }} disponibles)</p>
+            <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="d-flex gap-2 align-items-center mt-4">
+              <input type="hidden" name="item_type" value="product"/>
+              <input type="hidden" name="item_id" value="{{ product.id }}"/>
+              <label class="text-secondary me-2" for="qty">Cantidad:</label>
+              <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:80px;background:#2d2d4e;color:#e5e7eb;border-color:#4b5563"/>
+              <button type="submit" class="btn btn-primary"><i class="ti ti-shopping-cart-plus me-1"></i>Agregar al carrito</button>
+            </form>
+            {% else %}
+            <p class="text-danger"><i class="ti ti-x me-1"></i>Sin stock</p>
+            {% endif %}
+            <div class="card p-3 mt-4">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ti ti-eye-off text-success" style="font-size:1.4rem"></i>
+                <div>
+                  <strong class="text-white">Envío anónimo garantizado</strong>
+                  <p class="text-secondary small mb-0">Caja sin marcas, sin etiquetas del remitente. Opción de retiro en punto seguro.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>
