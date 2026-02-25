@@ -1,33 +1,18 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Estado de tu orden #{{ order.id }} – Fonotarot</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
-  <style>
-    body { background:#0f0f1a; color:#e5e7eb; }
-    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
-    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
-    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
-    .status-paid { color:#6ee7b7; }
-    .status-pending { color:#fbbf24; }
-    .status-failed, .status-cancelled { color:#f87171; }
-    .total { font-size:1.6rem; font-weight:800; color:#a78bfa; }
-  </style>
-</head>
-<body>
-<div class="page">
-  <header class="navbar navbar-expand-md sticky-top">
-    <div class="container-xl">
-      <a class="navbar-brand" href="/">✦ Fonotarot</a>
-      <div class="ms-auto">
-        <a href="{{ url_for('tienda.index') }}" class="btn btn-outline-secondary btn-sm">Volver a la tienda</a>
-      </div>
-    </div>
-  </header>
+{% extends "base.html" %}
 
+{% block title %}Estado de tu orden #{{ order.id }} – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .status-paid { color:#6ee7b7; }
+  .status-pending { color:#fbbf24; }
+  .status-failed, .status-cancelled { color:#f87171; }
+  .total { font-size:1.6rem; font-weight:800; color:#a78bfa; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
   <div class="page-wrapper">
     <div class="page-body py-5">
       <div class="container-xl" style="max-width:640px">
@@ -111,6 +96,4 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
-</body>
-</html>
+{% endblock %}
