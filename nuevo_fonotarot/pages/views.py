@@ -2,7 +2,7 @@
 
 from flask import abort, make_response, render_template
 
-from app.models import StaticPage
+from ..models import StaticPage
 
 from . import pages_bp
 

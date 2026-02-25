@@ -2,7 +2,7 @@
 
 from flask import abort, render_template
 
-from app.models import BlogPost
+from ..models import BlogPost
 
 from . import blog_bp
 

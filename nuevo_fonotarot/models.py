@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from flask_security import RoleMixin, UserMixin
+from flask_security.core import RoleMixin, UserMixin
 from slugify import slugify
 
 from app.extensions import db

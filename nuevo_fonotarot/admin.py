@@ -61,7 +61,7 @@ class StaticPageAdminView(SecureModelView):
     create_template = "admin/staticpage/create.html"
 
     def on_model_change(self, form, model, is_created):
-        from app.models import StaticPage
+        from .models import StaticPage
 
         model.path = StaticPage.normalize_path(model.path)
 
@@ -79,7 +79,7 @@ class BlogPostAdminView(SecureModelView):
     form_excluded_columns = ("created_at", "updated_at")
 
     def on_model_change(self, form, model, is_created):
-        from app.models import BlogPost
+        from .models import BlogPost
 
         if not model.slug and model.title:
             model.slug = BlogPost.make_slug(model.title)
@@ -93,7 +93,7 @@ class BlogPostAdminView(SecureModelView):
 
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
-    from app.models import BlogPost, Role, StaticPage, User
+    from .models import BlogPost, Role, StaticPage, User
 
     admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
     admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
