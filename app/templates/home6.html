@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Consulta Espiritual | Chile</title>
+    <meta name="description" content="Consulta de tarot por teléfono en Chile. Disponible 24/7. Planes desde 15 minutos. Confidencial." />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap");
+
+      :root {
+        --noir:    #0e0209;
+        --wine:    #3d0a18;
+        --wine-md: #6b1429;
+        --rose:    #a63250;
+        --champ:   #c9a84c;
+        --champ-lt:#f0d880;
+        --ivory:   #f8f0e4;
+        --warm:    #d4b896;
+        --muted:   #9a7e8a;
+        --border:  rgba(201,168,76,.2);
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'Nunito', sans-serif; background: var(--ivory); color: #2a1018; margin: 0; }
+
+      /* Off-canvas */
+      .offcanvas { background: var(--wine); color: var(--ivory); border-left: 1px solid var(--border); }
+      .offcanvas-title { font-family: 'Libre Baskerville', serif; color: var(--champ); font-size: 1.3rem; }
+      .btn-close { filter: invert(1) brightness(.7) sepia(1) saturate(3) hue-rotate(25deg); }
+      .agent-oc-card { background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .85rem; }
+      .agent-oc-av { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--wine-md), var(--champ)); display: flex; align-items: center; justify-content: center; font-family: 'Libre Baskerville', serif; font-size: 1.1rem; color: #fff; font-weight: 700; flex-shrink: 0; }
+      .agent-oc-nm { font-weight: 700; font-size: .9rem; color: var(--ivory); }
+      .agent-oc-sp { font-size: .75rem; color: var(--warm); }
+      .b-on { color: #4ade80; background: rgba(74,222,128,.12); border: 1px solid rgba(74,222,128,.3); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .b-busy { color: #fbbf24; background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.25); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .btn-oc-call { background: var(--champ); color: var(--noir) !important; border: none; border-radius: 6px; padding: .3rem .7rem; font-size: .75rem; font-weight: 800; }
+      .btn-oc-busy { background: rgba(255,255,255,.05); color: var(--muted) !important; border: 1px solid rgba(255,255,255,.1); border-radius: 6px; padding: .3rem .7rem; font-size: .75rem; cursor: default; }
+
+      /* Nav */
+      .site-nav { background: var(--noir); border-bottom: 1px solid var(--border); padding: 1rem 0; position: sticky; top: 0; z-index: 200; }
+      .brand { font-family: 'Libre Baskerville', serif; font-size: 1.4rem; color: var(--champ); text-decoration: none; font-weight: 700; }
+      .nav-a { color: rgba(240,216,128,.7); text-decoration: none; font-size: .9rem; transition: color .2s; }
+      .nav-a:hover { color: var(--champ); }
+      .btn-oc-nav { background: rgba(201,168,76,.12); border: 1px solid var(--border); color: var(--champ-lt) !important; border-radius: 6px; padding: .4rem .9rem; font-size: .82rem; font-weight: 600; }
+      .btn-oc-nav:hover { background: rgba(201,168,76,.2); }
+      .btn-nav-cta { background: linear-gradient(135deg, var(--champ), var(--champ-lt)); color: var(--noir) !important; border: none; border-radius: 6px; padding: .4rem 1.1rem; font-size: .82rem; font-weight: 800; }
+
+      /* Hero – editorial full-screen split */
+      .hero { min-height: 100vh; background: var(--noir); position: relative; overflow: hidden; display: flex; align-items: stretch; }
+      .hero-left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 80px 60px 60px 40px; max-width: 520px; position: relative; z-index: 1; }
+      .hero-right { flex: 1; background: var(--wine); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+      .hero-right-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(201,168,76,.15) 0%, transparent 60%); }
+      .hero-right-art { font-size: 12rem; line-height: 1; opacity: .15; position: absolute; bottom: 0; right: 0; }
+      .hero-eyebrow { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--champ); margin-bottom: 1.2rem; }
+      .hero h1 { font-family: 'Libre Baskerville', serif; font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 700; line-height: 1.15; color: var(--ivory); margin-bottom: 1.25rem; }
+      .hero h1 em { font-style: italic; color: var(--champ-lt); }
+      .hero-sub { font-size: 1rem; color: rgba(240,216,128,.65); line-height: 1.75; margin-bottom: 2rem; max-width: 400px; }
+      .btn-hero-cta { background: linear-gradient(135deg, var(--champ), var(--champ-lt)); color: var(--noir) !important; border: none; border-radius: 6px; padding: .7rem 1.8rem; font-size: .95rem; font-weight: 800; }
+      .btn-hero-outline { background: transparent; border: 1.5px solid var(--border); color: var(--ivory) !important; border-radius: 6px; padding: .68rem 1.8rem; font-size: .95rem; }
+      .hero-widget { background: rgba(255,255,255,.08); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; max-width: 340px; z-index: 1; position: relative; width: 100%; }
+      .hw-title { font-family: 'Libre Baskerville', serif; font-size: .85rem; color: var(--champ); margin-bottom: 1rem; letter-spacing: .1em; text-transform: uppercase; }
+      .hw-row { display: flex; align-items: center; gap: .75rem; padding: .55rem 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+      .hw-row:last-child { border-bottom: none; }
+      .hw-av { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--wine-md), var(--rose)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; color: #fff; flex-shrink: 0; }
+      .hw-name { font-weight: 700; font-size: .85rem; color: var(--ivory); }
+      .hw-spec { font-size: .72rem; color: var(--warm); }
+
+      /* ── BIG PULL QUOTE SECTION ───────────────────── */
+      .pull-quote-section { background: var(--wine-md); padding: 80px 0; }
+      .pull-quote { font-family: 'Libre Baskerville', serif; font-style: italic; font-size: clamp(1.6rem, 4vw, 2.8rem); color: var(--ivory); text-align: center; max-width: 860px; margin: 0 auto; line-height: 1.4; }
+      .pull-quote cite { display: block; font-style: normal; font-size: .9rem; color: var(--champ); letter-spacing: .1em; text-transform: uppercase; margin-top: 1.5rem; font-family: 'Nunito', sans-serif; font-weight: 700; }
+      .divider-champ { width: 60px; height: 2px; background: linear-gradient(90deg, var(--champ), transparent); margin: 1rem auto; }
+
+      /* Plans – features comparison */
+      .plans-section { padding: 80px 0; background: var(--ivory); }
+      .sec-tag { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--rose); font-weight: 700; margin-bottom: .4rem; }
+      .sec-h { font-family: 'Libre Baskerville', serif; font-size: clamp(1.7rem, 4vw, 2.4rem); color: #1a0810; margin-bottom: .4rem; }
+      .sec-sub { color: var(--muted); font-size: .95rem; }
+      .plan-card { background: #fff; border: 1.5px solid #e8d4dc; border-radius: 14px; padding: 2rem 1.5rem; text-align: center; height: 100%; display: flex; flex-direction: column; transition: box-shadow .2s; }
+      .plan-card:hover { box-shadow: 0 10px 30px rgba(107,20,41,.1); }
+      .plan-card.featured { border-color: var(--champ); background: linear-gradient(160deg, #fdf6e8 0%, #fff 100%); }
+      .plan-ribbon { background: var(--champ); color: var(--noir); border-radius: 6px; font-size: .65rem; font-weight: 800; padding: 2px 10px; letter-spacing: .08em; text-transform: uppercase; display: inline-block; margin-bottom: 1rem; }
+      .plan-mins { font-family: 'Libre Baskerville', serif; font-size: 2.8rem; color: #1a0810; font-weight: 700; line-height: 1; }
+      .plan-mins small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+      .plan-price { font-size: 1.3rem; font-weight: 800; color: var(--rose); margin: .4rem 0; }
+      .plan-price span { font-size: .8rem; color: var(--muted); font-weight: 400; }
+      .plan-features { list-style: none; padding: 0; margin: .75rem 0 1.5rem; text-align: left; flex-grow: 1; }
+      .plan-features li { font-size: .85rem; color: var(--muted); padding: .35rem 0; display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid #f0e8ec; }
+      .plan-features li::before { content: '✓'; color: var(--champ); font-weight: 900; flex-shrink: 0; }
+      .btn-plan-wine { background: var(--wine-md); color: #fff !important; border: none; border-radius: 6px; padding: .55rem 0; font-size: .9rem; font-weight: 700; width: 100%; transition: background .15s; }
+      .btn-plan-wine:hover { background: var(--wine); }
+      .btn-plan-outline { background: transparent; color: var(--wine-md) !important; border: 1.5px solid var(--wine-md); border-radius: 6px; padding: .55rem 0; font-size: .9rem; font-weight: 700; width: 100%; }
+      .btn-plan-outline:hover { background: rgba(107,20,41,.05); }
+
+      /* Testimonials slider */
+      .testi-section { padding: 80px 0; background: #fff; }
+      .testi-card { background: var(--ivory); border: 1px solid #e8d4dc; border-radius: 14px; padding: 2.5rem 2rem; max-width: 680px; margin: 0 auto; text-align: center; }
+      .t-stars { color: var(--champ); font-size: 1.1rem; letter-spacing: .1em; margin-bottom: 1.2rem; }
+      .t-quote { font-family: 'Libre Baskerville', serif; font-style: italic; font-size: 1.15rem; color: #2a1018; line-height: 1.7; margin-bottom: 1.5rem; }
+      .t-author { font-weight: 700; color: var(--wine-md); font-size: .9rem; }
+      .t-city { color: var(--muted); font-size: .8rem; }
+      .carousel-control-prev-icon, .carousel-control-next-icon { filter: invert(28%) sepia(80%) saturate(400%) hue-rotate(320deg); }
+      .carousel-indicators [data-bs-target] { background: var(--champ); border: none; opacity: .4; width: 8px; height: 8px; border-radius: 50%; }
+      .carousel-indicators .active { opacity: 1; }
+
+      /* Steps – horizontal */
+      .steps-section { padding: 80px 0; background: var(--wine); color: var(--ivory); }
+      .step-h-card { text-align: center; position: relative; }
+      .step-h-card:not(:last-child)::after { content: '→'; position: absolute; right: -20px; top: 20px; color: rgba(201,168,76,.5); font-size: 1.5rem; display: none; }
+      @media(min-width:768px) { .step-h-card:not(:last-child)::after { display: block; } }
+      .step-h-num { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--champ), var(--champ-lt)); color: var(--noir); display: flex; align-items: center; justify-content: center; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; font-weight: 700; margin: 0 auto 1rem; }
+      .step-h-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; color: var(--champ-lt); margin-bottom: .5rem; }
+      .step-h-text { color: rgba(240,216,128,.65); font-size: .87rem; line-height: 1.65; }
+
+      /* FAQ */
+      .faq-section { padding: 80px 0; background: var(--ivory); }
+      .faq-item { border-bottom: 1px solid #e8d4dc; padding: 1.1rem 0; }
+      .faq-q { font-family: 'Libre Baskerville', serif; font-size: .98rem; color: #1a0810; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; }
+      .faq-q::after { content: '+'; font-size: 1.2rem; color: var(--champ); flex-shrink: 0; transition: transform .2s; font-family: 'Nunito', sans-serif; }
+      .faq-item.open .faq-q::after { transform: rotate(45deg); }
+      .faq-a { display: none; color: var(--muted); font-size: .9rem; line-height: 1.7; padding-top: .65rem; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* CTA */
+      .cta-section { padding: 80px 0; background: var(--noir); text-align: center; }
+      .cta-section h2 { font-family: 'Libre Baskerville', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--ivory); margin-bottom: .75rem; }
+      .cta-section p { color: rgba(240,216,128,.65); font-size: 1rem; margin-bottom: 2rem; }
+
+      /* Stats */
+      .stats-section { background: var(--wine-md); padding: 2.5rem 0; }
+      .stat-n { font-family: 'Libre Baskerville', serif; font-size: 2rem; color: var(--champ); font-weight: 700; }
+      .stat-l { font-size: .78rem; color: rgba(240,216,128,.7); text-transform: uppercase; letter-spacing: .1em; }
+
+      footer { background: var(--noir); border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: rgba(201,168,76,.6); font-size: .85rem; }
+      footer .brand-f { font-family: 'Libre Baskerville', serif; color: var(--champ); font-size: 1.2rem; }
+      footer a { color: rgba(201,168,76,.6); }
+      footer a:hover { color: var(--champ); }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── OFF-CANVAS ────────────────────────────────── -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="agentCanvas6">
+      <div class="offcanvas-header border-bottom" style="border-color:var(--border) !important;">
+        <h5 class="offcanvas-title">Nuestras Especialistas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <p style="color:var(--warm); font-size:.85rem; margin-bottom:1.25rem;">Revisa la disponibilidad actual y llama cuando estés lista/o.</p>
+        {% for agent in agents %}
+        <div class="agent-oc-card">
+          <div class="agent-oc-av">{{ agent.name[0] }}</div>
+          <div class="flex-grow-1">
+            <div class="agent-oc-nm">{{ agent.name }}</div>
+            <div class="agent-oc-sp">{{ agent.specialty }}</div>
+            <div class="mt-1">
+              {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+              {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+            </div>
+          </div>
+          {% if agent.status == 'online' %}
+          <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+          {% else %}
+          <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <div class="mt-4">
+          <a href="tel:600XXXXXXX" class="btn btn-hero-cta w-100"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NAV ──────────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🍷 Fonotarot</a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#planes" class="nav-a d-none d-md-inline">Planes</a>
+          <a href="#testimonios" class="nav-a d-none d-md-inline">Testimonios</a>
+          <a href="#faq" class="nav-a d-none d-md-inline">Ayuda</a>
+          <button class="btn-oc-nav d-none d-md-inline-flex align-items-center gap-1" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas6">
+            <i class="ti ti-users"></i> Especialistas
+          </button>
+          <a href="#planes" class="btn-nav-cta">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO – editorial split layout ────────────── -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hero-eyebrow">✦ Consulta Esotérica Telefónica</div>
+        <h1>
+          Donde el tiempo<br>
+          se detiene y<br>
+          <em>todo se aclara</em>
+        </h1>
+        <p class="hero-sub">Nuestras especialistas te acompañan en los momentos que más importan. Amor, trabajo, salud y guía de vida. Disponible cada día del año.</p>
+        <div class="d-flex gap-3 flex-wrap">
+          <button class="btn btn-hero-cta" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas6">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </button>
+          <a href="#planes" class="btn btn-hero-outline"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+        </div>
+      </div>
+      <div class="hero-right d-none d-lg-flex">
+        <div class="hero-right-bg"></div>
+        <span class="hero-right-art">🃏</span>
+        <div class="hero-widget">
+          <div class="hw-title">En línea ahora</div>
+          {% for agent in agents %}
+          <div class="hw-row">
+            <div class="hw-av">{{ agent.name[0] }}</div>
+            <div class="flex-grow-1">
+              <div class="hw-name">{{ agent.name }}</div>
+              <div class="hw-spec">{{ agent.specialty }}</div>
+            </div>
+            {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+            {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATS ─────────────────────────────────────── -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="row text-center g-3">
+          <div class="col-6 col-md-3"><div class="stat-n">+50.000</div><div class="stat-l">Consultas realizadas</div></div>
+          <div class="col-6 col-md-3"><div class="stat-n">98%</div><div class="stat-l">Clientes satisfechos</div></div>
+          <div class="col-6 col-md-3"><div class="stat-n">+20</div><div class="stat-l">Especialistas</div></div>
+          <div class="col-6 col-md-3"><div class="stat-n">24/7</div><div class="stat-l">Disponibilidad</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PULL QUOTE (first testimonial display) ─── -->
+    <section class="pull-quote-section">
+      <div class="container">
+        <div class="divider-champ"></div>
+        <blockquote class="pull-quote">
+          "Nunca había llamado a un servicio de tarot y quedé gratamente sorprendida. La consulta fue muy profesional y reveladora."
+          <cite>Andrea M. · Concepción</cite>
+        </blockquote>
+        <div class="divider-champ"></div>
+      </div>
+    </section>
+
+    <!-- ── PLANES ─────────────────────────────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">Nuestros Planes</div>
+          <h2 class="sec-h">Elige tu consulta</h2>
+          <p class="sec-sub">Carga los minutos que necesitas y consulta cuando quieras</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3">
+            <div class="plan-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}<div><span class="plan-ribbon">✨ Más popular</span></div>{% endif %}
+              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <ul class="plan-features">
+                <li>Consulta de {{ plan.minutes }} minutos</li>
+                <li>Conexión directa con especialista</li>
+                <li>100% confidencial</li>
+                {% if plan.minutes >= 60 %}<li>Análisis en profundidad</li>{% endif %}
+                {% if plan.minutes >= 30 %}<li>Saldo sin vencimiento</li>{% endif %}
+              </ul>
+              <a href="#" class="btn {% if plan.featured %}btn-plan-wine{% else %}btn-plan-outline{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIALS CAROUSEL ─────────────────────── -->
+    <section id="testimonios" class="testi-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">Testimonios</div>
+          <h2 class="sec-h">Palabras de quienes ya consultaron</h2>
+        </div>
+        <div id="tc6" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
+          <div class="carousel-inner">
+            {% for t in testimonials %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <div class="testi-card">
+                <div class="t-stars">★★★★★</div>
+                <p class="t-quote">"{{ t.text }}"</p>
+                <div class="t-author">{{ t.author }}</div>
+                <div class="t-city">{{ t.city }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#tc6" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#tc6" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
+          <div class="carousel-indicators" style="position:static;margin-top:2rem;">
+            {% for t in testimonials %}
+            <button type="button" data-bs-target="#tc6" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CÓMO FUNCIONA – horizontal steps ──────────── -->
+    <section class="steps-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag" style="color:var(--champ);">¿Cómo funciona?</div>
+          <h2 style="font-family:'Libre Baskerville',serif; font-size:clamp(1.7rem,4vw,2.4rem); color:var(--ivory);">Tres pasos simples</h2>
+        </div>
+        <div class="row g-5 justify-content-center">
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">1</div>
+            <div class="step-h-title">Carga tu saldo</div>
+            <p class="step-h-text">Selecciona el plan de minutos que necesitas y realiza el pago de forma rápida y segura.</p>
+          </div>
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">2</div>
+            <div class="step-h-title">Elige tu especialista</div>
+            <p class="step-h-text">Revisa el panel de especialistas, ve quién está disponible y escoge con quién consultar.</p>
+          </div>
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">3</div>
+            <div class="step-h-title">Llama y consulta</div>
+            <p class="step-h-text">Marca el 600 XXX XXX. Tu consulta es privada y los minutos restantes no expiran.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-5">
+              <div class="sec-tag">Preguntas frecuentes</div>
+              <h2 class="sec-h">Resolvemos tus dudas</h2>
+            </div>
+            {% for q, a in [
+              ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una especialista disponible."),
+              ("¿Está disponible las 24 horas?","Sí. Contamos con especialistas disponibles todos los días, incluidos fines de semana y festivos."),
+              ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan en tu cuenta sin fecha de vencimiento. Úsalos cuando lo necesites."),
+              ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. No compartimos información con terceros."),
+              ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile.")
+            ] %}
+            <div class="faq-item">
+              <div class="faq-q">{{ q }}</div>
+              <div class="faq-a">{{ a }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>Tu consulta te espera</h2>
+        <p>Nuestras especialistas están disponibles ahora mismo para orientarte.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <button class="btn btn-hero-cta btn-lg" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas6">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </button>
+          <a href="#planes" class="btn btn-hero-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <footer>
+      <div class="container">
+        <div class="brand-f mb-2">🍷 Fonotarot</div>
+        <p class="mb-1">Servicio de consulta esotérica telefónica · Chile</p>
+        <p class="mb-0"><a href="/blog/">Blog</a> <span class="mx-2">·</span> <a href="#faq">Ayuda</a> <span class="mx-2">·</span> <a href="#planes">Planes</a></p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      document.querySelectorAll('.faq-q').forEach(q => {
+        q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
+      });
+    </script>
+  </body>
+</html>

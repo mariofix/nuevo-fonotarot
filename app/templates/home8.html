@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Tu Guía Espiritual | Chile</title>
+    <meta name="description" content="Consulta de tarot por teléfono en Chile. Especialistas disponibles 24/7. Planes desde 15 minutos." />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --ink:     #0f0e2c;
+        --indigo:  #312e81;
+        --ind-md:  #4338ca;
+        --violet:  #7c3aed;
+        --star:    #a78bfa;
+        --amber:   #f59e0b;
+        --amber-lt:#fde68a;
+        --paper:   #faf9ff;
+        --white:   #ffffff;
+        --text:    #1e1b4b;
+        --muted:   #6b7280;
+        --border:  rgba(167,139,250,.2);
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--paper); color: var(--text); margin: 0; }
+
+      /* Off-canvas with specialty filter tabs */
+      .offcanvas { background: var(--ink); color: var(--white); border-left: 1px solid var(--border); max-width: 420px; }
+      .offcanvas-title { color: var(--star); font-family: 'DM Serif Display', serif; font-size: 1.3rem; }
+      .btn-close { filter: invert(1) brightness(.6); }
+      .oc-tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1rem; gap: .25rem; }
+      .oc-tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: rgba(167,139,250,.6); padding: .5rem .75rem; font-size: .8rem; font-weight: 600; cursor: pointer; transition: color .15s, border-color .15s; }
+      .oc-tab.active { color: var(--star); border-bottom-color: var(--star); }
+      .oc-pane { display: none; }
+      .oc-pane.active { display: block; }
+      .agent-oc-card { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 12px; padding: .9rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .85rem; }
+      .agent-oc-av { width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, var(--indigo), var(--violet)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #fff; flex-shrink: 0; }
+      .agent-oc-nm { font-weight: 700; font-size: .88rem; color: var(--white); }
+      .agent-oc-sp { font-size: .73rem; color: rgba(167,139,250,.7); }
+      .b-on { background: rgba(74,222,128,.1); color: #4ade80; border: 1px solid rgba(74,222,128,.3); border-radius: 20px; padding: 1px 8px; font-size: .63rem; font-weight: 700; }
+      .b-busy { background: rgba(245,158,11,.1); color: var(--amber); border: 1px solid rgba(245,158,11,.25); border-radius: 20px; padding: 1px 8px; font-size: .63rem; font-weight: 700; }
+      .btn-oc-call { background: var(--violet); color: #fff !important; border: none; border-radius: 8px; padding: .32rem .7rem; font-size: .73rem; font-weight: 700; white-space: nowrap; }
+      .btn-oc-busy { background: rgba(255,255,255,.06); color: rgba(255,255,255,.35) !important; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: .32rem .7rem; font-size: .73rem; cursor: default; white-space: nowrap; }
+      .btn-oc-cta { background: linear-gradient(135deg, var(--violet), var(--star)); color: #fff !important; border: none; border-radius: 10px; padding: .65rem 0; font-size: .9rem; font-weight: 700; width: 100%; }
+
+      /* Nav */
+      .site-nav { background: var(--ink); border-bottom: 1px solid var(--border); padding: .9rem 0; position: sticky; top: 0; z-index: 200; }
+      .brand { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--star); text-decoration: none; }
+      .nav-a { color: rgba(167,139,250,.7); text-decoration: none; font-size: .88rem; font-weight: 500; transition: color .15s; }
+      .nav-a:hover { color: var(--star); }
+      .btn-nav-oc { background: rgba(124,58,237,.2); border: 1px solid var(--border); color: var(--star) !important; border-radius: 8px; padding: .42rem .9rem; font-size: .82rem; font-weight: 600; }
+      .btn-nav-oc:hover { background: rgba(124,58,237,.3); }
+      .btn-nav-cta { background: linear-gradient(135deg, var(--amber), var(--amber-lt)); color: var(--ink) !important; border: none; border-radius: 8px; padding: .42rem 1.1rem; font-size: .82rem; font-weight: 800; }
+
+      /* ── HERO ───────────────────────────────────────── */
+      .hero { background: var(--ink); padding: 80px 0; position: relative; overflow: hidden; }
+      .hero-constellation { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(167,139,250,.15) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+      .hero-aurora { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; border-radius: 50%; background: radial-gradient(ellipse, rgba(124,58,237,.2) 0%, rgba(67,56,202,.1) 40%, transparent 70%); pointer-events: none; }
+      .hero-eyebrow { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); margin-bottom: 1.2rem; font-weight: 700; }
+      .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 6vw, 5rem); color: var(--white); line-height: 1.1; margin-bottom: 1.25rem; }
+      .hero h1 em { font-style: italic; color: var(--star); }
+      .hero-sub { font-size: 1.05rem; color: rgba(167,139,250,.7); max-width: 480px; line-height: 1.75; margin-bottom: 2rem; }
+      .btn-h-cta { background: linear-gradient(135deg, var(--violet), var(--ind-md)); color: #fff !important; border: none; border-radius: 10px; padding: .75rem 1.9rem; font-size: 1rem; font-weight: 700; transition: box-shadow .2s; }
+      .btn-h-cta:hover { box-shadow: 0 0 24px rgba(124,58,237,.4); }
+      .btn-h-ghost { background: transparent; border: 1.5px solid var(--border); color: rgba(255,255,255,.75) !important; border-radius: 10px; padding: .73rem 1.9rem; font-size: 1rem; font-weight: 600; }
+      .btn-h-ghost:hover { border-color: var(--star); }
+
+      /* ── BENTO GRID ────────────────────────────────── */
+      .bento { padding: 80px 0; background: var(--paper); }
+      .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 1.25rem; }
+      @media(max-width:768px) { .bento-grid { grid-template-columns: 1fr; } }
+      @media(min-width:576px) and (max-width:768px) { .bento-grid { grid-template-columns: 1fr 1fr; } }
+      .bento-cell { background: #fff; border: 1px solid #e8e4f8; border-radius: 16px; padding: 1.75rem; }
+      .bento-cell.span2 { grid-column: span 2; }
+      .bento-cell.dark { background: var(--indigo); border-color: rgba(167,139,250,.3); color: var(--white); }
+      .bento-cell.amber { background: linear-gradient(135deg, var(--amber) 0%, var(--amber-lt) 100%); border-color: var(--amber); }
+      .bento-icon { font-size: 2rem; margin-bottom: .75rem; display: block; }
+      .bento-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin-bottom: .4rem; color: var(--text); }
+      .bento-cell.dark .bento-title { color: var(--star); }
+      .bento-cell.amber .bento-title { color: var(--ink); }
+      .bento-text { font-size: .87rem; color: var(--muted); line-height: 1.65; }
+      .bento-cell.dark .bento-text { color: rgba(167,139,250,.75); }
+      .bento-cell.amber .bento-text { color: rgba(15,14,44,.7); }
+      .bento-big-num { font-family: 'DM Serif Display', serif; font-size: 2.5rem; color: var(--violet); font-weight: 400; }
+      .bento-big-lbl { font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+
+      /* ── TIMELINE (how it works – FIRST major section) */
+      .timeline-section { padding: 80px 0; background: #fff; }
+      .sec-tag { font-size: .72rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--violet); margin-bottom: .4rem; }
+      .sec-h { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--text); margin-bottom: .5rem; }
+      .sec-sub { color: var(--muted); font-size: .95rem; }
+      /* Tabler timeline */
+      .timeline { position: relative; padding-left: 0; }
+      .tl-event { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; position: relative; }
+      .tl-event:not(:last-child)::after { content: ''; position: absolute; left: 22px; top: 44px; bottom: -2.5rem; width: 2px; background: #e8e4f8; }
+      .tl-icon { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--indigo), var(--violet)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 4px 12px rgba(67,56,202,.25); }
+      .tl-title { font-family: 'DM Serif Display', serif; font-size: 1.05rem; color: var(--text); margin-bottom: .3rem; }
+      .tl-text { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+
+      /* Plans – tabbed */
+      .plans-section { padding: 80px 0; background: var(--paper); }
+      .plan-tab-bar { display: flex; gap: .5rem; justify-content: center; margin-bottom: 2.5rem; background: #fff; border: 1px solid #e8e4f8; border-radius: 12px; padding: .5rem; display: inline-flex; }
+      .plan-tab { background: transparent; border: none; border-radius: 8px; padding: .5rem 1.2rem; font-size: .88rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: background .15s, color .15s; }
+      .plan-tab.active { background: var(--violet); color: #fff; }
+      .plan-pane { display: none; }
+      .plan-pane.active { display: block; }
+      .plan-card { background: #fff; border: 1.5px solid #e8e4f8; border-radius: 14px; padding: 2rem 1.5rem; text-align: center; height: 100%; display: flex; flex-direction: column; transition: box-shadow .2s; }
+      .plan-card:hover { box-shadow: 0 8px 28px rgba(67,56,202,.1); }
+      .plan-card.featured { border-color: var(--violet); background: linear-gradient(160deg, #f5f0ff 0%, #fff 100%); }
+      .plan-badge { background: var(--violet); color: #fff; border-radius: 6px; font-size: .65rem; font-weight: 700; padding: 2px 10px; letter-spacing: .08em; text-transform: uppercase; display: inline-block; margin-bottom: 1rem; }
+      .plan-mins { font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: var(--text); line-height: 1; }
+      .plan-mins small { font-size: 1rem; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+      .plan-price { font-size: 1.3rem; font-weight: 700; color: var(--violet); margin: .4rem 0; }
+      .plan-price span { font-size: .8rem; color: var(--muted); font-weight: 400; }
+      .plan-desc { font-size: .85rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.6; }
+      .btn-plan-violet { background: var(--violet); color: #fff !important; border: none; border-radius: 8px; padding: .6rem 0; font-size: .9rem; font-weight: 700; width: 100%; transition: background .15s; }
+      .btn-plan-violet:hover { background: var(--ind-md); }
+      .btn-plan-outline { background: transparent; color: var(--violet) !important; border: 1.5px solid rgba(124,58,237,.4); border-radius: 8px; padding: .6rem 0; font-size: .9rem; font-weight: 700; width: 100%; transition: border-color .15s; }
+      .btn-plan-outline:hover { border-color: var(--violet); }
+
+      /* Testimonials */
+      .testi-section { padding: 80px 0; background: var(--indigo); }
+      .testi-card { background: rgba(255,255,255,.06); border: 1px solid rgba(167,139,250,.25); border-radius: 16px; padding: 2.5rem 2rem; max-width: 680px; margin: 0 auto; text-align: center; }
+      .t-stars { color: var(--amber); font-size: 1.1rem; margin-bottom: 1.2rem; letter-spacing: .1em; }
+      .t-quote { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 1.2rem; color: var(--white); line-height: 1.65; margin-bottom: 1.5rem; }
+      .t-author { font-weight: 700; color: var(--amber); font-size: .9rem; }
+      .t-city { color: rgba(167,139,250,.6); font-size: .8rem; }
+      .carousel-control-prev-icon, .carousel-control-next-icon { filter: invert(1) brightness(.5) sepia(1) saturate(3) hue-rotate(200deg); }
+      .carousel-indicators [data-bs-target] { background: var(--amber); border: none; opacity: .4; width: 8px; height: 8px; border-radius: 50%; }
+      .carousel-indicators .active { opacity: 1; }
+
+      /* FAQ – with category nav tabs */
+      .faq-section { padding: 80px 0; background: #fff; }
+      .faq-nav { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; border-bottom: 1px solid #e8e4f8; padding-bottom: .5rem; }
+      .faq-nav-btn { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: .4rem .75rem; font-size: .85rem; font-weight: 600; cursor: pointer; transition: color .15s, border-color .15s; }
+      .faq-nav-btn.active { color: var(--violet); border-bottom-color: var(--violet); }
+      .faq-pane { display: none; }
+      .faq-pane.active { display: block; }
+      .faq-item { border-bottom: 1px solid #f0ebff; padding: 1rem 0; }
+      .faq-q { font-weight: 600; font-size: .93rem; color: var(--text); cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; }
+      .faq-q::after { content: '+'; font-size: 1.1rem; color: var(--violet); flex-shrink: 0; transition: transform .2s; }
+      .faq-item.open .faq-q::after { transform: rotate(45deg); }
+      .faq-a { display: none; color: var(--muted); font-size: .88rem; line-height: 1.7; padding-top: .6rem; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* CTA */
+      .cta-section { padding: 80px 0; background: var(--ink); text-align: center; position: relative; overflow: hidden; }
+      .cta-section::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(167,139,250,.12) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; }
+      .cta-section h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--white); margin-bottom: .75rem; position: relative; }
+      .cta-section p { color: rgba(167,139,250,.7); font-size: 1rem; margin-bottom: 2rem; position: relative; }
+      .cta-section .btns { position: relative; }
+      .btn-cta-amber { background: linear-gradient(135deg, var(--amber), var(--amber-lt)); color: var(--ink) !important; border: none; border-radius: 10px; padding: .75rem 2rem; font-size: 1rem; font-weight: 800; }
+      .btn-cta-ghost { background: transparent; color: rgba(255,255,255,.75) !important; border: 1.5px solid var(--border); border-radius: 10px; padding: .73rem 2rem; font-size: 1rem; font-weight: 600; }
+
+      /* Trust strip */
+      .trust-section { background: var(--paper); border-top: 1px solid #e8e4f8; border-bottom: 1px solid #e8e4f8; padding: 1.5rem 0; }
+      .trust-item { display: flex; align-items: center; gap: .6rem; color: var(--muted); font-size: .88rem; font-weight: 500; }
+      .trust-item i { color: var(--violet); font-size: 1.1rem; }
+
+      footer { background: var(--ink); border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: rgba(167,139,250,.5); font-size: .85rem; }
+      footer .brand-f { font-family: 'DM Serif Display', serif; color: var(--star); font-size: 1.2rem; }
+      footer a { color: rgba(167,139,250,.5); text-decoration: none; }
+      footer a:hover { color: var(--star); }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── OFF-CANVAS with specialty filter tabs ──── -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="agentCanvas8">
+      <div class="offcanvas-header border-bottom" style="border-color:var(--border) !important;">
+        <h5 class="offcanvas-title">✦ Especialistas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="oc-tab-bar">
+          <button class="oc-tab active" onclick="switchOcTab('oc-all8', this)">Todas</button>
+          <button class="oc-tab" onclick="switchOcTab('oc-online8', this)">Disponibles</button>
+          <button class="oc-tab" onclick="switchOcTab('oc-busy8', this)">En consulta</button>
+        </div>
+        <div class="oc-pane active" id="oc-all8">
+          {% for agent in agents %}
+          <div class="agent-oc-card">
+            <div class="agent-oc-av">{{ agent.name[0] }}</div>
+            <div class="flex-grow-1">
+              <div class="agent-oc-nm">{{ agent.name }}</div>
+              <div class="agent-oc-sp">{{ agent.specialty }}</div>
+              <div class="mt-1">
+                {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+              </div>
+            </div>
+            {% if agent.status == 'online' %}<a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            {% else %}<button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="oc-pane" id="oc-online8">
+          {% for agent in agents if agent.status == 'online' %}
+          <div class="agent-oc-card">
+            <div class="agent-oc-av">{{ agent.name[0] }}</div>
+            <div class="flex-grow-1">
+              <div class="agent-oc-nm">{{ agent.name }}</div>
+              <div class="agent-oc-sp">{{ agent.specialty }}</div>
+              <span class="b-on">● Disponible ahora</span>
+            </div>
+            <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="oc-pane" id="oc-busy8">
+          {% for agent in agents if agent.status == 'busy' %}
+          <div class="agent-oc-card">
+            <div class="agent-oc-av">{{ agent.name[0] }}</div>
+            <div class="flex-grow-1">
+              <div class="agent-oc-nm">{{ agent.name }}</div>
+              <div class="agent-oc-sp">{{ agent.specialty }}</div>
+              <span class="b-busy">● En consulta</span>
+            </div>
+            <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i> Vuelve pronto</button>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="mt-4">
+          <a href="tel:600XXXXXXX" class="btn-oc-cta"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NAV ──────────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">✦ Fonotarot</a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#como-funciona" class="nav-a d-none d-md-inline">Cómo funciona</a>
+          <a href="#planes" class="nav-a d-none d-md-inline">Planes</a>
+          <a href="#faq" class="nav-a d-none d-md-inline">FAQ</a>
+          <button class="btn-nav-oc d-none d-md-inline-flex align-items-center gap-1" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas8">
+            <i class="ti ti-users"></i> Especialistas
+          </button>
+          <a href="#planes" class="btn-nav-cta">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO ─────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-constellation"></div>
+      <div class="hero-aurora"></div>
+      <div class="container position-relative" style="z-index:1;">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-7">
+            <div class="hero-eyebrow">✦ Orientación Esotérica · Chile</div>
+            <h1>
+              Cuando la vida<br>
+              pide <em>claridad</em>
+            </h1>
+            <p class="hero-sub">Nuestras especialistas en tarot te acompañan en las decisiones importantes de tu vida. Disponible las 24 horas, completamente confidencial.</p>
+            <div class="d-flex gap-3 flex-wrap">
+              <button class="btn-h-cta" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas8">
+                <i class="ti ti-phone me-2"></i>Llama Ahora
+              </button>
+              <a href="#planes" class="btn-h-ghost"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+            </div>
+          </div>
+          <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+            <div style="text-align:center;">
+              <div style="font-size:8rem; line-height:1; filter:drop-shadow(0 0 40px rgba(124,58,237,.4));">✦</div>
+              <div style="color:rgba(167,139,250,.6); font-size:.85rem; margin-top:.75rem; letter-spacing:.15em; text-transform:uppercase;">Constelación de Guía</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TRUST STRIP ───────────────────────────────── -->
+    <section class="trust-section">
+      <div class="container">
+        <div class="row g-3 text-center text-md-start">
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start"><div class="trust-item"><i class="ti ti-lock"></i> 100% Confidencial</div></div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start"><div class="trust-item"><i class="ti ti-clock-24"></i> Disponible 24/7</div></div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start"><div class="trust-item"><i class="ti ti-calendar-off"></i> Sin contratos</div></div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start"><div class="trust-item"><i class="ti ti-map-pin"></i> Todo Chile</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CÓMO FUNCIONA (timeline – appears early) ─── -->
+    <section id="como-funciona" class="timeline-section">
+      <div class="container">
+        <div class="row g-5 align-items-start">
+          <div class="col-lg-5">
+            <div class="sec-tag">¿Cómo funciona?</div>
+            <h2 class="sec-h">Tres pasos hacia la claridad</h2>
+            <p class="sec-sub">Comienza en menos de dos minutos. Sin cuentas, sin complicaciones.</p>
+            <div class="d-flex gap-3 flex-wrap mt-4">
+              <button class="btn-h-cta" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas8" style="font-size:.9rem; padding:.6rem 1.4rem;">
+                <i class="ti ti-phone me-1"></i>Llama Ahora
+              </button>
+              <a href="#planes" class="btn-h-ghost" style="font-size:.9rem; padding:.58rem 1.4rem;"><i class="ti ti-wallet me-1"></i>Carga Minutos</a>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="timeline">
+              <div class="tl-event">
+                <div class="tl-icon"><i class="ti ti-wallet"></i></div>
+                <div>
+                  <div class="tl-title">Elige un plan y carga minutos</div>
+                  <p class="tl-text">Selecciona la cantidad de minutos que necesitas y realiza el pago de forma rápida y segura. Los minutos no tienen fecha de vencimiento.</p>
+                </div>
+              </div>
+              <div class="tl-event">
+                <div class="tl-icon"><i class="ti ti-users"></i></div>
+                <div>
+                  <div class="tl-title">Elige tu especialista</div>
+                  <p class="tl-text">Abre el panel de especialistas, revisa quién está disponible y elige con quién quieres consultar. Si está ocupada, inténtalo en unos minutos.</p>
+                </div>
+              </div>
+              <div class="tl-event">
+                <div class="tl-icon"><i class="ti ti-phone"></i></div>
+                <div>
+                  <div class="tl-title">Llama y consulta</div>
+                  <p class="tl-text">Marca el 600 XXX XXX desde cualquier teléfono en Chile. La sesión es completamente privada. El saldo restante queda disponible para cuando lo necesites.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BENTO GRID – eye candy + stats ────────────── -->
+    <section class="bento">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">Lo que nos distingue</div>
+          <h2 class="sec-h">Por qué consultar con nosotros</h2>
+        </div>
+        <div class="bento-grid">
+          <div class="bento-cell dark">
+            <span class="bento-icon">🌙</span>
+            <div class="bento-title">Disponible a cualquier hora</div>
+            <p class="bento-text">Las 24 horas del día, los 365 días del año. Cuando la necesidad llega, nosotros estamos.</p>
+          </div>
+          <div class="bento-cell amber">
+            <span class="bento-icon" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));">🔒</span>
+            <div class="bento-title">100% Confidencial</div>
+            <p class="bento-text">Tu privacidad es nuestra prioridad. Ningún dato es compartido con terceros bajo ninguna circunstancia.</p>
+          </div>
+          <div class="bento-cell" style="text-align:center;">
+            <div class="bento-big-num">+50K</div>
+            <div class="bento-big-lbl">Consultas realizadas</div>
+          </div>
+          <div class="bento-cell span2">
+            <span class="bento-icon">🃏</span>
+            <div class="bento-title">Especialistas en múltiples disciplinas</div>
+            <p class="bento-text">Tarot del Amor, Tarot Gitano, Tarot Marsella, Tarot Kármico, Tarot Intuitivo, Runas Nórdicas y más. Cada especialista tiene su área de dominio particular.</p>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              {% for spec in ["Amor","Trabajo","Salud","Familia","Finanzas","Guía Espiritual"] %}
+              <span style="background:#f0ebff; color:var(--violet); border-radius:20px; padding:3px 12px; font-size:.78rem; font-weight:600;">{{ spec }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="bento-cell" style="text-align:center;">
+            <div class="bento-big-num">98%</div>
+            <div class="bento-big-lbl">Satisfacción</div>
+          </div>
+          <div class="bento-cell dark" style="text-align:center;">
+            <span class="bento-icon">⏰</span>
+            <div class="bento-title">Minutos sin vencimiento</div>
+            <p class="bento-text">Carga cuando quieras, usa cuando lo necesites.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLANES (tabbed) ───────────────────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-2">
+          <div class="sec-tag">Nuestros Planes</div>
+          <h2 class="sec-h">Elige tu plan de minutos</h2>
+        </div>
+        <div class="text-center mb-5">
+          <div class="plan-tab-bar" id="planTabs">
+            {% for plan in plans %}
+            <button class="plan-tab {% if loop.first %}active{% endif %}" onclick="switchPlanTab('plan-{{ plan.minutes }}', this)">{{ plan.minutes }} min</button>
+            {% endfor %}
+          </div>
+        </div>
+        {% for plan in plans %}
+        <div class="plan-pane {% if loop.first %}active{% endif %}" id="plan-{{ plan.minutes }}">
+          <div class="row justify-content-center">
+            <div class="col-sm-8 col-md-6 col-lg-4">
+              <div class="plan-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}<div><span class="plan-badge">✨ Más popular</span></div>{% endif %}
+                <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+                <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                <p class="plan-desc">{{ plan.description }}</p>
+                <a href="#" class="btn {% if plan.featured %}btn-plan-violet{% else %}btn-plan-outline{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <p class="text-center mt-4" style="color:var(--muted); font-size:.85rem;">
+          <i class="ti ti-info-circle me-1" style="color:var(--violet);"></i>Los minutos no tienen fecha de vencimiento.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIALS ───────────────────────────────── -->
+    <section id="testimonios" class="testi-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag" style="color:var(--amber);">Testimonios</div>
+          <h2 class="sec-h" style="color:var(--white);">Lo que dicen nuestros clientes</h2>
+        </div>
+        <div id="tc8" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
+          <div class="carousel-inner">
+            {% for t in testimonials %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <div class="testi-card">
+                <div class="t-stars">★★★★★</div>
+                <p class="t-quote">"{{ t.text }}"</p>
+                <div class="t-author">{{ t.author }}</div>
+                <div class="t-city">{{ t.city }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#tc8" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#tc8" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
+          <div class="carousel-indicators" style="position:static;margin-top:2rem;">
+            {% for t in testimonials %}
+            <button type="button" data-bs-target="#tc8" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ (categorized tabs) ────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-4">
+              <div class="sec-tag">FAQ</div>
+              <h2 class="sec-h">Preguntas frecuentes</h2>
+            </div>
+            <div class="faq-nav">
+              <button class="faq-nav-btn active" onclick="switchFaqCat('fcat-general', this)">General</button>
+              <button class="faq-nav-btn" onclick="switchFaqCat('fcat-planes', this)">Planes y Pagos</button>
+              <button class="faq-nav-btn" onclick="switchFaqCat('fcat-privacidad', this)">Privacidad</button>
+            </div>
+            <div class="faq-pane active" id="fcat-general">
+              {% for q, a in [
+                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una especialista disponible."),
+                ("¿Está disponible las 24 horas?","Sí, operamos todos los días del año sin excepción."),
+                ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú o el botón de la página y elige con quién prefieres consultar.")
+              ] %}
+              <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
+              {% endfor %}
+            </div>
+            <div class="faq-pane" id="fcat-planes">
+              {% for q, a in [
+                ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento."),
+                ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile."),
+                ("¿Qué pasa con los minutos que no uso?","Los minutos restantes de una sesión quedan guardados en tu cuenta para que los uses en otra consulta.")
+              ] %}
+              <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
+              {% endfor %}
+            </div>
+            <div class="faq-pane" id="fcat-privacidad">
+              {% for q, a in [
+                ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato compartido durante la consulta es divulgado a terceros."),
+                ("¿Se graban las llamadas?","No. Las sesiones son completamente privadas y no quedan grabadas en ningún sistema."),
+                ("¿Necesito crear una cuenta?","No es obligatorio. Puedes consultar sin registrarte.")
+              ] %}
+              <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>La orientación que buscas está a una llamada</h2>
+        <p>Nuestras especialistas están disponibles para recibirte ahora mismo.</p>
+        <div class="btns d-flex gap-3 justify-content-center flex-wrap">
+          <button class="btn btn-cta-amber btn-lg" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas8">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </button>
+          <a href="#planes" class="btn btn-cta-ghost btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <footer>
+      <div class="container">
+        <div class="brand-f mb-2">✦ Fonotarot</div>
+        <p class="mb-1">Servicio de orientación esotérica telefónica · Chile</p>
+        <p class="mb-0"><a href="/blog/">Blog</a> <span class="mx-2">·</span> <a href="#faq">FAQ</a> <span class="mx-2">·</span> <a href="#planes">Planes</a></p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      // FAQ toggle
+      document.querySelectorAll('.faq-q').forEach(q => {
+        q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
+      });
+
+      // Plan tabs
+      function switchPlanTab(id, btn) {
+        document.querySelectorAll('.plan-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.plan-tab').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+      }
+
+      // FAQ category tabs
+      function switchFaqCat(id, btn) {
+        document.querySelectorAll('.faq-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.faq-nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        // Close open items in new pane
+        document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      }
+
+      // Off-canvas tabs
+      function switchOcTab(id, btn) {
+        document.querySelectorAll('.oc-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.oc-tab').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+      }
+    </script>
+  </body>
+</html>

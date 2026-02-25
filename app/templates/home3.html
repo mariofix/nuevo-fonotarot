@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Consulta de Tarot Telefónico | Chile</title>
+    <meta name="description" content="Servicio de consulta de tarot por teléfono en Chile. Especialistas disponibles 24/7. Planes desde 15 minutos. Confidencial y sin contratos." />
+    <link rel="canonical" href="https://www.fonotarot.cl/" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+      :root {
+        --ink:     #0f1729;
+        --ink2:    #1e2d4a;
+        --teal:    #0d9488;
+        --teal-lt: #14b8a6;
+        --amber:   #f59e0b;
+        --slate:   #64748b;
+        --light:   #f8fafc;
+        --white:   #ffffff;
+        --border:  #e2e8f0;
+        --online:  #10b981;
+        --busy:    #f59e0b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--white);
+        color: var(--ink);
+        margin: 0;
+      }
+
+      /* ─── Top bar ──────────────────────────────────── */
+      .topbar {
+        background: var(--ink);
+        color: rgba(255,255,255,.7);
+        font-size: .78rem;
+        padding: .45rem 0;
+        text-align: center;
+      }
+      .topbar strong { color: var(--teal-lt); }
+      .topbar a { color: rgba(255,255,255,.7); text-decoration: none; }
+
+      /* ─── Nav ──────────────────────────────────────── */
+      .site-nav {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: .9rem 0;
+        position: sticky; top: 0; z-index: 100;
+        box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      }
+      .brand {
+        font-size: 1.25rem; font-weight: 800; color: var(--ink);
+        text-decoration: none; letter-spacing: -.02em;
+      }
+      .brand span { color: var(--teal); }
+      .nav-item-link { color: var(--slate); text-decoration: none; font-size: .9rem; font-weight: 500; padding: .3rem .1rem; transition: color .15s; }
+      .nav-item-link:hover { color: var(--ink); }
+      .btn-primary-pro {
+        background: var(--teal);
+        color: #fff !important; border: none;
+        border-radius: 8px; padding: .5rem 1.25rem;
+        font-size: .88rem; font-weight: 700; transition: background .15s;
+      }
+      .btn-primary-pro:hover { background: var(--teal-lt); }
+      .btn-outline-pro {
+        background: transparent;
+        color: var(--ink) !important;
+        border: 1.5px solid var(--border);
+        border-radius: 8px; padding: .5rem 1.25rem;
+        font-size: .88rem; font-weight: 600; transition: border-color .15s;
+      }
+      .btn-outline-pro:hover { border-color: var(--teal); color: var(--teal) !important; }
+
+      /* ─── Hero ─────────────────────────────────────── */
+      .hero {
+        background: var(--ink);
+        padding: 80px 0 0;
+        position: relative; overflow: hidden;
+      }
+      .hero-grid-bg {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(13,148,136,.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(13,148,136,.08) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+      }
+      .hero-glow {
+        position: absolute; top: -80px; right: -80px;
+        width: 500px; height: 500px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(13,148,136,.25) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .hero-label {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: rgba(13,148,136,.15);
+        border: 1px solid rgba(13,148,136,.35);
+        border-radius: 6px; padding: .35rem .9rem;
+        font-size: .78rem; font-weight: 700; color: var(--teal-lt);
+        letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.5rem;
+      }
+      .hero h1 {
+        font-size: clamp(2.4rem, 5.5vw, 4rem);
+        font-weight: 900; line-height: 1.1;
+        color: #fff; margin-bottom: 1.25rem;
+        letter-spacing: -.03em;
+      }
+      .hero h1 .hl { color: var(--teal-lt); }
+      .hero .hero-sub {
+        font-size: 1.1rem; color: rgba(255,255,255,.65);
+        max-width: 480px; line-height: 1.7; margin-bottom: 2rem;
+      }
+      .hero-phone-badge {
+        display: inline-flex; align-items: center; gap: .75rem;
+        background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 10px; padding: .75rem 1.25rem;
+        color: #fff; font-weight: 700; font-size: 1.1rem;
+        text-decoration: none; transition: background .15s;
+      }
+      .hero-phone-badge:hover { background: rgba(255,255,255,.12); color: #fff; }
+      .hero-phone-badge .badge-icon {
+        width: 36px; height: 36px; border-radius: 8px;
+        background: var(--teal); display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+      }
+      .hero-visual {
+        background: linear-gradient(160deg, rgba(13,148,136,.2) 0%, rgba(15,23,41,.8) 100%);
+        border-radius: 20px 20px 0 0;
+        padding: 2rem;
+        margin-top: 3rem;
+        border: 1px solid rgba(255,255,255,.08);
+        border-bottom: none;
+      }
+      .mini-card {
+        background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 12px; padding: .75rem 1rem;
+        margin-bottom: .5rem;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .mini-card-name { color: #fff; font-weight: 600; font-size: .9rem; }
+      .mini-card-spec { color: rgba(255,255,255,.5); font-size: .78rem; }
+      .dot-online { width: 8px; height: 8px; border-radius: 50%; background: var(--online); display: inline-block; }
+      .dot-busy   { width: 8px; height: 8px; border-radius: 50%; background: var(--busy); display: inline-block; }
+
+      /* ─── Trust bar ────────────────────────────────── */
+      .trust-bar {
+        background: var(--light); border-bottom: 1px solid var(--border);
+        padding: 1.5rem 0;
+      }
+      .trust-item { display: flex; align-items: center; gap: .6rem; color: var(--slate); font-size: .9rem; font-weight: 500; }
+      .trust-item i { color: var(--teal); font-size: 1.1rem; }
+
+      /* ─── Agents ───────────────────────────────────── */
+      .agents-section { padding: 80px 0; background: var(--white); }
+      .section-kicker {
+        font-size: .73rem; font-weight: 700; letter-spacing: .15em;
+        text-transform: uppercase; color: var(--teal); margin-bottom: .4rem;
+      }
+      .section-h {
+        font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800;
+        color: var(--ink); letter-spacing: -.03em; margin-bottom: .4rem;
+      }
+      .section-p { color: var(--slate); font-size: 1rem; }
+
+      .agent-row-card {
+        border: 1px solid var(--border); border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        display: flex; align-items: center; gap: 1.25rem;
+        transition: box-shadow .2s, border-color .2s;
+        background: var(--white);
+      }
+      .agent-row-card:hover {
+        box-shadow: 0 6px 24px rgba(13,148,136,.1);
+        border-color: var(--teal-lt);
+      }
+      .agent-row-avatar {
+        width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--ink2), var(--teal));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 1.2rem; font-weight: 800;
+      }
+      .agent-row-info { flex-grow: 1; min-width: 0; }
+      .agent-row-name { font-weight: 700; font-size: .98rem; color: var(--ink); margin-bottom: .15rem; }
+      .agent-row-spec { font-size: .82rem; color: var(--slate); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .badge-pro-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 6px; padding: 2px 9px; font-size: .72rem; font-weight: 700; }
+      .badge-pro-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; padding: 2px 9px; font-size: .72rem; font-weight: 700; }
+      .badge-pro-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid var(--border); border-radius: 6px; padding: 2px 9px; font-size: .72rem; font-weight: 700; }
+      .btn-call-teal {
+        background: var(--teal); color: #fff !important;
+        border: none; border-radius: 8px;
+        padding: .45rem .9rem; font-size: .82rem; font-weight: 700;
+        white-space: nowrap; flex-shrink: 0; transition: background .15s;
+      }
+      .btn-call-teal:hover { background: var(--teal-lt); }
+      .btn-call-disabled {
+        background: var(--light); color: var(--slate) !important;
+        border: 1px solid var(--border); border-radius: 8px;
+        padding: .45rem .9rem; font-size: .82rem; font-weight: 600;
+        white-space: nowrap; flex-shrink: 0; cursor: default;
+      }
+
+      /* ─── Plans ─────────────────────────────────────── */
+      .plans-section { padding: 80px 0; background: var(--light); }
+      .plan-pro-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 16px; padding: 2rem 1.75rem;
+        text-align: center; height: 100%; display: flex; flex-direction: column;
+        transition: box-shadow .2s, border-color .2s;
+      }
+      .plan-pro-card:hover {
+        box-shadow: 0 8px 32px rgba(13,148,136,.1);
+        border-color: var(--teal-lt);
+      }
+      .plan-pro-card.featured {
+        border-color: var(--teal);
+        background: linear-gradient(160deg, #f0fdfa 0%, var(--white) 100%);
+      }
+      .pro-badge {
+        background: var(--teal); color: #fff;
+        border-radius: 6px; font-size: .7rem; font-weight: 700;
+        padding: 2px 10px; letter-spacing: .06em; text-transform: uppercase;
+        display: inline-block; margin-bottom: 1rem;
+      }
+      .pro-mins {
+        font-size: 3rem; font-weight: 900; color: var(--ink);
+        letter-spacing: -.05em; line-height: 1;
+      }
+      .pro-mins small { font-size: 1.1rem; font-weight: 500; color: var(--slate); }
+      .pro-price { font-size: 1.4rem; font-weight: 800; color: var(--teal); margin: .5rem 0; letter-spacing: -.02em; }
+      .pro-price span { font-size: .82rem; color: var(--slate); font-weight: 400; }
+      .pro-desc { font-size: .87rem; color: var(--slate); line-height: 1.65; flex-grow: 1; margin: .75rem 0 1.5rem; }
+      .btn-pro-solid {
+        background: var(--teal); color: #fff !important;
+        border: none; border-radius: 8px; padding: .6rem 0;
+        font-size: .9rem; font-weight: 700; width: 100%; transition: background .15s;
+      }
+      .btn-pro-solid:hover { background: var(--teal-lt); }
+      .btn-pro-ghost {
+        background: transparent; color: var(--teal) !important;
+        border: 1.5px solid var(--teal); border-radius: 8px; padding: .6rem 0;
+        font-size: .9rem; font-weight: 700; width: 100%; transition: background .15s;
+      }
+      .btn-pro-ghost:hover { background: #f0fdfa; }
+
+      /* ─── Eye candy – animated counter widget ─────── */
+      .widget-strip {
+        background: var(--ink2); padding: 60px 0;
+      }
+      .widget-box {
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 16px; padding: 1.75rem 1.5rem; text-align: center;
+      }
+      .widget-num {
+        font-size: 2.2rem; font-weight: 900; color: var(--teal-lt);
+        letter-spacing: -.04em; margin-bottom: .3rem;
+      }
+      .widget-label { color: rgba(255,255,255,.6); font-size: .82rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; }
+
+      /* ─── Testimonials ─────────────────────────────── */
+      .testimonials-section { padding: 80px 0; background: var(--white); }
+      .testi-pro {
+        background: var(--light);
+        border: 1px solid var(--border);
+        border-radius: 16px; padding: 2.5rem 2rem;
+        max-width: 700px; margin: 0 auto;
+        position: relative;
+      }
+      .testi-pro::before {
+        content: '"';
+        position: absolute; top: 1rem; left: 1.5rem;
+        font-size: 6rem; line-height: 1;
+        color: var(--teal); opacity: .1;
+        font-family: Georgia, serif;
+      }
+      .stars-pro { color: var(--amber); font-size: 1rem; letter-spacing: .1em; margin-bottom: 1rem; }
+      .t-body { font-size: 1.05rem; color: var(--ink); line-height: 1.75; margin-bottom: 1.5rem; }
+      .t-meta { display: flex; align-items: center; gap: .75rem; }
+      .t-initials {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: var(--ink2); color: var(--teal-lt);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: .95rem; flex-shrink: 0;
+      }
+      .t-name { font-weight: 700; color: var(--ink); font-size: .93rem; }
+      .t-loc { color: var(--slate); font-size: .8rem; }
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon { filter: invert(1) brightness(.4); }
+      .carousel-indicators [data-bs-target] { background: var(--teal); border: none; opacity: .35; width: 8px; height: 8px; border-radius: 50%; }
+      .carousel-indicators .active { opacity: 1; }
+
+      /* ─── FAQ ──────────────────────────────────────── */
+      .faq-section { padding: 80px 0; background: var(--light); }
+      .faq-pro-item {
+        border-bottom: 1px solid var(--border); padding: 1.1rem 0;
+      }
+      .faq-pro-q {
+        font-weight: 600; font-size: .97rem; color: var(--ink);
+        cursor: pointer; user-select: none;
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      }
+      .faq-pro-icon { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; transition: transform .2s; }
+      .faq-pro-item.open .faq-pro-icon { transform: rotate(45deg); }
+      .faq-pro-a { display: none; color: var(--slate); font-size: .9rem; line-height: 1.7; padding: .65rem 0 .25rem; }
+      .faq-pro-item.open .faq-pro-a { display: block; }
+
+      /* ─── Help ─────────────────────────────────────── */
+      .help-pro-section { padding: 80px 0; background: var(--white); }
+      .help-pro-step {
+        display: flex; gap: 1.25rem; align-items: flex-start;
+        padding: 1.5rem;
+        border: 1px solid var(--border); border-radius: 12px;
+        background: var(--white); height: 100%;
+        transition: box-shadow .2s;
+      }
+      .help-pro-step:hover { box-shadow: 0 4px 16px rgba(13,148,136,.08); }
+      .step-badge {
+        width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+        background: var(--teal); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1.1rem;
+      }
+      .step-body-title { font-weight: 700; font-size: .97rem; color: var(--ink); margin-bottom: .3rem; }
+      .step-body-text { color: var(--slate); font-size: .88rem; line-height: 1.65; }
+
+      /* ─── CTA ──────────────────────────────────────── */
+      .cta-pro {
+        padding: 80px 0;
+        background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+        position: relative; overflow: hidden; text-align: center;
+      }
+      .cta-pro::after {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(13,148,136,.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(13,148,136,.06) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+      .cta-pro .inner { position: relative; z-index: 1; }
+      .cta-pro h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; color: #fff; letter-spacing: -.04em; margin-bottom: .75rem; }
+      .cta-pro p { color: rgba(255,255,255,.65); font-size: 1.05rem; margin-bottom: 2rem; }
+      .btn-cta-teal {
+        background: var(--teal-lt); color: var(--ink) !important;
+        border: none; border-radius: 8px; padding: .75rem 2rem;
+        font-size: 1rem; font-weight: 800; transition: background .15s;
+      }
+      .btn-cta-teal:hover { background: #5eead4; }
+      .btn-cta-border {
+        background: transparent; color: rgba(255,255,255,.8) !important;
+        border: 1.5px solid rgba(255,255,255,.3); border-radius: 8px; padding: .73rem 2rem;
+        font-size: 1rem; font-weight: 600; transition: border-color .15s;
+      }
+      .btn-cta-border:hover { border-color: rgba(255,255,255,.7); color: #fff !important; }
+
+      /* ─── Footer ───────────────────────────────────── */
+      footer {
+        background: var(--ink); color: rgba(255,255,255,.55);
+        padding: 2.5rem 0; font-size: .85rem;
+      }
+      footer .brand { color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: -.02em; }
+      footer .brand span { color: var(--teal-lt); }
+      footer a { color: rgba(255,255,255,.55); text-decoration: none; }
+      footer a:hover { color: var(--teal-lt); }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── TOP BAR ──────────────────────────────────── -->
+    <div class="topbar">
+      Servicio disponible <strong>las 24 horas</strong> · Llame al
+      <a href="tel:600XXXXXXX"><strong>600 XXX XXX</strong></a>
+    </div>
+
+    <!-- ── NAV ─────────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🔮 Fono<span>tarot</span></a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#especialistas" class="nav-item-link d-none d-md-inline">Especialistas</a>
+          <a href="#planes" class="nav-item-link d-none d-md-inline">Planes</a>
+          <a href="#faq" class="nav-item-link d-none d-md-inline">FAQ</a>
+          <a href="tel:600XXXXXXX" class="btn-outline-pro d-none d-md-inline-flex align-items-center gap-1">
+            <i class="ti ti-phone"></i> 600 XXX XXX
+          </a>
+          <a href="#planes" class="btn-primary-pro">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO ────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-grid-bg"></div>
+      <div class="hero-glow"></div>
+      <div class="container position-relative" style="z-index:1;">
+        <div class="row g-5 align-items-end">
+          <div class="col-lg-6 pb-5">
+            <div class="hero-label">
+              <span class="dot-online"></span> Especialistas disponibles ahora
+            </div>
+            <h1>
+              Orientación experta<br>
+              <span class="hl">cuando más la necesitas</span>
+            </h1>
+            <p class="hero-sub">
+              Consulta de tarot por teléfono. Confidencial, sin contratos y
+              disponible las 24 horas del día en todo Chile.
+            </p>
+            <div class="d-flex gap-3 flex-wrap mb-4">
+              <a href="#especialistas" class="btn btn-lg btn-call-teal px-4" style="border-radius:8px;">
+                <i class="ti ti-phone me-2"></i>Llama Ahora
+              </a>
+              <a href="#planes" class="btn btn-lg btn-outline-pro px-4" style="border-radius:8px; color:rgba(255,255,255,.8) !important; border-color:rgba(255,255,255,.25) !important;">
+                <i class="ti ti-wallet me-2"></i>Carga Minutos
+              </a>
+            </div>
+            <a href="tel:600XXXXXXX" class="hero-phone-badge">
+              <div class="badge-icon"><i class="ti ti-phone"></i></div>
+              <div>
+                <div style="font-size:.72rem; font-weight:500; opacity:.6; letter-spacing:.06em; text-transform:uppercase;">Número directo</div>
+                <div>600 XXX XXX</div>
+              </div>
+            </a>
+          </div>
+          <div class="col-lg-6 d-none d-lg-block">
+            <div class="hero-visual">
+              <div class="section-kicker mb-3">En línea ahora</div>
+              {% for agent in agents %}
+              {% if loop.index <= 4 %}
+              <div class="mini-card">
+                <div>
+                  <div class="mini-card-name">{{ agent.name }}</div>
+                  <div class="mini-card-spec">{{ agent.specialty }}</div>
+                </div>
+                {% if agent.status == 'online' %}
+                <span class="dot-online"></span>
+                {% else %}
+                <span class="dot-busy"></span>
+                {% endif %}
+              </div>
+              {% endif %}
+              {% endfor %}
+              <div class="text-center mt-3" style="color:rgba(255,255,255,.4); font-size:.8rem;">Ver todos los especialistas ↓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TRUST BAR ────────────────────────────────── -->
+    <section class="trust-bar">
+      <div class="container">
+        <div class="row g-3 text-center text-md-start">
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start">
+            <div class="trust-item"><i class="ti ti-lock"></i> 100% Confidencial</div>
+          </div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start">
+            <div class="trust-item"><i class="ti ti-clock-24"></i> Disponible 24/7</div>
+          </div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start">
+            <div class="trust-item"><i class="ti ti-calendar-off"></i> Sin contratos</div>
+          </div>
+          <div class="col-6 col-md-3 d-flex justify-content-center justify-content-md-start">
+            <div class="trust-item"><i class="ti ti-map-pin"></i> Servicio en todo Chile</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WIDGET STRIP ─────────────────────────────── -->
+    <section class="widget-strip">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-6 col-md-3">
+            <div class="widget-box">
+              <div class="widget-num">+50K</div>
+              <div class="widget-label">Consultas realizadas</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="widget-box">
+              <div class="widget-num">98%</div>
+              <div class="widget-label">Satisfacción</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="widget-box">
+              <div class="widget-num">+20</div>
+              <div class="widget-label">Especialistas activas</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="widget-box">
+              <div class="widget-num">24/7</div>
+              <div class="widget-label">Disponibilidad</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ESPECIALISTAS ────────────────────────────── -->
+    <section id="especialistas" class="agents-section">
+      <div class="container">
+        <div class="row align-items-end mb-5">
+          <div class="col-md-7">
+            <div class="section-kicker">Nuestro equipo</div>
+            <h2 class="section-h">Especialistas disponibles</h2>
+            <p class="section-p">Selecciona a la persona con quien quieras consultar y llama ahora mismo.</p>
+          </div>
+          <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <a href="tel:600XXXXXXX" class="btn btn-lg btn-call-teal">
+              <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
+            </a>
+          </div>
+        </div>
+        <div class="row g-3">
+          {% for agent in agents %}
+          <div class="col-md-6">
+            <div class="agent-row-card">
+              <div class="agent-row-avatar">{{ agent.name[0] }}</div>
+              <div class="agent-row-info">
+                <div class="agent-row-name">{{ agent.name }}</div>
+                <div class="agent-row-spec">{{ agent.specialty }}</div>
+                <div class="mt-1">
+                  {% if agent.status == 'online' %}
+                  <span class="badge-pro-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}
+                  <span class="badge-pro-busy">● En consulta</span>
+                  {% else %}
+                  <span class="badge-pro-offline">● No disponible</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% if agent.status == 'online' %}
+              <a href="tel:600XXXXXXX" class="btn btn-call-teal">
+                <i class="ti ti-phone me-1"></i>Llama Ahora
+              </a>
+              {% elif agent.status == 'busy' %}
+              <button class="btn-call-disabled" disabled>
+                <i class="ti ti-clock me-1"></i>Ocupada
+              </button>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLANS ─────────────────────────────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-kicker">Tarifas transparentes</div>
+          <h2 class="section-h">Elige tu plan de minutos</h2>
+          <p class="section-p">Sin sorpresas. Pagas solo lo que usas.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3">
+            <div class="plan-pro-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}
+              <div><span class="pro-badge">Más popular</span></div>
+              {% endif %}
+              <div class="pro-mins">{{ plan.minutes }}<small> min</small></div>
+              <div class="pro-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <p class="pro-desc">{{ plan.description }}</p>
+              <a href="#" class="btn {% if plan.featured %}btn-pro-solid{% else %}btn-pro-ghost{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-center mt-4" style="color:var(--slate); font-size:.88rem;">
+          <i class="ti ti-info-circle me-1" style="color:var(--teal);"></i>
+          Los minutos no tienen fecha de vencimiento. Úsalos cuando lo necesites.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIALS ─────────────────────────────── -->
+    <section id="testimonios" class="testimonials-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-kicker">Testimonios verificados</div>
+          <h2 class="section-h">Lo que dicen nuestros clientes</h2>
+          <p class="section-p">Opiniones reales de personas que ya consultaron con nosotros.</p>
+        </div>
+        <div id="tProCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
+          <div class="carousel-inner">
+            {% for t in testimonials %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <div class="testi-pro">
+                <div class="stars-pro">★★★★★</div>
+                <p class="t-body">{{ t.text }}</p>
+                <div class="t-meta">
+                  <div class="t-initials">{{ t.author[0] }}</div>
+                  <div>
+                    <div class="t-name">{{ t.author }}</div>
+                    <div class="t-loc">{{ t.city }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#tProCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#tProCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+          <div class="carousel-indicators" style="position:static; margin-top:2rem;">
+            {% for t in testimonials %}
+            <button type="button" data-bs-target="#tProCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HELP ─────────────────────────────────────── -->
+    <section id="como-funciona" class="help-pro-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-kicker">¿Cómo funciona?</div>
+          <h2 class="section-h">Tres pasos simples</h2>
+          <p class="section-p">Comienza en menos de dos minutos.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="help-pro-step">
+              <div class="step-badge">1</div>
+              <div>
+                <div class="step-body-title">Elige un plan</div>
+                <p class="step-body-text">Selecciona la cantidad de minutos que necesitas y completa el pago con el medio que prefieras. Rápido y seguro.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-pro-step">
+              <div class="step-badge">2</div>
+              <div>
+                <div class="step-body-title">Elige tu especialista</div>
+                <p class="step-body-text">Revisa la disponibilidad en tiempo real y escoge a quien quieras consultar. Si está ocupada, intenta en un momento.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-pro-step">
+              <div class="step-badge">3</div>
+              <div>
+                <div class="step-body-title">Llama y consulta</div>
+                <p class="step-body-text">Marca el 600 XXX XXX desde cualquier teléfono en Chile. La sesión es privada; los minutos restantes quedan en tu cuenta.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-7">
+            <div class="text-center mb-5">
+              <div class="section-kicker">FAQ</div>
+              <h2 class="section-h">Preguntas frecuentes</h2>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Cómo funciona el servicio? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">Elige un plan, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a con una especialista disponible en ese momento. La consulta es privada y confidencial.</div>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Cuándo está disponible el servicio? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">Las 24 horas del día, los 7 días de la semana, incluidos festivos. Siempre hay especialistas disponibles para recibirte.</div>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Los minutos vencen? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">No. Los minutos que cargues quedan registrados en tu cuenta sin fecha de vencimiento. Los usas cuando y cuanto necesites.</div>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Qué pasa si la especialista que quiero está ocupada? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">En ese caso puedes esperar unos minutos e intentar nuevamente, o elegir a otra especialista que esté disponible en ese momento.</div>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Es seguro y confidencial? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">Sí. Toda la información compartida durante la consulta es estrictamente privada. No compartimos datos con terceros bajo ninguna circunstancia.</div>
+            </div>
+            <div class="faq-pro-item">
+              <div class="faq-pro-q">¿Qué métodos de pago aceptan? <span class="faq-pro-icon">+</span></div>
+              <div class="faq-pro-a">Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios de pago habituales en Chile.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-pro">
+      <div class="container inner">
+        <h2>¿Listo/a para consultar?</h2>
+        <p>Nuestras especialistas están disponibles para ti en este momento.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="tel:600XXXXXXX" class="btn btn-lg btn-cta-teal">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </a>
+          <a href="#planes" class="btn btn-lg btn-cta-border">
+            <i class="ti ti-wallet me-2"></i>Carga Minutos
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ───────────────────────────────────── -->
+    <footer>
+      <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+        <div class="brand">🔮 Fono<span>tarot</span></div>
+        <p class="mb-0 text-center">Servicio de consulta esotérica telefónica · Chile</p>
+        <div class="d-flex gap-3">
+          <a href="/blog/">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="#planes">Planes</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      document.querySelectorAll('.faq-pro-q').forEach(q => {
+        q.addEventListener('click', () => q.closest('.faq-pro-item').classList.toggle('open'));
+      });
+    </script>
+  </body>
+</html>

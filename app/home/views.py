@@ -74,3 +74,102 @@ def index():
         testimonials=TESTIMONIALS,
         plans=PLANS,
     )
+
+
+@home_bp.route("/home1")
+def home1():
+    """Render alternative home page design 1 – Místico Oscuro."""
+    return render_template(
+        "home1.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home2")
+def home2():
+    """Render alternative home page design 2 – Luna Suave."""
+    return render_template(
+        "home2.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home3")
+def home3():
+    """Render alternative home page design 3 – Moderno Profesional."""
+    return render_template(
+        "home3.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home4")
+def home4():
+    """Render alternative home page design 4 – Bosque Esmeralda."""
+    return render_template(
+        "home4.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home5")
+def home5():
+    """Render alternative home page design 5 – Electra (tech-mystic)."""
+    return render_template(
+        "home5.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home6")
+def home6():
+    """Render alternative home page design 6 – Bordó Oscuro (wine luxury)."""
+    return render_template(
+        "home6.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home7")
+def home7():
+    """Render alternative home page design 7 – Puesta del Sol (conversion)."""
+    return render_template(
+        "home7.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home8")
+def home8():
+    """Render alternative home page design 8 – Índigo Místico (bento grid)."""
+    return render_template(
+        "home8.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home-full")
+def home_full():
+    """Render the full showcase page – /home1 base enriched with sections from /home2, /home4 and /home6."""
+    return render_template(
+        "home-full.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
