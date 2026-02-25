@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Tarot por Teléfono | Chile</title>
+    <meta name="description" content="Consulta de tarot por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más." />
+    <link rel="canonical" href="https://www.fonotarot.cl/" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap");
+
+      :root {
+        --deep:   #0d0d1a;
+        --void:   #13132b;
+        --cosmic: #1e1e40;
+        --gold:   #c9a84c;
+        --gold-lt:#f0d080;
+        --violet: #7c3aed;
+        --star:   #e8e0ff;
+        --muted:  #9090b8;
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'Lato', sans-serif; background: var(--deep); color: var(--star); margin: 0; }
+
+      /* ─── Stars canvas ─────────────────────────────── */
+      #stars-bg { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse at 20% 30%, #1e1e50 0%, #0d0d1a 60%); overflow: hidden; pointer-events: none; }
+      .star-dot { position: absolute; border-radius: 50%; background: #fff; animation: twinkle 3s infinite; }
+      @keyframes twinkle { 0%,100% { opacity:.2; } 50% { opacity:1; } }
+
+      /* ─── Navbar ───────────────────────────────────── */
+      .site-nav { position: sticky; top: 0; z-index: 100; background: rgba(13,13,26,.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(201,168,76,.25); padding: .75rem 0; }
+      .site-nav .brand { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold); text-decoration: none; letter-spacing: .05em; }
+      .site-nav .nav-link { color: var(--star); opacity: .8; transition: opacity .2s; }
+      .site-nav .nav-link:hover { opacity: 1; color: var(--gold); }
+      .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: #1a1000 !important; font-weight: 700; border: none; border-radius: 30px; padding: .45rem 1.4rem; transition: box-shadow .2s; }
+      .btn-gold:hover { box-shadow: 0 0 18px rgba(201,168,76,.6); }
+
+      /* ─── Hero ─────────────────────────────────────── */
+      .hero { position: relative; z-index: 1; padding: 120px 0 80px; text-align: center; }
+      .hero-label { display: inline-block; font-family: 'Cinzel', serif; font-size: .75rem; letter-spacing: .2em; color: var(--gold); border: 1px solid rgba(201,168,76,.4); border-radius: 30px; padding: .35rem 1.2rem; margin-bottom: 1.5rem; text-transform: uppercase; }
+      .hero h1 { font-family: 'Cinzel', serif; font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.15; color: #fff; margin-bottom: 1.25rem; }
+      .hero h1 em { font-style: normal; color: var(--gold); }
+      .hero p { font-size: 1.15rem; color: var(--muted); max-width: 550px; margin: 0 auto 2.5rem; line-height: 1.7; }
+      .hero-orb { width: 300px; height: 300px; border-radius: 50%; margin: 2rem auto 0; background: radial-gradient(circle at 35% 35%, #5b2fc4 0%, #1a1a40 70%); box-shadow: 0 0 80px rgba(124,58,237,.5), 0 0 140px rgba(124,58,237,.15); display: flex; align-items: center; justify-content: center; font-size: 6rem; position: relative; }
+      .hero-orb::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1px solid rgba(201,168,76,.3); animation: orbit 8s linear infinite; }
+      @keyframes orbit { to { transform: rotate(360deg); } }
+
+      /* ─── Stats strip ──────────────────────────────── */
+      .stats-strip { position: relative; z-index: 1; background: rgba(255,255,255,.04); border-top: 1px solid rgba(201,168,76,.15); border-bottom: 1px solid rgba(201,168,76,.15); padding: 1.5rem 0; }
+      .stat-num { font-family: 'Cinzel', serif; font-size: 1.8rem; color: var(--gold); font-weight: 700; }
+      .stat-lbl { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+      /* ─── Section helpers ──────────────────────────── */
+      .section-tag { font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: .6rem; }
+      .section-title { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; color: #fff; margin-bottom: .6rem; }
+      .section-subtitle { color: var(--muted); font-size: 1.05rem; margin-bottom: 0; }
+      .divider-gold { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin: 1rem auto; }
+
+      /* ─── FROM HOME4: Ticker ───────────────────────── */
+      .ticker { position: relative; z-index: 1; background: rgba(124,58,237,.12); border-top: 1px solid rgba(201,168,76,.2); border-bottom: 1px solid rgba(201,168,76,.2); padding: .6rem 0; overflow: hidden; }
+      .ticker-inner { display: flex; gap: 3rem; width: max-content; animation: ticker-scroll 25s linear infinite; }
+      @keyframes ticker-scroll { to { transform: translateX(-50%); } }
+      .ticker-item { white-space: nowrap; color: var(--muted); font-size: .85rem; }
+      .ticker-item span { color: var(--gold); font-weight: 700; margin-right: .4rem; }
+
+      /* ─── Zodiac strip ─────────────────────────────── */
+      .zodiac-strip { position: relative; z-index: 1; background: var(--deep); padding: 40px 0; overflow: hidden; }
+      .zodiac-scroll { display: flex; gap: 2.5rem; animation: scroll-left 22s linear infinite; width: max-content; }
+      .zodiac-scroll:hover { animation-play-state: paused; }
+      @keyframes scroll-left { to { transform: translateX(-50%); } }
+      .zodiac-item { text-align: center; min-width: 80px; opacity: .55; transition: opacity .2s; }
+      .zodiac-item:hover { opacity: 1; }
+      .zodiac-icon { font-size: 2rem; display: block; }
+      .zodiac-name { font-size: .7rem; letter-spacing: .1em; color: var(--gold); text-transform: uppercase; }
+
+      /* ─── FROM HOME2: Moon phases ──────────────────── */
+      .moon-strip { position: relative; z-index: 1; background: linear-gradient(160deg, rgba(124,58,237,.2) 0%, rgba(30,30,64,.95) 100%); border-top: 1px solid rgba(201,168,76,.15); border-bottom: 1px solid rgba(201,168,76,.15); padding: 50px 0; text-align: center; overflow: hidden; }
+      .moon-strip h3 { font-family: 'Cinzel', serif; font-style: italic; color: var(--gold-lt); font-size: 1.2rem; margin-bottom: 2rem; letter-spacing: .05em; }
+      .moon-phases { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+      .moon-phase { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
+      .moon-phase span:first-child { font-size: 2.8rem; }
+      .moon-phase span:last-child { font-size: .72rem; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; font-family: 'Cinzel', serif; }
+
+      /* ─── FROM HOME2: Specialties ──────────────────── */
+      .specialties-section { position: relative; z-index: 1; padding: 70px 0; background: var(--cosmic); }
+      .spec-chip { display: inline-flex; align-items: center; gap: .5rem; background: rgba(124,58,237,.15); color: var(--gold-lt); border: 1px solid rgba(201,168,76,.2); border-radius: 30px; padding: .5rem 1.2rem; font-size: .9rem; font-weight: 600; margin: .3rem; transition: background .2s, box-shadow .2s; }
+      .spec-chip:hover { background: rgba(124,58,237,.3); box-shadow: 0 0 12px rgba(124,58,237,.3); }
+
+      /* ─── Agents ───────────────────────────────────── */
+      .agents-section { position: relative; z-index: 1; padding: 80px 0; background: var(--void); }
+      .agent-card { background: rgba(255,255,255,.04); border: 1px solid rgba(201,168,76,.18); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: transform .25s, box-shadow .25s; }
+      .agent-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(124,58,237,.25); border-color: rgba(201,168,76,.4); }
+      .agent-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, var(--gold)); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; color: #fff; margin: 0 auto 1rem; box-shadow: 0 0 20px rgba(124,58,237,.4); }
+      .agent-name { font-family: 'Cinzel', serif; font-size: 1.1rem; color: #fff; margin-bottom: .25rem; }
+      .agent-spec { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
+      .badge-online  { background: rgba(52,211,153,.15); color: #34d399; border: 1px solid rgba(52,211,153,.3); border-radius: 20px; padding: 3px 12px; font-size: .7rem; font-weight: 700; letter-spacing: .08em; }
+      .badge-busy    { background: rgba(251,191,36,.12); color: #fbbf24; border: 1px solid rgba(251,191,36,.25); border-radius: 20px; padding: 3px 12px; font-size: .7rem; font-weight: 700; letter-spacing: .08em; }
+      .badge-offline { background: rgba(148,163,184,.1); color: #94a3b8; border: 1px solid rgba(148,163,184,.2); border-radius: 20px; padding: 3px 12px; font-size: .7rem; font-weight: 700; letter-spacing: .08em; }
+      .btn-call { background: linear-gradient(135deg, #7c3aed, #5b2fc4); color: #fff !important; border: none; border-radius: 30px; padding: .5rem 1.2rem; font-size: .9rem; font-weight: 700; width: 100%; margin-top: 1rem; transition: box-shadow .2s; }
+      .btn-call:hover { box-shadow: 0 0 20px rgba(124,58,237,.5); }
+      .btn-busy { background: transparent; border: 1px solid rgba(148,163,184,.3); color: var(--muted) !important; border-radius: 30px; padding: .5rem 1.2rem; font-size: .9rem; width: 100%; margin-top: 1rem; cursor: default; }
+
+      /* ─── Plans ────────────────────────────────────── */
+      .plans-section { position: relative; z-index: 1; padding: 80px 0; background: var(--cosmic); }
+      .plan-card { border: 1px solid rgba(201,168,76,.2); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; background: rgba(255,255,255,.03); transition: transform .25s, box-shadow .25s; height: 100%; display: flex; flex-direction: column; }
+      .plan-card.featured { background: linear-gradient(160deg, rgba(124,58,237,.25) 0%, rgba(201,168,76,.08) 100%); border-color: var(--gold); box-shadow: 0 0 40px rgba(201,168,76,.12); }
+      .plan-card:hover { transform: translateY(-4px); }
+      .plan-badge { display: inline-block; font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: .15em; text-transform: uppercase; background: var(--gold); color: #0d0d1a; border-radius: 20px; padding: 3px 12px; margin-bottom: 1rem; font-weight: 700; }
+      .plan-mins { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 900; color: #fff; line-height: 1; }
+      .plan-mins small { font-size: 1.2rem; color: var(--muted); font-weight: 400; }
+      .plan-price { font-size: 1.5rem; font-weight: 700; color: var(--gold); margin: .5rem 0; }
+      .plan-price span { font-size: .85rem; color: var(--muted); font-weight: 400; }
+      .plan-desc { font-size: .88rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.6; }
+      .btn-plan { border-radius: 30px; padding: .55rem 0; font-weight: 700; font-size: .9rem; width: 100%; }
+      .btn-plan-primary { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: #0d0d1a !important; border: none; }
+      .btn-plan-outline { background: transparent; border: 1px solid rgba(201,168,76,.45); color: var(--gold) !important; }
+      .btn-plan-outline:hover { background: rgba(201,168,76,.08); }
+
+      /* ─── FROM HOME6: Pull Quote ───────────────────── */
+      .pull-quote-section { position: relative; z-index: 1; background: linear-gradient(135deg, rgba(124,58,237,.35) 0%, rgba(13,13,26,.97) 100%); border-top: 1px solid rgba(201,168,76,.25); border-bottom: 1px solid rgba(201,168,76,.25); padding: 80px 0; }
+      .pull-quote { font-family: 'Cinzel', serif; font-style: italic; font-size: clamp(1.4rem, 3.5vw, 2.4rem); color: var(--star); text-align: center; max-width: 860px; margin: 0 auto; line-height: 1.45; }
+      .pull-quote cite { display: block; font-style: normal; font-size: .88rem; color: var(--gold); letter-spacing: .15em; text-transform: uppercase; margin-top: 1.5rem; font-family: 'Lato', sans-serif; font-weight: 700; }
+      .divider-gold-sym { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1rem auto; }
+
+      /* ─── Testimonials ─────────────────────────────── */
+      .testimonials-section { position: relative; z-index: 1; padding: 80px 0; background: var(--void); }
+      .testimonial-slide { background: rgba(255,255,255,.04); border: 1px solid rgba(201,168,76,.15); border-radius: 20px; padding: 2.5rem 2rem; max-width: 680px; margin: 0 auto; text-align: center; }
+      .stars-row { font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; letter-spacing: .1em; }
+      .t-text { font-size: 1.1rem; font-style: italic; color: var(--star); line-height: 1.7; margin-bottom: 1.5rem; }
+      .t-author { font-family: 'Cinzel', serif; color: var(--gold); font-size: .95rem; }
+      .t-city { color: var(--muted); font-size: .82rem; margin-top: .2rem; }
+      .carousel-control-prev-icon, .carousel-control-next-icon { filter: invert(1) brightness(.7) sepia(1) saturate(5) hue-rotate(10deg); }
+      .carousel-indicators [data-bs-target] { background: var(--gold); opacity: .4; width: 8px; height: 8px; border-radius: 50%; border: none; }
+      .carousel-indicators .active { opacity: 1; }
+
+      /* ─── FROM HOME4: Vertical timeline steps ──────── */
+      .steps-timeline-section { position: relative; z-index: 1; padding: 80px 0; background: var(--deep); }
+      .step-line { display: flex; flex-direction: column; align-items: flex-start; position: relative; padding-left: 64px; margin-bottom: 2rem; }
+      .step-line:not(:last-child)::after { content: ''; position: absolute; left: 21px; top: 44px; bottom: -32px; width: 2px; background: rgba(201,168,76,.2); }
+      .step-num { position: absolute; left: 0; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--violet), var(--gold)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; }
+      .step-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); margin-bottom: .3rem; }
+      .step-desc { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+
+      /* ─── FROM HOME6: Horizontal steps ────────────── */
+      .steps-horiz-section { position: relative; z-index: 1; padding: 80px 0; background: var(--cosmic); border-top: 1px solid rgba(201,168,76,.15); }
+      .step-h-card { text-align: center; position: relative; }
+      .step-h-card:not(:last-child)::after { content: '→'; position: absolute; right: -20px; top: 20px; color: rgba(201,168,76,.45); font-size: 1.5rem; display: none; }
+      @media(min-width:768px) { .step-h-card:not(:last-child)::after { display: block; } }
+      .step-h-num { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: var(--deep); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; margin: 0 auto 1rem; }
+      .step-h-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold-lt); margin-bottom: .5rem; }
+      .step-h-text { color: var(--muted); font-size: .87rem; line-height: 1.65; }
+
+      /* ─── FAQ ──────────────────────────────────────── */
+      .faq-section { position: relative; z-index: 1; padding: 80px 0; background: var(--void); }
+      .faq-item { border-bottom: 1px solid rgba(201,168,76,.15); padding: 1.25rem 0; }
+      .faq-q { font-family: 'Cinzel', serif; font-size: .98rem; color: var(--gold-lt); cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      .faq-q::after { content: '+'; font-size: 1.3rem; color: var(--gold); flex-shrink: 0; transition: transform .2s; }
+      .faq-item.open .faq-q::after { transform: rotate(45deg); }
+      .faq-a { display: none; color: var(--muted); font-size: .93rem; line-height: 1.7; padding-top: .75rem; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* ─── Help ─────────────────────────────────────── */
+      .help-section { position: relative; z-index: 1; padding: 80px 0; background: var(--cosmic); }
+      .help-card { border: 1px solid rgba(201,168,76,.15); border-radius: 14px; padding: 2rem 1.5rem; background: rgba(255,255,255,.03); text-align: center; height: 100%; }
+      .help-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+      .help-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); margin-bottom: .5rem; }
+      .help-text { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+
+      /* ─── CTA Banner ───────────────────────────────── */
+      .cta-banner { position: relative; z-index: 1; padding: 80px 0; background: linear-gradient(135deg, #1e1e50 0%, #13132b 100%); text-align: center; border-top: 1px solid rgba(201,168,76,.2); border-bottom: 1px solid rgba(201,168,76,.2); }
+      .cta-banner h2 { font-family: 'Cinzel', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); color: #fff; margin-bottom: .75rem; }
+      .cta-banner p { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
+
+      /* ─── Footer ───────────────────────────────────── */
+      footer { position: relative; z-index: 1; background: #08080f; border-top: 1px solid rgba(201,168,76,.15); padding: 2.5rem 0; text-align: center; color: var(--muted); font-size: .85rem; }
+      footer .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); }
+      footer a { color: var(--muted); }
+      footer a:hover { color: var(--gold); }
+    </style>
+  </head>
+  <body>
+
+    <!-- Stars background -->
+    <div id="stars-bg"></div>
+
+    <!-- ── NAVBAR ──────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🔮 Fonotarot</a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#tarotistas" class="nav-link d-none d-md-inline">Tarotistas</a>
+          <a href="#planes" class="nav-link d-none d-md-inline">Planes</a>
+          <a href="#faq" class="nav-link d-none d-md-inline">Ayuda</a>
+          <a href="#planes" class="btn-gold">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO (from /home1) ───────────────────────── -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-label">✦ Servicio de Consulta Esotérica</div>
+        <h1>
+          Las respuestas que buscas<br>
+          <em>te esperan ahora mismo</em>
+        </h1>
+        <p>
+          Conecta en segundos con nuestras especialistas en tarot.
+          Consulta sobre amor, trabajo, salud y caminos de vida.<br>
+          Disponible las 24 horas, los 365 días del año.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="#tarotistas" class="btn btn-lg btn-call px-5">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </a>
+          <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="border-radius:30px;">
+            <i class="ti ti-wallet me-2"></i>Carga Minutos
+          </a>
+        </div>
+        <div class="hero-orb">🔮</div>
+      </div>
+    </section>
+
+    <!-- ── STATS (from /home1) ──────────────────────── -->
+    <section class="stats-strip">
+      <div class="container">
+        <div class="row g-3 text-center">
+          <div class="col-6 col-md-3"><div class="stat-num">+50.000</div><div class="stat-lbl">Consultas realizadas</div></div>
+          <div class="col-6 col-md-3"><div class="stat-num">98%</div><div class="stat-lbl">Clientes satisfechos</div></div>
+          <div class="col-6 col-md-3"><div class="stat-num">+20</div><div class="stat-lbl">Especialistas activas</div></div>
+          <div class="col-6 col-md-3"><div class="stat-num">24/7</div><div class="stat-lbl">Siempre disponible</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FROM /home4: TICKER ──────────────────────── -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-inner">
+        {% for label in ["Amor y Relaciones","Trabajo y Finanzas","Salud y Bienestar","Familia","Crecimiento Personal","Tarot del Amor","Tarot Gitano","Tarot Marsella","Runas Nórdicas","Videncia","Lectura General","Guía Espiritual","Amor y Relaciones","Trabajo y Finanzas","Salud y Bienestar","Familia","Crecimiento Personal","Tarot del Amor","Tarot Gitano","Tarot Marsella","Runas Nórdicas","Videncia","Lectura General","Guía Espiritual"] %}
+        <span class="ticker-item"><span>✦</span>{{ label }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ── ZODIAC EYE CANDY (from /home1) ──────────── -->
+    <section class="zodiac-strip" aria-hidden="true">
+      <div class="zodiac-scroll">
+        {% set signs = [
+          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
+          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
+          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis"),
+          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
+          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
+          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis")
+        ] %}
+        {% for symbol, name in signs %}
+        <div class="zodiac-item">
+          <span class="zodiac-icon">{{ symbol }}</span>
+          <span class="zodiac-name">{{ name }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ── FROM /home2: MOON PHASES ─────────────────── -->
+    <section class="moon-strip" aria-hidden="true">
+      <h3>Las fases de la luna guían cada lectura</h3>
+      <div class="moon-phases">
+        <div class="moon-phase"><span>🌑</span><span>Luna Nueva</span></div>
+        <div class="moon-phase"><span>🌒</span><span>Creciente</span></div>
+        <div class="moon-phase"><span>🌓</span><span>Cuarto Creciente</span></div>
+        <div class="moon-phase"><span>🌔</span><span>Gibosa Creciente</span></div>
+        <div class="moon-phase"><span>🌕</span><span>Luna Llena</span></div>
+        <div class="moon-phase"><span>🌖</span><span>Gibosa Menguante</span></div>
+        <div class="moon-phase"><span>🌗</span><span>Cuarto Menguante</span></div>
+        <div class="moon-phase"><span>🌘</span><span>Menguante</span></div>
+      </div>
+    </section>
+
+    <!-- ── FROM /home2: ¿EN QUÉ PODEMOS ORIENTARTE? ── -->
+    <section class="specialties-section">
+      <div class="container text-center">
+        <div class="section-tag">✦ Áreas de Consulta</div>
+        <h2 class="section-title">¿En qué podemos orientarte?</h2>
+        <div class="divider-gold"></div>
+        <div class="mt-4">
+          <span class="spec-chip">💕 Amor y Relaciones</span>
+          <span class="spec-chip">💼 Trabajo y Finanzas</span>
+          <span class="spec-chip">🏥 Salud y Bienestar</span>
+          <span class="spec-chip">👨‍👩‍👧 Familia</span>
+          <span class="spec-chip">🌱 Crecimiento Personal</span>
+          <span class="spec-chip">🏠 Hogar y Mudanzas</span>
+          <span class="spec-chip">✈️ Viajes y Decisiones</span>
+          <span class="spec-chip">🎓 Estudios y Proyectos</span>
+          <span class="spec-chip">🔮 Lectura General</span>
+          <span class="spec-chip">🌟 Guía Espiritual</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAROTISTAS (from /home1) ─────────────────── -->
+    <section id="tarotistas" class="agents-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag">✦ Nuestro Equipo</div>
+          <h2 class="section-title">Nuestras Tarotistas</h2>
+          <div class="divider-gold"></div>
+          <p class="section-subtitle">Especialistas con años de experiencia preparadas para orientarte</p>
+        </div>
+        <div class="row g-4">
+          {% for agent in agents %}
+          <div class="col-sm-6 col-lg-4">
+            <div class="agent-card h-100 d-flex flex-column">
+              <div class="agent-avatar">{{ agent.name[0] }}</div>
+              <div class="agent-name">{{ agent.name }}</div>
+              <div class="agent-spec">{{ agent.specialty }}</div>
+              <div class="mb-2">
+                {% if agent.status == 'online' %}
+                <span class="badge-online">● Disponible</span>
+                {% elif agent.status == 'busy' %}
+                <span class="badge-busy">● En consulta</span>
+                {% else %}
+                <span class="badge-offline">● No disponible</span>
+                {% endif %}
+              </div>
+              {% if agent.status == 'online' %}
+              <a href="tel:600XXXXXXX" class="btn btn-call mt-auto">
+                <i class="ti ti-phone me-1"></i>Llama Ahora
+              </a>
+              {% elif agent.status == 'busy' %}
+              <button class="btn btn-busy mt-auto" disabled>
+                <i class="ti ti-clock me-1"></i>En consulta
+              </button>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+          <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5">
+            <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLANS (from /home1) ──────────────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag">✦ Tarifas</div>
+          <h2 class="section-title">Elige tu Plan</h2>
+          <div class="divider-gold"></div>
+          <p class="section-subtitle">Carga los minutos que necesitas y consulta cuando quieras</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3">
+            <div class="plan-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}
+              <div><span class="plan-badge">Más Popular</span></div>
+              {% endif %}
+              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <p class="plan-desc">{{ plan.description }}</p>
+              <a href="#" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FROM /home6: PULL QUOTE ──────────────────── -->
+    <section class="pull-quote-section">
+      <div class="container">
+        <div class="divider-gold-sym"></div>
+        <blockquote class="pull-quote">
+          "Nunca había llamado a un servicio de tarot y quedé gratamente sorprendida.
+          La consulta fue muy profesional y reveladora."
+          <cite>Andrea M. · Concepción</cite>
+        </blockquote>
+        <div class="divider-gold-sym"></div>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIALS (from /home1) ──────────────── -->
+    <section id="testimonios" class="testimonials-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag">✦ Testimonios</div>
+          <h2 class="section-title">Lo que dicen nuestras consultantes</h2>
+          <div class="divider-gold"></div>
+        </div>
+        <div id="testiCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
+          <div class="carousel-inner">
+            {% for t in testimonials %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <div class="testimonial-slide">
+                <div class="stars-row">★★★★★</div>
+                <p class="t-text">"{{ t.text }}"</p>
+                <div class="t-author">{{ t.author }}</div>
+                <div class="t-city">{{ t.city }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#testiCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#testiCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+          <div class="carousel-indicators" style="position:static; margin-top:2rem;">
+            {% for t in testimonials %}
+            <button type="button" data-bs-target="#testiCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FROM /home4: VERTICAL TIMELINE STEPS ─────── -->
+    <section class="steps-timeline-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-7">
+            <div class="text-center mb-5">
+              <div class="section-tag">✦ ¿Cómo funciona?</div>
+              <h2 class="section-title">Tres pasos simples</h2>
+              <div class="divider-gold"></div>
+            </div>
+            <div class="step-line">
+              <div class="step-num">1</div>
+              <div class="step-title">Elige tu plan y carga saldo</div>
+              <p class="step-desc">Selecciona la cantidad de minutos que necesitas y realiza el pago en línea de forma rápida y segura con el medio que prefieras.</p>
+            </div>
+            <div class="step-line">
+              <div class="step-num">2</div>
+              <div class="step-title">Revisa la disponibilidad</div>
+              <p class="step-desc">Abre el panel de especialistas y elige con quién quieres consultar. Si está en consulta, inténtalo unos minutos después.</p>
+            </div>
+            <div class="step-line">
+              <div class="step-num">3</div>
+              <div class="step-title">Llama y consulta</div>
+              <p class="step-desc">Marca el 600 XXX XXX desde cualquier teléfono en Chile. La sesión es privada y confidencial; los minutos restantes quedan disponibles para otra vez.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FROM /home6: HORIZONTAL STEPS ────────────── -->
+    <section class="steps-horiz-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag">✦ ¿Cómo funciona?</div>
+          <h2 class="section-title">Tres pasos simples</h2>
+          <div class="divider-gold"></div>
+        </div>
+        <div class="row g-5 justify-content-center">
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">1</div>
+            <div class="step-h-title">Carga tu saldo</div>
+            <p class="step-h-text">Selecciona el plan de minutos que necesitas y realiza el pago de forma rápida y segura.</p>
+          </div>
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">2</div>
+            <div class="step-h-title">Elige tu especialista</div>
+            <p class="step-h-text">Revisa el panel de especialistas, ve quién está disponible y escoge con quién consultar.</p>
+          </div>
+          <div class="col-md-4 step-h-card">
+            <div class="step-h-num">3</div>
+            <div class="step-h-title">Llama y consulta</div>
+            <p class="step-h-text">Marca el 600 XXX XXX. Tu consulta es privada y los minutos restantes no expiran.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ (from /home1) ────────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-5">
+              <div class="section-tag">✦ Preguntas frecuentes</div>
+              <h2 class="section-title">¿Tienes dudas?</h2>
+              <div class="divider-gold"></div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Cómo funciona el servicio de Fonotarot?</div>
+              <div class="faq-a">Selecciona un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una de nuestras especialistas disponibles. La consulta es totalmente privada y confidencial.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Está disponible las 24 horas?</div>
+              <div class="faq-a">Sí, contamos con especialistas disponibles las 24 horas del día, los 7 días de la semana, para que puedas consultar cuando más lo necesites.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Cuánto cuesta una consulta?</div>
+              <div class="faq-a">Ofrecemos planes desde 15 minutos por $4.990 CLP hasta 120 minutos por $24.990 CLP. Cada plan se adapta a distintas necesidades y profundidades de consulta.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Mis datos están seguros?</div>
+              <div class="faq-a">Absolutamente. Tu privacidad es nuestra prioridad. Toda la información que compartas durante la consulta es estrictamente confidencial y nunca será divulgada a terceros.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Puedo elegir con qué especialista consultar?</div>
+              <div class="faq-a">Sí. Puedes ver el listado de nuestras especialistas disponibles en esta página y llamar cuando la de tu preferencia esté libre. Si está en consulta, prueba un poco más tarde.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">¿Qué formas de pago aceptan?</div>
+              <div class="faq-a">Aceptamos las principales tarjetas de crédito y débito, transferencia bancaria, y otros métodos de pago disponibles en Chile.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HELP (from /home1) ───────────────────────── -->
+    <section class="help-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag">✦ Cómo Funciona</div>
+          <h2 class="section-title">Comenzar es muy fácil</h2>
+          <div class="divider-gold"></div>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="help-card">
+              <span class="help-icon">①</span>
+              <div class="help-title">Elige tu plan</div>
+              <p class="help-text">Selecciona la cantidad de minutos que mejor se adapte a tu consulta y carga tu saldo de forma rápida y segura.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-card">
+              <span class="help-icon">②</span>
+              <div class="help-title">Elige tu especialista</div>
+              <p class="help-text">Revisa quiénes están disponibles en este momento y elige la especialista con quien sientas más afinidad.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-card">
+              <span class="help-icon">③</span>
+              <div class="help-title">Llama y consulta</div>
+              <p class="help-text">Marca el 600 XXX XXX y conéctate. Tu consulta es privada, personalizada y sin compromisos adicionales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-banner">
+      <div class="container">
+        <h2>¿Lista/o para dar el primer paso?</h2>
+        <p>Nuestras especialistas están esperando tu llamada ahora mismo.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </a>
+          <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="border-radius:30px;">
+            <i class="ti ti-wallet me-2"></i>Carga Minutos
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ───────────────────────────────────── -->
+    <footer>
+      <div class="container">
+        <div class="brand mb-2">🔮 Fonotarot</div>
+        <p class="mb-1">Servicio de consulta esotérica telefónica · Chile</p>
+        <p class="mb-0">
+          <a href="/blog/">Blog</a>
+          <span class="mx-2">·</span>
+          <a href="#faq">Ayuda</a>
+          <span class="mx-2">·</span>
+          <a href="#planes">Planes</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      // Generate stars
+      const bg = document.getElementById('stars-bg');
+      for (let i = 0; i < 120; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-dot';
+        const size = Math.random() * 2.5 + .5;
+        s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*4}s;opacity:${Math.random()*.5};`;
+        bg.appendChild(s);
+      }
+
+      // FAQ toggle
+      document.querySelectorAll('.faq-q').forEach(q => {
+        q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
+      });
+    </script>
+  </body>
+</html>

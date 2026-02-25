@@ -162,3 +162,14 @@ def home8():
         testimonials=TESTIMONIALS,
         plans=PLANS,
     )
+
+
+@home_bp.route("/home-full")
+def home_full():
+    """Render the full showcase page – /home1 base enriched with sections from /home2, /home4 and /home6."""
+    return render_template(
+        "home-full.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
