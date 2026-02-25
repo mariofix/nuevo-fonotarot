@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Planes de Suscripción – Fonotarot</title>
+  <meta name="description" content="Planes de suscripción mensual de tarot telefónico. Ahorra con minutos renovados cada mes."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .card-featured { border-color:#6d28d9; box-shadow:0 0 28px rgba(109,40,217,.4); }
+    .price-tag { font-size:2.4rem; font-weight:800; color:#a78bfa; }
+    .price-tag small { font-size:1rem; color:#9ca3af; }
+    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
+    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
+    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
+    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
+    .badge-rec { background:#d97706; color:#000; font-size:.72rem; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .saving-badge { background:#14532d; color:#86efac; border-radius:8px; padding:.2rem .7rem; font-size:.78rem; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="{{ url_for('tienda.index') }}" class="text-secondary text-decoration-none">Tienda</a>
+        <a href="{{ url_for('tienda.minutos') }}" class="text-secondary text-decoration-none d-none d-md-inline">Minutos</a>
+        <a href="{{ url_for('tienda.productos') }}" class="text-secondary text-decoration-none d-none d-md-inline">Productos</a>
+        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
+          <i class="ti ti-shopping-cart"></i>
+          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <div class="text-center mb-5">
+          <h1 class="fw-bold text-white">Planes de Suscripción</h1>
+          <p class="text-secondary fs-5 mt-2">Minutos renovados cada mes — ahorra y prioriza tu bienestar</p>
+        </div>
+
+        <div class="row g-4 justify-content-center align-items-stretch">
+          {% for plan in plans %}
+          <div class="col-12 col-md-4">
+            <div class="card h-100 p-4 {% if plan.is_featured %}card-featured{% endif %}">
+              {% if plan.is_featured %}
+              <div class="mb-2"><span class="badge badge-rec">⭐ Recomendado</span></div>
+              {% endif %}
+              <h3 class="text-white fw-bold">{{ plan.name }}</h3>
+              <div class="price-tag my-2">${{ plan.price_display }}<small>/mes</small></div>
+              <p class="text-secondary mb-1">
+                <i class="ti ti-clock me-1 text-purple"></i>
+                <strong class="text-white">{{ plan.minutes_per_month }} minutos</strong> por mes
+              </p>
+              {% if plan.description %}
+              <p class="text-secondary small">{{ plan.description }}</p>
+              {% endif %}
+              {% if plan.features_list %}
+              <ul class="list-unstyled mt-3">
+                {% for feat in plan.features_list %}
+                <li class="mb-1 small text-secondary"><i class="ti ti-check text-success me-1"></i>{{ feat }}</li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="mt-auto pt-3">
+                <input type="hidden" name="item_type" value="subscription"/>
+                <input type="hidden" name="item_id" value="{{ plan.id }}"/>
+                <input type="hidden" name="quantity" value="1"/>
+                <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                <button type="submit" class="btn btn-primary w-100">Suscribirme</button>
+              </form>
+            </div>
+          </div>
+          {% else %}
+          <div class="col-12 text-center text-secondary py-5">
+            <i class="ti ti-calendar-off" style="font-size:3rem"></i>
+            <p class="mt-2">No hay planes disponibles por el momento.</p>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Comparison vs prepaid -->
+        <div class="card p-4 mt-5">
+          <h5 class="text-white mb-3">¿Suscripción o minutos prepagados?</h5>
+          <div class="table-responsive">
+            <table class="table table-dark table-sm mb-0">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="text-center">Prepagado</th>
+                  <th class="text-center">Suscripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Minutos nunca vencen</td>
+                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
+                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+                </tr>
+                <tr>
+                  <td>Renovación automática</td>
+                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>Precio por minuto más bajo</td>
+                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>Sin compromiso</td>
+                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
+                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>

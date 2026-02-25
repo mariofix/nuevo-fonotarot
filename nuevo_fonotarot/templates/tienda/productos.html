@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Productos Esotéricos – Fonotarot</title>
+  <meta name="description" content="Mazos de tarot, velas, inciensos, cristales y más. Envíos anónimos a todo Chile."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .card:hover { border-color:#6d28d9; }
+    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
+    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
+    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
+    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .cat-btn.active { background:#6d28d9; border-color:#6d28d9; color:#fff; }
+    .product-img { width:100%; height:160px; object-fit:cover; border-radius:6px 6px 0 0; }
+    .product-img-placeholder { width:100%; height:160px; background:#2d2d4e; border-radius:6px 6px 0 0; display:flex; align-items:center; justify-content:center; }
+    .price { color:#a78bfa; font-weight:700; font-size:1.1rem; }
+    .anonymous-note { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="{{ url_for('tienda.index') }}" class="text-secondary text-decoration-none">Tienda</a>
+        <a href="{{ url_for('tienda.minutos') }}" class="text-secondary text-decoration-none d-none d-md-inline">Minutos</a>
+        <a href="{{ url_for('tienda.suscripciones') }}" class="text-secondary text-decoration-none d-none d-md-inline">Suscripciones</a>
+        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
+          <i class="ti ti-shopping-cart"></i>
+          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <div class="text-center mb-4">
+          <h1 class="fw-bold text-white">Productos Esotéricos</h1>
+          <p class="text-secondary fs-5 mt-2">Mazos, velas, inciensos, cristales y más</p>
+          <span class="anonymous-note"><i class="ti ti-eye-off me-1"></i>Cajas sin marcas · Envíos discretos · Punto de retiro disponible</span>
+        </div>
+
+        <!-- Category filter -->
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <a href="{{ url_for('tienda.productos') }}"
+             class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
+            Todos
+          </a>
+          {% for slug, label in categories %}
+          <a href="{{ url_for('tienda.productos', categoria=slug) }}"
+             class="btn btn-sm btn-outline-primary cat-btn {% if active_category == slug %}active{% endif %}">
+            {{ label }}
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Products grid -->
+        <div class="row g-3">
+          {% for product in products %}
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="card h-100">
+              {% if product.image_url %}
+              <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img"/>
+              {% else %}
+              <div class="product-img-placeholder">
+                <i class="ti ti-package text-secondary" style="font-size:3rem"></i>
+              </div>
+              {% endif %}
+              <div class="p-3">
+                <div class="small text-secondary mb-1">
+                  {% for slug, label in categories %}{% if slug == product.category %}{{ label }}{% endif %}{% endfor %}
+                </div>
+                <h6 class="text-white mb-1">{{ product.name }}</h6>
+                <div class="price">${{ product.price_display }}</div>
+                {% if product.stock > 0 %}
+                <div class="small text-success mt-1"><i class="ti ti-check me-1"></i>En stock</div>
+                {% else %}
+                <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>Sin stock</div>
+                {% endif %}
+                <div class="d-flex gap-2 mt-3">
+                  <a href="{{ url_for('tienda.producto_detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">Ver</a>
+                  {% if product.stock > 0 %}
+                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="d-flex">
+                    <input type="hidden" name="item_type" value="product"/>
+                    <input type="hidden" name="item_id" value="{{ product.id }}"/>
+                    <input type="hidden" name="quantity" value="1"/>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-shopping-cart-plus"></i></button>
+                  </form>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="col-12 text-center text-secondary py-5">
+            <i class="ti ti-package-off" style="font-size:3rem"></i>
+            <p class="mt-2">No hay productos en esta categoría por el momento.</p>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>

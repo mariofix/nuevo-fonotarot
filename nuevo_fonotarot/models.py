@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from flask_security.core import RoleMixin, UserMixin
 from slugify import slugify
 
-from app.extensions import db
+from .extensions import db
 
 # Many-to-many association table between users and roles.
 roles_users = db.Table(
@@ -120,3 +120,193 @@ class BlogPost(db.Model):
     def make_slug(title: str) -> str:
         """Return a URL-safe slug from *title*."""
         return slugify(title)
+
+
+# ---------------------------------------------------------------------------
+# Tienda models
+# ---------------------------------------------------------------------------
+
+
+class MinutePack(db.Model):
+    """Prepaid tarot-minute package.
+
+    Minutes never expire once purchased.
+    """
+
+    __tablename__ = "minute_packs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    minutes = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)  # price in CLP cents-free integer
+    description = db.Column(db.String(255), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<MinutePack {self.minutes}min ${self.price}>"
+
+    @property
+    def price_display(self) -> str:
+        """Format price with thousands separator (CLP style)."""
+        return f"{self.price:,}".replace(",", ".")
+
+
+class SubscriptionPlan(db.Model):
+    """Monthly tarot subscription plan."""
+
+    __tablename__ = "subscription_plans"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    minutes_per_month = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)  # monthly price in CLP
+    description = db.Column(db.Text, nullable=True)
+    features = db.Column(db.Text, nullable=True)  # newline-separated feature list
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<SubscriptionPlan {self.name}>"
+
+    @property
+    def price_display(self) -> str:
+        return f"{self.price:,}".replace(",", ".")
+
+    @property
+    def features_list(self) -> list:
+        if not self.features:
+            return []
+        return [f.strip() for f in self.features.splitlines() if f.strip()]
+
+
+class Product(db.Model):
+    """Physical esoteric product (mazos, velas, inciensos, etc.)."""
+
+    __tablename__ = "products"
+
+    CATEGORY_CHOICES = [
+        ("mazos", "Mazos de Tarot"),
+        ("velas", "Velas"),
+        ("inciensos", "Inciensos"),
+        ("cristales", "Cristales"),
+        ("otros", "Otros"),
+    ]
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    category = db.Column(db.String(50), nullable=False, default="otros")
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Integer, nullable=False)  # price in CLP
+    stock = db.Column(db.Integer, nullable=False, default=0)
+    image_url = db.Column(db.String(500), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<Product {self.name}>"
+
+    @property
+    def price_display(self) -> str:
+        return f"{self.price:,}".replace(",", ".")
+
+    @staticmethod
+    def make_slug(name: str) -> str:
+        return slugify(name)
+
+
+class Order(db.Model):
+    """Customer order (minutes pack, subscription, or physical products)."""
+
+    __tablename__ = "orders"
+
+    STATUS_PENDING = "pending"
+    STATUS_PAID = "paid"
+    STATUS_FAILED = "failed"
+    STATUS_SHIPPED = "shipped"
+    STATUS_DELIVERED = "delivered"
+    STATUS_CANCELLED = "cancelled"
+
+    id = db.Column(db.Integer, primary_key=True)
+    # Optional link to registered user; guests allowed.
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    user = db.relationship("User", backref=db.backref("orders", lazy="dynamic"))
+
+    status = db.Column(db.String(30), nullable=False, default=STATUS_PENDING)
+    total = db.Column(db.Integer, nullable=False, default=0)  # CLP
+    payment_method = db.Column(db.String(30), nullable=True)  # 'flow' | 'khipu'
+    payment_token = db.Column(db.String(255), nullable=True)  # gateway token/order id
+
+    # Shipping details (only required for physical products).
+    # Anonymous shipping: unmarked boxes, pickup-point option.
+    shipping_name = db.Column(db.String(255), nullable=True)
+    shipping_email = db.Column(db.String(255), nullable=True)
+    shipping_phone = db.Column(db.String(30), nullable=True)
+    shipping_address = db.Column(db.Text, nullable=True)
+    shipping_uses_pickup = db.Column(db.Boolean, default=False, nullable=False)
+    shipping_pickup_point = db.Column(db.String(255), nullable=True)
+    # Anonymous packaging: boxes are sent without branding/markings.
+    anonymous_shipping = db.Column(db.Boolean, default=True, nullable=False)
+
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    items = db.relationship("OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"<Order #{self.id} {self.status}>"
+
+    @property
+    def total_display(self) -> str:
+        return f"{self.total:,}".replace(",", ".")
+
+
+class OrderItem(db.Model):
+    """A single line item within an Order."""
+
+    __tablename__ = "order_items"
+
+    ITEM_TYPE_MINUTE_PACK = "minute_pack"
+    ITEM_TYPE_SUBSCRIPTION = "subscription"
+    ITEM_TYPE_PRODUCT = "product"
+
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
+    item_type = db.Column(db.String(20), nullable=False)
+    item_id = db.Column(db.Integer, nullable=False)  # FK to the relevant table
+    name = db.Column(db.String(255), nullable=False)  # denormalised name
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    unit_price = db.Column(db.Integer, nullable=False)  # CLP
+
+    def __repr__(self) -> str:
+        return f"<OrderItem {self.name} x{self.quantity}>"
+
+    @property
+    def subtotal(self) -> int:
+        return self.unit_price * self.quantity
+
+    @property
+    def subtotal_display(self) -> str:
+        return f"{self.subtotal:,}".replace(",", ".")

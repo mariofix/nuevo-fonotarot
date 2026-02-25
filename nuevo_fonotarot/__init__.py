@@ -47,7 +47,7 @@ def _init_extensions(app: Flask) -> None:
     babel.init_app(app, locale_selector=_locale_selector)
 
     # Flask-Security: set up user datastore and initialise extension.
-    from app.models import Role, User
+    from .models import Role, User
 
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, user_datastore)
@@ -62,10 +62,12 @@ def _init_extensions(app: Flask) -> None:
 
 
 def _register_blueprints(app: Flask) -> None:
-    from app.blog import blog_bp
-    from app.home import home_bp
-    from app.pages import pages_bp
+    from .blog import blog_bp
+    from .home import home_bp
+    from .pages import pages_bp
+    from .tienda import tienda_bp
 
     app.register_blueprint(home_bp)
     app.register_blueprint(blog_bp)
     app.register_blueprint(pages_bp)
+    app.register_blueprint(tienda_bp)

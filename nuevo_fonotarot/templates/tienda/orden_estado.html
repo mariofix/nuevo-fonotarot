@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Estado de tu orden #{{ order.id }} – Fonotarot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .status-paid { color:#6ee7b7; }
+    .status-pending { color:#fbbf24; }
+    .status-failed, .status-cancelled { color:#f87171; }
+    .total { font-size:1.6rem; font-weight:800; color:#a78bfa; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto">
+        <a href="{{ url_for('tienda.index') }}" class="btn btn-outline-secondary btn-sm">Volver a la tienda</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl" style="max-width:640px">
+
+        <div class="text-center mb-4">
+          {% if order.status == 'paid' %}
+          <i class="ti ti-circle-check status-paid" style="font-size:4rem"></i>
+          <h2 class="text-white mt-2">¡Pago confirmado!</h2>
+          <p class="text-secondary">Tu orden ha sido procesada exitosamente.</p>
+          {% elif order.status == 'pending' %}
+          <i class="ti ti-clock status-pending" style="font-size:4rem"></i>
+          <h2 class="text-white mt-2">Pago pendiente</h2>
+          <p class="text-secondary">Estamos esperando la confirmación del pago.</p>
+          {% elif order.status in ('failed', 'cancelled') %}
+          <i class="ti ti-circle-x status-failed" style="font-size:4rem"></i>
+          <h2 class="text-white mt-2">Pago no completado</h2>
+          <p class="text-secondary">No se pudo procesar el pago. Por favor intenta nuevamente.</p>
+          {% else %}
+          <i class="ti ti-package" style="font-size:4rem;color:#a78bfa"></i>
+          <h2 class="text-white mt-2">Orden #{{ order.id }}</h2>
+          {% endif %}
+        </div>
+
+        <div class="card p-4 mb-4">
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-secondary">Número de orden</span>
+            <span class="text-white fw-bold">#{{ order.id }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-secondary">Estado</span>
+            <span class="fw-bold status-{{ order.status }}">{{ order.status|title }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-secondary">Método de pago</span>
+            <span class="text-white">{{ order.payment_method|upper if order.payment_method else '—' }}</span>
+          </div>
+          <hr style="border-color:#2d2d4e"/>
+          {% for item in items %}
+          <div class="d-flex justify-content-between text-secondary small mb-2">
+            <span>{{ item.name }} × {{ item.quantity }}</span>
+            <span>${{ item.subtotal_display }}</span>
+          </div>
+          {% endfor %}
+          <hr style="border-color:#2d2d4e"/>
+          <div class="d-flex justify-content-between total">
+            <span>Total</span>
+            <span>${{ order.total_display }}</span>
+          </div>
+        </div>
+
+        {% if order.shipping_uses_pickup %}
+        <div class="card p-3 mb-4">
+          <div class="d-flex gap-2 align-items-start">
+            <i class="ti ti-map-pin" style="color:#a78bfa;font-size:1.3rem"></i>
+            <div>
+              <strong class="text-white">Punto de retiro</strong>
+              <p class="text-secondary small mb-0">{{ order.shipping_pickup_point }}</p>
+            </div>
+          </div>
+        </div>
+        {% elif order.shipping_address %}
+        <div class="card p-3 mb-4">
+          <div class="d-flex gap-2 align-items-start">
+            <i class="ti ti-truck" style="color:#a78bfa;font-size:1.3rem"></i>
+            <div>
+              <strong class="text-white">Envío a domicilio</strong>
+              <p class="text-secondary small mb-0">{{ order.shipping_address }}</p>
+              {% if order.anonymous_shipping %}
+              <p class="text-success small mb-0"><i class="ti ti-eye-off me-1"></i>Caja sin marcas</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="text-center">
+          <a href="{{ url_for('tienda.index') }}" class="btn btn-primary">Volver a la tienda</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>

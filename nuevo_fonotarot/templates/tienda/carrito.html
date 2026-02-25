@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mi Carrito – Fonotarot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+  <style>
+    body { background:#0f0f1a; color:#e5e7eb; }
+    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
+    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
+    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
+    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
+    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
+    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
+    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
+    .price { color:#a78bfa; font-weight:700; }
+    .total-row { font-size:1.4rem; font-weight:800; color:#a78bfa; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="navbar navbar-expand-md sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand" href="/">✦ Fonotarot</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="{{ url_for('tienda.index') }}" class="text-secondary text-decoration-none">Tienda</a>
+        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
+          <i class="ti ti-shopping-cart"></i>
+          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <h1 class="fw-bold text-white mb-4">Mi Carrito</h1>
+
+        {% if cart %}
+        <div class="row g-4">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="table-responsive">
+                <table class="table table-dark mb-0">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th class="text-center">Cantidad</th>
+                      <th class="text-end">Precio</th>
+                      <th class="text-end">Subtotal</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in cart %}
+                    <tr>
+                      <td>
+                        <div class="fw-bold">{{ item.name }}</div>
+                        <div class="small text-secondary">
+                          {% if item.item_type == 'minute_pack' %}Minutos prepagados
+                          {% elif item.item_type == 'subscription' %}Suscripción mensual
+                          {% else %}Producto físico
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td class="text-center align-middle">{{ item.quantity }}</td>
+                      <td class="text-end align-middle price">${{ "{:,}".format(item.unit_price).replace(",", ".") }}</td>
+                      <td class="text-end align-middle price">${{ "{:,}".format(item.unit_price * item.quantity).replace(",", ".") }}</td>
+                      <td class="text-end align-middle">
+                        <form action="{{ url_for('tienda.eliminar_del_carrito') }}" method="post">
+                          <input type="hidden" name="index" value="{{ loop.index0 }}"/>
+                          <button type="submit" class="btn btn-sm btn-outline-danger"><i class="ti ti-trash"></i></button>
+                        </form>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-between">
+              <a href="{{ url_for('tienda.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="ti ti-arrow-left me-1"></i>Seguir comprando
+              </a>
+              <form action="{{ url_for('tienda.vaciar_carrito') }}" method="post">
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Vaciar el carrito?')">
+                  <i class="ti ti-trash me-1"></i>Vaciar carrito
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card p-4">
+              <h5 class="text-white mb-3">Resumen del pedido</h5>
+              <div class="d-flex justify-content-between text-secondary mb-2">
+                <span>Subtotal</span>
+                <span>${{ "{:,}".format(total).replace(",", ".") }} CLP</span>
+              </div>
+              <hr style="border-color:#2d2d4e"/>
+              <div class="d-flex justify-content-between total-row mb-4">
+                <span>Total</span>
+                <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
+              </div>
+              <a href="{{ url_for('tienda.checkout') }}" class="btn btn-primary w-100">
+                <i class="ti ti-lock me-1"></i>Proceder al pago
+              </a>
+              <div class="text-center mt-3">
+                <small class="text-secondary d-block mb-1">Métodos de pago</small>
+                <div class="d-flex justify-content-center gap-2">
+                  <span class="badge bg-dark border border-secondary px-2">Flow</span>
+                  <span class="badge bg-dark border border-secondary px-2">Khipu</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% else %}
+        <div class="text-center py-5 text-secondary">
+          <i class="ti ti-shopping-cart-off" style="font-size:4rem"></i>
+          <h4 class="mt-3 text-white">Tu carrito está vacío</h4>
+          <p>Agrega minutos, suscripciones o productos esotéricos.</p>
+          <a href="{{ url_for('tienda.index') }}" class="btn btn-primary mt-2">Ir a la tienda</a>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+</body>
+</html>
