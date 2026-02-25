@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Consulta Esotérica 24/7 | Chile</title>
+    <meta name="description" content="Tarot por teléfono en Chile. Especialistas disponibles 24/7. Planes desde 15 minutos. Confidencial y sin contratos." />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+
+      :root {
+        --void:   #07060f;
+        --dark:   #0d0b1e;
+        --mid:    #1a1740;
+        --purple: #7928ca;
+        --violet: #9d50e8;
+        --neon:   #00d2ff;
+        --lime:   #a3e635;
+        --muted:  #8b85b8;
+        --border: rgba(121,40,202,.35);
+        --white:  #e8e4ff;
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'Space Grotesk', system-ui, sans-serif; background: var(--void); color: var(--white); margin: 0; }
+
+      /* Off-canvas */
+      .offcanvas { background: var(--dark); color: var(--white); border-left: 1px solid var(--border); }
+      .offcanvas-title { color: var(--neon); font-size: 1.2rem; font-weight: 700; }
+      .btn-close { filter: invert(1) brightness(.5); }
+      .oc-tabs .nav-link { color: var(--muted); border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: .5rem .75rem; font-size: .83rem; font-weight: 600; }
+      .oc-tabs .nav-link.active { color: var(--neon); border-bottom-color: var(--neon); background: transparent; }
+      .oc-tabs { border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+      .agent-oc-row { border: 1px solid var(--border); border-radius: 10px; padding: .85rem 1rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .85rem; background: rgba(255,255,255,.03); }
+      .agent-oc-av { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--neon)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: #fff; flex-shrink: 0; }
+      .agent-oc-name { font-weight: 700; font-size: .88rem; color: var(--white); }
+      .agent-oc-spec { font-size: .75rem; color: var(--muted); }
+      .b-on { background: rgba(0,210,255,.1); color: #00d2ff; border: 1px solid rgba(0,210,255,.3); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .b-busy { background: rgba(251,191,36,.1); color: #fbbf24; border: 1px solid rgba(251,191,36,.25); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .btn-oc-call { background: var(--purple); color: #fff !important; border: none; border-radius: 8px; padding: .3rem .7rem; font-size: .75rem; font-weight: 700; transition: background .15s; }
+      .btn-oc-call:hover { background: var(--violet); }
+      .btn-oc-busy { background: rgba(255,255,255,.05); color: var(--muted) !important; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: .3rem .7rem; font-size: .75rem; cursor: default; }
+
+      /* Nav */
+      .site-nav { background: rgba(7,6,15,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: .85rem 0; position: sticky; top: 0; z-index: 200; }
+      .brand { font-size: 1.2rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -.02em; }
+      .brand em { font-style: normal; color: var(--neon); }
+      .nav-a { color: var(--muted); text-decoration: none; font-size: .88rem; font-weight: 500; transition: color .15s; }
+      .nav-a:hover { color: var(--white); }
+      .btn-nav-oc { background: rgba(121,40,202,.2); border: 1px solid var(--border); color: var(--violet) !important; border-radius: 8px; padding: .4rem .9rem; font-size: .82rem; font-weight: 700; }
+      .btn-nav-oc:hover { background: rgba(121,40,202,.35); }
+      .btn-nav-cta { background: var(--neon); color: var(--void) !important; border: none; border-radius: 8px; padding: .4rem 1rem; font-size: .82rem; font-weight: 800; }
+
+      /* Hero */
+      .hero { padding: 90px 0 70px; position: relative; overflow: hidden; }
+      .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(121,40,202,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(121,40,202,.07) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+      .hero-glow1 { position: absolute; top: -100px; left: -100px; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(121,40,202,.18) 0%, transparent 70%); pointer-events: none; }
+      .hero-glow2 { position: absolute; bottom: -100px; right: -100px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(0,210,255,.1) 0%, transparent 70%); pointer-events: none; }
+      .hero-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(121,40,202,.2); border: 1px solid var(--border); border-radius: 6px; padding: .3rem .9rem; font-size: .72rem; font-weight: 700; color: var(--violet); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+      .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; color: #fff; letter-spacing: -.04em; margin-bottom: 1.2rem; }
+      .hero h1 .hl { color: var(--neon); }
+      .hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 440px; line-height: 1.7; margin-bottom: 2rem; }
+      .btn-h-primary { background: linear-gradient(135deg, var(--purple), var(--violet)); color: #fff !important; border: none; border-radius: 8px; padding: .7rem 1.75rem; font-size: .95rem; font-weight: 800; transition: box-shadow .2s; }
+      .btn-h-primary:hover { box-shadow: 0 0 20px rgba(121,40,202,.5); }
+      .btn-h-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--white) !important; border-radius: 8px; padding: .68rem 1.75rem; font-size: .95rem; font-weight: 600; transition: border-color .2s; }
+      .btn-h-ghost:hover { border-color: var(--neon); }
+
+      /* Live widget */
+      .live-widget { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+      .live-header { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; font-size: .78rem; font-weight: 700; color: var(--neon); letter-spacing: .1em; text-transform: uppercase; }
+      .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--neon); animation: pulse 1.5s ease-in-out infinite; }
+      @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(0,210,255,.4); } 50% { box-shadow: 0 0 0 6px transparent; } }
+      .live-agent-row { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+      .live-agent-row:last-child { border-bottom: none; }
+      .av-sm { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--neon)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .85rem; color: #fff; flex-shrink: 0; }
+      .la-name { font-weight: 600; font-size: .85rem; color: var(--white); }
+      .la-spec { font-size: .72rem; color: var(--muted); }
+
+      /* Plans section – comes early in this design */
+      .plans-section { padding: 80px 0; background: var(--dark); }
+      .sec-tag { font-size: .72rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--neon); margin-bottom: .4rem; }
+      .sec-h { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; color: #fff; letter-spacing: -.04em; margin-bottom: .4rem; }
+      .sec-sub { color: var(--muted); font-size: .95rem; }
+      .plan-card { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem 1.5rem; text-align: center; height: 100%; display: flex; flex-direction: column; transition: border-color .2s, box-shadow .2s; }
+      .plan-card:hover { border-color: var(--violet); box-shadow: 0 0 24px rgba(121,40,202,.15); }
+      .plan-card.featured { background: linear-gradient(160deg, rgba(121,40,202,.2) 0%, rgba(0,210,255,.05) 100%); border-color: var(--neon); }
+      .plan-badge { display: inline-block; background: var(--neon); color: var(--void); border-radius: 6px; font-size: .65rem; font-weight: 800; padding: 2px 9px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; }
+      .plan-mins { font-size: 2.8rem; font-weight: 900; color: #fff; letter-spacing: -.05em; line-height: 1; }
+      .plan-mins small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+      .plan-price { font-size: 1.3rem; font-weight: 800; color: var(--neon); margin: .4rem 0; letter-spacing: -.02em; }
+      .plan-price span { font-size: .8rem; color: var(--muted); font-weight: 400; }
+      .plan-desc { font-size: .85rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.6; }
+      .btn-plan-solid { background: var(--purple); color: #fff !important; border: none; border-radius: 8px; padding: .55rem 0; font-size: .88rem; font-weight: 800; width: 100%; transition: background .15s; }
+      .btn-plan-solid:hover { background: var(--violet); }
+      .btn-plan-ghost { background: transparent; color: var(--neon) !important; border: 1.5px solid var(--border); border-radius: 8px; padding: .55rem 0; font-size: .88rem; font-weight: 700; width: 100%; transition: border-color .15s; }
+      .btn-plan-ghost:hover { border-color: var(--neon); }
+
+      /* Testimonials */
+      .testi-section { padding: 80px 0; background: var(--mid); }
+      .testi-box { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; max-width: 680px; margin: 0 auto; text-align: center; }
+      .t-stars { color: #fbbf24; font-size: 1rem; letter-spacing: .1em; margin-bottom: 1.2rem; }
+      .t-quote { font-size: 1.1rem; color: var(--white); line-height: 1.75; margin-bottom: 1.5rem; font-style: italic; }
+      .t-who { font-weight: 700; color: var(--neon); font-size: .9rem; }
+      .t-where { color: var(--muted); font-size: .8rem; }
+      .carousel-control-prev-icon, .carousel-control-next-icon { filter: invert(1) brightness(.5) hue-rotate(180deg); }
+      .carousel-indicators [data-bs-target] { background: var(--neon); border: none; opacity: .4; width: 8px; height: 8px; border-radius: 50%; }
+      .carousel-indicators .active { opacity: 1; }
+
+      /* Steps / Help */
+      .help-section { padding: 80px 0; background: var(--void); }
+      .help-card { border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; background: rgba(255,255,255,.02); height: 100%; }
+      .help-num { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--purple), var(--neon)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; margin-bottom: 1rem; }
+      .help-title { font-weight: 700; font-size: .95rem; color: var(--white); margin-bottom: .4rem; }
+      .help-text { color: var(--muted); font-size: .87rem; line-height: 1.65; }
+
+      /* FAQ – Tabler accordion */
+      .faq-section { padding: 80px 0; background: var(--dark); }
+      .faq-accordion .accordion-item { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px !important; margin-bottom: .6rem; overflow: hidden; }
+      .faq-accordion .accordion-button { background: rgba(255,255,255,.03); color: var(--white); font-weight: 600; font-size: .93rem; }
+      .faq-accordion .accordion-button:not(.collapsed) { background: rgba(121,40,202,.12); color: var(--neon); box-shadow: none; }
+      .faq-accordion .accordion-button::after { filter: invert(1) brightness(.6); }
+      .faq-accordion .accordion-body { color: var(--muted); font-size: .88rem; line-height: 1.7; background: rgba(255,255,255,.02); }
+
+      /* CTA */
+      .cta-section { padding: 80px 0; background: linear-gradient(135deg, var(--purple) 0%, var(--void) 60%); text-align: center; }
+      .cta-section h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: #fff; letter-spacing: -.04em; margin-bottom: .75rem; }
+      .cta-section p { color: rgba(255,255,255,.65); font-size: 1rem; margin-bottom: 2rem; }
+      .btn-cta-neon { background: var(--neon); color: var(--void) !important; border: none; border-radius: 8px; padding: .75rem 2rem; font-size: 1rem; font-weight: 900; transition: box-shadow .15s; }
+      .btn-cta-neon:hover { box-shadow: 0 0 24px rgba(0,210,255,.5); }
+      .btn-cta-border { background: transparent; color: rgba(255,255,255,.8) !important; border: 1.5px solid rgba(255,255,255,.3); border-radius: 8px; padding: .73rem 2rem; font-size: 1rem; font-weight: 600; transition: border-color .15s; }
+
+      /* Footer */
+      footer { background: #04030a; border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--muted); font-size: .85rem; }
+      footer .brand-f { font-weight: 800; color: var(--neon); font-size: 1.1rem; }
+      footer a { color: var(--muted); text-decoration: none; }
+      footer a:hover { color: var(--neon); }
+
+      /* Stats */
+      .stats-section { padding: 60px 0; background: var(--mid); }
+      .stat-card { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: center; }
+      .stat-num { font-size: 2rem; font-weight: 900; color: var(--neon); letter-spacing: -.04em; }
+      .stat-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: .2rem; }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── OFF-CANVAS with specialty filter tabs ──── -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="agentCanvas5" aria-labelledby="agentCanvas5Label">
+      <div class="offcanvas-header border-bottom" style="border-color:var(--border) !important;">
+        <h5 class="offcanvas-title" id="agentCanvas5Label"><span class="pulse" style="display:inline-block;margin-right:.4rem;"></span>Especialistas en Línea</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <!-- Specialty filter tabs -->
+        <ul class="nav oc-tabs mb-3" id="ocTabs" role="tablist">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all">Todas</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online">Disponibles</button></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="oc-all">
+            {% for agent in agents %}
+            <div class="agent-oc-row">
+              <div class="agent-oc-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="agent-oc-name">{{ agent.name }}</div>
+                <div class="agent-oc-spec">{{ agent.specialty }}</div>
+                <div class="mt-1">
+                  {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                  {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+                </div>
+              </div>
+              {% if agent.status == 'online' %}
+              <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% else %}
+              <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade" id="oc-online">
+            {% for agent in agents if agent.status == 'online' %}
+            <div class="agent-oc-row">
+              <div class="agent-oc-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="agent-oc-name">{{ agent.name }}</div>
+                <div class="agent-oc-spec">{{ agent.specialty }}</div>
+                <span class="b-on">● Disponible ahora</span>
+              </div>
+              <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="mt-4">
+          <a href="tel:600XXXXXXX" class="btn btn-h-primary w-100"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NAV ──────────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🔮 Fono<em>tarot</em></a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#planes" class="nav-a d-none d-md-inline">Planes</a>
+          <a href="#testimonios" class="nav-a d-none d-md-inline">Testimonios</a>
+          <a href="#faq" class="nav-a d-none d-md-inline">FAQ</a>
+          <button class="btn-nav-oc d-none d-md-inline-flex align-items-center gap-1" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas5">
+            <i class="ti ti-users"></i> Especialistas
+          </button>
+          <a href="#planes" class="btn-nav-cta">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO ─────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-grid"></div>
+      <div class="hero-glow1"></div>
+      <div class="hero-glow2"></div>
+      <div class="container position-relative" style="z-index:1;">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-6">
+            <div class="hero-tag"><span class="pulse"></span> En línea ahora</div>
+            <h1>Claridad cuando<br><span class="hl">más la necesitas</span></h1>
+            <p class="hero-sub">Consulta de tarot por teléfono. Disponible 24/7, completamente confidencial y sin compromisos. Todo Chile.</p>
+            <div class="d-flex gap-3 flex-wrap">
+              <button class="btn-h-primary" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas5">
+                <i class="ti ti-phone me-2"></i>Llama Ahora
+              </button>
+              <a href="#planes" class="btn-h-ghost"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+            </div>
+          </div>
+          <div class="col-lg-6 d-none d-lg-block">
+            <div class="live-widget">
+              <div class="live-header"><span class="pulse"></span>Especialistas disponibles ahora</div>
+              {% for agent in agents %}
+              <div class="live-agent-row">
+                <div class="av-sm">{{ agent.name[0] }}</div>
+                <div class="flex-grow-1">
+                  <div class="la-name">{{ agent.name }}</div>
+                  <div class="la-spec">{{ agent.specialty }}</div>
+                </div>
+                {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATS ─────────────────────────────────────── -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="row g-3">
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">+50K</div><div class="stat-label">Consultas</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">98%</div><div class="stat-label">Satisfacción</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">+20</div><div class="stat-label">Especialistas</div></div></div>
+          <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">24/7</div><div class="stat-label">Disponibilidad</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLANES (early, after hero) ───────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">Tarifas</div>
+          <h2 class="sec-h">Elige tu plan de minutos</h2>
+          <p class="sec-sub">Sin sorpresas · Los minutos no vencen</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3">
+            <div class="plan-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}<div><span class="plan-badge">Más popular</span></div>{% endif %}
+              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <p class="plan-desc">{{ plan.description }}</p>
+              <a href="#" class="btn {% if plan.featured %}btn-plan-solid{% else %}btn-plan-ghost{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIOS ───────────────────────────────── -->
+    <section id="testimonios" class="testi-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">Testimonios</div>
+          <h2 class="sec-h">Lo que dicen nuestros clientes</h2>
+        </div>
+        <div id="tc5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+          <div class="carousel-inner">
+            {% for t in testimonials %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <div class="testi-box">
+                <div class="t-stars">★★★★★</div>
+                <p class="t-quote">"{{ t.text }}"</p>
+                <div class="t-who">{{ t.author }}</div>
+                <div class="t-where">{{ t.city }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#tc5" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#tc5" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
+          <div class="carousel-indicators" style="position:static;margin-top:2rem;">
+            {% for t in testimonials %}
+            <button type="button" data-bs-target="#tc5" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AYUDA ─────────────────────────────────────── -->
+    <section class="help-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-tag">¿Cómo funciona?</div>
+          <h2 class="sec-h">Comienza en 3 pasos</h2>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="help-card">
+              <div class="help-num">1</div>
+              <div class="help-title">Elige y carga minutos</div>
+              <p class="help-text">Selecciona el plan que necesitas y paga en línea con el medio de pago que prefieras. Rápido y seguro.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-card">
+              <div class="help-num">2</div>
+              <div class="help-title">Elige tu especialista</div>
+              <p class="help-text">Abre el panel de especialistas y elige con quién quieres consultar. Puedes ver su disponibilidad en tiempo real.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="help-card">
+              <div class="help-num">3</div>
+              <div class="help-title">Llama y consulta</div>
+              <p class="help-text">Marca el 600 XXX XXX. La sesión es completamente privada. El saldo restante queda disponible para otra ocasión.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-5">
+              <div class="sec-tag">FAQ</div>
+              <h2 class="sec-h">Preguntas frecuentes</h2>
+            </div>
+            <div class="accordion faq-accordion" id="faq5">
+              {% for q, a, id in [
+                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a con una especialista disponible. Todo es privado y confidencial.","f1"),
+                ("¿Está disponible las 24 horas?","Sí, contamos con especialistas disponibles todos los días del año, sin excepción.","f2"),
+                ("¿Los minutos vencen?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento.","f3"),
+                ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato es compartido con terceros.","f4"),
+                ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú y elige con quien quieras consultar.","f5")
+              ] %}
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ id }}5">{{ q }}</button>
+                </h2>
+                <div id="{{ id }}5" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#faq5">
+                  <div class="accordion-body">{{ a }}</div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>¿Lista/o para consultar?</h2>
+        <p>Nuestras especialistas están disponibles en este momento.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <button class="btn btn-cta-neon btn-lg" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas5">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </button>
+          <a href="#planes" class="btn btn-cta-border btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <footer>
+      <div class="container">
+        <div class="brand-f mb-2">🔮 Fonotarot</div>
+        <p class="mb-1">Servicio de consulta esotérica telefónica · Chile</p>
+        <p class="mb-0"><a href="/blog/">Blog</a> <span class="mx-2">·</span> <a href="#faq">FAQ</a> <span class="mx-2">·</span> <a href="#planes">Planes</a></p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fonotarot – Consulta Ahora | Chile</title>
+    <meta name="description" content="Tarot por teléfono en Chile. Especialistas disponibles 24/7. Planes desde 15 min. Llama ahora." />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap");
+
+      :root {
+        --sunset1: #ff4500;
+        --sunset2: #ff7043;
+        --amber:   #fbbf24;
+        --sky:     #0ea5e9;
+        --deep:    #0a1628;
+        --ink:     #1e293b;
+        --cream:   #fffbf7;
+        --muted:   #94a3b8;
+        --border:  #e2e8f0;
+        --white:   #ffffff;
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'Montserrat', system-ui, sans-serif; background: var(--cream); color: var(--ink); margin: 0; }
+
+      /* Off-canvas */
+      .offcanvas { background: var(--deep); color: var(--white); border-left: 1px solid rgba(255,255,255,.1); max-width: 400px; }
+      .offcanvas-title { color: var(--amber); font-weight: 800; font-size: 1.2rem; }
+      .btn-close { filter: invert(1) brightness(.5); }
+      .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: blink 1.5s ease-in-out infinite; display: inline-block; }
+      @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+      .agent-oc-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1rem; margin-bottom: .65rem; display: flex; align-items: center; gap: .85rem; }
+      .agent-oc-av { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--sunset1), var(--amber)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
+      .agent-oc-name { font-weight: 700; font-size: .88rem; color: var(--white); }
+      .agent-oc-spec { font-size: .75rem; color: rgba(255,255,255,.55); }
+      .b-on { background: rgba(74,222,128,.15); color: #4ade80; border: 1px solid rgba(74,222,128,.3); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .b-busy { background: rgba(251,191,36,.12); color: var(--amber); border: 1px solid rgba(251,191,36,.25); border-radius: 20px; padding: 1px 8px; font-size: .65rem; font-weight: 700; }
+      .btn-oc-call { background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff !important; border: none; border-radius: 8px; padding: .35rem .8rem; font-size: .75rem; font-weight: 800; white-space: nowrap; }
+      .btn-oc-busy { background: rgba(255,255,255,.06); color: rgba(255,255,255,.4) !important; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: .35rem .8rem; font-size: .75rem; cursor: default; }
+
+      /* Announcement bar */
+      .topbar { background: linear-gradient(90deg, var(--sunset1), var(--sunset2)); color: #fff; padding: .5rem 0; text-align: center; font-size: .82rem; font-weight: 700; }
+      .topbar a { color: #fff; font-weight: 900; text-decoration: none; }
+
+      /* Nav */
+      .site-nav { background: #fff; border-bottom: 1px solid var(--border); padding: .85rem 0; position: sticky; top: 0; z-index: 200; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+      .brand { font-size: 1.25rem; font-weight: 900; color: var(--ink); text-decoration: none; letter-spacing: -.03em; }
+      .brand span { color: var(--sunset1); }
+      .nav-a { color: var(--muted); text-decoration: none; font-size: .88rem; font-weight: 600; transition: color .15s; }
+      .nav-a:hover { color: var(--ink); }
+      .btn-nav-oc { background: rgba(255,69,0,.08); border: 1.5px solid rgba(255,69,0,.25); color: var(--sunset1) !important; border-radius: 8px; padding: .42rem .9rem; font-size: .82rem; font-weight: 700; }
+      .btn-nav-oc:hover { background: rgba(255,69,0,.15); }
+      .btn-nav-cta { background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff !important; border: none; border-radius: 8px; padding: .42rem 1.1rem; font-size: .82rem; font-weight: 800; transition: box-shadow .15s; }
+      .btn-nav-cta:hover { box-shadow: 0 4px 16px rgba(255,69,0,.35); }
+
+      /* Hero – conversion focus, large background gradient */
+      .hero { background: linear-gradient(160deg, var(--deep) 0%, #1a1040 60%, var(--deep) 100%); padding: 80px 0; position: relative; overflow: hidden; }
+      .hero-blob1 { position: absolute; top: -100px; right: -100px; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(255,69,0,.15) 0%, transparent 70%); pointer-events: none; }
+      .hero-blob2 { position: absolute; bottom: -80px; left: -80px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(14,165,233,.1) 0%, transparent 70%); pointer-events: none; }
+      .hero-tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 30px; padding: .3rem .9rem; font-size: .72rem; font-weight: 700; color: rgba(255,255,255,.8); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1.4rem; }
+      .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; color: #fff; letter-spacing: -.04em; line-height: 1.1; margin-bottom: 1.2rem; }
+      .hero h1 .hl { background: linear-gradient(90deg, var(--amber), var(--sunset2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+      .hero-sub { font-size: 1.05rem; color: rgba(255,255,255,.6); line-height: 1.7; max-width: 480px; margin-bottom: 2rem; }
+      .trust-badges { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+      .trust-badge { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; color: rgba(255,255,255,.75); font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+      .btn-hero-primary { background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff !important; border: none; border-radius: 10px; padding: .8rem 2rem; font-size: 1rem; font-weight: 900; transition: box-shadow .2s; }
+      .btn-hero-primary:hover { box-shadow: 0 8px 24px rgba(255,69,0,.4); }
+      .btn-hero-ghost { background: transparent; border: 1.5px solid rgba(255,255,255,.25); color: rgba(255,255,255,.8) !important; border-radius: 10px; padding: .78rem 2rem; font-size: 1rem; font-weight: 700; transition: border-color .2s; }
+      .btn-hero-ghost:hover { border-color: rgba(255,255,255,.6); }
+
+      /* ── PLANES – FIRST in body (conversion design) ── */
+      .plans-section { padding: 80px 0; background: var(--cream); }
+      .sec-kicker { font-size: .72rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--sunset1); margin-bottom: .4rem; }
+      .sec-h { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 900; color: var(--ink); letter-spacing: -.04em; margin-bottom: .4rem; }
+      .sec-sub { color: var(--muted); font-size: .95rem; }
+      .plan-card { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 2rem 1.5rem; text-align: center; height: 100%; display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
+      .plan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+      .plan-card.featured { border-color: var(--sunset1); background: linear-gradient(160deg, #fff8f5 0%, #fff 100%); }
+      .plan-badge { background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff; border-radius: 6px; font-size: .65rem; font-weight: 800; padding: 2px 10px; letter-spacing: .08em; text-transform: uppercase; display: inline-block; margin-bottom: 1rem; }
+      .plan-mins { font-size: 3rem; font-weight: 900; color: var(--ink); letter-spacing: -.06em; line-height: 1; }
+      .plan-mins small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+      .plan-price { font-size: 1.4rem; font-weight: 900; color: var(--sunset1); margin: .4rem 0; letter-spacing: -.03em; }
+      .plan-price span { font-size: .8rem; color: var(--muted); font-weight: 500; }
+      .plan-desc { font-size: .85rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.6; }
+      .btn-plan-hot { background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff !important; border: none; border-radius: 8px; padding: .6rem 0; font-size: .9rem; font-weight: 800; width: 100%; transition: box-shadow .15s; }
+      .btn-plan-hot:hover { box-shadow: 0 4px 16px rgba(255,69,0,.3); }
+      .btn-plan-ghost { background: transparent; color: var(--sunset1) !important; border: 1.5px solid rgba(255,69,0,.3); border-radius: 8px; padding: .6rem 0; font-size: .9rem; font-weight: 700; width: 100%; transition: border-color .15s; }
+      .btn-plan-ghost:hover { border-color: var(--sunset1); }
+
+      /* Horizontal scroll testimonials */
+      .testi-section { padding: 80px 0; background: var(--deep); overflow: hidden; }
+      .testi-scroll-wrapper { overflow: hidden; position: relative; }
+      .testi-scroll-track { display: flex; gap: 1.5rem; transition: transform .5s ease; }
+      .testi-item { flex: 0 0 320px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 1.75rem; }
+      .t-stars { color: var(--amber); font-size: .95rem; letter-spacing: .1em; margin-bottom: .9rem; }
+      .t-text { font-size: .92rem; color: rgba(255,255,255,.8); line-height: 1.7; font-style: italic; margin-bottom: 1.25rem; }
+      .t-who { font-weight: 800; font-size: .85rem; color: var(--white); }
+      .t-where { color: rgba(255,255,255,.45); font-size: .75rem; }
+      .scroll-controls { display: flex; gap: .75rem; justify-content: center; margin-top: 2rem; }
+      .scroll-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; font-size: 1rem; }
+      .scroll-btn:hover { background: rgba(255,255,255,.15); }
+
+      /* Stats with progress */
+      .stats-section { padding: 60px 0; background: #fff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+      .stat-lbl { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .3rem; }
+      .stat-num { font-size: 2rem; font-weight: 900; color: var(--ink); letter-spacing: -.04em; }
+      .stat-progress { height: 4px; background: var(--border); border-radius: 2px; margin-top: .5rem; }
+      .stat-bar { height: 100%; background: linear-gradient(90deg, var(--sunset1), var(--amber)); border-radius: 2px; }
+
+      /* Help */
+      .help-section { padding: 70px 0; background: var(--cream); }
+      .help-step { display: flex; gap: 1.25rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 12px; background: #fff; height: 100%; }
+      .help-num { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--sunset1), var(--sunset2)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; flex-shrink: 0; }
+      .help-title { font-weight: 800; font-size: .93rem; color: var(--ink); margin-bottom: .3rem; }
+      .help-text { color: var(--muted); font-size: .86rem; line-height: 1.65; }
+
+      /* FAQ */
+      .faq-section { padding: 70px 0; background: var(--deep); }
+      .faq-item { border-bottom: 1px solid rgba(255,255,255,.1); padding: 1.1rem 0; }
+      .faq-q { font-weight: 700; font-size: .93rem; color: rgba(255,255,255,.85); cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; }
+      .faq-q::after { content: '+'; font-size: 1.2rem; color: var(--amber); flex-shrink: 0; transition: transform .2s; }
+      .faq-item.open .faq-q::after { transform: rotate(45deg); }
+      .faq-a { display: none; color: rgba(255,255,255,.55); font-size: .88rem; line-height: 1.7; padding-top: .6rem; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* CTA */
+      .cta-section { padding: 80px 0; background: linear-gradient(135deg, var(--sunset1) 0%, #c0392b 100%); text-align: center; }
+      .cta-section h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: #fff; letter-spacing: -.04em; margin-bottom: .75rem; }
+      .cta-section p { color: rgba(255,255,255,.8); font-size: 1rem; margin-bottom: 2rem; }
+      .btn-cta-white { background: #fff; color: var(--sunset1) !important; border: none; border-radius: 10px; padding: .75rem 2rem; font-size: 1rem; font-weight: 900; transition: box-shadow .15s; }
+      .btn-cta-white:hover { box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+      .btn-cta-outline { background: transparent; color: rgba(255,255,255,.85) !important; border: 2px solid rgba(255,255,255,.5); border-radius: 10px; padding: .73rem 2rem; font-size: 1rem; font-weight: 700; }
+      .btn-cta-outline:hover { border-color: #fff; }
+
+      footer { background: var(--deep); border-top: 1px solid rgba(255,255,255,.08); padding: 2rem 0; text-align: center; color: rgba(255,255,255,.45); font-size: .85rem; }
+      footer .brand-f { font-weight: 900; color: rgba(255,255,255,.8); font-size: 1.1rem; }
+      footer .brand-f span { color: var(--sunset2); }
+      footer a { color: rgba(255,255,255,.45); text-decoration: none; }
+      footer a:hover { color: var(--amber); }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── OFF-CANVAS ────────────────────────────────── -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="agentCanvas7">
+      <div class="offcanvas-header border-bottom" style="border-color:rgba(255,255,255,.1) !important;">
+        <h5 class="offcanvas-title"><span class="live-dot me-2"></span>Especialistas Disponibles</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <p style="color:rgba(255,255,255,.5); font-size:.83rem; margin-bottom:1.2rem;">Elige a la especialista con quien quieras consultar y llama ahora.</p>
+        {% for agent in agents %}
+        <div class="agent-oc-card">
+          <div class="agent-oc-av">{{ agent.name[0] }}</div>
+          <div class="flex-grow-1">
+            <div class="agent-oc-name">{{ agent.name }}</div>
+            <div class="agent-oc-spec">{{ agent.specialty }}</div>
+            <div class="mt-1">
+              {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+              {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+            </div>
+          </div>
+          {% if agent.status == 'online' %}
+          <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+          {% else %}
+          <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <div class="mt-4">
+          <a href="tel:600XXXXXXX" class="btn btn-hero-primary w-100"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TOPBAR ─────────────────────────────────────── -->
+    <div class="topbar">
+      🔴 Atención disponible <strong>24/7</strong> · Llame al <a href="tel:600XXXXXXX">600 XXX XXX</a>
+    </div>
+
+    <!-- ── NAV ──────────────────────────────────────── -->
+    <nav class="site-nav">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a href="/" class="brand">🌅 Fono<span>tarot</span></a>
+        <div class="d-flex align-items-center gap-3">
+          <a href="#planes" class="nav-a d-none d-md-inline">Planes</a>
+          <a href="#testimonios" class="nav-a d-none d-md-inline">Testimonios</a>
+          <a href="#faq" class="nav-a d-none d-md-inline">FAQ</a>
+          <button class="btn-nav-oc d-none d-md-inline-flex align-items-center gap-1" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas7">
+            <i class="ti ti-users"></i> Especialistas
+          </button>
+          <a href="#planes" class="btn-nav-cta">Carga Minutos</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── HERO ─────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-blob1"></div>
+      <div class="hero-blob2"></div>
+      <div class="container position-relative" style="z-index:1;">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-7">
+            <div class="hero-tag"><span class="live-dot"></span> Especialistas disponibles ahora</div>
+            <h1>El universo tiene<br>un mensaje<br><span class="hl">para ti hoy</span></h1>
+            <p class="hero-sub">Consulta de tarot por teléfono. Disponible las 24 horas, confidencial y sin contratos. Todo Chile.</p>
+            <div class="d-flex gap-3 flex-wrap">
+              <button class="btn-hero-primary" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas7">
+                <i class="ti ti-phone me-2"></i>Llama Ahora
+              </button>
+              <a href="#planes" class="btn-hero-ghost"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+            </div>
+            <div class="trust-badges">
+              <span class="trust-badge"><i class="ti ti-lock" style="color:var(--amber);"></i>Confidencial</span>
+              <span class="trust-badge"><i class="ti ti-clock-24" style="color:var(--amber);"></i>24/7</span>
+              <span class="trust-badge"><i class="ti ti-calendar-off" style="color:var(--amber);"></i>Sin contratos</span>
+              <span class="trust-badge"><i class="ti ti-map-pin" style="color:var(--amber);"></i>Todo Chile</span>
+            </div>
+          </div>
+          <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+            <div style="font-size:10rem; line-height:1; opacity:.3; filter:drop-shadow(0 0 40px rgba(255,112,67,.4));">🌅</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLANES (first major section – conversion) ── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-kicker">Tarifas</div>
+          <h2 class="sec-h">Elige tu plan de minutos</h2>
+          <p class="sec-sub">Carga minutos ahora y consulta cuando quieras · Sin vencimiento</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3">
+            <div class="plan-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}<div><span class="plan-badge">🔥 Más popular</span></div>{% endif %}
+              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+              <p class="plan-desc">{{ plan.description }}</p>
+              <a href="#" class="btn {% if plan.featured %}btn-plan-hot{% else %}btn-plan-ghost{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-center mt-4" style="color:var(--muted); font-size:.85rem;">
+          <i class="ti ti-info-circle me-1" style="color:var(--sunset1);"></i>Los minutos no tienen fecha de vencimiento.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── STATS ─────────────────────────────────────── -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-lbl">Consultas realizadas</div>
+            <div class="stat-num">+50K</div>
+            <div class="stat-progress"><div class="stat-bar" style="width:100%"></div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-lbl">Satisfacción</div>
+            <div class="stat-num">98%</div>
+            <div class="stat-progress"><div class="stat-bar" style="width:98%"></div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-lbl">Especialistas</div>
+            <div class="stat-num">+20</div>
+            <div class="stat-progress"><div class="stat-bar" style="width:100%"></div></div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-lbl">Disponibilidad</div>
+            <div class="stat-num">24/7</div>
+            <div class="stat-progress"><div class="stat-bar" style="width:100%"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TESTIMONIALS – horizontal scroll ──────────── -->
+    <section id="testimonios" class="testi-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-kicker" style="color:var(--amber);">Testimonios</div>
+          <h2 class="sec-h" style="color:#fff;">Lo que dicen nuestros clientes</h2>
+        </div>
+        <div class="testi-scroll-wrapper">
+          <div class="testi-scroll-track" id="testiTrack">
+            {% for t in testimonials %}
+            <div class="testi-item">
+              <div class="t-stars">★★★★★</div>
+              <p class="t-text">"{{ t.text }}"</p>
+              <div class="t-who">{{ t.author }}</div>
+              <div class="t-where">{{ t.city }}</div>
+            </div>
+            {% endfor %}
+            <!-- Duplicate for infinite feel -->
+            {% for t in testimonials %}
+            <div class="testi-item">
+              <div class="t-stars">★★★★★</div>
+              <p class="t-text">"{{ t.text }}"</p>
+              <div class="t-who">{{ t.author }}</div>
+              <div class="t-where">{{ t.city }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="scroll-controls">
+          <button class="scroll-btn" id="scrollPrev"><i class="ti ti-chevron-left"></i></button>
+          <button class="scroll-btn" id="scrollNext"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AYUDA ─────────────────────────────────────── -->
+    <section class="help-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="sec-kicker">¿Cómo funciona?</div>
+          <h2 class="sec-h">Comienza en 3 pasos</h2>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4"><div class="help-step"><div class="help-num">1</div><div><div class="help-title">Elige y carga</div><p class="help-text mb-0">Selecciona tu plan y paga en línea. Rápido y seguro.</p></div></div></div>
+          <div class="col-md-4"><div class="help-step"><div class="help-num">2</div><div><div class="help-title">Elige tu especialista</div><p class="help-text mb-0">Abre el panel de especialistas y elige a quien prefieras.</p></div></div></div>
+          <div class="col-md-4"><div class="help-step"><div class="help-num">3</div><div><div class="help-title">Llama y consulta</div><p class="help-text mb-0">Marca el 600 XXX XXX. Privado y sin complicaciones.</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────── -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="text-center mb-5">
+              <div class="sec-kicker" style="color:var(--amber);">FAQ</div>
+              <h2 class="sec-h" style="color:#fff;">Preguntas frecuentes</h2>
+            </div>
+            {% for q, a in [
+              ("¿Cómo funciona el servicio?","Elige un plan, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a con una especialista disponible. Todo es privado."),
+              ("¿El servicio está disponible las 24 horas?","Sí, operamos las 24 horas los 7 días de la semana."),
+              ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan en tu cuenta sin fecha de vencimiento."),
+              ("¿Es confidencial?","Sí. Toda la información es estrictamente privada."),
+              ("¿Qué formas de pago aceptan?","Tarjetas de crédito/débito, transferencia bancaria y otros medios habituales en Chile.")
+            ] %}
+            <div class="faq-item">
+              <div class="faq-q">{{ q }}</div>
+              <div class="faq-a">{{ a }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────── -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>¿Lista/o para consultar?</h2>
+        <p>Nuestras especialistas te están esperando ahora mismo.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <button class="btn btn-cta-white btn-lg" data-bs-toggle="offcanvas" data-bs-target="#agentCanvas7">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </button>
+          <a href="#planes" class="btn btn-cta-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <footer>
+      <div class="container">
+        <div class="brand-f mb-2">🌅 Fono<span>tarot</span></div>
+        <p class="mb-1">Servicio de consulta esotérica telefónica · Chile</p>
+        <p class="mb-0"><a href="/blog/">Blog</a> <span class="mx-2">·</span> <a href="#faq">FAQ</a> <span class="mx-2">·</span> <a href="#planes">Planes</a></p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script>
+      // FAQ toggle
+      document.querySelectorAll('.faq-q').forEach(q => {
+        q.addEventListener('click', () => q.closest('.faq-item').classList.toggle('open'));
+      });
+
+      // Horizontal testimonial scroll
+      const track = document.getElementById('testiTrack');
+      let offset = 0;
+      const step = 336; // card width + gap
+      document.getElementById('scrollNext').addEventListener('click', () => {
+        offset = Math.min(offset + step, track.scrollWidth / 2 - track.parentElement.offsetWidth);
+        track.style.transform = `translateX(-${offset}px)`;
+      });
+      document.getElementById('scrollPrev').addEventListener('click', () => {
+        offset = Math.max(offset - step, 0);
+        track.style.transform = `translateX(-${offset}px)`;
+      });
+    </script>
+  </body>
+</html>
