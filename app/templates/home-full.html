@@ -173,6 +173,29 @@
       .cta-banner h2 { font-family: 'Cinzel', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); color: #fff; margin-bottom: .75rem; }
       .cta-banner p { color: var(--muted); font-size: 1.05rem; margin-bottom: 2rem; }
 
+      /* ─── Off-canvas agent panel ───────────────────── */
+      .offcanvas-agents { background: var(--void); border-left: 1px solid rgba(201,168,76,.25); color: var(--star); }
+      .offcanvas-agents .offcanvas-header { background: rgba(13,13,26,.95); border-bottom: 1px solid rgba(201,168,76,.2); padding: 1.25rem 1.5rem; }
+      .offcanvas-agents .offcanvas-title { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.1rem; letter-spacing: .05em; }
+      .offcanvas-agents .btn-close { filter: invert(1) brightness(.7) sepia(1) saturate(5) hue-rotate(10deg); }
+      .offcanvas-agents .offcanvas-body { padding: 1.25rem 1.5rem; }
+      .oc-agent-row { display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border-bottom: 1px solid rgba(201,168,76,.1); }
+      .oc-agent-row:last-child { border-bottom: none; }
+      .oc-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, var(--gold)); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 0 14px rgba(124,58,237,.4); }
+      .oc-info { flex: 1; min-width: 0; }
+      .oc-name { font-family: 'Cinzel', serif; font-size: .9rem; color: #fff; margin-bottom: 2px; }
+      .oc-spec { font-size: .78rem; color: var(--muted); }
+      .oc-filter-tabs .nav-link { font-size: .82rem; font-family: 'Cinzel', serif; color: var(--muted); border: 1px solid rgba(201,168,76,.15); border-radius: 20px; padding: .3rem .9rem; margin-right: .4rem; transition: all .2s; }
+      .oc-filter-tabs .nav-link.active { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); color: #0d0d1a; border-color: transparent; font-weight: 700; }
+      .oc-filter-tabs .nav-link:hover:not(.active) { color: var(--gold); border-color: rgba(201,168,76,.3); }
+      .btn-oc-call { background: linear-gradient(135deg, #7c3aed, #5b2fc4); color: #fff !important; border: none; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; font-weight: 700; transition: box-shadow .2s; white-space: nowrap; }
+      .btn-oc-call:hover { box-shadow: 0 0 14px rgba(124,58,237,.5); }
+      .btn-oc-busy { background: transparent; border: 1px solid rgba(148,163,184,.25); color: var(--muted) !important; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; white-space: nowrap; cursor: default; }
+      .btn-oc-trigger { background: rgba(201,168,76,.1); color: var(--gold) !important; border: 1px solid rgba(201,168,76,.3); border-radius: 20px; padding: .38rem 1rem; font-size: .85rem; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: .4rem; }
+      .btn-oc-trigger:hover { background: rgba(201,168,76,.18); box-shadow: 0 0 14px rgba(201,168,76,.2); }
+      .oc-online-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; margin-right: 3px; box-shadow: 0 0 6px #34d399; }
+      .oc-busy-dot  { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; display: inline-block; margin-right: 3px; }
+
       /* ─── Footer ───────────────────────────────────── */
       footer { position: relative; z-index: 1; background: #08080f; border-top: 1px solid rgba(201,168,76,.15); padding: 2.5rem 0; text-align: center; color: var(--muted); font-size: .85rem; }
       footer .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); }
@@ -185,7 +208,116 @@
     <!-- Stars background -->
     <div id="stars-bg"></div>
 
-    <!-- ── NAVBAR ──────────────────────────────────── -->
+    <!-- ── OFF-CANVAS: AGENT PANEL ────────────────── -->
+    <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
+          <i class="ti ti-stars me-2"></i>Especialistas
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
+      <div class="offcanvas-body">
+        <!-- Filter tabs -->
+        <ul class="nav oc-filter-tabs mb-4" id="ocFilterTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="oc-tab-all" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="oc-tab-online" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab">
+              <span class="oc-online-dot"></span>Disponibles
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="oc-tab-busy" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab">
+              <span class="oc-busy-dot"></span>En consulta
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- All agents -->
+          <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
+            {% for agent in agents %}
+            <div class="oc-agent-row">
+              <div class="oc-avatar">{{ agent.name[0] }}</div>
+              <div class="oc-info">
+                <div class="oc-name">{{ agent.name }}</div>
+                <div class="oc-spec">{{ agent.specialty }}</div>
+                <div class="mt-1">
+                  {% if agent.status == 'online' %}
+                  <span class="badge-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}
+                  <span class="badge-busy">● En consulta</span>
+                  {% else %}
+                  <span class="badge-offline">● No disponible</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% if agent.status == 'online' %}
+              <a href="tel:600XXXXXXX" class="btn btn-oc-call">
+                <i class="ti ti-phone me-1"></i>Llamar
+              </a>
+              {% else %}
+              <button class="btn btn-oc-busy" disabled>
+                <i class="ti ti-clock me-1"></i>Ocupada
+              </button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          <!-- Online only -->
+          <div class="tab-pane fade" id="oc-online" role="tabpanel">
+            {% set online_agents = agents | selectattr('status', 'eq', 'online') | list %}
+            {% if online_agents %}
+            {% for agent in online_agents %}
+            <div class="oc-agent-row">
+              <div class="oc-avatar">{{ agent.name[0] }}</div>
+              <div class="oc-info">
+                <div class="oc-name">{{ agent.name }}</div>
+                <div class="oc-spec">{{ agent.specialty }}</div>
+                <div class="mt-1"><span class="badge-online">● Disponible</span></div>
+              </div>
+              <a href="tel:600XXXXXXX" class="btn btn-oc-call">
+                <i class="ti ti-phone me-1"></i>Llamar
+              </a>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas en este momento. Inténtalo pronto.</p>
+            {% endif %}
+          </div>
+          <!-- Busy only -->
+          <div class="tab-pane fade" id="oc-busy" role="tabpanel">
+            {% set busy_agents = agents | selectattr('status', 'eq', 'busy') | list %}
+            {% if busy_agents %}
+            {% for agent in busy_agents %}
+            <div class="oc-agent-row">
+              <div class="oc-avatar">{{ agent.name[0] }}</div>
+              <div class="oc-info">
+                <div class="oc-name">{{ agent.name }}</div>
+                <div class="oc-spec">{{ agent.specialty }}</div>
+                <div class="mt-1"><span class="badge-busy">● En consulta</span></div>
+              </div>
+              <button class="btn btn-oc-busy" disabled>
+                <i class="ti ti-clock me-1"></i>Ocupada
+              </button>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta en este momento.</p>
+            {% endif %}
+          </div>
+        </div>
+        <!-- Global CTA -->
+        <div class="text-center mt-4 pt-3" style="border-top:1px solid rgba(201,168,76,.15);">
+          <a href="tel:600XXXXXXX" class="btn btn-call w-100 mb-2">
+            <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
+          </a>
+          <a href="#planes" class="btn btn-plan-outline w-100" style="border-radius:30px;" data-bs-dismiss="offcanvas">
+            <i class="ti ti-wallet me-2"></i>Ver Planes y Carga Minutos
+          </a>
+        </div>
+      </div>
+    </div>
     <nav class="site-nav">
       <div class="container d-flex align-items-center justify-content-between">
         <a href="/" class="brand">🔮 Fonotarot</a>
@@ -193,6 +325,9 @@
           <a href="#tarotistas" class="nav-link d-none d-md-inline">Tarotistas</a>
           <a href="#planes" class="nav-link d-none d-md-inline">Planes</a>
           <a href="#faq" class="nav-link d-none d-md-inline">Ayuda</a>
+          <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas" aria-controls="agentsOffcanvas">
+            <span class="oc-online-dot"></span>Especialistas
+          </button>
           <a href="#planes" class="btn-gold">Carga Minutos</a>
         </div>
       </div>
