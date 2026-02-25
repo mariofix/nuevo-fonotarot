@@ -74,3 +74,36 @@ def index():
         testimonials=TESTIMONIALS,
         plans=PLANS,
     )
+
+
+@home_bp.route("/home1")
+def home1():
+    """Render alternative home page design 1 – Místico Oscuro."""
+    return render_template(
+        "home1.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home2")
+def home2():
+    """Render alternative home page design 2 – Luna Suave."""
+    return render_template(
+        "home2.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/home3")
+def home3():
+    """Render alternative home page design 3 – Moderno Profesional."""
+    return render_template(
+        "home3.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
