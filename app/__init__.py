@@ -63,7 +63,9 @@ def _init_extensions(app: Flask) -> None:
 
 def _register_blueprints(app: Flask) -> None:
     from app.blog import blog_bp
+    from app.home import home_bp
     from app.pages import pages_bp
 
+    app.register_blueprint(home_bp)
     app.register_blueprint(blog_bp)
     app.register_blueprint(pages_bp)
