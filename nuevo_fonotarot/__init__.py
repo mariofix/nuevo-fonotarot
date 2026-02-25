@@ -1,14 +1,46 @@
 """Flask application factory."""
 
+import json
 import os
 
-from flask import Flask, request
+from flask import Flask, redirect, request, session, url_for
 
 from flask_security.datastore import SQLAlchemyUserDatastore
 
 from config import config
 from .admin import SecureAdminIndexView, init_admin
 from .extensions import admin, babel, db, limiter, migrate, security, theme
+
+# Fallback language list used when the DB is unavailable or the
+# ``available_lang`` setting has not been seeded yet.
+# Format: [short_code, locale, label]
+_FALLBACK_LANGUAGES = [
+    ["es", "es_CL", "Español"],
+    ["en", "en_US", "English"],
+    ["pt", "pt_BR", "Português"],
+]
+
+
+def _flag_class(locale: str) -> str:
+    """Derive a Tabler flag CSS class from a locale string.
+
+    ``es_CL`` → ``flag-country-cl``
+    """
+    territory = locale.split("_")[-1].lower()
+    return f"flag-country-{territory}"
+
+
+class _LangEntry:
+    """Simple value object exposing the language attributes templates expect."""
+
+    def __init__(self, short: str, locale: str, label: str) -> None:
+        self.short = short
+        self.locale = locale
+        self.label = label
+        self.flag_class = _flag_class(locale)
+
+    def __repr__(self) -> str:
+        return f"<_LangEntry {self.locale}>"
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -36,15 +68,37 @@ def _init_extensions(app: Flask) -> None:
     migrate.init_app(app, db)
     limiter.init_app(app)
 
-    # Flask-Babel: select locale from Accept-Language header, falling back to
-    # the configured ADMIN_LOCALE value.
-    def _locale_selector():
-        return request.accept_languages.best_match(
-            ["en_US", "es_CL", "pt_BR"],
-            default=app.config.get("ADMIN_LOCALE", "en_US"),
-        )
+    default_lang: str = app.config.get("DEFAULT_LANGUAGE", "es_CL")
+
+    def _parse_available_langs() -> list[_LangEntry]:
+        """Return language entries from SiteSettings, falling back to defaults."""
+        try:
+            from .models import SiteSettings
+            raw = SiteSettings.get("available_lang")
+            if raw:
+                return [_LangEntry(*item) for item in json.loads(raw)]
+        except Exception:
+            pass
+        return [_LangEntry(*item) for item in _FALLBACK_LANGUAGES]
+
+    def _active_locales() -> list[str]:
+        return [lang.locale for lang in _parse_available_langs()]
+
+    # Flask-Babel: honour explicit session choice first, then Accept-Language,
+    # then fall back to DEFAULT_LANGUAGE.
+    def _locale_selector() -> str:
+        lang = session.get("lang") or request.args.get("lang")
+        active = _active_locales()
+        if lang and lang in active:
+            session["lang"] = lang
+            return lang
+        return request.accept_languages.best_match(active, default=default_lang)
 
     babel.init_app(app, locale_selector=_locale_selector)
+
+    # Expose get_locale() in every template.
+    from flask_babel import get_locale
+    app.jinja_env.globals["get_locale"] = get_locale
 
     # Flask-Security: set up user datastore and initialise extension.
     from .models import Role, User
@@ -60,6 +114,11 @@ def _init_extensions(app: Flask) -> None:
 
     init_admin(app, admin)
 
+    # Context processor: inject site_languages into every non-admin template.
+    @app.context_processor
+    def inject_site_languages() -> dict:
+        return {"site_languages": _parse_available_langs()}
+
 
 def _register_blueprints(app: Flask) -> None:
     from .blog import blog_bp
@@ -71,3 +130,6 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(blog_bp)
     app.register_blueprint(pages_bp)
     app.register_blueprint(tienda_bp)
+
+    from .cli import lang_cli
+    app.cli.add_command(lang_cli)

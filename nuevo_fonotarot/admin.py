@@ -126,6 +126,15 @@ class ProductAdminView(SecureModelView):
             model.slug = Product.make_slug(model.slug)
 
 
+class SiteSettingsAdminView(SecureModelView):
+    """Admin view for generic site settings."""
+
+    column_list = ("key", "value", "module", "description")
+    column_searchable_list = ("key", "module")
+    column_filters = ("module",)
+    column_editable_list = ("value",)
+
+
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -137,7 +146,10 @@ class OrderAdminView(SecureModelView):
 
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
-    from .models import BlogPost, MinutePack, Order, Product, Role, StaticPage, SubscriptionPlan, User
+    from .models import (
+        BlogPost, MinutePack, Order, Product, Role,
+        SiteSettings, StaticPage, SubscriptionPlan, User,
+    )
 
     admin_ext.add_view(UserAdminView(User, db.session, name="Users", category="Auth"))
     admin_ext.add_view(RoleAdminView(Role, db.session, name="Roles", category="Auth"))
@@ -158,4 +170,7 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         OrderAdminView(Order, db.session, name="Órdenes", category="Tienda")
+    )
+    admin_ext.add_view(
+        SiteSettingsAdminView(SiteSettings, db.session, name="Configuración", category="Sitio")
     )

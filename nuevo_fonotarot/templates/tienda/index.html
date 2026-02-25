@@ -1,53 +1,26 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  <title>Tienda Fonotarot – Minutos, Suscripciones y Productos</title>
-  <meta name="description" content="Compra minutos de tarot prepagados, suscripciones mensuales y productos esotéricos. Envíos anónimos, sin marcas."/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
-  <style>
-    :root { --color-mystic: #6d28d9; --color-gold: #d97706; }
-    body { background: #0f0f1a; color: #e5e7eb; }
-    .navbar { background: #1a1a2e !important; border-bottom: 1px solid #2d2d4e; }
-    .navbar-brand { color: #a78bfa !important; font-size: 1.4rem; font-weight: 700; }
-    .section-title { color: #a78bfa; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .section-subtitle { color: #9ca3af; margin-bottom: 2rem; }
-    .card { background: #1e1e35; border: 1px solid #2d2d4e; color: #e5e7eb; }
-    .card-featured { border-color: var(--color-mystic); box-shadow: 0 0 20px rgba(109,40,217,.3); }
-    .badge-featured { background: var(--color-gold); color: #000; font-size: .7rem; }
-    .price-tag { font-size: 2rem; font-weight: 800; color: #a78bfa; }
-    .price-tag small { font-size: 1rem; color: #9ca3af; }
-    .btn-primary { background: var(--color-mystic); border-color: var(--color-mystic); }
-    .btn-primary:hover { background: #5b21b6; border-color: #5b21b6; }
-    .btn-outline-primary { color: #a78bfa; border-color: #a78bfa; }
-    .btn-outline-primary:hover { background: var(--color-mystic); color: #fff; border-color: var(--color-mystic); }
-    .hero { padding: 4rem 0 3rem; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); }
-    .hero h1 { font-size: 2.5rem; font-weight: 800; color: #fff; }
-    .anonymous-badge { background: #065f46; color: #6ee7b7; border-radius: 999px; padding: .25rem .75rem; font-size: .8rem; }
-    .cart-btn { position: relative; }
-    .cart-count { position: absolute; top:-6px; right:-6px; background: var(--color-gold); color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
-  </style>
-</head>
-<body>
-<div class="page">
-  <!-- Navbar -->
-  <header class="navbar navbar-expand-md sticky-top">
-    <div class="container-xl">
-      <a class="navbar-brand" href="/">✦ Fonotarot</a>
-      <div class="ms-auto d-flex align-items-center gap-3">
-        <a href="{{ url_for('tienda.minutos') }}" class="text-decoration-none text-secondary d-none d-md-inline">Minutos</a>
-        <a href="{{ url_for('tienda.suscripciones') }}" class="text-decoration-none text-secondary d-none d-md-inline">Suscripciones</a>
-        <a href="{{ url_for('tienda.productos') }}" class="text-decoration-none text-secondary d-none d-md-inline">Productos</a>
-        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
-          <i class="ti ti-shopping-cart"></i>
-          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
-        </a>
-      </div>
-    </div>
-  </header>
+{% extends "base.html" %}
 
+{% block title %}Tienda Fonotarot – Minutos, Suscripciones y Productos{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root { --color-mystic: #6d28d9; --color-gold: #d97706; }
+  .section-title { color: #a78bfa; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .section-subtitle { color: #9ca3af; margin-bottom: 2rem; }
+  .card-featured { border-color: var(--color-mystic); box-shadow: 0 0 20px rgba(109,40,217,.3); }
+  .badge-featured { background: var(--color-gold); color: #000; font-size: .7rem; }
+  .price-tag { font-size: 2rem; font-weight: 800; color: #a78bfa; }
+  .price-tag small { font-size: 1rem; color: #9ca3af; }
+  .hero { padding: 4rem 0 3rem; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); }
+  .hero h1 { font-size: 2.5rem; font-weight: 800; color: #fff; }
+  .anonymous-badge { background: #065f46; color: #6ee7b7; border-radius: 999px; padding: .25rem .75rem; font-size: .8rem; }
+  .cart-btn { position: relative; }
+  .cart-count { position: absolute; top:-6px; right:-6px; background: var(--color-gold); color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
   <!-- Hero -->
   <section class="hero">
     <div class="container-xl text-center">
@@ -186,6 +159,4 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
-</body>
-</html>
+{% endblock %}

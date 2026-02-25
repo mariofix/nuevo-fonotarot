@@ -1,0 +1,82 @@
+# Spanish (Chile) translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-02-25 07:50+0000\n"
+"PO-Revision-Date: 2026-02-25 07:31+0000\n"
+"Last-Translator: Mario Fix <admin@fonotarot.cl>\n"
+"Language: es_CL\n"
+"Language-Team: es_CL <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: nuevo_fonotarot/templates/base.html:10
+#: nuevo_fonotarot/templates/base.html:34
+msgid "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
+msgstr "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
+
+#: nuevo_fonotarot/templates/base.html:11
+#: nuevo_fonotarot/templates/base.html:35
+msgid ""
+"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7. Amor, trabajo, salud y más."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:12
+msgid ""
+"tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, "
+"consulta tarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:44
+msgid "Fonotarot - Tarot por Teléfono con Personas Reales"
+msgstr "Fonotarot - Tarot por Teléfono con Personas Reales"
+
+#: nuevo_fonotarot/templates/base.html:45
+msgid ""
+"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:186
+msgid "Tarotistas"
+msgstr "Tarotistas"
+
+#: nuevo_fonotarot/templates/base.html:187
+msgid "Planes"
+msgstr "Planes"
+
+#: nuevo_fonotarot/templates/base.html:188
+#: nuevo_fonotarot/templates/base.html:209
+msgid "Blog"
+msgstr "Blog"
+
+#: nuevo_fonotarot/templates/base.html:189
+#: nuevo_fonotarot/templates/base.html:211
+msgid "Ayuda"
+msgstr "Ayuda"
+
+#: nuevo_fonotarot/templates/base.html:191
+msgid "Carga Minutos"
+msgstr "Carga Minutos"
+
+#: nuevo_fonotarot/templates/base.html:207
+msgid "Servicio de consulta esotérica telefónica · Chile"
+msgstr "Servicio de consulta esotérica telefónica · Chile"
+
+#: nuevo_fonotarot/templates/base.html:213
+msgid "Tienda"
+msgstr "Tienda"
+
+#: nuevo_fonotarot/templates/macros/lang_switcher.html:24
+msgid "Seleccionar idioma"
+msgstr "Seleccionar idioma"
+

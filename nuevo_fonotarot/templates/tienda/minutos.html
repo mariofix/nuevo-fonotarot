@@ -1,46 +1,20 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Minutos de Tarot Prepagados – Fonotarot</title>
-  <meta name="description" content="Compra minutos de tarot prepagados. Los minutos nunca vencen. Disponibles desde $5.000 CLP."/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
-  <style>
-    body { background:#0f0f1a; color:#e5e7eb; }
-    .navbar { background:#1a1a2e !important; border-bottom:1px solid #2d2d4e; }
-    .navbar-brand { color:#a78bfa !important; font-weight:700; font-size:1.4rem; }
-    .card { background:#1e1e35; border:1px solid #2d2d4e; color:#e5e7eb; }
-    .card-featured { border-color:#6d28d9; box-shadow:0 0 24px rgba(109,40,217,.35); transform:scale(1.03); }
-    .price-tag { font-size:2.2rem; font-weight:800; color:#a78bfa; }
-    .btn-primary { background:#6d28d9; border-color:#6d28d9; }
-    .btn-primary:hover { background:#5b21b6; border-color:#5b21b6; }
-    .btn-outline-primary { color:#a78bfa; border-color:#a78bfa; }
-    .btn-outline-primary:hover { background:#6d28d9; color:#fff; border-color:#6d28d9; }
-    .badge-pop { background:#d97706; color:#000; font-size:.7rem; }
-    .cart-btn { position:relative; }
-    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
-    .never-expire { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
-  </style>
-</head>
-<body>
-<div class="page">
-  <header class="navbar navbar-expand-md sticky-top">
-    <div class="container-xl">
-      <a class="navbar-brand" href="/">✦ Fonotarot</a>
-      <div class="ms-auto d-flex align-items-center gap-3">
-        <a href="{{ url_for('tienda.index') }}" class="text-secondary text-decoration-none">Tienda</a>
-        <a href="{{ url_for('tienda.suscripciones') }}" class="text-secondary text-decoration-none d-none d-md-inline">Suscripciones</a>
-        <a href="{{ url_for('tienda.productos') }}" class="text-secondary text-decoration-none d-none d-md-inline">Productos</a>
-        <a href="{{ url_for('tienda.carrito') }}" class="btn btn-outline-primary btn-sm cart-btn">
-          <i class="ti ti-shopping-cart"></i>
-          {% if cart_count %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
-        </a>
-      </div>
-    </div>
-  </header>
+{% extends "base.html" %}
 
+{% block title %}Minutos de Tarot Prepagados – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card-featured { border-color:#6d28d9; box-shadow:0 0 24px rgba(109,40,217,.35); transform:scale(1.03); }
+  .price-tag { font-size:2.2rem; font-weight:800; color:#a78bfa; }
+  .badge-pop { background:#d97706; color:#000; font-size:.7rem; }
+  .cart-btn { position:relative; }
+  .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .never-expire { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
   <div class="page-wrapper">
     <div class="page-body py-5">
       <div class="container-xl">
@@ -129,6 +103,4 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
-</body>
-</html>
+{% endblock %}

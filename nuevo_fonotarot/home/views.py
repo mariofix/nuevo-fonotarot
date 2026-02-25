@@ -1,6 +1,6 @@
 """Views for the home blueprint."""
 
-from flask import render_template
+from flask import redirect, render_template, request, session, url_for
 
 from . import home_bp
 
@@ -189,3 +189,21 @@ def home8():
     )
 
 
+
+
+@home_bp.route("/set-language/<lang>")
+def set_language(lang: str):
+    """Persist the chosen locale in the session and redirect back."""
+    try:
+        import json
+        from ..models import SiteSettings
+        raw = SiteSettings.get("available_lang")
+        active = [item[1] for item in json.loads(raw)] if raw else ["es_CL", "en_US", "pt_BR"]
+    except Exception:
+        active = ["es_CL", "en_US", "pt_BR"]
+
+    if lang in active:
+        session["lang"] = lang
+
+    next_url = request.referrer or url_for("home.index")
+    return redirect(next_url)

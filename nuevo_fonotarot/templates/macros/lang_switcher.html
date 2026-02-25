@@ -1,0 +1,34 @@
+{#
+  lang_switcher macro
+  -------------------
+  Renders a compact row of clickable country flags for language selection.
+
+  Parameters
+  ----------
+  current_locale : str
+      The active locale code, e.g. "es_CL". Typically ``get_locale()``.
+  languages : list
+      Ordered list of SiteLanguage model instances (or dicts with the same
+      attributes): locale, flag_class, label.
+      Injected automatically into every template by the ``inject_site_languages``
+      context processor – pass ``site_languages`` from the calling template.
+
+  Requires tabler-flags.css (already included in base.html).
+
+  Usage in base.html:
+      {% from "macros/lang_switcher.html" import lang_switcher %}
+      {{ lang_switcher(get_locale(), site_languages) }}
+#}
+
+{%- macro lang_switcher(current_locale, languages) -%}
+<div class="lang-switcher" aria-label="{{ _('Seleccionar idioma') }}">
+  {%- for lang in languages %}
+  <a href="{{ url_for('home.set_language', lang=lang.locale) }}"
+     title="{{ lang.label }}"
+     aria-label="{{ lang.label }}"
+     class="lang-flag{% if current_locale == lang.locale %} active{% endif %}">
+    <span class="flag flag-xs {{ lang.flag_class }}" aria-hidden="true"></span>
+  </a>
+  {%- endfor %}
+</div>
+{%- endmacro -%}

@@ -310,3 +310,48 @@ class OrderItem(db.Model):
     @property
     def subtotal_display(self) -> str:
         return f"{self.subtotal:,}".replace(",", ".")
+
+
+# ---------------------------------------------------------------------------
+# Site configuration models
+# ---------------------------------------------------------------------------
+
+
+class SiteSettings(db.Model):
+    """Generic key-value store for site-wide configuration.
+
+    Settings are grouped by *module* (e.g. ``"general"``, ``"tienda"``,
+    ``"blog"``) so the admin panel can display them in logical sections.
+
+    Notable built-in keys
+    ---------------------
+    ``available_lang``
+        JSON array of available public languages used by the language
+        switcher.  Each element is a three-item list::
+
+            [short_code, locale, label]
+
+        Example value::
+
+            [["es","es_CL","Español"],["en","en_US","English"],["pt","pt_BR","Português"]]
+
+        The Tabler flag CSS class is derived automatically from the locale's
+        territory code (e.g. ``es_CL`` → ``flag-country-cl``).
+    """
+
+    __tablename__ = "site_settings"
+
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    value = db.Column(db.Text, nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    module = db.Column(db.String(50), nullable=False, default="general")
+
+    def __repr__(self) -> str:
+        return f"<SiteSettings {self.key}={self.value!r}>"
+
+    @classmethod
+    def get(cls, key: str, default: str | None = None) -> str | None:
+        """Return the value for *key*, or *default* when not found."""
+        row = cls.query.filter_by(key=key).first()
+        return row.value if row else default

@@ -35,6 +35,10 @@ class Config:
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
 
+    # Default public-facing locale used when no language is set in the
+    # session and Accept-Language negotiation yields no match.
+    DEFAULT_LANGUAGE: str = os.environ.get("DEFAULT_LANGUAGE", "es_CL")
+
     # Flow payment gateway
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
     FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
