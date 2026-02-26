@@ -89,7 +89,6 @@ def index():
         "home.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
-        plans=PLANS,
         minute_packs=minute_packs,
     )
 

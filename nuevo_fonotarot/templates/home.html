@@ -534,6 +534,7 @@
     </section>
 
     <!-- ── PLANS ────────────────────────────────────── -->
+    {% if minute_packs %}
     <section id="planes" class="plans-section">
       <div class="container">
         <div class="text-center mb-5">
@@ -542,7 +543,6 @@
           <div class="divider-gold"></div>
           <p class="section-subtitle">{{ _("Carga los minutos que necesitas y consulta cuando quieras") }}</p>
         </div>
-        {% if minute_packs %}
         <!-- Responsive minute packs slider -->
         <div class="packs-slider-wrapper">
           <button class="slider-btn slider-btn-prev" id="packsPrev" aria-label="{{ _('Anterior') }}">
@@ -581,28 +581,9 @@
             <i class="ti ti-chevron-right"></i>
           </button>
         </div>
-        {% else %}
-        <!-- Fallback static plans -->
-        <div class="row g-4 justify-content-center">
-          {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="plan-badge">{{ _("Más Popular") }}</span></div>
-              {% endif %}
-              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> {{ _("/ sesión") }}</span></div>
-              <p class="plan-desc">{{ plan.description }}</p>
-              <a href="{{ url_for('tienda.minutos') }}" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>{{ _("Carga Minutos") }}
-              </a>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
       </div>
     </section>
+    {% endif %}
 
     <!-- ── TESTIMONIALS ─────────────────────────────── -->
     <section id="testimonios" class="testimonials-section">
