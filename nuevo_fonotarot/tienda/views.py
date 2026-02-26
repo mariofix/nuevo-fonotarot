@@ -15,6 +15,26 @@ from . import tienda_bp
 
 CART_SESSION_KEY = "tienda_cart"
 
+# Allowed internal path prefixes for the `next` redirect parameter.
+_SAFE_NEXT_PREFIXES = ("/tienda/", "/")
+
+
+def _safe_next(default: str) -> str:
+    """Return a safe internal redirect URL from the POST ``next`` parameter.
+
+    External URLs and absolute URLs with a host are rejected and the
+    *default* is returned instead, preventing open-redirect attacks.
+    """
+    from urllib.parse import urlparse
+    raw = request.form.get("next", "").strip()
+    if not raw:
+        return default
+    parsed = urlparse(raw)
+    # Reject anything with a scheme or netloc (e.g. "https://evil.com/").
+    if parsed.scheme or parsed.netloc:
+        return default
+    return raw
+
 
 def _get_cart() -> list:
     """Return the current cart from the session (list of item dicts)."""
@@ -172,7 +192,7 @@ def agregar_al_carrito():
             "Usa el enlace de pago para suscribirte.",
             "warning",
         )
-        next_url = request.form.get("next") or url_for("tienda.suscripciones")
+        next_url = _safe_next(url_for("tienda.suscripciones"))
         return redirect(next_url)
 
     if item_type == OrderItem.ITEM_TYPE_MINUTE_PACK:
@@ -206,7 +226,7 @@ def agregar_al_carrito():
         })
     _save_cart(cart)
     flash("Producto agregado al carrito.", "success")
-    next_url = request.form.get("next") or url_for("tienda.carrito")
+    next_url = _safe_next(url_for("tienda.carrito"))
     return redirect(next_url)
 
 
@@ -476,9 +496,11 @@ def checkout():
             # Use profile data for authenticated physical customers.
             order.shipping_name = current_user.full_name
             order.shipping_phone = current_user.phone
-            order.shipping_address = (
-                f"{current_user.address}, {current_user.commune} {current_user.postal_code}"
-            )
+            order.shipping_address = ", ".join(filter(None, [
+                current_user.address,
+                current_user.commune,
+                current_user.postal_code,
+            ]))
             order.anonymous_shipping = True  # always anonymous
 
         db.session.add(order)

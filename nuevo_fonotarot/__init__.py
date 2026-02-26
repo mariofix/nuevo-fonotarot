@@ -137,7 +137,9 @@ def _init_merchants(app: Flask) -> None:
         api_secret=app.config.get("FLOW_SECRET_KEY", ""),
         api_url=app.config.get("FLOW_API_URL", "https://sandbox.flow.cl/api"),
         subject="Fonotarot – Compra",
-        confirmation_url="",  # will be set per-request via metadata
+        # Set FLOW_CONFIRMATION_URL in production to the server-to-server
+        # callback URL (e.g. https://fonotarot.cl/tienda/pago/confirmacion).
+        confirmation_url=app.config.get("FLOW_CONFIRMATION_URL", ""),
     )
     khipu_provider = KhipuProvider(
         api_key=app.config.get("KHIPU_API_KEY", ""),

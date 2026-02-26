@@ -65,7 +65,7 @@ class User(db.Model, UserMixin):
     @property
     def has_physical_profile(self) -> bool:
         """Return True when the user has all fields required for physical goods."""
-        return all([self.full_name, self.rut, self.address, self.commune, self.postal_code])
+        return all((self.full_name, self.rut, self.address, self.commune, self.postal_code))
 
 
 class StaticPage(db.Model):

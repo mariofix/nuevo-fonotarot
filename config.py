@@ -43,6 +43,7 @@ class Config:
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
     FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
     FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
+    FLOW_CONFIRMATION_URL: str = os.environ.get("FLOW_CONFIRMATION_URL", "")
 
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
