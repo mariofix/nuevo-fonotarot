@@ -3,6 +3,7 @@
 from flask import redirect, render_template, request, session, url_for
 
 from . import home_bp
+from ..models import MinutePack
 
 # Sample agents shown on the home page (replace with DB-backed data as needed)
 AGENTS = [
@@ -83,11 +84,12 @@ PLANS = [
 @home_bp.route("/")
 def index():
     """Render the Fonotarot home page."""
+    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
     return render_template(
         "home.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
-        plans=PLANS,
+        minute_packs=minute_packs,
     )
 
 @home_bp.route("/home-full")

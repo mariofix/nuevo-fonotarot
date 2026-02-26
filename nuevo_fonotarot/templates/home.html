@@ -259,6 +259,42 @@
       }
       .btn-plan-outline:hover { background: rgba(201,168,76,.08); }
 
+      /* ─── Minute Packs Slider ───────────────────────── */
+      .packs-slider-wrapper { position: relative; padding: 0 2.5rem; }
+      .packs-slider {
+        display: flex;
+        gap: 1.25rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: .75rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(201,168,76,.4) transparent;
+      }
+      .packs-slider::-webkit-scrollbar { height: 4px; }
+      .packs-slider::-webkit-scrollbar-track { background: transparent; }
+      .packs-slider::-webkit-scrollbar-thumb { background: rgba(201,168,76,.4); border-radius: 2px; }
+      .pack-slide { flex: 0 0 270px; scroll-snap-align: start; }
+      @media (min-width: 576px) { .pack-slide { flex: 0 0 calc(50% - .625rem); } }
+      @media (min-width: 992px) { .pack-slide { flex: 0 0 calc(25% - .94rem); } }
+      .slider-btn {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(201,168,76,.15); border: 1px solid rgba(201,168,76,.3);
+        color: var(--gold); width: 2.2rem; height: 2.2rem; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: background .2s; z-index: 2; font-size: 1.1rem;
+      }
+      .slider-btn:hover { background: rgba(201,168,76,.3); }
+      .slider-btn-prev { left: 0; }
+      .slider-btn-next { right: 0; }
+      @media (min-width: 992px) { .slider-btn { display: none; } }
+      .btn-cart-sm {
+        border-radius: 30px; padding: .35rem 0; font-weight: 600; font-size: .78rem; width: 100%;
+        background: transparent; border: 1px solid rgba(201,168,76,.35); color: var(--gold) !important;
+        transition: background .2s;
+      }
+      .btn-cart-sm:hover { background: rgba(201,168,76,.08); }
+
       /* ─── Testimonials ─────────────────────────────── */
       .testimonials-section {
         position: relative; z-index: 1;
@@ -498,6 +534,7 @@
     </section>
 
     <!-- ── PLANS ────────────────────────────────────── -->
+    {% if minute_packs %}
     <section id="planes" class="plans-section">
       <div class="container">
         <div class="text-center mb-5">
@@ -506,25 +543,47 @@
           <div class="divider-gold"></div>
           <p class="section-subtitle">{{ _("Carga los minutos que necesitas y consulta cuando quieras") }}</p>
         </div>
-        <div class="row g-4 justify-content-center">
-          {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="plan-badge">{{ _("Más Popular") }}</span></div>
-              {% endif %}
-              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> {{ _("/ sesión") }}</span></div>
-              <p class="plan-desc">{{ plan.description }}</p>
-              <a href="#" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>{{ _("Carga Minutos") }}
-              </a>
+        <!-- Responsive minute packs slider -->
+        <div class="packs-slider-wrapper">
+          <button class="slider-btn slider-btn-prev" id="packsPrev" aria-label="{{ _('Anterior') }}">
+            <i class="ti ti-chevron-left"></i>
+          </button>
+          <div class="packs-slider" id="packsSlider">
+            {% for pack in minute_packs %}
+            <div class="pack-slide">
+              <div class="plan-card {% if pack.is_featured %}featured{% endif %}">
+                {% if pack.is_featured %}
+                <div><span class="plan-badge">{{ _("Más Popular") }}</span></div>
+                {% endif %}
+                <div class="plan-mins">{{ pack.minutes }}<small> min</small></div>
+                <div class="plan-price">${{ pack.price_display }} CLP<span> {{ _("/ sesión") }}</span></div>
+                <p class="plan-desc">{{ pack.description or '' }}</p>
+                <div class="mt-auto d-flex flex-column gap-2">
+                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}"
+                     class="btn btn-plan btn-plan-primary">
+                    <i class="ti ti-bolt me-1"></i>{{ _("Compra Ahora") }}
+                  </a>
+                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
+                    <input type="hidden" name="item_type" value="minute_pack"/>
+                    <input type="hidden" name="item_id" value="{{ pack.id }}"/>
+                    <input type="hidden" name="quantity" value="1"/>
+                    <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                    <button type="submit" class="btn btn-cart-sm">
+                      <i class="ti ti-shopping-cart me-1"></i>{{ _("Agregar al Carro") }}
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
+            {% endfor %}
           </div>
-          {% endfor %}
+          <button class="slider-btn slider-btn-next" id="packsNext" aria-label="{{ _('Siguiente') }}">
+            <i class="ti ti-chevron-right"></i>
+          </button>
         </div>
       </div>
     </section>
+    {% endif %}
 
     <!-- ── TESTIMONIALS ─────────────────────────────── -->
     <section id="testimonios" class="testimonials-section">
@@ -662,5 +721,25 @@
   document.querySelectorAll('.faq-q').forEach(function (q) {
     q.addEventListener('click', function () { q.closest('.faq-item').classList.toggle('open'); });
   });
+
+  // Minute packs slider navigation
+  (function () {
+    var slider = document.getElementById('packsSlider');
+    var prev = document.getElementById('packsPrev');
+    var next = document.getElementById('packsNext');
+    if (!slider) return;
+    var gap = 20; // matches 1.25rem gap in .packs-slider
+    var fallbackWidth = 290; // fallback slide width in px
+    function slideWidth() {
+      var slide = slider.querySelector('.pack-slide');
+      return slide ? slide.offsetWidth + gap : fallbackWidth;
+    }
+    if (prev) prev.addEventListener('click', function () {
+      slider.scrollBy({ left: -slideWidth(), behavior: 'smooth' });
+    });
+    if (next) next.addEventListener('click', function () {
+      slider.scrollBy({ left: slideWidth(), behavior: 'smooth' });
+    });
+  })();
 </script>
 {% endblock %}
