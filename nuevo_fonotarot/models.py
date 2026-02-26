@@ -47,8 +47,25 @@ class User(db.Model, UserMixin):
         "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
     )
 
+    # Customer profile fields ---------------------------------------------------
+    # Minimal profile (Known Customer)
+    full_name = db.Column(db.String(255), nullable=True)
+    phone = db.Column(db.String(30), nullable=True)
+    # Extended profile (Physical Customer – required for physical goods)
+    rut = db.Column(db.String(20), nullable=True)
+    address = db.Column(db.String(500), nullable=True)
+    commune = db.Column(db.String(100), nullable=True)
+    postal_code = db.Column(db.String(20), nullable=True)
+    # Preferred payment provider key ('flow' or 'khipu')
+    preferred_payment = db.Column(db.String(30), nullable=True)
+
     def __repr__(self) -> str:
         return f"<User {self.email}>"
+
+    @property
+    def has_physical_profile(self) -> bool:
+        """Return True when the user has all fields required for physical goods."""
+        return all([self.full_name, self.rut, self.address, self.commune, self.postal_code])
 
 
 class StaticPage(db.Model):
@@ -315,6 +332,57 @@ class OrderItem(db.Model):
 # ---------------------------------------------------------------------------
 # Site configuration models
 # ---------------------------------------------------------------------------
+
+
+class Payment(db.Model):
+    """Payment session record managed by flask-merchants.
+
+    Tracks every checkout session created via the merchants SDK.
+    Linked to the Order via ``metadata_json["order_id"]``.
+    """
+
+    __tablename__ = "payments"
+
+    VALID_STATES = frozenset(
+        ("pending", "processing", "succeeded", "failed", "cancelled", "refunded", "unknown")
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(128), unique=True, index=True, nullable=False)
+    redirect_url = db.Column(db.String(2048), nullable=False)
+    provider = db.Column(db.String(64), nullable=False)
+    amount = db.Column(db.Numeric(19, 4), nullable=False)
+    currency = db.Column(db.String(8), nullable=False)
+    state = db.Column(db.String(32), nullable=False, default="pending")
+    metadata_json = db.Column(db.JSON, nullable=False, default=dict)
+    request_payload = db.Column(db.JSON, nullable=False, default=dict)
+    response_payload = db.Column(db.JSON, nullable=False, default=dict)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<Payment {self.session_id} state={self.state!r}>"
+
+    def to_dict(self) -> dict:
+        from decimal import Decimal
+        return {
+            "session_id": self.session_id,
+            "redirect_url": self.redirect_url,
+            "provider": self.provider,
+            "amount": f"{Decimal(self.amount):.2f}",
+            "currency": self.currency,
+            "state": self.state,
+            "metadata": self.metadata_json or {},
+            "request_payload": self.request_payload or {},
+            "response_payload": self.response_payload or {},
+        }
 
 
 class SiteSettings(db.Model):

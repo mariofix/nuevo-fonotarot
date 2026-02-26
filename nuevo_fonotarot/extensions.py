@@ -4,6 +4,7 @@ from flask_admin import Admin
 from flask_babel import Babel
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_merchants import FlaskMerchants
 from flask_migrate import Migrate
 from flask_security.core import Security
 from flask_sqlalchemy import SQLAlchemy
@@ -17,5 +18,5 @@ security = Security()
 # Apply Tabler theme before creating the Admin instance.
 theme = TablerTheme()
 
-
 admin = Admin(name="Fonotarot", theme=theme)
+merchants_ext = FlaskMerchants()

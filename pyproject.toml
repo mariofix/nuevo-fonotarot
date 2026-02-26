@@ -13,6 +13,8 @@ dependencies = [
     "flask-migrate (>=4.1.0,<5.0.0)",
     "pyflowcl (>=2025.2.0,<2026.0.0)",
     "khipu-tools (>=2025.1.0,<2026.0.0)",
+    "merchants @ git+https://github.com/mariofix/merchants.git",
+    "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git",
 ]
 
 [project.scripts]

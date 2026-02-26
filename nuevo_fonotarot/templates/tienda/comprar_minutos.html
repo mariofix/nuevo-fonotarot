@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Comprar {{ pack.minutes }} Minutos – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, .form-select { background:#2d2d4e; color:#e5e7eb; border-color:#4b5563; }
+  .form-control:focus, .form-select:focus { background:#3a3a5c; color:#e5e7eb; border-color:#6d28d9; box-shadow:0 0 0 .2rem rgba(109,40,217,.25); }
+  .form-label { color:#d1d5db; }
+  .pack-summary { background:#1a1a2e; border:1px solid #4b5563; border-radius:12px; }
+  .price-tag { font-size:2rem; font-weight:800; color:#a78bfa; }
+  .payment-option { cursor:pointer; border:2px solid #2d2d4e; border-radius:8px; padding:1rem; transition:border-color .2s; }
+  .payment-option:hover { border-color:#6d28d9; }
+  .payment-option.selected { border-color:#6d28d9; background:#2d1a4e; }
+  .anon-note { background:#1e3a5f; color:#93c5fd; border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl" style="max-width:700px">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <h1 class="fw-bold text-white mb-4">Comprar ahora</h1>
+
+        <!-- Pack summary -->
+        <div class="pack-summary p-4 mb-4 d-flex align-items-center gap-4">
+          <i class="ti ti-clock" style="font-size:3rem;color:#a78bfa"></i>
+          <div>
+            <h3 class="text-white fw-bold mb-0">{{ pack.minutes }} minutos de tarot</h3>
+            {% if pack.description %}<p class="text-secondary small mb-1">{{ pack.description }}</p>{% endif %}
+            <div class="price-tag">${{ pack.price_display }} <small class="text-secondary fs-6 fw-normal">CLP</small></div>
+          </div>
+        </div>
+
+        <form method="post" action="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}">
+
+          <!-- Contact data -->
+          <div class="card p-4 mb-4">
+            <h5 class="text-white mb-3"><i class="ti ti-mail me-2"></i>Datos de contacto</h5>
+
+            {% if not current_user.is_authenticated %}
+            <div class="anon-note mb-3">
+              <i class="ti ti-info-circle me-1"></i>
+              Compra anónima – sólo necesitamos tu email para enviarte el comprobante.
+              <a href="{{ url_for('security.login') }}" class="ms-1">¿Ya tienes cuenta?</a>
+            </div>
+            {% endif %}
+
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label" for="email">Email *</label>
+                <input type="email" id="email" name="email" class="form-control" required
+                       value="{{ prefilled_email }}"
+                       {% if current_user.is_authenticated %}readonly{% endif %}/>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label" for="phone">Teléfono</label>
+                <input type="tel" id="phone" name="phone" class="form-control"
+                       value="{{ prefilled_phone }}"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment method -->
+          <div class="card p-4 mb-4">
+            <h5 class="text-white mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago</h5>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="flow" class="d-none"
+                         id="pay_flow" required {% if preferred == 'flow' %}checked{% endif %}/>
+                  <div class="payment-option text-center {% if preferred == 'flow' %}selected{% endif %}" id="flow_box">
+                    <div class="fw-bold text-white mb-1">Flow</div>
+                    <div class="small text-secondary">Tarjeta débito / crédito</div>
+                  </div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="khipu" class="d-none"
+                         id="pay_khipu" {% if preferred == 'khipu' %}checked{% endif %}/>
+                  <div class="payment-option text-center {% if preferred == 'khipu' %}selected{% endif %}" id="khipu_box">
+                    <div class="fw-bold text-white mb-1">Khipu</div>
+                    <div class="small text-secondary">Transferencia bancaria</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary + submit -->
+          <div class="card p-4">
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-secondary">{{ pack.minutes }} minutos de tarot</span>
+              <span class="text-white">${{ pack.price_display }}</span>
+            </div>
+            <hr style="border-color:#2d2d4e"/>
+            <div class="d-flex justify-content-between mb-4" style="font-size:1.4rem;font-weight:800;color:#a78bfa">
+              <span>Total</span>
+              <span>${{ pack.price_display }}</span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+              <i class="ti ti-lock me-2"></i>Pagar ahora
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(function(b){ b.classList.remove('selected'); });
+      if (this.value === 'flow') document.getElementById('flow_box').classList.add('selected');
+      if (this.value === 'khipu') document.getElementById('khipu_box').classList.add('selected');
+    });
+  });
+</script>
+{% endblock %}
