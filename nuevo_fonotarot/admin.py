@@ -145,10 +145,20 @@ class OrderAdminView(SecureModelView):
     form_excluded_columns = ("created_at", "updated_at", "items")
 
 
+class PaymentAdminView(SecureModelView):
+    """Admin view for payment sessions (flask-merchants)."""
+
+    column_list = ("session_id", "provider", "amount", "currency", "state", "created_at")
+    column_searchable_list = ("session_id",)
+    column_filters = ("provider", "state")
+    can_create = False
+    form_excluded_columns = ("created_at", "updated_at")
+
+
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
     from .models import (
-        BlogPost, MinutePack, Order, Product, Role,
+        BlogPost, MinutePack, Order, Payment, Product, Role,
         SiteSettings, StaticPage, SubscriptionPlan, User,
     )
 
@@ -171,6 +181,9 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         OrderAdminView(Order, db.session, name=_l("Órdenes"), category=_l("Tienda"))
+    )
+    admin_ext.add_view(
+        PaymentAdminView(Payment, db.session, name=_l("Pagos"), category=_l("Tienda"))
     )
     admin_ext.add_view(
         SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"))

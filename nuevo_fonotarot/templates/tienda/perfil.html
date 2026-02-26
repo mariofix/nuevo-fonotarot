@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, .form-select { background:#2d2d4e; color:#e5e7eb; border-color:#4b5563; }
+  .form-control:focus, .form-select:focus { background:#3a3a5c; color:#e5e7eb; border-color:#6d28d9; box-shadow:0 0 0 .2rem rgba(109,40,217,.25); }
+  .form-label { color:#d1d5db; }
+  .section-title { color:#a78bfa; font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:.05em; }
+  .profile-complete { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
+  .profile-incomplete { background:#7f1d1d; color:#fca5a5; border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl" style="max-width:720px">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <h1 class="fw-bold text-white mb-1">Mi Perfil</h1>
+        <p class="text-secondary mb-4">{{ user.email }}</p>
+
+        <!-- Profile completeness -->
+        {% if user.has_physical_profile %}
+        <div class="profile-complete mb-4">
+          <i class="ti ti-circle-check me-1"></i>
+          <strong>Perfil completo</strong> – puedes comprar productos físicos, paquetes y suscripciones.
+        </div>
+        {% else %}
+        <div class="profile-incomplete mb-4">
+          <i class="ti ti-alert-circle me-1"></i>
+          <strong>Perfil incompleto</strong> – completa todos los campos para poder comprar productos físicos.
+        </div>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('tienda.perfil') }}">
+
+          <!-- Minimal profile -->
+          <div class="card p-4 mb-4">
+            <p class="section-title mb-3">Datos básicos</p>
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label" for="full_name">Nombre completo</label>
+                <input type="text" id="full_name" name="full_name" class="form-control"
+                       value="{{ user.full_name or '' }}"/>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label" for="phone">Teléfono</label>
+                <input type="tel" id="phone" name="phone" class="form-control"
+                       value="{{ user.phone or '' }}"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Physical profile -->
+          <div class="card p-4 mb-4">
+            <p class="section-title mb-1">Datos para productos físicos</p>
+            <p class="text-secondary small mb-3">Requeridos para recibir envíos.</p>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label" for="rut">RUT</label>
+                <input type="text" id="rut" name="rut" class="form-control"
+                       placeholder="12.345.678-9"
+                       value="{{ user.rut or '' }}"/>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label" for="address">Dirección</label>
+                <input type="text" id="address" name="address" class="form-control"
+                       placeholder="Calle, número, depto."
+                       value="{{ user.address or '' }}"/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="commune">Comuna</label>
+                <input type="text" id="commune" name="commune" class="form-control"
+                       value="{{ user.commune or '' }}"/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="postal_code">Código postal</label>
+                <input type="text" id="postal_code" name="postal_code" class="form-control"
+                       value="{{ user.postal_code or '' }}"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferred payment -->
+          <div class="card p-4 mb-4">
+            <p class="section-title mb-1">Pago preferido</p>
+            <p class="text-secondary small mb-3">
+              Si seleccionas un método preferido, el botón <em>Comprar ahora</em> te llevará
+              directamente al formulario de pago sin pasos intermedios.
+            </p>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="preferred_payment"
+                         id="pref_none" value=""
+                         {% if not user.preferred_payment %}checked{% endif %}/>
+                  <label class="form-check-label text-secondary" for="pref_none">Sin preferencia</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="preferred_payment"
+                         id="pref_flow" value="flow"
+                         {% if user.preferred_payment == 'flow' %}checked{% endif %}/>
+                  <label class="form-check-label text-secondary" for="pref_flow">Flow (tarjeta)</label>
+                </div>
+                <div class="form-check mt-1">
+                  <input class="form-check-input" type="radio" name="preferred_payment"
+                         id="pref_khipu" value="khipu"
+                         {% if user.preferred_payment == 'khipu' %}checked{% endif %}/>
+                  <label class="form-check-label text-secondary" for="pref_khipu">Khipu (transferencia)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

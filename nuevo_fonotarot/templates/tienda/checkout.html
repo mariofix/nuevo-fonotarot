@@ -40,57 +40,21 @@
             <div class="col-md-7">
 
               {% if has_physical %}
-              <!-- Shipping details -->
+              <!-- Physical goods: shipping from profile -->
               <div class="card p-4 mb-4">
                 <h5 class="text-white mb-3"><i class="ti ti-truck me-2"></i>Datos de envío</h5>
-
-                <div class="anonymous-note mb-4">
+                <div class="anonymous-note mb-3">
                   <i class="ti ti-eye-off me-1"></i>
-                  <strong>Envío anónimo:</strong> La caja llega sin marcas ni etiquetas que identifiquen el contenido. Nadie sabrá qué hay dentro.
+                  <strong>Envío anónimo:</strong> La caja llega sin marcas ni etiquetas que identifiquen el contenido.
                 </div>
-
-                <div class="mb-3">
-                  <label class="form-label" for="shipping_name">Nombre completo *</label>
-                  <input type="text" id="shipping_name" name="shipping_name" class="form-control" required/>
-                </div>
-                <div class="row g-3 mb-3">
-                  <div class="col-md-6">
-                    <label class="form-label" for="shipping_email">Email *</label>
-                    <input type="email" id="shipping_email" name="shipping_email" class="form-control" required/>
+                <div class="text-secondary small">
+                  <div><i class="ti ti-user me-1"></i>{{ current_user.full_name }}</div>
+                  <div><i class="ti ti-map-pin me-1"></i>{{ current_user.address }}, {{ current_user.commune }} {{ current_user.postal_code }}</div>
+                  <div class="mt-1">
+                    <a href="{{ url_for('tienda.perfil') }}" class="text-secondary">
+                      <i class="ti ti-pencil me-1"></i>Cambiar datos de envío
+                    </a>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label" for="shipping_phone">Teléfono</label>
-                    <input type="tel" id="shipping_phone" name="shipping_phone" class="form-control"/>
-                  </div>
-                </div>
-
-                <!-- Pickup vs home delivery -->
-                <div class="mb-3">
-                  <label class="form-label d-block">Tipo de entrega *</label>
-                  <div class="d-flex gap-3">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="uses_pickup" id="pickup_no" value="0" checked
-                             onchange="document.getElementById('addr_section').style.display='block';document.getElementById('pickup_section').style.display='none'"/>
-                      <label class="form-check-label text-secondary" for="pickup_no">Envío a domicilio</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="uses_pickup" id="pickup_yes" value="1"
-                             onchange="document.getElementById('addr_section').style.display='none';document.getElementById('pickup_section').style.display='block'"/>
-                      <label class="form-check-label text-secondary" for="pickup_yes">
-                        <i class="ti ti-map-pin me-1 text-success"></i>Punto de retiro <small class="text-success">(más discreto)</small>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div id="addr_section">
-                  <label class="form-label" for="shipping_address">Dirección completa *</label>
-                  <textarea id="shipping_address" name="shipping_address" class="form-control" rows="2"></textarea>
-                </div>
-                <div id="pickup_section" style="display:none">
-                  <label class="form-label" for="pickup_point">Punto de retiro *</label>
-                  <input type="text" id="pickup_point" name="pickup_point" class="form-control" placeholder="Ej: Starken Providencia, Chilexpress Las Condes…"/>
-                  <div class="small text-secondary mt-1">Ingresa el nombre o dirección del punto de retiro de tu preferencia.</div>
                 </div>
               </div>
               {% else %}
@@ -100,6 +64,7 @@
                 <div class="mb-3">
                   <label class="form-label" for="shipping_email">Email *</label>
                   <input type="email" id="shipping_email" name="shipping_email" class="form-control" required
+                         value="{{ prefilled_email }}"
                          placeholder="Para enviarte el comprobante"/>
                 </div>
               </div>

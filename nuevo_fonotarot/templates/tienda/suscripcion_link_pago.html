@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Enlace de Pago – {{ plan.name }} – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, .form-select { background:#2d2d4e; color:#e5e7eb; border-color:#4b5563; }
+  .form-control:focus { background:#3a3a5c; color:#e5e7eb; border-color:#6d28d9; box-shadow:0 0 0 .2rem rgba(109,40,217,.25); }
+  .form-label { color:#d1d5db; }
+  .payment-option { cursor:pointer; border:2px solid #2d2d4e; border-radius:8px; padding:1rem; transition:border-color .2s; }
+  .payment-option:hover { border-color:#6d28d9; }
+  .payment-option.selected { border-color:#6d28d9; background:#2d1a4e; }
+  .plan-info { background:#1a1a2e; border:1px solid #4b5563; border-radius:12px; }
+  .price-tag { font-size:1.8rem; font-weight:800; color:#a78bfa; }
+  .manual-note { background:#1c1c3a; color:#a5b4fc; border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-wrapper">
+    <div class="page-body py-5">
+      <div class="container-xl" style="max-width:600px">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible mb-4">
+              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endwith %}
+
+        <h1 class="fw-bold text-white mb-4">Renovar suscripción</h1>
+
+        <!-- Plan details -->
+        <div class="plan-info p-4 mb-4 d-flex align-items-center gap-4">
+          <i class="ti ti-refresh" style="font-size:2.5rem;color:#a78bfa"></i>
+          <div>
+            <h4 class="text-white fw-bold mb-0">{{ plan.name }}</h4>
+            <p class="text-secondary small mb-1">{{ plan.minutes_per_month }} minutos / mes</p>
+            <div class="price-tag">${{ plan.price_display }} <small class="text-secondary fs-6 fw-normal">CLP / mes</small></div>
+          </div>
+        </div>
+
+        <div class="manual-note mb-4">
+          <i class="ti ti-info-circle me-1"></i>
+          <strong>Cobro manual:</strong> Las suscripciones no tienen cargo automático. Recibirás un enlace
+          de pago por email cada período para renovar cuando quieras.
+        </div>
+
+        <form method="post" action="{{ url_for('tienda.suscripcion_link_pago', plan_id=plan.id) }}">
+
+          <div class="card p-4 mb-4">
+            <h5 class="text-white mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago para esta renovación</h5>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="flow" class="d-none"
+                         id="pay_flow" required/>
+                  <div class="payment-option text-center" id="flow_box">
+                    <div class="fw-bold text-white mb-1">Flow</div>
+                    <div class="small text-secondary">Tarjeta débito / crédito</div>
+                  </div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="khipu" class="d-none"
+                         id="pay_khipu"/>
+                  <div class="payment-option text-center" id="khipu_box">
+                    <div class="fw-bold text-white mb-1">Khipu</div>
+                    <div class="small text-secondary">Transferencia bancaria</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 btn-lg">
+            <i class="ti ti-link me-2"></i>Generar enlace de pago
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(function(b){ b.classList.remove('selected'); });
+      if (this.value === 'flow') document.getElementById('flow_box').classList.add('selected');
+      if (this.value === 'khipu') document.getElementById('khipu_box').classList.add('selected');
+    });
+  });
+</script>
+{% endblock %}

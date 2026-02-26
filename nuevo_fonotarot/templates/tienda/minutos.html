@@ -62,7 +62,13 @@
                 <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                 <input type="hidden" name="quantity" value="1"/>
                 <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
-                <button type="submit" class="btn btn-primary w-100">Agregar al carrito</button>
+                <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}"
+                   class="btn btn-primary w-100 mb-2">
+                  <i class="ti ti-bolt me-1"></i>Comprar ahora
+                </a>
+                <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">
+                  <i class="ti ti-shopping-cart me-1"></i>Agregar al carrito
+                </button>
               </form>
             </div>
           </div>

@@ -1,11 +1,12 @@
 """Views for the tienda (store) blueprint."""
 
-import json
+from decimal import Decimal
 
-from flask import abort, flash, redirect, render_template, request, session, url_for
+from flask import abort, current_app, flash, redirect, render_template, request, session, url_for
+from flask_security import current_user
 
 from ..models import MinutePack, Order, OrderItem, Product, SubscriptionPlan
-from ..extensions import db
+from ..extensions import db, merchants_ext
 from . import tienda_bp
 
 # ---------------------------------------------------------------------------
@@ -13,6 +14,26 @@ from . import tienda_bp
 # ---------------------------------------------------------------------------
 
 CART_SESSION_KEY = "tienda_cart"
+
+# Allowed internal path prefixes for the `next` redirect parameter.
+_SAFE_NEXT_PREFIXES = ("/tienda/", "/")
+
+
+def _safe_next(default: str) -> str:
+    """Return a safe internal redirect URL from the POST ``next`` parameter.
+
+    External URLs and absolute URLs with a host are rejected and the
+    *default* is returned instead, preventing open-redirect attacks.
+    """
+    from urllib.parse import urlparse
+    raw = request.form.get("next", "").strip()
+    if not raw:
+        return default
+    parsed = urlparse(raw)
+    # Reject anything with a scheme or netloc (e.g. "https://evil.com/").
+    if parsed.scheme or parsed.netloc:
+        return default
+    return raw
 
 
 def _get_cart() -> list:
@@ -27,6 +48,50 @@ def _save_cart(cart: list) -> None:
 
 def _cart_total(cart: list) -> int:
     return sum(item["unit_price"] * item["quantity"] for item in cart)
+
+
+def _create_payment_and_redirect(order: Order, payment_method: str, email: str) -> object:
+    """Create a checkout session via flask-merchants and redirect to the provider.
+
+    Returns a Flask redirect response.
+    """
+    confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
+    success_url = url_for("tienda.pago_retorno", order_id=order.id, _external=True)
+
+    # Build provider-specific confirmation URL into the metadata so the
+    # FlowProvider confirmation_url can be forwarded through request metadata.
+    try:
+        client = merchants_ext.get_client(payment_method)
+        checkout_session = client.payments.create_checkout(
+            amount=Decimal(str(order.total)),
+            currency="CLP",
+            success_url=success_url,
+            cancel_url=url_for("tienda.index", _external=True),
+            metadata={
+                "order_id": str(order.id),
+                "confirmation_url": confirmation_url,
+                "email": email,
+            },
+        )
+    except Exception as exc:
+        current_app.logger.error("Payment creation error (%s): %s", payment_method, exc)
+        flash("Error al conectar con el proveedor de pago. Intenta más tarde.", "danger")
+        return redirect(url_for("tienda.checkout"))
+
+    order.payment_token = checkout_session.session_id
+    db.session.commit()
+
+    merchants_ext.save_session(
+        checkout_session,
+        request_payload={
+            "order_id": order.id,
+            "amount": str(order.total),
+            "currency": "CLP",
+            "provider": payment_method,
+        },
+    )
+
+    return redirect(checkout_session.redirect_url)
 
 
 # ---------------------------------------------------------------------------
@@ -110,22 +175,31 @@ def carrito():
 
 @tienda_bp.route("/carrito/agregar", methods=["POST"])
 def agregar_al_carrito():
-    """Add an item to the cart."""
+    """Add an item to the cart.
+
+    Rules:
+    - Subscriptions cannot be added to the cart (use the dedicated payment-link flow).
+    - Physical products can be added; the profile check is enforced at checkout.
+    - Minute packs can be added or purchased directly via fast checkout.
+    """
     item_type = request.form.get("item_type")
     item_id = request.form.get("item_id", type=int)
     quantity = request.form.get("quantity", 1, type=int)
+
+    if item_type == OrderItem.ITEM_TYPE_SUBSCRIPTION:
+        flash(
+            "Las suscripciones no se pueden agregar al carrito. "
+            "Usa el enlace de pago para suscribirte.",
+            "warning",
+        )
+        next_url = _safe_next(url_for("tienda.suscripciones"))
+        return redirect(next_url)
 
     if item_type == OrderItem.ITEM_TYPE_MINUTE_PACK:
         obj = MinutePack.query.get(item_id)
         if obj is None or not obj.is_active:
             abort(404)
         name = f"{obj.minutes} minutos de tarot"
-        unit_price = obj.price
-    elif item_type == OrderItem.ITEM_TYPE_SUBSCRIPTION:
-        obj = SubscriptionPlan.query.get(item_id)
-        if obj is None or not obj.is_active:
-            abort(404)
-        name = f"Suscripción {obj.name}"
         unit_price = obj.price
     elif item_type == OrderItem.ITEM_TYPE_PRODUCT:
         obj = Product.query.get(item_id)
@@ -152,7 +226,7 @@ def agregar_al_carrito():
         })
     _save_cart(cart)
     flash("Producto agregado al carrito.", "success")
-    next_url = request.form.get("next") or url_for("tienda.carrito")
+    next_url = _safe_next(url_for("tienda.carrito"))
     return redirect(next_url)
 
 
@@ -175,13 +249,203 @@ def vaciar_carrito():
 
 
 # ---------------------------------------------------------------------------
+# Fast Checkout – "Buy Now" for minute packs
+# ---------------------------------------------------------------------------
+
+
+@tienda_bp.route("/minutos/<int:pack_id>/comprar", methods=["GET", "POST"])
+def comprar_minutos(pack_id: int):
+    """Fast checkout for a single minute pack.
+
+    GET  → show the checkout form (payment method + contact details).
+    POST → create order + redirect to payment gateway.
+
+    Three customer variants:
+    - Anonymous: must supply email and phone on every purchase.
+    - Known (authenticated, no physical profile): email pre-filled, no shipping.
+    - Physical (authenticated, full profile): all data pre-filled.
+    """
+    pack = MinutePack.query.filter_by(id=pack_id, is_active=True).first_or_404()
+
+    if request.method == "POST":
+        payment_method = request.form.get("payment_method")
+        if payment_method not in ("flow", "khipu"):
+            flash("Método de pago no válido.", "danger")
+            return redirect(url_for("tienda.comprar_minutos", pack_id=pack_id))
+
+        email = request.form.get("email", "").strip()
+        phone = request.form.get("phone", "").strip()
+
+        if not email:
+            flash("El email es obligatorio.", "danger")
+            return redirect(url_for("tienda.comprar_minutos", pack_id=pack_id))
+
+        order = Order(
+            total=pack.price,
+            payment_method=payment_method,
+            shipping_email=email,
+            shipping_phone=phone,
+        )
+        if current_user.is_authenticated:
+            order.user_id = current_user.id
+
+        db.session.add(order)
+        db.session.flush()
+
+        item = OrderItem(
+            order_id=order.id,
+            item_type=OrderItem.ITEM_TYPE_MINUTE_PACK,
+            item_id=pack.id,
+            name=f"{pack.minutes} minutos de tarot",
+            quantity=1,
+            unit_price=pack.price,
+        )
+        db.session.add(item)
+        db.session.commit()
+
+        return _create_payment_and_redirect(order, payment_method, email)
+
+    # GET – detect preferred payment method for fast redirect
+    preferred = None
+    prefilled_email = ""
+    prefilled_phone = ""
+    if current_user.is_authenticated:
+        preferred = current_user.preferred_payment
+        prefilled_email = current_user.email or ""
+        prefilled_phone = current_user.phone or ""
+
+    return render_template(
+        "tienda/comprar_minutos.html",
+        pack=pack,
+        preferred=preferred,
+        prefilled_email=prefilled_email,
+        prefilled_phone=prefilled_phone,
+        cart_count=len(_get_cart()),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Customer profile
+# ---------------------------------------------------------------------------
+
+
+@tienda_bp.route("/perfil/", methods=["GET", "POST"])
+def perfil():
+    """View and update the logged-in customer's profile."""
+    if not current_user.is_authenticated:
+        flash("Debes iniciar sesión para ver tu perfil.", "warning")
+        return redirect(url_for("security.login"))
+
+    if request.method == "POST":
+        current_user.full_name = request.form.get("full_name", "").strip() or None
+        current_user.phone = request.form.get("phone", "").strip() or None
+        current_user.rut = request.form.get("rut", "").strip() or None
+        current_user.address = request.form.get("address", "").strip() or None
+        current_user.commune = request.form.get("commune", "").strip() or None
+        current_user.postal_code = request.form.get("postal_code", "").strip() or None
+        pref = request.form.get("preferred_payment", "").strip()
+        current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
+        db.session.commit()
+        flash("Perfil actualizado correctamente.", "success")
+        return redirect(url_for("tienda.perfil"))
+
+    return render_template(
+        "tienda/perfil.html",
+        user=current_user,
+        cart_count=len(_get_cart()),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Subscription payment links
+# ---------------------------------------------------------------------------
+
+
+@tienda_bp.route("/suscripciones/<int:plan_id>/link-pago", methods=["GET", "POST"])
+def suscripcion_link_pago(plan_id: int):
+    """Generate a one-off payment link for a subscription renewal.
+
+    Only accessible to authenticated users.
+    POST creates an order and surfaces the payment link via flash message
+    (in production this would be emailed by the admin/scheduler).
+    """
+    if not current_user.is_authenticated:
+        flash("Debes iniciar sesión para gestionar tu suscripción.", "warning")
+        return redirect(url_for("security.login"))
+
+    plan = SubscriptionPlan.query.filter_by(id=plan_id, is_active=True).first_or_404()
+
+    if request.method == "POST":
+        payment_method = request.form.get("payment_method")
+        if payment_method not in ("flow", "khipu"):
+            flash("Método de pago no válido.", "danger")
+            return redirect(url_for("tienda.suscripcion_link_pago", plan_id=plan_id))
+
+        order = Order(
+            user_id=current_user.id,
+            total=plan.price,
+            payment_method=payment_method,
+            shipping_email=current_user.email,
+        )
+        db.session.add(order)
+        db.session.flush()
+
+        item = OrderItem(
+            order_id=order.id,
+            item_type=OrderItem.ITEM_TYPE_SUBSCRIPTION,
+            item_id=plan.id,
+            name=f"Suscripción {plan.name}",
+            quantity=1,
+            unit_price=plan.price,
+        )
+        db.session.add(item)
+        db.session.commit()
+
+        # In production, an email with this URL would be sent by the scheduler.
+        payment_url = url_for(
+            "tienda.iniciar_pago_suscripcion", order_id=order.id, _external=True
+        )
+        flash(
+            f"Enlace de pago generado. Accede directamente: {payment_url}",
+            "success",
+        )
+        return redirect(url_for("tienda.orden_estado", order_id=order.id))
+
+    return render_template(
+        "tienda/suscripcion_link_pago.html",
+        plan=plan,
+        cart_count=len(_get_cart()),
+    )
+
+
+@tienda_bp.route("/pago/suscripcion/<int:order_id>/iniciar")
+def iniciar_pago_suscripcion(order_id: int):
+    """Redirect to payment gateway for a subscription payment link."""
+    order = Order.query.get_or_404(order_id)
+    if order.status != Order.STATUS_PENDING:
+        flash("Esta orden ya fue procesada.", "info")
+        return redirect(url_for("tienda.orden_estado", order_id=order.id))
+    email = order.shipping_email or ""
+    return _create_payment_and_redirect(order, order.payment_method, email)
+
+
+# ---------------------------------------------------------------------------
 # Checkout
 # ---------------------------------------------------------------------------
 
 
 @tienda_bp.route("/checkout/", methods=["GET", "POST"])
 def checkout():
-    """Checkout page: shipping info + payment method selection."""
+    """Checkout page: shipping info + payment method selection.
+
+    Physical goods require a logged-in user with a complete physical profile
+    (full_name, RUT, address, commune, postal_code). If these are missing the
+    user is shown an error and redirected to the profile page.
+
+    Subscriptions cannot be added to the cart (only via the dedicated
+    subscription payment-link flow). Mixed carts with minute packs + physical
+    goods are allowed for Physical Customers.
+    """
     cart = _get_cart()
     if not cart:
         flash("Tu carrito está vacío.", "warning")
@@ -190,31 +454,57 @@ def checkout():
     has_physical = any(i["item_type"] == OrderItem.ITEM_TYPE_PRODUCT for i in cart)
     total = _cart_total(cart)
 
+    # Physical goods require a full authenticated profile.
+    if has_physical:
+        if not current_user.is_authenticated:
+            flash(
+                "Para comprar productos físicos debes iniciar sesión y completar tu perfil.",
+                "warning",
+            )
+            return redirect(url_for("security.login"))
+        if not current_user.has_physical_profile:
+            flash(
+                "Para comprar productos físicos debes completar tu perfil con "
+                "Nombre Completo, RUT, Dirección, Comuna y Código Postal.",
+                "danger",
+            )
+            return redirect(url_for("tienda.perfil"))
+
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
         if payment_method not in ("flow", "khipu"):
             flash("Método de pago no válido.", "danger")
             return redirect(url_for("tienda.checkout"))
 
-        # Build order
+        email = request.form.get("shipping_email", "").strip()
+        if current_user.is_authenticated:
+            email = email or current_user.email
+
+        if not email:
+            flash("El email de contacto es obligatorio.", "danger")
+            return redirect(url_for("tienda.checkout"))
+
         order = Order(
             total=total,
             payment_method=payment_method,
+            shipping_email=email,
         )
+        if current_user.is_authenticated:
+            order.user_id = current_user.id
+
         if has_physical:
-            order.shipping_name = request.form.get("shipping_name", "").strip()
-            order.shipping_email = request.form.get("shipping_email", "").strip()
-            order.shipping_phone = request.form.get("shipping_phone", "").strip()
+            # Use profile data for authenticated physical customers.
+            order.shipping_name = current_user.full_name
+            order.shipping_phone = current_user.phone
+            order.shipping_address = ", ".join(filter(None, [
+                current_user.address,
+                current_user.commune,
+                current_user.postal_code,
+            ]))
             order.anonymous_shipping = True  # always anonymous
-            uses_pickup = request.form.get("uses_pickup") == "1"
-            order.shipping_uses_pickup = uses_pickup
-            if uses_pickup:
-                order.shipping_pickup_point = request.form.get("pickup_point", "").strip()
-            else:
-                order.shipping_address = request.form.get("shipping_address", "").strip()
 
         db.session.add(order)
-        db.session.flush()  # get order.id
+        db.session.flush()
 
         for line in cart:
             item = OrderItem(
@@ -230,8 +520,10 @@ def checkout():
         db.session.commit()
         _save_cart([])
 
-        # Redirect to payment gateway
-        return redirect(url_for("tienda.iniciar_pago", order_id=order.id))
+        return _create_payment_and_redirect(order, payment_method, email)
+
+    # Prefill email for authenticated users.
+    prefilled_email = current_user.email if current_user.is_authenticated else ""
 
     return render_template(
         "tienda/checkout.html",
@@ -239,168 +531,64 @@ def checkout():
         total=total,
         has_physical=has_physical,
         cart_count=len(cart),
+        prefilled_email=prefilled_email,
     )
 
 
 # ---------------------------------------------------------------------------
-# Payment gateways
+# Payment callbacks
 # ---------------------------------------------------------------------------
 
 
-@tienda_bp.route("/pago/<int:order_id>/iniciar")
-def iniciar_pago(order_id: int):
-    """Redirect the customer to the selected payment gateway."""
-    order = Order.query.get_or_404(order_id)
-    if order.status != Order.STATUS_PENDING:
-        flash("Esta orden ya fue procesada.", "info")
-        return redirect(url_for("tienda.orden_estado", order_id=order.id))
+@tienda_bp.route("/pago/confirmacion", methods=["POST"])
+def pago_confirmacion():
+    """Server-to-server payment confirmation webhook (all providers).
 
-    from flask import current_app
-
-    if order.payment_method == "flow":
-        try:
-            from pyflowcl import FlowAPI
-            from pyflowcl.Clients import ApiClient
-
-            api_key = current_app.config.get("FLOW_API_KEY", "")
-            secret_key = current_app.config.get("FLOW_SECRET_KEY", "")
-            api_url = current_app.config.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
-
-            client = ApiClient(api_url, api_key, secret_key)
-            api = FlowAPI(client)
-
-            payment_data = {
-                "commerceOrder": str(order.id),
-                "subject": "Fonotarot - Compra",
-                "currency": "CLP",
-                "amount": order.total,
-                "email": order.shipping_email or "",
-                "urlConfirmation": url_for("tienda.flow_confirmacion", _external=True),
-                "urlReturn": url_for("tienda.flow_retorno", _external=True),
-            }
-            result = api.payment.create(payment_data)
-            order.payment_token = result.get("token")
-            db.session.commit()
-            redirect_url = f"{result.get('url')}?token={result.get('token')}"
-            return redirect(redirect_url)
-        except Exception as exc:
-            current_app.logger.error("Flow payment error: %s", exc)
-            flash("Error al conectar con Flow. Intenta más tarde.", "danger")
-            return redirect(url_for("tienda.checkout"))
-
-    elif order.payment_method == "khipu":
-        try:
-            import khipu_tools
-
-            khipu_tools.api_key = current_app.config.get("KHIPU_API_KEY", "")
-            payment = khipu_tools.Payment.create(
-                amount=order.total,
-                currency="CLP",
-                subject="Fonotarot - Compra",
-                transaction_id=str(order.id),
-                return_url=url_for("tienda.khipu_retorno", _external=True),
-                notify_url=url_for("tienda.khipu_notificacion", _external=True),
-            )
-            order.payment_token = payment.payment_id
-            db.session.commit()
-            return redirect(payment.payment_url)
-        except Exception as exc:
-            current_app.logger.error("Khipu payment error: %s", exc)
-            flash("Error al conectar con Khipu. Intenta más tarde.", "danger")
-            return redirect(url_for("tienda.checkout"))
-
-    abort(400)
-
-
-@tienda_bp.route("/pago/flow/confirmacion", methods=["POST"])
-def flow_confirmacion():
-    """Flow server-to-server payment confirmation callback."""
-    token = request.form.get("token")
+    The providers call this URL after payment is processed.
+    We update the Order status based on the payment session state.
+    """
+    token = request.form.get("token") or request.form.get("payment_id") or ""
     if not token:
         abort(400)
-    from flask import current_app
+
     try:
-        from pyflowcl import FlowAPI
-        from pyflowcl.Clients import ApiClient
-
-        api_key = current_app.config.get("FLOW_API_KEY", "")
-        secret_key = current_app.config.get("FLOW_SECRET_KEY", "")
-        api_url = current_app.config.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
-
-        client = ApiClient(api_url, api_key, secret_key)
-        api = FlowAPI(client)
-        result = api.payment.getStatusByToken({"token": token})
-
-        if result.get("status") == 2:  # PAID
-            order_id = int(result.get("commerceOrder", 0))
+        stored = merchants_ext.get_session(token)
+        if stored:
+            order_id = int((stored.get("metadata") or {}).get("order_id", 0))
             order = Order.query.get(order_id)
             if order and order.status == Order.STATUS_PENDING:
-                order.status = Order.STATUS_PAID
+                state = stored.get("state", "")
+                if state == "succeeded":
+                    order.status = Order.STATUS_PAID
+                elif state in ("failed", "cancelled"):
+                    order.status = Order.STATUS_FAILED
                 db.session.commit()
     except Exception as exc:
-        current_app.logger.error("Flow confirmation error: %s", exc)
+        current_app.logger.error("Payment confirmation error: %s", exc)
     return "OK", 200
 
 
-@tienda_bp.route("/pago/flow/retorno")
-def flow_retorno():
-    """Flow user-redirect return page after payment."""
-    token = request.args.get("token")
-    if token:
-        from flask import current_app
+@tienda_bp.route("/pago/retorno/<int:order_id>")
+def pago_retorno(order_id: int):
+    """User-facing return page after payment (success or cancel)."""
+    order = Order.query.get_or_404(order_id)
+
+    # Try to sync payment state from provider.
+    if order.payment_token and order.status == Order.STATUS_PENDING:
         try:
-            from pyflowcl import FlowAPI
-            from pyflowcl.Clients import ApiClient
-
-            api_key = current_app.config.get("FLOW_API_KEY", "")
-            secret_key = current_app.config.get("FLOW_SECRET_KEY", "")
-            api_url = current_app.config.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
-
-            client = ApiClient(api_url, api_key, secret_key)
-            api = FlowAPI(client)
-            result = api.payment.getStatusByToken({"token": token})
-            order_id = int(result.get("commerceOrder", 0))
-            order = Order.query.get(order_id)
-            if order and result.get("status") == 2 and order.status == Order.STATUS_PENDING:
-                order.status = Order.STATUS_PAID
-                db.session.commit()
-            if order:
-                return redirect(url_for("tienda.orden_estado", order_id=order.id))
-        except Exception as exc:
-            current_app.logger.error("Flow return error: %s", exc)
-    flash("No se pudo confirmar el estado del pago.", "warning")
-    return redirect(url_for("tienda.index"))
-
-
-@tienda_bp.route("/pago/khipu/retorno")
-def khipu_retorno():
-    """Khipu user-redirect return page after payment."""
-    payment_id = request.args.get("payment_id") or request.args.get("payment_method")
-    order = Order.query.filter_by(payment_token=payment_id).first()
-    if order:
-        return redirect(url_for("tienda.orden_estado", order_id=order.id))
-    return redirect(url_for("tienda.index"))
-
-
-@tienda_bp.route("/pago/khipu/notificacion", methods=["POST"])
-def khipu_notificacion():
-    """Khipu server-to-server payment notification webhook."""
-    from flask import current_app
-    try:
-        import khipu_tools
-
-        khipu_tools.api_key = current_app.config.get("KHIPU_API_KEY", "")
-        payment_id = request.form.get("payment_id")
-        if payment_id:
-            payment = khipu_tools.Payment.retrieve(payment_id)
-            if payment.status == "done":
-                order = Order.query.filter_by(payment_token=payment_id).first()
-                if order and order.status == Order.STATUS_PENDING:
+            stored = merchants_ext.get_session(order.payment_token)
+            if stored:
+                state = stored.get("state", "")
+                if state == "succeeded":
                     order.status = Order.STATUS_PAID
                     db.session.commit()
-    except Exception as exc:
-        current_app.logger.error("Khipu notification error: %s", exc)
-    return "OK", 200
+                elif state in ("failed", "cancelled"):
+                    order.status = Order.STATUS_FAILED
+                    db.session.commit()
+        except Exception as exc:
+            current_app.logger.error("Payment return sync error: %s", exc)
+
+    return redirect(url_for("tienda.orden_estado", order_id=order.id))
 
 
 # ---------------------------------------------------------------------------
@@ -414,4 +602,5 @@ def orden_estado(order_id: int):
     order = Order.query.get_or_404(order_id)
     items = list(order.items)
     return render_template("tienda/orden_estado.html", order=order, items=items)
+
 

@@ -9,7 +9,7 @@ from flask_security.datastore import SQLAlchemyUserDatastore
 
 from config import config
 from .admin import SecureAdminIndexView, init_admin
-from .extensions import admin, babel, db, limiter, migrate, security, theme
+from .extensions import admin, babel, db, limiter, merchants_ext, migrate, security, theme
 
 # Fallback language list used when the DB is unavailable or the
 # ``available_lang`` setting has not been seeded yet.
@@ -119,10 +119,42 @@ def _init_extensions(app: Flask) -> None:
 
     init_admin(app, admin)
 
+    # Initialise flask-merchants with Flow and Khipu providers.
+    _init_merchants(app)
+
     # Context processor: inject site_languages into every non-admin template.
     @app.context_processor
     def inject_site_languages() -> dict:
         return {"site_languages": _parse_available_langs()}
+
+
+def _init_merchants(app: Flask) -> None:
+    """Configure flask-merchants with Flow and Khipu providers."""
+    from .providers import FlowProvider, KhipuProvider
+
+    flow_provider = FlowProvider(
+        api_key=app.config.get("FLOW_API_KEY", ""),
+        api_secret=app.config.get("FLOW_SECRET_KEY", ""),
+        api_url=app.config.get("FLOW_API_URL", "https://sandbox.flow.cl/api"),
+        subject="Fonotarot – Compra",
+        # Set FLOW_CONFIRMATION_URL in production to the server-to-server
+        # callback URL (e.g. https://fonotarot.cl/tienda/pago/confirmacion).
+        confirmation_url=app.config.get("FLOW_CONFIRMATION_URL", ""),
+    )
+    khipu_provider = KhipuProvider(
+        api_key=app.config.get("KHIPU_API_KEY", ""),
+        subject="Fonotarot – Compra",
+    )
+
+    from .models import Payment
+
+    merchants_ext.init_app(
+        app,
+        providers=[flow_provider, khipu_provider],
+        db=db,
+        models=[Payment],
+        admin=admin,
+    )
 
 
 def _register_blueprints(app: Flask) -> None:
