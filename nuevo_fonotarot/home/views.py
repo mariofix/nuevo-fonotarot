@@ -3,7 +3,6 @@
 from flask import redirect, render_template, request, session, url_for
 
 from . import home_bp
-from ..models import MinutePack
 
 # Sample agents shown on the home page (replace with DB-backed data as needed)
 AGENTS = [
@@ -84,14 +83,11 @@ PLANS = [
 @home_bp.route("/")
 def index():
     """Render the Fonotarot home page."""
-    minute_packs = (
-        MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-    )
     return render_template(
-        "home.html",
+        "new-home-full.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
-        minute_packs=minute_packs,
+        plans=PLANS,
     )
 
 
@@ -100,6 +96,17 @@ def home_full():
     """Render the full showcase page - /home1 base enriched with sections from /home2, /home4 and /home6."""
     return render_template(
         "home-full.html",
+        agents=AGENTS,
+        testimonials=TESTIMONIALS,
+        plans=PLANS,
+    )
+
+
+@home_bp.route("/new-home-full")
+def new_home_full():
+    """Render the new full showcase page - /home2 base enriched with sections from /home1, /home4 and /home6."""
+    return render_template(
+        "new-home-full.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
