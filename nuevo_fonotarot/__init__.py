@@ -9,7 +9,16 @@ from flask_security.datastore import SQLAlchemyUserDatastore
 
 from config import config
 from .admin import SecureAdminIndexView, init_admin
-from .extensions import admin, babel, db, limiter, merchants_ext, migrate, security, theme
+from .extensions import (
+    admin,
+    babel,
+    db,
+    limiter,
+    merchants_ext,
+    migrate,
+    security,
+    theme,
+)
 
 # Fallback language list used when the DB is unavailable or the
 # ``available_lang`` setting has not been seeded yet.
@@ -43,7 +52,7 @@ class _LangEntry:
         return f"<_LangEntry {self.locale}>"
 
 
-def create_app(config_name: str | None = None) -> Flask:
+def create_flask(config_name: str | None = None) -> Flask:
     """Create and configure the Flask application.
 
     Args:
@@ -74,6 +83,7 @@ def _init_extensions(app: Flask) -> None:
         """Return language entries from SiteSettings, falling back to defaults."""
         try:
             from .models import SiteSettings
+
             raw = SiteSettings.get("available_lang")
             if raw:
                 return [_LangEntry(*item) for item in json.loads(raw)]
@@ -103,6 +113,7 @@ def _init_extensions(app: Flask) -> None:
 
     # Expose get_locale() in every template.
     from flask_babel import get_locale
+
     app.jinja_env.globals["get_locale"] = get_locale
 
     # Flask-Security: set up user datastore and initialise extension.
@@ -169,4 +180,5 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(tienda_bp)
 
     from .cli import lang_cli
+
     app.cli.add_command(lang_cli)

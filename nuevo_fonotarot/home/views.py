@@ -84,13 +84,16 @@ PLANS = [
 @home_bp.route("/")
 def index():
     """Render the Fonotarot home page."""
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    minute_packs = (
+        MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    )
     return render_template(
         "home.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         minute_packs=minute_packs,
     )
+
 
 @home_bp.route("/home-full")
 def home_full():
@@ -107,7 +110,7 @@ def home_full():
 def home1():
     """Render alternative home page design 1 - Místico Oscuro."""
     return render_template(
-        "home1.html",
+        "old-experiments/home1.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -118,7 +121,7 @@ def home1():
 def home2():
     """Render alternative home page design 2 - Luna Suave."""
     return render_template(
-        "home2.html",
+        "old-experiments/home2.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -129,7 +132,7 @@ def home2():
 def home3():
     """Render alternative home page design 3 - Moderno Profesional."""
     return render_template(
-        "home3.html",
+        "old-experiments/home3.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -140,7 +143,7 @@ def home3():
 def home4():
     """Render alternative home page design 4 - Bosque Esmeralda."""
     return render_template(
-        "home4.html",
+        "old-experiments/home4.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -151,7 +154,7 @@ def home4():
 def home5():
     """Render alternative home page design 5 - Electra (tech-mystic)."""
     return render_template(
-        "home5.html",
+        "old-experiments/home5.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -162,7 +165,7 @@ def home5():
 def home6():
     """Render alternative home page design 6 - Bordó Oscuro (wine luxury)."""
     return render_template(
-        "home6.html",
+        "old-experiments/home6.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -173,7 +176,7 @@ def home6():
 def home7():
     """Render alternative home page design 7 - Puesta del Sol (conversion)."""
     return render_template(
-        "home7.html",
+        "old-experiments/home7.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
@@ -184,13 +187,11 @@ def home7():
 def home8():
     """Render alternative home page design 8 - Índigo Místico (bento grid)."""
     return render_template(
-        "home8.html",
+        "old-experiments/home8.html",
         agents=AGENTS,
         testimonials=TESTIMONIALS,
         plans=PLANS,
     )
-
-
 
 
 @home_bp.route("/set-language/<lang>")
@@ -199,8 +200,13 @@ def set_language(lang: str):
     try:
         import json
         from ..models import SiteSettings
+
         raw = SiteSettings.get("available_lang")
-        active = [item[1] for item in json.loads(raw)] if raw else ["es_CL", "en_US", "pt_BR"]
+        active = (
+            [item[1] for item in json.loads(raw)]
+            if raw
+            else ["es_CL", "en_US", "pt_BR"]
+        )
     except Exception:
         active = ["es_CL", "en_US", "pt_BR"]
 
