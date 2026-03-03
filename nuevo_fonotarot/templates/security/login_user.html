@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ingresar – Fonotarot</title>
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap");
+
+    :root {
+      --cream:   #faf7f3;
+      --sand:    #f0e8dc;
+      --blush:   #f5e6e8;
+      --lavender:#e8e0f0;
+      --plum:    #6b3fa0;
+      --plum-dk: #4a2872;
+      --rose:    #c06080;
+      --warm:    #8b5e3c;
+      --text:    #2d2233;
+      --muted:   #8a7a8e;
+      --border:  #e0d4e8;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Nav ─────────────────────────────────────────── */
+    .site-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; color: var(--plum);
+      text-decoration: none; font-weight: 700;
+    }
+
+    /* ─── Login wrapper ───────────────────────────────── */
+    .login-wrap {
+      flex: 1;
+      background: linear-gradient(160deg, #f5e6f0 0%, #e8e0f0 45%, #dce8f5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-wrap::before {
+      content: '🔮';
+      position: absolute; right: 4%; top: 8%;
+      font-size: 16rem; opacity: .06; pointer-events: none;
+      line-height: 1;
+    }
+
+    /* ─── Card ────────────────────────────────────────── */
+    .login-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 60px rgba(107,63,160,.15);
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-icon {
+      text-align: center;
+      font-size: 3rem;
+      margin-bottom: .5rem;
+      line-height: 1;
+    }
+    .login-card h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--plum-dk);
+      text-align: center;
+      margin: 0 0 .25rem;
+    }
+    .login-card .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 1.75rem;
+    }
+
+    /* ─── Form ────────────────────────────────────────── */
+    .form-label {
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .3rem;
+      display: block;
+    }
+    .form-control-ft {
+      width: 100%;
+      padding: .6rem .9rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: .95rem;
+      color: var(--text);
+      background: var(--cream);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      margin-bottom: 1rem;
+    }
+    .form-control-ft:focus {
+      border-color: var(--plum);
+      box-shadow: 0 0 0 3px rgba(107,63,160,.12);
+    }
+
+    /* ─── Submit button ───────────────────────────────── */
+    .btn-login {
+      display: block;
+      width: 100%;
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: .7rem 1.3rem;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+      margin-top: .5rem;
+    }
+    .btn-login:hover {
+      background: var(--plum-dk);
+      box-shadow: 0 6px 20px rgba(107,63,160,.3);
+    }
+
+    /* ─── Alerts ──────────────────────────────────────── */
+    .alert-ft {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      color: #b91c1c;
+      padding: .65rem .9rem;
+      font-size: .88rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ─── Back link ───────────────────────────────────── */
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: .85rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .back-link:hover { color: var(--plum); }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="site-nav">
+    <div class="container">
+      <a href="{{ url_for('content.index') }}" class="brand">✦ Fonotarot</a>
+    </div>
+  </nav>
+
+  <!-- Login area -->
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-icon">🌙</div>
+      <h1>Bienvenida</h1>
+      <p class="subtitle">Ingresa a tu cuenta</p>
+
+      <!-- Flash messages (errors from Flask-Security) -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert-ft">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Login form -->
+      <form method="POST" action="{{ url_for_security('login') }}">
+        {{ login_user_form.hidden_tag() }}
+
+        <label class="form-label" for="email">Correo electrónico</label>
+        <input
+          class="form-control-ft"
+          type="email"
+          id="email"
+          name="email"
+          autocomplete="email"
+          required
+          value="{{ login_user_form.email.data or '' }}"
+        />
+
+        <label class="form-label" for="password">Contraseña</label>
+        <input
+          class="form-control-ft"
+          type="password"
+          id="password"
+          name="password"
+          autocomplete="current-password"
+          required
+        />
+
+        <button type="submit" class="btn-login">Ingresar</button>
+      </form>
+
+      <a href="{{ url_for('content.index') }}" class="back-link">← Volver al inicio</a>
+    </div>
+  </div>
+
+</body>
+</html>
