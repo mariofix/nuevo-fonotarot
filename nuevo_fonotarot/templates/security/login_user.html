@@ -190,6 +190,13 @@
         {% endif %}
       {% endwith %}
 
+      <!-- Form validation errors (Flask-Security v5) -->
+      {% for field, errors in login_user_form.errors.items() %}
+        {% for error in errors %}
+          <div class="alert-ft">{{ error }}</div>
+        {% endfor %}
+      {% endfor %}
+
       <!-- Login form -->
       <form method="POST" action="{{ url_for_security('login') }}">
         {{ login_user_form.hidden_tag() }}
