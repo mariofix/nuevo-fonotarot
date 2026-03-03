@@ -32,6 +32,11 @@ class Config:
     )
     SECURITY_PASSWORD_HASH: str = "bcrypt"
 
+    # Custom login/logout routing
+    SECURITY_LOGIN_URL: str = "/ft-login"
+    SECURITY_POST_LOGIN_VIEW: str = "/admin"
+    SECURITY_POST_LOGOUT_VIEW: str = "/"
+
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
 
@@ -47,6 +52,9 @@ class Config:
 
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
+
+    # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
+    BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 
 
 class DevelopmentConfig(Config):
