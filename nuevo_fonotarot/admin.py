@@ -158,6 +158,9 @@ class PaymentAdminView(SecureModelView):
 
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
+    import redis as redis_lib
+    from flask_admin.contrib.rediscli import RedisCli
+
     from .models import (
         BlogPost, MinutePack, Order, Payment, Product, Role,
         SiteSettings, StaticPage, SubscriptionPlan, User,
@@ -189,4 +192,9 @@ def init_admin(app, admin_ext):
     admin_ext.add_view(
         SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"))
     )
+    r = redis_lib.from_url(
+        app.config.get("REDIS_URL", "redis://localhost:6379/0"),
+        decode_responses=True,
+    )
+    admin_ext.add_view(RedisCli(r, name=_l("Redis Console"), category=_l("Agentes")))
     admin_ext.add_link(MenuLink(name="Home Page", url="/"))
