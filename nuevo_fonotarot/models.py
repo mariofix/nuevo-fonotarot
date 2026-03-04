@@ -405,6 +405,16 @@ class SiteSettings(db.Model):
 
         The Tabler flag CSS class is derived automatically from the locale's
         territory code (e.g. ``es_CL`` → ``flag-country-cl``).
+
+    ``dark_hours_start``
+        Integer 0–23.  Hour (server local time) at which the dark theme
+        becomes the default.  Defaults to ``20`` (8 pm).
+
+    ``dark_hours_end``
+        Integer 0–23.  Hour (server local time) at which the light theme
+        resumes.  Defaults to ``8`` (8 am).
+
+        Dark window example: start=20, end=8 → dark from 20:00 to 07:59.
     """
 
     __tablename__ = "site_settings"
