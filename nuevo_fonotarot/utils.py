@@ -28,3 +28,6 @@ _FALLBACK_LANGUAGES = [
     ["en", "en_US", "English"],
     ["pt", "pt_BR", "Português"],
 ]
+
+
+__all__ = ["_flag_class", "_LangEntry", "_FALLBACK_LANGUAGES"]

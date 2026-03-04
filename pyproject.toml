@@ -4,7 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.14,<4.0"
 dependencies = [
     "flask>=3.0",
-    "flask-admin-tabler (>=2026.2.2,<2027.0.0)",
+    # "flask-admin-tabler (>=2026.2.2,<2027.0.0)",
     "flask-admin[images,sqlalchemy-with-utils,translation] (>=2.0.2,<3.0.0)",
     "flask-security[babel,common,fsqla] (>=5.7.1,<6.0.0)",
     "python-slugify (>=8.0.4,<9.0.0)",
@@ -15,6 +15,7 @@ dependencies = [
     "khipu-tools (>=2025.1.0,<2026.0.0)",
     "merchants @ git+https://github.com/mariofix/merchants.git",
     "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git",
+    "flask-debugtoolbar (>=0.16.0,<0.17.0)",
 ]
 
 [project.scripts]

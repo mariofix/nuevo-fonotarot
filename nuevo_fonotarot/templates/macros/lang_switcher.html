@@ -23,7 +23,7 @@
 {%- macro lang_switcher(current_locale, languages) -%}
 <div class="lang-switcher" aria-label="{{ _('Seleccionar idioma') }}">
   {%- for lang in languages %}
-  <a href="{{ url_for('home.set_language', lang=lang.locale) }}"
+  <a href="{{ url_for('account.set_language', lang=lang.locale) }}"
      title="{{ lang.label }}"
      aria-label="{{ lang.label }}"
      class="lang-flag{% if current_locale == lang.locale %} active{% endif %}">
