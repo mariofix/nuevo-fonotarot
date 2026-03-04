@@ -1,4 +1,7 @@
 # Byte-compiled / optimized / DLL files
+flask_admin_tabler/
+.mcp.json
+CLAUDE.md
 __pycache__/
 *.py[codz]
 *$py.class
