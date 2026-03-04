@@ -641,19 +641,21 @@
         <div class="tab-content">
           <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
             {% for agent in agents %}
-            <div class="oc-row">
+            <div class="oc-row" data-agent-option="{{ agent.option }}">
               <div class="oc-avatar">{{ agent.name[0] }}</div>
               <div class="oc-info">
                 <div class="oc-name">{{ agent.name }}</div>
                 <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-                <div class="mt-1">
+                <div class="mt-1 agent-status-wrap">
                   {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                   {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
                 </div>
               </div>
+              <span class="agent-action-wrap">
               {% if agent.status == 'available' %}<a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
+              </span>
             </div>
             {% endfor %}
           </div>
@@ -767,15 +769,17 @@
               </div>
               <div class="agent-widget-body">
                 {% for agent in agents[:4] %}
-                <div class="aw-row">
+                <div class="aw-row" data-agent-option="{{ agent.option }}">
                   <div class="aw-avatar">{{ agent.name[0] }}</div>
                   <div style="flex:1; min-width:0;">
                     <div class="aw-name">{{ agent.name }}</div>
                     <div class="aw-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   </div>
+                  <span class="agent-status-wrap">
                   {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                   {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
+                  </span>
                 </div>
                 {% endfor %}
                 <a href="tel:600XXXXXXX" class="aw-cta">
@@ -997,20 +1001,22 @@
         <div class="row g-4">
           {% for agent in agents %}
           <div class="col-sm-6 col-lg-4 reveal" style="transition-delay:{{ loop.index0 * 0.08 }}s">
-            <div class="agent-card">
+            <div class="agent-card" data-agent-option="{{ agent.option }}">
               <div class="agent-avatar">{{ agent.name[0] }}</div>
               <div class="agent-name">{{ agent.name }}</div>
               <div class="agent-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-              <div class="mb-3">
+              <div class="mb-3 agent-status-wrap">
                 {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                 {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                 {% else %}<span class="s-offline">● No disponible</span>{% endif %}
               </div>
+              <span class="agent-action-wrap">
               {% if agent.status == 'available' %}
               <a href="tel:600XXXXXXX" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
               {% elif agent.status == 'busy' %}
               <button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>
               {% endif %}
+              </span>
             </div>
           </div>
           {% endfor %}
@@ -1262,6 +1268,122 @@
         if (prev) prev.addEventListener('click', function () { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
         if (next) next.addEventListener('click', function () { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
       }
+    })();
+    </script>
+
+    <script>
+    /* ── Agent status poller (every 5 s) ───────────────── */
+    (function () {
+      var PHONE = 'tel:600XXXXXXX';
+
+      /* Escape user-supplied strings before inserting into the DOM */
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      /* These return only hardcoded markup — no user data, XSS-safe */
+      function statusBadge(status) {
+        if (status === 'available') return '<span class="s-online">\u25cf Disponible</span>';
+        if (status === 'busy')      return '<span class="s-busy">\u25cf En consulta</span>';
+        return '<span class="s-offline">\u25cf No disponible</span>';
+      }
+      function cardAction(status) {
+        if (status === 'available')
+          return '<a href="' + PHONE + '" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>';
+        if (status === 'busy')
+          return '<button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>';
+        return '';
+      }
+      function ocAction(status) {
+        if (status === 'available')
+          return '<a href="' + PHONE + '" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>';
+        return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>';
+      }
+
+      /* Build an offcanvas row using escaped data + hardcoded markup */
+      function ocRowHTML(a) {
+        var avatar = document.createElement('div');
+        avatar.className = 'oc-avatar';
+        avatar.textContent = a.name[0];
+
+        var nameEl = document.createElement('div');
+        nameEl.className = 'oc-name';
+        nameEl.textContent = a.name;
+
+        var spec = document.createElement('div');
+        spec.className = 'oc-spec';
+        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
+
+        var statusWrap = document.createElement('div');
+        statusWrap.className = 'mt-1 agent-status-wrap';
+        statusWrap.innerHTML = statusBadge(a.status);
+
+        var info = document.createElement('div');
+        info.className = 'oc-info';
+        info.appendChild(nameEl);
+        info.appendChild(spec);
+        info.appendChild(statusWrap);
+
+        var actionWrap = document.createElement('span');
+        actionWrap.className = 'agent-action-wrap';
+        actionWrap.innerHTML = ocAction(a.status);
+
+        var row = document.createElement('div');
+        row.className = 'oc-row';
+        row.dataset.agentOption = a.option;
+        row.appendChild(avatar);
+        row.appendChild(info);
+        row.appendChild(actionWrap);
+        return row;
+      }
+
+      function applyAgents(agents) {
+        agents.forEach(function (a) {
+          var opt = a.option;
+          /* status badges — hero widget + agent cards */
+          document.querySelectorAll('[data-agent-option="' + esc(opt) + '"] .agent-status-wrap')
+            .forEach(function (el) { el.innerHTML = statusBadge(a.status); });
+          /* call buttons — agent cards */
+          document.querySelectorAll('.agent-card[data-agent-option="' + esc(opt) + '"] .agent-action-wrap')
+            .forEach(function (el) { el.innerHTML = cardAction(a.status); });
+          /* call buttons — offcanvas all-tab */
+          document.querySelectorAll('.oc-row[data-agent-option="' + esc(opt) + '"] .agent-action-wrap')
+            .forEach(function (el) { el.innerHTML = ocAction(a.status); });
+        });
+
+        /* rebuild offcanvas available / busy tabs using DOM nodes */
+        var available = agents.filter(function (a) { return a.status === 'available'; });
+        var busy      = agents.filter(function (a) { return a.status === 'busy'; });
+
+        function rebuildTab(id, list, emptyMsg) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          while (el.firstChild) el.removeChild(el.firstChild);
+          if (list.length) {
+            list.forEach(function (a) { el.appendChild(ocRowHTML(a)); });
+          } else {
+            var p = document.createElement('p');
+            p.className = 'text-center py-4';
+            p.style.color = 'var(--muted)';
+            p.textContent = emptyMsg;
+            el.appendChild(p);
+          }
+        }
+
+        rebuildTab('oc-online', available, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
+        rebuildTab('oc-busy',   busy,      'No hay especialistas en consulta ahora.');
+      }
+
+      function poll() {
+        fetch('/api/agents')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (agents) { if (agents) applyAgents(agents); })
+          .catch(function () { /* silent — don't break page if API is down */ });
+      }
+
+      setInterval(poll, 5000);
     })();
     </script>
   </body>

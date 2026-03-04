@@ -1,7 +1,8 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
-from flask import Blueprint, abort, make_response, render_template
+from flask import Blueprint, abort, jsonify, make_response, render_template
 
+from ..extensions import limiter
 from ..models import BlogPost, MinutePack, SiteSettings, StaticPage
 from ..placeholder import PLANS, TESTIMONIALS
 from ..utils import get_agents
@@ -54,6 +55,18 @@ def index():
         plans=PLANS,
         minute_packs=minute_packs,
     )
+
+
+# ---------------------------------------------------------------------------
+# Agent status API
+# ---------------------------------------------------------------------------
+
+
+@content_bp.route("/api/agents")
+@limiter.exempt
+def api_agents():
+    """Return the live agent list as JSON (consumed by the homepage poller)."""
+    return jsonify(get_agents())
 
 
 # ---------------------------------------------------------------------------
