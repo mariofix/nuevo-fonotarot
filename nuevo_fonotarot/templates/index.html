@@ -56,20 +56,22 @@
         padding: .45rem 1.3rem;
         font-size: .9rem; font-weight: 600;
         transition: background .2s;
+        text-decoration: none;
       }
       .btn-rose:hover { background: var(--plum-dk); }
 
       /* ─── Hero ─────────────────────────────────────── */
       .hero {
-        background: linear-gradient(160deg, #f5e6f0 0%, #e8e0f0 45%, #dce8f5 100%);
-        padding: 90px 0 70px;
+        background: linear-gradient(155deg, #faf7f3 0%, #f0e8f8 40%, #e8e0f5 75%, #dce8f5 100%);
+        padding: 80px 0 60px;
         position: relative; overflow: hidden;
       }
       .hero::before {
-        content: '🌙';
-        position: absolute; right: 5%; top: 10%;
-        font-size: 18rem; opacity: .07; pointer-events: none;
-        line-height: 1;
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(107,63,160,.06) 0%, transparent 70%);
+        pointer-events: none;
       }
       .hero-eyebrow {
         font-size: .8rem; letter-spacing: .18em; text-transform: uppercase;
@@ -77,43 +79,96 @@
       }
       .hero h1 {
         font-family: 'Playfair Display', serif;
-        font-size: clamp(2.2rem, 5vw, 3.8rem);
-        font-weight: 700; line-height: 1.2; color: var(--plum-dk);
+        font-size: clamp(2.2rem, 5vw, 3.6rem);
+        font-weight: 700; line-height: 1.18; color: var(--plum-dk);
         margin-bottom: 1.2rem;
       }
       .hero h1 em { font-style: italic; color: var(--rose); }
-      .hero p {
-        font-size: 1.1rem; color: var(--warm); max-width: 480px; line-height: 1.75;
-        margin-bottom: 2.5rem;
+      .hero-lead {
+        font-size: 1.05rem; color: var(--warm); max-width: 500px; line-height: 1.75;
+        margin-bottom: 2rem;
       }
-      .hero-img-col { position: relative; }
-      .hero-card-float {
-        background: #fff;
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 20px 60px rgba(107,63,160,.15);
-        max-width: 320px;
-        margin: 0 auto;
-        text-align: center;
-      }
-      .hero-card-float .moon { font-size: 5rem; line-height: 1; }
-      .hero-card-float p { font-family: 'Playfair Display', serif; font-style: italic; color: var(--muted); margin-top: .75rem; font-size: .95rem; }
       .hero-badge-strip {
-        display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; justify-content: center;
+        display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.25rem;
       }
       .hero-badge {
         background: rgba(107,63,160,.1); color: var(--plum);
-        border-radius: 20px; padding: 4px 14px; font-size: .8rem; font-weight: 600;
+        border-radius: 20px; padding: 4px 13px; font-size: .8rem; font-weight: 600;
       }
+
+      /* ── Hero: live-agent widget ─────────────────────── */
+      .agent-widget {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: 0 24px 64px rgba(107,63,160,.14);
+        overflow: hidden;
+        max-width: 360px;
+        margin: 0 auto;
+      }
+      .agent-widget-header {
+        background: linear-gradient(135deg, var(--plum) 0%, #9454d4 100%);
+        padding: 1.25rem 1.5rem;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .agent-widget-header span {
+        font-family: 'Playfair Display', serif;
+        color: #fff; font-size: 1rem; font-weight: 700;
+      }
+      .online-pulse {
+        display: flex; align-items: center; gap: .45rem;
+        font-size: .78rem; color: rgba(255,255,255,.85);
+      }
+      .online-pulse::before {
+        content: '';
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 3px rgba(74,222,128,.3);
+        animation: pulse-green 2s infinite;
+      }
+      @keyframes pulse-green {
+        0%, 100% { box-shadow: 0 0 0 3px rgba(74,222,128,.3); }
+        50%       { box-shadow: 0 0 0 6px rgba(74,222,128,.1); }
+      }
+      .agent-widget-body { padding: 1rem 1.5rem 1.5rem; }
+      .aw-agent-row {
+        display: flex; align-items: center; gap: .75rem;
+        padding: .6rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .aw-agent-row:last-of-type { border-bottom: none; }
+      .aw-avatar {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--lavender), var(--blush));
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem; font-weight: 700; color: var(--plum);
+        flex-shrink: 0;
+        border: 2px solid var(--border);
+      }
+      .aw-info { flex: 1; min-width: 0; }
+      .aw-name { font-family: 'Playfair Display', serif; font-size: .88rem; color: var(--plum-dk); }
+      .aw-spec { font-size: .75rem; color: var(--muted); }
+      .s-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+      .s-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+      .s-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+      .aw-cta {
+        background: var(--plum); color: #fff !important;
+        border: none; border-radius: 12px;
+        padding: .7rem 0; font-size: .9rem; font-weight: 700;
+        width: 100%; margin-top: 1rem; display: block; text-align: center;
+        text-decoration: none; transition: background .2s;
+      }
+      .aw-cta:hover { background: var(--plum-dk); }
 
       /* ─── Stats ────────────────────────────────────── */
       .stats-section {
         background: var(--plum);
-        padding: 2.5rem 0;
+        padding: 2.25rem 0;
         color: #fff;
       }
       .stat-big { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; }
-      .stat-label { font-size: .82rem; opacity: .8; text-transform: uppercase; letter-spacing: .1em; }
+      .stat-label { font-size: .8rem; opacity: .8; text-transform: uppercase; letter-spacing: .1em; }
 
       /* ─── Section helpers ──────────────────────────── */
       .eyebrow {
@@ -132,6 +187,41 @@
         margin: .75rem 0 1.5rem;
       }
 
+      /* ─── How it works ─────────────────────────────── */
+      .how-section { padding: 80px 0; background: var(--sand); }
+      .step-card {
+        background: #fff; border-radius: 20px;
+        padding: 2.25rem 1.75rem; text-align: center;
+        box-shadow: 0 4px 20px rgba(107,63,160,.06);
+        height: 100%; position: relative;
+        border: 1px solid var(--border);
+        transition: box-shadow .25s, transform .25s;
+      }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(107,63,160,.12); }
+      .step-num {
+        width: 54px; height: 54px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--plum), var(--rose));
+        color: #fff; font-family: 'Playfair Display', serif;
+        font-size: 1.3rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.25rem;
+      }
+      .step-icon { font-size: 1.8rem; margin-bottom: .5rem; }
+      .step-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--plum-dk); margin-bottom: .5rem; }
+      .step-text { color: var(--muted); font-size: .88rem; line-height: 1.7; }
+      /* connector line between cards on md+ */
+      .steps-row { position: relative; }
+      .steps-row::before {
+        content: '';
+        position: absolute; top: 27px; left: calc(16.666% + 27px); right: calc(16.666% + 27px);
+        height: 2px;
+        background: linear-gradient(90deg, var(--border), var(--plum) 50%, var(--border));
+        pointer-events: none;
+        z-index: 0;
+      }
+      @media (max-width: 767px) { .steps-row::before { display: none; } }
+      .step-card { position: relative; z-index: 1; }
+
       /* ─── Agents ───────────────────────────────────── */
       .agents-section { padding: 80px 0; background: var(--cream); }
       .agent-card {
@@ -142,17 +232,18 @@
         text-align: center;
         transition: box-shadow .25s, transform .25s;
         height: 100%;
+        display: flex; flex-direction: column;
       }
       .agent-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 16px 40px rgba(107,63,160,.12);
       }
       .agent-avatar {
-        width: 68px; height: 68px; border-radius: 50%;
+        width: 72px; height: 72px; border-radius: 50%;
         background: linear-gradient(135deg, var(--lavender), var(--blush));
         display: flex; align-items: center; justify-content: center;
         font-family: 'Playfair Display', serif;
-        font-size: 1.6rem; font-weight: 700; color: var(--plum);
+        font-size: 1.7rem; font-weight: 700; color: var(--plum);
         margin: 0 auto 1rem;
         border: 3px solid var(--border);
       }
@@ -161,14 +252,12 @@
         font-size: 1.1rem; color: var(--plum-dk); margin-bottom: .2rem;
       }
       .agent-spec { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
-      .s-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 3px 11px; font-size: .73rem; font-weight: 600; }
-      .s-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 3px 11px; font-size: .73rem; font-weight: 600; }
-      .s-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; border-radius: 20px; padding: 3px 11px; font-size: .73rem; font-weight: 600; }
       .btn-call-rose {
         background: var(--plum); color: #fff !important;
         border: none; border-radius: 30px;
         padding: .5rem 1rem; font-size: .9rem; font-weight: 600;
-        width: 100%; margin-top: 1rem; display: block;
+        width: 100%; margin-top: auto; display: block; text-align: center;
+        text-decoration: none;
         transition: background .2s, box-shadow .2s;
       }
       .btn-call-rose:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.3); }
@@ -176,44 +265,16 @@
         background: var(--sand); color: var(--muted) !important;
         border: none; border-radius: 30px;
         padding: .5rem 1rem; font-size: .9rem;
-        width: 100%; margin-top: 1rem; display: block; cursor: default;
-      }
-
-      /* ─── Eye candy – Luna phases ──────────────────── */
-      .moon-strip {
-        background: linear-gradient(160deg, #f5e6f0 0%, var(--lavender) 100%);
-        padding: 50px 0;
+        width: 100%; margin-top: auto; display: block; cursor: default;
         text-align: center;
-        overflow: hidden;
-      }
-      .moon-phases {
-        display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
-      }
-      .moon-phase {
-        display: flex; flex-direction: column; align-items: center; gap: .4rem;
-      }
-      .moon-phase span:first-child { font-size: 2.8rem; }
-      .moon-phase span:last-child { font-size: .72rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
-      .moon-strip h3 {
-        font-family: 'Playfair Display', serif;
-        font-style: italic; color: var(--plum); font-size: 1.3rem; margin-bottom: 2rem;
-      }
-
-      /* ─── Specialties ribbon ───────────────────────── */
-      .specialties-section { padding: 70px 0; background: #fff; }
-      .spec-chip {
-        display: inline-flex; align-items: center; gap: .5rem;
-        background: var(--lavender); color: var(--plum);
-        border-radius: 30px; padding: .5rem 1.2rem; font-size: .9rem; font-weight: 600;
-        margin: .3rem;
       }
 
       /* ─── Plans ─────────────────────────────────────── */
-      .plans-section { padding: 80px 0; background: var(--cream); }
+      .plans-section { padding: 80px 0; background: #fff; }
       .plan-card {
         border: 2px solid var(--border);
         border-radius: 20px; padding: 2rem 1.5rem;
-        text-align: center; background: #fff;
+        text-align: center; background: var(--cream);
         transition: transform .25s, box-shadow .25s;
         height: 100%; display: flex; flex-direction: column;
       }
@@ -241,18 +302,18 @@
         background: var(--plum); color: #fff !important;
         border: none; border-radius: 30px; padding: .55rem 0;
         font-size: .9rem; font-weight: 600; width: 100%;
-        transition: background .2s;
+        transition: background .2s; text-decoration: none; display: block;
       }
       .btn-plan-rose:hover { background: var(--plum-dk); }
       .btn-plan-outline-rose {
         background: transparent; color: var(--plum) !important;
         border: 2px solid var(--plum); border-radius: 30px; padding: .55rem 0;
         font-size: .9rem; font-weight: 600; width: 100%;
-        transition: background .2s;
+        transition: background .2s; text-decoration: none; display: block;
       }
       .btn-plan-outline-rose:hover { background: rgba(107,63,160,.07); }
 
-      /* ─── Minute Packs Slider ───────────────────────── */
+      /* ── Minute packs slider ───────────────────────── */
       .packs-slider-wrapper { position: relative; padding: 0 2.5rem; }
       .packs-slider {
         display: flex;
@@ -293,29 +354,28 @@
         padding: 80px 0;
         background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%);
       }
+      .testi-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+      @media (min-width: 768px) { .testi-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (min-width: 992px) { .testi-grid { grid-template-columns: repeat(3, 1fr); } }
       .testi-card {
         background: #fff;
         border-radius: 20px;
-        padding: 2.5rem 2rem;
+        padding: 2rem 1.75rem;
         box-shadow: 0 10px 30px rgba(107,63,160,.08);
-        max-width: 680px; margin: 0 auto;
-        text-align: center;
+        display: flex; flex-direction: column;
       }
-      .stars-sm { font-size: 1.1rem; color: #f59e0b; letter-spacing: .1em; margin-bottom: 1.2rem; }
+      .stars-sm { font-size: 1rem; color: #f59e0b; letter-spacing: .1em; margin-bottom: 1rem; }
       .t-quote {
         font-family: 'Playfair Display', serif;
-        font-style: italic; font-size: 1.1rem;
-        color: var(--text); line-height: 1.75; margin-bottom: 1.5rem;
+        font-style: italic; font-size: 1rem;
+        color: var(--text); line-height: 1.75; margin-bottom: 1.25rem;
+        flex: 1;
       }
-      .t-who { font-weight: 700; color: var(--plum-dk); font-size: .95rem; }
-      .t-where { color: var(--muted); font-size: .82rem; }
-      .carousel-control-prev-icon,
-      .carousel-control-next-icon { filter: invert(28%) sepia(60%) saturate(500%) hue-rotate(250deg); }
-      .carousel-indicators [data-bs-target] { background: var(--plum); border: none; opacity: .35; width: 8px; height: 8px; border-radius: 50%; }
-      .carousel-indicators .active { opacity: 1; }
+      .t-who { font-weight: 700; color: var(--plum-dk); font-size: .9rem; }
+      .t-where { color: var(--muted); font-size: .8rem; }
 
       /* ─── FAQ ──────────────────────────────────────── */
-      .faq-section { padding: 80px 0; background: #fff; }
+      .faq-section { padding: 80px 0; background: var(--cream); }
       .faq-accordion .accordion-button {
         font-family: 'Source Sans 3', sans-serif;
         font-weight: 600; font-size: .98rem;
@@ -333,25 +393,6 @@
       }
       .faq-accordion .accordion-body { color: var(--muted); font-size: .93rem; line-height: 1.7; }
 
-      /* ─── Help steps ───────────────────────────────── */
-      .help-section { padding: 80px 0; background: var(--sand); }
-      .step-card {
-        background: #fff; border-radius: 18px;
-        padding: 2rem 1.5rem; text-align: center;
-        box-shadow: 0 4px 20px rgba(107,63,160,.06);
-        height: 100%;
-      }
-      .step-num {
-        width: 52px; height: 52px; border-radius: 50%;
-        background: linear-gradient(135deg, var(--plum), var(--rose));
-        color: #fff; font-family: 'Playfair Display', serif;
-        font-size: 1.3rem; font-weight: 700;
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 1rem;
-      }
-      .step-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--plum-dk); margin-bottom: .5rem; }
-      .step-text { color: var(--muted); font-size: .88rem; line-height: 1.65; }
-
       /* ─── CTA ──────────────────────────────────────── */
       .cta-section {
         padding: 80px 0;
@@ -364,14 +405,14 @@
         background: #fff; color: var(--plum) !important;
         border: none; border-radius: 30px; padding: .7rem 2rem;
         font-size: 1rem; font-weight: 700;
-        transition: box-shadow .2s;
+        transition: box-shadow .2s; text-decoration: none;
       }
       .btn-cta-white:hover { box-shadow: 0 8px 24px rgba(0,0,0,.2); }
       .btn-cta-outline-white {
         background: transparent; color: #fff !important;
         border: 2px solid rgba(255,255,255,.6); border-radius: 30px; padding: .65rem 2rem;
         font-size: 1rem; font-weight: 600;
-        transition: border-color .2s;
+        transition: border-color .2s; text-decoration: none;
       }
       .btn-cta-outline-white:hover { border-color: #fff; }
 
@@ -379,43 +420,22 @@
       footer {
         background: var(--plum-dk);
         color: rgba(255,255,255,.65);
-        padding: 2.5rem 0; text-align: center; font-size: .85rem;
+        padding: 3rem 0 2rem; font-size: .88rem;
       }
-      footer .brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.2rem; }
-      footer a { color: rgba(255,255,255,.65); }
-      footer a:hover { color: #fff; }
-
-      /* ─── FROM HOME4: Ticker ───────────────────────── */
-      .ticker { background: var(--lavender); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: .55rem 0; overflow: hidden; }
-      .ticker-inner { display: flex; gap: 3rem; width: max-content; animation: ticker-scroll 25s linear infinite; }
-      @keyframes ticker-scroll { to { transform: translateX(-50%); } }
-      .ticker-item { white-space: nowrap; color: var(--muted); font-size: .85rem; }
-      .ticker-item span { color: var(--rose); font-weight: 700; margin-right: .4rem; }
-
-      /* ─── FROM HOME1: Zodiac strip ─────────────────── */
-      .zodiac-strip { background: var(--blush); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px 0; overflow: hidden; }
-      .zodiac-strip-title { font-family: 'Playfair Display', serif; font-style: italic; color: var(--plum); font-size: 1rem; text-align: center; margin-bottom: 1.25rem; }
-      .zodiac-scroll { display: flex; gap: 2.5rem; animation: scroll-left 22s linear infinite; width: max-content; }
-      .zodiac-scroll:hover { animation-play-state: paused; }
-      @keyframes scroll-left { to { transform: translateX(-50%); } }
-      .zodiac-item { text-align: center; min-width: 72px; opacity: .6; transition: opacity .2s; }
-      .zodiac-item:hover { opacity: 1; }
-      .zodiac-icon { font-size: 1.8rem; display: block; color: var(--plum); }
-      .zodiac-name { font-size: .68rem; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
-
-      /* ─── FROM HOME6: Pull Quote ───────────────────── */
-      .pull-quote-section { padding: 80px 0; background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-      .pull-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(1.2rem, 3vw, 2rem); color: var(--plum-dk); text-align: center; max-width: 780px; margin: 0 auto; line-height: 1.55; }
-      .pull-quote cite { display: block; font-style: normal; font-size: .85rem; color: var(--rose); letter-spacing: .12em; text-transform: uppercase; margin-top: 1.25rem; font-family: 'Source Sans 3', sans-serif; font-weight: 700; }
-      .divider-rose-sym { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--rose), transparent); margin: 1rem auto; }
-
-      /* ─── FROM HOME4: Vertical timeline steps ──────── */
-      .steps-timeline-section { padding: 80px 0; background: var(--sand); }
-      .step-vline { display: flex; flex-direction: column; align-items: flex-start; position: relative; padding-left: 64px; margin-bottom: 2rem; }
-      .step-vline:not(:last-child)::after { content: ''; position: absolute; left: 21px; top: 44px; bottom: -32px; width: 2px; background: var(--border); }
-      .step-vnum { position: absolute; left: 0; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--plum), var(--rose)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
-      .step-vtitle { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--plum-dk); margin-bottom: .3rem; }
-      .step-vdesc { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+      .footer-brand {
+        font-family: 'Playfair Display', serif;
+        color: #fff; font-size: 1.3rem; font-weight: 700;
+        text-decoration: none;
+        display: inline-block; margin-bottom: .5rem;
+      }
+      .footer-tagline { color: rgba(255,255,255,.55); font-size: .85rem; margin-bottom: 1.5rem; }
+      .footer-links a {
+        color: rgba(255,255,255,.6); text-decoration: none;
+        font-size: .85rem; transition: color .2s;
+      }
+      .footer-links a:hover { color: #fff; }
+      .footer-divider { border-color: rgba(255,255,255,.1); margin: 1.5rem 0; }
+      .footer-copy { color: rgba(255,255,255,.4); font-size: .78rem; }
 
       /* ─── Off-canvas agent panel ───────────────────── */
       .offcanvas-agents { background: #fff; border-left: 1px solid var(--border); color: var(--text); }
@@ -432,7 +452,7 @@
       .oc-filter-tabs .nav-link { font-size: .82rem; color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: .3rem .9rem; margin-right: .4rem; transition: all .2s; }
       .oc-filter-tabs .nav-link.active { background: var(--plum); color: #fff; border-color: transparent; font-weight: 600; }
       .oc-filter-tabs .nav-link:hover:not(.active) { color: var(--plum); border-color: var(--plum); }
-      .btn-oc-call { background: var(--plum); color: #fff !important; border: none; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; font-weight: 700; transition: background .2s; white-space: nowrap; }
+      .btn-oc-call { background: var(--plum); color: #fff !important; border: none; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; font-weight: 700; transition: background .2s; white-space: nowrap; text-decoration: none; }
       .btn-oc-call:hover { background: var(--plum-dk); }
       .btn-oc-busy { background: transparent; border: 1px solid var(--border); color: var(--muted) !important; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; white-space: nowrap; cursor: default; }
       .btn-oc-trigger { background: rgba(107,63,160,.1); color: var(--plum) !important; border: 1px solid rgba(107,63,160,.3); border-radius: 20px; padding: .38rem 1rem; font-size: .85rem; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: .4rem; }
@@ -456,21 +476,24 @@
       [data-theme="dark"] body { background: var(--cream); color: var(--text); }
       [data-theme="dark"] .site-nav { background: rgba(13,13,26,.92); border-color: var(--border); }
       [data-theme="dark"] .brand { color: var(--plum); }
+      [data-theme="dark"] .agent-widget { background: #1a1535; border-color: var(--border); }
+      [data-theme="dark"] .aw-cta { background: var(--plum); }
+      [data-theme="dark"] .step-card { background: #141428; }
+      [data-theme="dark"] .agent-card { background: #141428; }
+      [data-theme="dark"] .testi-card { background: #1a1535; }
+      [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
+      [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
+      [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
       [data-theme="dark"] footer { background: #080810; }
+      [data-theme="dark"] .plan-card { background: #141428; }
+      [data-theme="dark"] .plan-card.featured { background: linear-gradient(160deg, #2a1a45 0%, #1a1535 100%); }
 
-      /* ─── Theme toggle button ───────────────────────── */
+      /* ─── Theme toggle ──────────────────────────────── */
       .btn-theme-toggle {
-        background: none;
-        border: 1px solid rgba(107,63,160,.35);
-        border-radius: 20px;
-        padding: .3rem .65rem;
-        cursor: pointer;
-        color: var(--plum);
-        font-size: 1rem;
-        line-height: 1;
-        transition: border-color .2s, background .2s;
-        display: inline-flex;
-        align-items: center;
+        background: none; border: 1px solid rgba(107,63,160,.35); border-radius: 20px;
+        padding: .3rem .65rem; cursor: pointer; color: var(--plum);
+        font-size: 1rem; line-height: 1; transition: border-color .2s, background .2s;
+        display: inline-flex; align-items: center;
       }
       .btn-theme-toggle:hover { border-color: var(--plum); background: rgba(107,63,160,.08); }
       .btn-theme-toggle .icon-sun  { display: none; }
@@ -483,13 +506,10 @@
       .btn-back-top {
         position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1020;
         width: 44px; height: 44px; border-radius: 50%;
-        background: var(--plum); color: #fff;
-        border: none; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem;
+        background: var(--plum); color: #fff; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         box-shadow: 0 4px 16px rgba(107,63,160,.35);
-        opacity: 0; visibility: hidden;
-        transform: translateY(8px);
+        opacity: 0; visibility: hidden; transform: translateY(8px);
         transition: opacity .25s, visibility .25s, transform .25s, background .2s;
       }
       .btn-back-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -497,7 +517,6 @@
     </style>
   </head>
   <body>
-
 
     <!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
     <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
@@ -508,7 +527,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
       </div>
       <div class="offcanvas-body">
-        <!-- Filter tabs -->
         <ul class="nav oc-filter-tabs mb-4" id="ocFilterTabs" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="oc-tab-all" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button>
@@ -525,7 +543,6 @@
           </li>
         </ul>
         <div class="tab-content">
-          <!-- All agents -->
           <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
             {% for agent in agents %}
             <div class="oc-agent-row">
@@ -534,28 +551,19 @@
                 <div class="oc-name">{{ agent.name }}</div>
                 <div class="oc-spec">{{ agent.specialty }}</div>
                 <div class="mt-1">
-                  {% if agent.status == 'online' %}
-                  <span class="s-online">● Disponible</span>
-                  {% elif agent.status == 'busy' %}
-                  <span class="s-busy">● En consulta</span>
-                  {% else %}
-                  <span class="s-offline">● No disponible</span>
-                  {% endif %}
+                  {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
+                  {% else %}<span class="s-offline">● No disponible</span>{% endif %}
                 </div>
               </div>
               {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn btn-oc-call">
-                <i class="ti ti-phone me-1"></i>Llamar
-              </a>
+              <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               {% else %}
-              <button class="btn btn-oc-busy" disabled>
-                <i class="ti ti-clock me-1"></i>Ocupada
-              </button>
+              <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
               {% endif %}
             </div>
             {% endfor %}
           </div>
-          <!-- Online only -->
           <div class="tab-pane fade" id="oc-online" role="tabpanel">
             {% set online_agents = agents | selectattr('status', 'eq', 'online') | list %}
             {% if online_agents %}
@@ -567,16 +575,13 @@
                 <div class="oc-spec">{{ agent.specialty }}</div>
                 <div class="mt-1"><span class="s-online">● Disponible</span></div>
               </div>
-              <a href="tel:600XXXXXXX" class="btn btn-oc-call">
-                <i class="ti ti-phone me-1"></i>Llamar
-              </a>
+              <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
             </div>
             {% endfor %}
             {% else %}
-            <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas en este momento. Inténtalo pronto.</p>
+            <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
             {% endif %}
           </div>
-          <!-- Busy only -->
           <div class="tab-pane fade" id="oc-busy" role="tabpanel">
             {% set busy_agents = agents | selectattr('status', 'eq', 'busy') | list %}
             {% if busy_agents %}
@@ -588,9 +593,7 @@
                 <div class="oc-spec">{{ agent.specialty }}</div>
                 <div class="mt-1"><span class="s-busy">● En consulta</span></div>
               </div>
-              <button class="btn btn-oc-busy" disabled>
-                <i class="ti ti-clock me-1"></i>Ocupada
-              </button>
+              <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
             </div>
             {% endfor %}
             {% else %}
@@ -598,7 +601,6 @@
             {% endif %}
           </div>
         </div>
-        <!-- Global CTA -->
         <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
           <a href="tel:600XXXXXXX" class="btn-call-rose d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-decoration:none; text-align:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
@@ -644,34 +646,50 @@
               en los momentos<br>
               <em>que más importan</em>
             </h1>
-            <p>
-              Nuestras especialistas en tarot están disponibles para acompañarte
-              en las decisiones importantes de tu vida. Amor, trabajo, familia
-              y mucho más. Sin esperas, sin complicaciones.
+            <p class="hero-lead">
+              Nuestras especialistas en tarot te acompañan en las decisiones
+              importantes de tu vida — amor, trabajo, familia y más.
+              Disponibles ahora mismo, sin citas ni esperas.
             </p>
             <div class="d-flex gap-3 flex-wrap">
-              <a href="#tarotistas" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+              <a href="tel:600XXXXXXX" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
                 <i class="ti ti-phone me-2"></i>Llama Ahora
               </a>
-              <a href="#planes" class="btn btn-lg btn-plan-outline-rose px-5">
+              <a href="#planes" class="btn btn-lg btn-plan-outline-rose px-5" style="display:inline-flex; align-items:center;">
                 <i class="ti ti-wallet me-2"></i>Carga Minutos
               </a>
             </div>
-            <div class="hero-badge-strip justify-content-start">
+            <div class="hero-badge-strip">
               <span class="hero-badge">✔ Disponible 24/7</span>
               <span class="hero-badge">✔ 100% Confidencial</span>
               <span class="hero-badge">✔ Sin contratos</span>
+              <span class="hero-badge">✔ Minutos sin vencimiento</span>
             </div>
           </div>
-          <div class="col-lg-6 text-center">
-            <div class="hero-card-float">
-              <div class="moon">🌙</div>
-              <p>"El tarot no predice el futuro,<br>ilumina el camino."</p>
-              <div class="mt-3 d-flex justify-content-center gap-2 flex-wrap">
-                <span class="hero-badge">Amor</span>
-                <span class="hero-badge">Trabajo</span>
-                <span class="hero-badge">Salud</span>
-                <span class="hero-badge">Familia</span>
+
+          <!-- Live agent widget -->
+          <div class="col-lg-6">
+            <div class="agent-widget">
+              <div class="agent-widget-header">
+                <span>Especialistas disponibles ahora</span>
+                <span class="online-pulse">En línea</span>
+              </div>
+              <div class="agent-widget-body">
+                {% for agent in agents[:4] %}
+                <div class="aw-agent-row">
+                  <div class="aw-avatar">{{ agent.name[0] }}</div>
+                  <div class="aw-info">
+                    <div class="aw-name">{{ agent.name }}</div>
+                    <div class="aw-spec">{{ agent.specialty }}</div>
+                  </div>
+                  {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
+                  {% else %}<span class="s-offline">● No disponible</span>{% endif %}
+                </div>
+                {% endfor %}
+                <a href="tel:600XXXXXXX" class="aw-cta">
+                  <i class="ti ti-phone me-2"></i>Consultar Ahora – 600 XXX XXX
+                </a>
               </div>
             </div>
           </div>
@@ -679,7 +697,7 @@
       </div>
     </section>
 
-    <!-- ── STATS ────────────────────────────────────── -->
+    <!-- ── STATS ─────────────────────────────────────── -->
     <section class="stats-section">
       <div class="container">
         <div class="row text-center g-4">
@@ -703,61 +721,57 @@
       </div>
     </section>
 
-
-    <!-- ── FROM /home4: TICKER ──────────────────────── -->
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker-inner">
-        {% for label in ["Amor y Relaciones","Trabajo y Finanzas","Salud y Bienestar","Familia","Crecimiento Personal","Tarot del Amor","Tarot Gitano","Tarot Marsella","Runas Nórdicas","Videncia","Lectura General","Guía Espiritual","Amor y Relaciones","Trabajo y Finanzas","Salud y Bienestar","Familia","Crecimiento Personal","Tarot del Amor","Tarot Gitano","Tarot Marsella","Runas Nórdicas","Videncia","Lectura General","Guía Espiritual"] %}
-        <span class="ticker-item"><span>✦</span>{{ label }}</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- ── MOON PHASES – Eye candy ──────────────────── -->
-    <section class="moon-strip" aria-hidden="true">
-      <h3>Las fases de la luna guían cada lectura</h3>
-      <div class="moon-phases">
-        <div class="moon-phase"><span>🌑</span><span>Luna Nueva</span></div>
-        <div class="moon-phase"><span>🌒</span><span>Creciente</span></div>
-        <div class="moon-phase"><span>🌓</span><span>Cuarto Creciente</span></div>
-        <div class="moon-phase"><span>🌔</span><span>Gibosa Creciente</span></div>
-        <div class="moon-phase"><span>🌕</span><span>Luna Llena</span></div>
-        <div class="moon-phase"><span>🌖</span><span>Gibosa Menguante</span></div>
-        <div class="moon-phase"><span>🌗</span><span>Cuarto Menguante</span></div>
-        <div class="moon-phase"><span>🌘</span><span>Menguante</span></div>
-      </div>
-    </section>
-
-
-    <!-- ── FROM /home1: ZODIAC EYE CANDY ────────────── -->
-    <section class="zodiac-strip" aria-hidden="true">
-      <p class="zodiac-strip-title">Consulta para todos los signos del zodiaco</p>
-      <div class="zodiac-scroll">
-        {% set signs = [
-          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
-          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
-          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis"),
-          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
-          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
-          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis")
-        ] %}
-        {% for symbol, name in signs %}
-        <div class="zodiac-item">
-          <span class="zodiac-icon">{{ symbol }}</span>
-          <span class="zodiac-name">{{ name }}</span>
+    <!-- ── HOW IT WORKS ──────────────────────────────── -->
+    <section id="ayuda" class="how-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="eyebrow">¿Cómo funciona?</div>
+          <h2 class="sec-title">En tres pasos simples</h2>
+          <div class="divider-rose mx-auto"></div>
+          <p class="sec-sub">Rápido, seguro y sin complicaciones</p>
         </div>
-        {% endfor %}
+        <div class="row g-4 steps-row">
+          <div class="col-md-4">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <div class="step-icon">💳</div>
+              <div class="step-title">Carga tu saldo</div>
+              <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago en línea, de forma rápida y segura con cualquier medio de pago disponible en Chile.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <div class="step-icon">🔮</div>
+              <div class="step-title">Elige tu especialista</div>
+              <p class="step-text">Revisa quién está disponible ahora mismo y elige a quien más resuene contigo. Si tu favorita está ocupada, inténtalo unos minutos después.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <div class="step-icon">📞</div>
+              <div class="step-title">Consulta con tranquilidad</div>
+              <p class="step-text">Llama al 600 XXX XXX y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas; el saldo restante nunca expira.</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-5">
+          <a href="#planes" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+            <i class="ti ti-wallet me-2"></i>Ver Planes
+          </a>
+        </div>
       </div>
     </section>
 
-    <!-- ── TAROTISTAS ───────────────────────────────── -->
+    <!-- ── TAROTISTAS ────────────────────────────────── -->
     <section id="tarotistas" class="agents-section">
       <div class="container">
         <div class="text-center mb-5">
           <div class="eyebrow">Nuestro Equipo</div>
           <h2 class="sec-title">Especialistas disponibles hoy</h2>
           <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Elige a la especialista que más resuene contigo</p>
+          <p class="sec-sub">Elige a quien más resuene contigo</p>
         </div>
         <div class="row g-4">
           {% for agent in agents %}
@@ -766,14 +780,10 @@
               <div class="agent-avatar">{{ agent.name[0] }}</div>
               <div class="agent-name">{{ agent.name }}</div>
               <div class="agent-spec">{{ agent.specialty }}</div>
-              <div class="mb-2">
-                {% if agent.status == 'online' %}
-                <span class="s-online">● Disponible</span>
-                {% elif agent.status == 'busy' %}
-                <span class="s-busy">● En consulta</span>
-                {% else %}
-                <span class="s-offline">● No disponible</span>
-                {% endif %}
+              <div class="mb-3">
+                {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
+                {% else %}<span class="s-offline">● No disponible</span>{% endif %}
               </div>
               {% if agent.status == 'online' %}
               <a href="tel:600XXXXXXX" class="btn-call-rose">
@@ -796,26 +806,6 @@
       </div>
     </section>
 
-    <!-- ── SPECIALTIES EYE CANDY ────────────────────── -->
-    <section class="specialties-section">
-      <div class="container text-center">
-        <div class="eyebrow">Áreas de Consulta</div>
-        <h2 class="sec-title mb-4">¿En qué podemos orientarte?</h2>
-        <div>
-          <span class="spec-chip">💕 Amor y Relaciones</span>
-          <span class="spec-chip">💼 Trabajo y Finanzas</span>
-          <span class="spec-chip">🏥 Salud y Bienestar</span>
-          <span class="spec-chip">👨‍👩‍👧 Familia</span>
-          <span class="spec-chip">🌱 Crecimiento Personal</span>
-          <span class="spec-chip">🏠 Hogar y Mudanzas</span>
-          <span class="spec-chip">✈️ Viajes y Decisiones</span>
-          <span class="spec-chip">🎓 Estudios y Proyectos</span>
-          <span class="spec-chip">🔮 Lectura General</span>
-          <span class="spec-chip">🌟 Guía Espiritual</span>
-        </div>
-      </div>
-    </section>
-
     <!-- ── PLANS ─────────────────────────────────────── -->
     <section id="planes" class="plans-section">
       <div class="container">
@@ -823,10 +813,9 @@
           <div class="eyebrow">Tarifas</div>
           <h2 class="sec-title">Planes a tu medida</h2>
           <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Carga los minutos que necesitas; son tuyos sin fecha de vencimiento</p>
+          <p class="sec-sub">Carga los minutos que necesitas — son tuyos sin fecha de vencimiento</p>
         </div>
         {% if minute_packs %}
-        <!-- Responsive minute packs slider (from DB) -->
         <div class="packs-slider-wrapper">
           <button class="slider-btn slider-btn-prev" id="packsPrev" aria-label="Anterior">
             <i class="ti ti-chevron-left"></i>
@@ -842,8 +831,7 @@
                 <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
                 <p class="plan-desc-txt">{{ pack.description or '' }}</p>
                 <div class="mt-auto d-flex flex-column gap-2">
-                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}"
-                     class="btn btn-plan-rose">
+                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}" class="btn btn-plan-rose">
                     <i class="ti ti-bolt me-1"></i>Compra Ahora
                   </a>
                   <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
@@ -865,7 +853,6 @@
           </button>
         </div>
         {% else %}
-        <!-- Fallback: static plans -->
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
           <div class="col-sm-6 col-lg-3">
@@ -876,7 +863,7 @@
               <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
               <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
               <p class="plan-desc-txt">{{ plan.description }}</p>
-              <a href="{{ url_for('tienda.minutos') }}" class="btn {% if plan.featured %}btn-plan-rose{% else %}btn-plan-outline-rose{% endif %}">
+              <a href="{{ url_for('tienda.minutos') }}" class="{% if plan.featured %}btn-plan-rose{% else %}btn-plan-outline-rose{% endif %}">
                 <i class="ti ti-wallet me-1"></i>Carga Minutos
               </a>
             </div>
@@ -887,7 +874,7 @@
       </div>
     </section>
 
-    <!-- ── TESTIMONIALS ─────────────────────────────── -->
+    <!-- ── TESTIMONIALS ──────────────────────────────── -->
     <section id="testimonios" class="testimonials-section">
       <div class="container">
         <div class="text-center mb-5">
@@ -895,113 +882,41 @@
           <h2 class="sec-title">Palabras de quienes ya consultaron</h2>
           <div class="divider-rose mx-auto"></div>
         </div>
-        <div id="tCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
-          <div class="carousel-inner">
-            {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
+        <div class="testi-grid">
+          {% for t in testimonials[:3] %}
+          <div class="testi-card">
+            <div class="stars-sm">★★★★★</div>
+            <p class="t-quote">"{{ t.text }}"</p>
+            <div>
+              <div class="t-who">{{ t.author }}</div>
+              <div class="t-where">{{ t.city }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if testimonials|length > 3 %}
+        <div class="text-center mt-4">
+          <button class="btn btn-plan-outline-rose px-4" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#moreTestimonials"
+                  aria-expanded="false" style="width:auto;">
+            Ver más opiniones
+          </button>
+          <div class="collapse mt-4" id="moreTestimonials">
+            <div class="testi-grid">
+              {% for t in testimonials[3:] %}
               <div class="testi-card">
                 <div class="stars-sm">★★★★★</div>
                 <p class="t-quote">"{{ t.text }}"</p>
-                <div class="t-who">{{ t.author }}</div>
-                <div class="t-where">{{ t.city }}</div>
+                <div>
+                  <div class="t-who">{{ t.author }}</div>
+                  <div class="t-where">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
-            {% endfor %}
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#tCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Anterior</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#tCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Siguiente</span>
-          </button>
-          <div class="carousel-indicators" style="position:static; margin-top:2rem;">
-            {% for t in testimonials %}
-            <button type="button" data-bs-target="#tCarousel" data-bs-slide-to="{{ loop.index0 }}"
-                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ── FROM /home6: PULL QUOTE ─────────────────── -->
-    <section class="pull-quote-section">
-      <div class="container">
-        <div class="divider-rose-sym"></div>
-        <blockquote class="pull-quote">
-          "Mis tarotistas preferidas son Altair y Simone. La verdad es que son asertivas en la mayoría de las preguntas.
-          Saben llegar al corazón de las personas."
-          <cite>Susan · 48 años · Peluquera</cite>
-        </blockquote>
-        <div class="divider-rose-sym"></div>
-      </div>
-    </section>
-
-    <!-- ── HELP ─────────────────────────────────────── -->
-    <section id="ayuda" class="help-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">¿Cómo funciona?</div>
-          <h2 class="sec-title">Tres pasos simples</h2>
-          <div class="divider-rose mx-auto"></div>
-        </div>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="step-card">
-              <div class="step-num">1</div>
-              <div class="step-title">Carga tu saldo</div>
-              <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago de forma rápida y segura con cualquier medio de pago disponible en Chile.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="step-card">
-              <div class="step-num">2</div>
-              <div class="step-title">Elige tu especialista</div>
-              <p class="step-text">Revisa quién está disponible en este momento y marca cuando estés lista/o. Si tu favorita está ocupada, intenta unos minutos después.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="step-card">
-              <div class="step-num">3</div>
-              <div class="step-title">Consulta con tranquilidad</div>
-              <p class="step-text">Llama al 600 XXX XXX y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas; el saldo restante no expira.</p>
+              {% endfor %}
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-
-    <!-- ── FROM /home4: VERTICAL TIMELINE STEPS ─────── -->
-    <section class="steps-timeline-section">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-7">
-            <div class="text-center mb-5">
-              <div class="eyebrow">Paso a paso</div>
-              <h2 class="sec-title">Todo lo que necesitas saber</h2>
-              <div class="divider-rose mx-auto"></div>
-            </div>
-            <div class="step-vline">
-              <div class="step-vnum">1</div>
-              <div class="step-vtitle">Elige tu plan y carga saldo</div>
-              <p class="step-vdesc">Selecciona la cantidad de minutos que necesitas y realiza el pago en línea de forma rápida y segura con el medio que prefieras.</p>
-            </div>
-            <div class="step-vline">
-              <div class="step-vnum">2</div>
-              <div class="step-vtitle">Revisa la disponibilidad</div>
-              <p class="step-vdesc">Abre el panel de especialistas y elige con quién quieres consultar. Si está en consulta, inténtalo unos minutos después.</p>
-            </div>
-            <div class="step-vline">
-              <div class="step-vnum">3</div>
-              <div class="step-vtitle">Llama y consulta</div>
-              <p class="step-vdesc">Marca el 600 XXX XXX desde cualquier teléfono en Chile. La sesión es privada y confidencial; los minutos restantes quedan disponibles para otra vez.</p>
-            </div>
-          </div>
-        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -1012,7 +927,7 @@
           <div class="col-lg-8">
             <div class="text-center mb-5">
               <div class="eyebrow">Preguntas frecuentes</div>
-              <h2 class="sec-title">¿Tienes dudas? Aquí las resolvemos</h2>
+              <h2 class="sec-title">¿Tienes dudas?</h2>
               <div class="divider-rose mx-auto"></div>
             </div>
             <div class="accordion faq-accordion" id="faqAccordion">
@@ -1101,14 +1016,38 @@
     <!-- ── FOOTER ───────────────────────────────────── -->
     <footer>
       <div class="container">
-        <div class="brand mb-2">🌙 Fonotarot</div>
-        <p class="mb-1">Servicio de orientación espiritual telefónica · Chile</p>
-        <p class="mb-0">
-          <a href="/blog/">Blog</a>
-          <span class="mx-2">·</span>
-          <a href="#faq">Preguntas frecuentes</a>
-          <span class="mx-2">·</span>
-          <a href="#planes">Planes</a>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <a href="/" class="footer-brand">🌙 Fonotarot</a>
+            <p class="footer-tagline">Servicio de orientación espiritual<br>telefónica · Chile</p>
+            <a href="tel:600XXXXXXX" style="color:rgba(255,255,255,.7); text-decoration:none; font-size:.9rem;">
+              <i class="ti ti-phone me-1"></i>600 XXX XXX
+            </a>
+          </div>
+          <div class="col-md-4">
+            <p class="footer-tagline mb-2" style="text-transform:uppercase; letter-spacing:.1em; font-size:.75rem;">Navegación</p>
+            <div class="footer-links d-flex flex-column gap-1">
+              <a href="#tarotistas">Tarotistas</a>
+              <a href="#planes">Planes y Precios</a>
+              <a href="#ayuda">Cómo Funciona</a>
+              <a href="#faq">Preguntas Frecuentes</a>
+              <a href="/blog/">Blog</a>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <p class="footer-tagline mb-2" style="text-transform:uppercase; letter-spacing:.1em; font-size:.75rem;">Áreas de consulta</p>
+            <div style="color:rgba(255,255,255,.55); font-size:.85rem; line-height:1.9;">
+              💕 Amor y Relaciones<br>
+              💼 Trabajo y Finanzas<br>
+              🏥 Salud y Bienestar<br>
+              👨‍👩‍👧 Familia<br>
+              🌱 Crecimiento Personal
+            </div>
+          </div>
+        </div>
+        <hr class="footer-divider">
+        <p class="footer-copy text-center mb-0">
+          &copy; 2025 Fonotarot Chile · Todos los derechos reservados
         </p>
       </div>
     </footer>
@@ -1144,25 +1083,23 @@
         var btn = document.getElementById('back-top');
         if (!btn) return;
         window.addEventListener('scroll', function () {
-          if (window.scrollY > 400) btn.classList.add('visible');
-          else btn.classList.remove('visible');
+          btn.classList.toggle('visible', window.scrollY > 400);
         }, { passive: true });
         btn.addEventListener('click', function () {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       })();
 
-      // Minute packs slider navigation
+      // ── Minute packs slider ───────────────────────────────────────
       (function () {
         var slider = document.getElementById('packsSlider');
         var prev = document.getElementById('packsPrev');
         var next = document.getElementById('packsNext');
         if (!slider) return;
-        var gap = 20; // matches 1.25rem gap in .packs-slider
-        var fallbackWidth = 290; // fallback slide width in px
+        var gap = 20;
         function slideWidth() {
           var slide = slider.querySelector('.pack-slide');
-          return slide ? slide.offsetWidth + gap : fallbackWidth;
+          return slide ? slide.offsetWidth + gap : 290;
         }
         if (prev) prev.addEventListener('click', function () {
           slider.scrollBy({ left: -slideWidth(), behavior: 'smooth' });
