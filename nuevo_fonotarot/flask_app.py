@@ -88,7 +88,13 @@ def _init_extensions(app: Flask) -> None:
     # blueprint — Flask resolves templates in blueprint registration order.
     from flask_admin_tabler import TablerTheme
 
-    theme = TablerTheme()
+    theme = TablerTheme(
+        theme="light",
+        theme_primary="lime",
+        theme_base="neutral",
+        theme_radius="2",
+        inter_font=True,
+    )
     theme.init_app(app)
 
     admin.name = app.config.get("ADMIN_NAME", "Fonotarot Admin")
