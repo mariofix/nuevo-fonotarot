@@ -2,6 +2,7 @@
 
 from flask import redirect, request, url_for
 from flask_admin import AdminIndexView, expose
+from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
@@ -188,3 +189,4 @@ def init_admin(app, admin_ext):
     admin_ext.add_view(
         SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"))
     )
+    admin_ext.add_link(MenuLink(name="Home Page", url="/"))
