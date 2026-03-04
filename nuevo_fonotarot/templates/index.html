@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="{{ default_theme }}" data-bs-theme="{{ default_theme }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -436,6 +436,45 @@
       .btn-oc-trigger:hover { background: rgba(107,63,160,.18); }
       .oc-online-dot { width: 8px; height: 8px; border-radius: 50%; background: #059669; display: inline-block; margin-right: 3px; }
       .oc-busy-dot  { width: 8px; height: 8px; border-radius: 50%; background: #b45309; display: inline-block; margin-right: 3px; }
+
+      /* ─── Dark theme overrides ──────────────────────── */
+      [data-theme="dark"] {
+        --cream:   #0d0d1a;
+        --sand:    #141428;
+        --blush:   #1a1030;
+        --lavender:#1e1535;
+        --plum:    #a87dd4;
+        --plum-dk: #c4a0e8;
+        --rose:    #d98aaa;
+        --text:    #e8e0ff;
+        --muted:   #9d8fbe;
+        --border:  rgba(168,125,212,.25);
+      }
+      [data-theme="dark"] body { background: var(--cream); color: var(--text); }
+      [data-theme="dark"] .site-nav { background: rgba(13,13,26,.95); border-color: var(--border); }
+      [data-theme="dark"] .brand { color: var(--plum); }
+      [data-theme="dark"] footer { background: #080810; }
+
+      /* ─── Theme toggle button ───────────────────────── */
+      .btn-theme-toggle {
+        background: none;
+        border: 1px solid rgba(107,63,160,.35);
+        border-radius: 20px;
+        padding: .3rem .65rem;
+        cursor: pointer;
+        color: var(--plum);
+        font-size: 1rem;
+        line-height: 1;
+        transition: border-color .2s, background .2s;
+        display: inline-flex;
+        align-items: center;
+      }
+      .btn-theme-toggle:hover { border-color: var(--plum); background: rgba(107,63,160,.08); }
+      .btn-theme-toggle .icon-sun  { display: none; }
+      .btn-theme-toggle .icon-moon { display: inline; }
+      [data-theme="dark"] .btn-theme-toggle { border-color: rgba(168,125,212,.35); color: var(--plum); }
+      [data-theme="dark"] .btn-theme-toggle .icon-sun  { display: inline; }
+      [data-theme="dark"] .btn-theme-toggle .icon-moon { display: none; }
     </style>
   </head>
   <body>
@@ -567,6 +606,10 @@
             <span class="oc-online-dot"></span>Especialistas
           </button>
           <a href="#planes" class="btn-rose">Carga Minutos</a>
+          <button class="btn-theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+          </button>
         </div>
       </div>
     </nav>
@@ -1053,6 +1096,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
     <script>
+      // ── Theme toggle ──────────────────────────────────────────────
+      (function () {
+        var html = document.documentElement;
+        var btn  = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var saved = localStorage.getItem('ft-theme');
+        if (saved === 'dark' || saved === 'light') {
+          html.setAttribute('data-theme', saved);
+          html.setAttribute('data-bs-theme', saved);
+        }
+        btn.addEventListener('click', function () {
+          var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          var next    = current === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', next);
+          html.setAttribute('data-bs-theme', next);
+          localStorage.setItem('ft-theme', next);
+        });
+      })();
+
       // Minute packs slider navigation
       (function () {
         var slider = document.getElementById('packsSlider');
