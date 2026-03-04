@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Mi cuenta") }} – Fonotarot{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-12 col-lg-6">
+    <h1 class="mb-4">{{ _("Mi cuenta") }}</h1>
+
+    {% if not user.is_authenticated %}
+    <div class="alert alert-warning">
+      {{ _("Debes iniciar sesión para ver la configuración de tu cuenta.") }}
+      <a href="{{ url_for('security.login') }}" class="alert-link">{{ _("Iniciar sesión") }}</a>
+    </div>
+    {% else %}
+    <div class="card mb-3">
+      <div class="card-header">{{ _("Información de la cuenta") }}</div>
+      <div class="card-body">
+        <p class="mb-1"><strong>{{ _("Email") }}:</strong> {{ user.email }}</p>
+        {% if user.username %}
+        <p class="mb-1"><strong>{{ _("Usuario") }}:</strong> {{ user.username }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">{{ _("Seguridad") }}</div>
+      <div class="card-body">
+        <a href="{{ url_for('security.change_password') }}" class="btn btn-outline-secondary btn-sm">
+          {{ _("Cambiar contraseña") }}
+        </a>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">{{ _("Perfil de envío") }}</div>
+      <div class="card-body">
+        <p class="text-muted small mb-2">
+          {{ _("Dirección, RUT y datos de contacto para pedidos físicos.") }}
+        </p>
+        <a href="{{ url_for('tienda.perfil') }}" class="btn btn-outline-secondary btn-sm">
+          {{ _("Editar perfil de envío") }}
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
