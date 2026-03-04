@@ -11,18 +11,20 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap");
 
+      /* ─── Tokens ───────────────────────────────────── */
       :root {
-        --cream:   #faf7f3;
-        --sand:    #f0e8dc;
-        --blush:   #f5e6e8;
-        --lavender:#e8e0f0;
-        --plum:    #6b3fa0;
-        --plum-dk: #4a2872;
-        --rose:    #c06080;
-        --warm:    #8b5e3c;
-        --text:    #2d2233;
-        --muted:   #8a7a8e;
-        --border:  #e0d4e8;
+        --cream:    #faf7f3;
+        --sand:     #f0e8dc;
+        --blush:    #f5e6e8;
+        --lavender: #e8e0f0;
+        --plum:     #6b3fa0;
+        --plum-dk:  #4a2872;
+        --rose:     #c06080;
+        --warm:     #8b5e3c;
+        --text:     #2d2233;
+        --muted:    #8a7a8e;
+        --border:   #e0d4e8;
+        --gold:     #c9a84c;
       }
       * { box-sizing: border-box; }
       body {
@@ -30,84 +32,130 @@
         background: var(--cream);
         color: var(--text);
         margin: 0;
+        padding-top: 65px;
       }
+
+      /* ─── Scroll-reveal base ────────────────────────── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity .6s ease, transform .6s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-d1 { transition-delay: .1s; }
+      .reveal-d2 { transition-delay: .2s; }
+      .reveal-d3 { transition-delay: .3s; }
+      .reveal-d4 { transition-delay: .4s; }
 
       /* ─── Nav ──────────────────────────────────────── */
       .site-nav {
-        background: rgba(255,255,255,.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(250,247,243,.95);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         border-bottom: 1px solid var(--border);
         padding: 1rem 0;
         position: fixed; top: 0; left: 0; right: 0; z-index: 1030;
+        transition: background .3s;
       }
-      body { padding-top: 65px; }
       .brand {
         font-family: 'Playfair Display', serif;
         font-size: 1.5rem; color: var(--plum);
         text-decoration: none; font-weight: 700;
+        letter-spacing: -.01em;
       }
-      .nav-link-soft { color: var(--muted); text-decoration: none; font-size: .95rem; transition: color .2s; padding: 0 .1rem; }
+      .nav-link-soft { color: var(--muted); text-decoration: none; font-size: .95rem; transition: color .2s; }
       .nav-link-soft:hover { color: var(--plum); }
       .btn-rose {
-        background: var(--plum);
-        color: #fff !important;
-        border: none; border-radius: 30px;
-        padding: .45rem 1.3rem;
-        font-size: .9rem; font-weight: 600;
-        transition: background .2s;
+        background: var(--plum); color: #fff !important;
+        border: none; border-radius: 30px; padding: .45rem 1.3rem;
+        font-size: .9rem; font-weight: 600; transition: background .2s, box-shadow .2s;
         text-decoration: none;
       }
-      .btn-rose:hover { background: var(--plum-dk); }
+      .btn-rose:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.3); }
 
       /* ─── Hero ─────────────────────────────────────── */
       .hero {
-        background: linear-gradient(155deg, #faf7f3 0%, #f0e8f8 40%, #e8e0f5 75%, #dce8f5 100%);
-        padding: 80px 0 60px;
+        background: linear-gradient(155deg, #fdf8ff 0%, #f2eaff 35%, #e8e0f8 65%, #dce8f5 100%);
+        padding: 90px 0 80px;
         position: relative; overflow: hidden;
       }
-      .hero::before {
+      /* Atmospheric orbs */
+      .hero::before, .hero::after {
         content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(107,63,160,.06) 0%, transparent 70%);
-        pointer-events: none;
+        position: absolute; border-radius: 50%; pointer-events: none;
       }
+      .hero::before {
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(107,63,160,.09) 0%, transparent 70%);
+        right: -100px; top: -100px;
+        animation: orb-drift 12s ease-in-out infinite alternate;
+      }
+      .hero::after {
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(192,96,128,.07) 0%, transparent 70%);
+        left: -80px; bottom: -80px;
+        animation: orb-drift 16s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes orb-drift {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(40px, 30px) scale(1.08); }
+      }
+
+      /* Stars / particles (JS-generated, defined here) */
+      .hero-particle {
+        position: absolute; pointer-events: none; border-radius: 50%;
+        background: var(--plum); opacity: 0;
+        animation: particle-float var(--dur, 8s) var(--del, 0s) ease-in-out infinite;
+      }
+      @keyframes particle-float {
+        0%   { opacity: 0;    transform: translateY(0) scale(.6); }
+        20%  { opacity: .35; }
+        80%  { opacity: .2; }
+        100% { opacity: 0;    transform: translateY(-120px) scale(1); }
+      }
+
       .hero-eyebrow {
-        font-size: .8rem; letter-spacing: .18em; text-transform: uppercase;
+        font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
         color: var(--rose); font-weight: 600; margin-bottom: 1rem;
       }
       .hero h1 {
         font-family: 'Playfair Display', serif;
-        font-size: clamp(2.2rem, 5vw, 3.6rem);
-        font-weight: 700; line-height: 1.18; color: var(--plum-dk);
+        font-size: clamp(2.4rem, 5.5vw, 4rem);
+        font-weight: 700; line-height: 1.15; color: var(--plum-dk);
         margin-bottom: 1.2rem;
       }
       .hero h1 em { font-style: italic; color: var(--rose); }
       .hero-lead {
-        font-size: 1.05rem; color: var(--warm); max-width: 500px; line-height: 1.75;
+        font-size: 1.05rem; color: var(--warm); max-width: 500px; line-height: 1.8;
         margin-bottom: 2rem;
       }
-      .hero-badge-strip {
-        display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.25rem;
-      }
+      .hero-badge-strip { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: 1.25rem; }
       .hero-badge {
         background: rgba(107,63,160,.1); color: var(--plum);
-        border-radius: 20px; padding: 4px 13px; font-size: .8rem; font-weight: 600;
+        border-radius: 20px; padding: 4px 13px; font-size: .78rem; font-weight: 600;
+        border: 1px solid rgba(107,63,160,.2);
       }
 
-      /* ── Hero: live-agent widget ─────────────────────── */
+      /* ── Agent widget ────────────────────────────────── */
       .agent-widget {
-        background: #fff;
+        background: rgba(255,255,255,.92);
         border: 1px solid var(--border);
         border-radius: 24px;
-        box-shadow: 0 24px 64px rgba(107,63,160,.14);
+        box-shadow: 0 30px 80px rgba(107,63,160,.16), 0 0 0 1px rgba(107,63,160,.04);
         overflow: hidden;
         max-width: 360px;
         margin: 0 auto;
+        animation: widget-float 6s ease-in-out infinite;
+      }
+      @keyframes widget-float {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-8px); }
       }
       .agent-widget-header {
-        background: linear-gradient(135deg, var(--plum) 0%, #9454d4 100%);
+        background: linear-gradient(135deg, var(--plum) 0%, #8a50cc 100%);
         padding: 1.25rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
       }
@@ -115,232 +163,305 @@
         font-family: 'Playfair Display', serif;
         color: #fff; font-size: 1rem; font-weight: 700;
       }
-      .online-pulse {
+      .live-badge {
         display: flex; align-items: center; gap: .45rem;
-        font-size: .78rem; color: rgba(255,255,255,.85);
+        font-size: .75rem; color: rgba(255,255,255,.9);
+        background: rgba(255,255,255,.15); border-radius: 20px; padding: 3px 10px;
       }
-      .online-pulse::before {
-        content: '';
-        width: 8px; height: 8px; border-radius: 50%;
-        background: #4ade80;
+      .live-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
         box-shadow: 0 0 0 3px rgba(74,222,128,.3);
-        animation: pulse-green 2s infinite;
+        animation: pulse-green 2s ease-in-out infinite;
       }
       @keyframes pulse-green {
         0%, 100% { box-shadow: 0 0 0 3px rgba(74,222,128,.3); }
-        50%       { box-shadow: 0 0 0 6px rgba(74,222,128,.1); }
+        50%       { box-shadow: 0 0 0 6px rgba(74,222,128,.12); }
       }
-      .agent-widget-body { padding: 1rem 1.5rem 1.5rem; }
-      .aw-agent-row {
+      .agent-widget-body { padding: .75rem 1.5rem 1.5rem; }
+      .aw-row {
         display: flex; align-items: center; gap: .75rem;
-        padding: .6rem 0;
-        border-bottom: 1px solid var(--border);
+        padding: .6rem 0; border-bottom: 1px solid var(--border);
       }
-      .aw-agent-row:last-of-type { border-bottom: none; }
+      .aw-row:last-of-type { border-bottom: none; }
       .aw-avatar {
-        width: 40px; height: 40px; border-radius: 50%;
+        width: 38px; height: 38px; border-radius: 50%;
         background: linear-gradient(135deg, var(--lavender), var(--blush));
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Playfair Display', serif;
-        font-size: 1rem; font-weight: 700; color: var(--plum);
-        flex-shrink: 0;
-        border: 2px solid var(--border);
+        font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 700;
+        color: var(--plum); flex-shrink: 0; border: 2px solid var(--border);
       }
-      .aw-info { flex: 1; min-width: 0; }
-      .aw-name { font-family: 'Playfair Display', serif; font-size: .88rem; color: var(--plum-dk); }
-      .aw-spec { font-size: .75rem; color: var(--muted); }
-      .s-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
-      .s-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
-      .s-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2px 9px; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+      .aw-name { font-family: 'Playfair Display', serif; font-size: .85rem; color: var(--plum-dk); }
+      .aw-spec { font-size: .72rem; color: var(--muted); }
       .aw-cta {
-        background: var(--plum); color: #fff !important;
-        border: none; border-radius: 12px;
-        padding: .7rem 0; font-size: .9rem; font-weight: 700;
-        width: 100%; margin-top: 1rem; display: block; text-align: center;
-        text-decoration: none; transition: background .2s;
+        background: var(--plum); color: #fff !important; border: none; border-radius: 12px;
+        padding: .7rem 0; font-size: .9rem; font-weight: 700; width: 100%;
+        margin-top: 1rem; display: block; text-align: center; text-decoration: none;
+        transition: background .2s, box-shadow .2s;
       }
-      .aw-cta:hover { background: var(--plum-dk); }
+      .aw-cta:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.35); }
+
+      /* Status badges */
+      .s-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
+      .s-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
+      .s-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
 
       /* ─── Stats ────────────────────────────────────── */
       .stats-section {
-        background: var(--plum);
-        padding: 2.25rem 0;
-        color: #fff;
+        background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
+        padding: 2.5rem 0; color: #fff; position: relative; overflow: hidden;
       }
-      .stat-big { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; }
-      .stat-label { font-size: .8rem; opacity: .8; text-transform: uppercase; letter-spacing: .1em; }
+      .stats-section::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+      }
+      .stat-big {
+        font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700;
+        line-height: 1;
+      }
+      .stat-label { font-size: .78rem; opacity: .75; text-transform: uppercase; letter-spacing: .1em; margin-top: .3rem; }
 
       /* ─── Section helpers ──────────────────────────── */
       .eyebrow {
-        font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
-        color: var(--rose); font-weight: 600; margin-bottom: .5rem;
+        font-size: .75rem; letter-spacing: .2em; text-transform: uppercase;
+        color: var(--rose); font-weight: 700; margin-bottom: .5rem;
       }
       .sec-title {
         font-family: 'Playfair Display', serif;
-        font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--plum-dk);
-        margin-bottom: .5rem;
+        font-size: clamp(1.7rem, 4vw, 2.5rem); color: var(--plum-dk);
+        margin-bottom: .5rem; line-height: 1.2;
       }
       .sec-sub { color: var(--muted); font-size: 1rem; }
       .divider-rose {
-        width: 50px; height: 3px;
+        width: 48px; height: 3px;
         background: linear-gradient(90deg, var(--rose), transparent);
-        margin: .75rem 0 1.5rem;
+        margin: .75rem 0 1.5rem; border-radius: 2px;
+      }
+
+      /* ─── Free Trial Banner ─────────────────────────── */
+      .trial-section {
+        background: linear-gradient(135deg, #1e0a35 0%, #2d1155 50%, #1a0a2e 100%);
+        padding: 70px 0; position: relative; overflow: hidden;
+        border-top: 1px solid rgba(168,125,212,.2);
+        border-bottom: 1px solid rgba(168,125,212,.2);
+      }
+      .trial-section::before {
+        content: '✦';
+        position: absolute; font-size: 28rem; opacity: .03;
+        right: -2rem; top: 50%; transform: translateY(-50%);
+        color: #fff; pointer-events: none; line-height: 1;
+      }
+      .trial-badge {
+        display: inline-flex; align-items: center; gap: .5rem;
+        background: rgba(201,168,76,.15); color: var(--gold);
+        border: 1px solid rgba(201,168,76,.3); border-radius: 30px;
+        padding: .35rem 1rem; font-size: .78rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.5rem;
+      }
+      .trial-badge::before { content: '★'; }
+      .trial-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3.6rem);
+        color: #fff; line-height: 1.15; margin-bottom: 1rem;
+      }
+      .trial-title em { font-style: italic; color: var(--gold); }
+      .trial-desc {
+        color: rgba(255,255,255,.7); font-size: 1.05rem; line-height: 1.75;
+        max-width: 460px; margin-bottom: 2rem;
+      }
+      .btn-trial {
+        background: var(--gold); color: #1e0a35 !important;
+        border: none; border-radius: 30px; padding: .75rem 2.25rem;
+        font-size: 1rem; font-weight: 700; text-decoration: none;
+        display: inline-flex; align-items: center; gap: .5rem;
+        transition: box-shadow .2s, transform .2s;
+        box-shadow: 0 4px 24px rgba(201,168,76,.35);
+      }
+      .btn-trial:hover { box-shadow: 0 8px 32px rgba(201,168,76,.5); transform: translateY(-2px); }
+      .trial-terms {
+        color: rgba(255,255,255,.4); font-size: .78rem; margin-top: 1rem;
+      }
+      .trial-card {
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 24px; padding: 2.5rem 2rem;
+        text-align: center; backdrop-filter: blur(10px);
+      }
+      .trial-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 5rem; font-weight: 700; color: var(--gold);
+        line-height: 1; text-shadow: 0 0 40px rgba(201,168,76,.4);
+      }
+      .trial-num-label { color: rgba(255,255,255,.8); font-size: 1.3rem; font-weight: 300; letter-spacing: .15em; text-transform: uppercase; margin-top: .25rem; }
+      .trial-features { list-style: none; padding: 0; margin: 1.5rem 0 0; text-align: left; }
+      .trial-features li {
+        color: rgba(255,255,255,.75); font-size: .9rem; padding: .4rem 0;
+        border-bottom: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: .6rem;
+      }
+      .trial-features li:last-child { border-bottom: none; }
+      .trial-features li::before { content: '✦'; color: var(--gold); font-size: .65rem; flex-shrink: 0; }
+
+      /* ─── Moon phases ──────────────────────────────── */
+      .moon-section {
+        background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 60%, var(--cream) 100%);
+        padding: 60px 0; overflow: hidden; text-align: center;
+        border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      }
+      .moon-section-title {
+        font-family: 'Playfair Display', serif; font-style: italic;
+        color: var(--plum); font-size: 1.15rem; margin-bottom: 2.5rem;
+        opacity: .85;
+      }
+      .moon-phases { display: flex; justify-content: center; align-items: center; gap: 0; flex-wrap: wrap; }
+      .moon-phase {
+        display: flex; flex-direction: column; align-items: center; gap: .35rem;
+        padding: .75rem 1.25rem;
+        transition: transform .25s;
+        position: relative;
+      }
+      .moon-phase:hover { transform: scale(1.12); }
+      .moon-emoji {
+        font-size: 2.8rem; line-height: 1;
+        filter: drop-shadow(0 0 0px rgba(168,125,212,0));
+        transition: filter .3s;
+        animation: moon-glow var(--mg-dur, 4s) var(--mg-del, 0s) ease-in-out infinite alternate;
+      }
+      .moon-phase:hover .moon-emoji { filter: drop-shadow(0 0 14px rgba(168,125,212,.6)); }
+      @keyframes moon-glow {
+        from { filter: drop-shadow(0 0 2px rgba(168,125,212,.1)); }
+        to   { filter: drop-shadow(0 0 10px rgba(168,125,212,.35)); }
+      }
+      .moon-label { font-size: .68rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+      /* Separator dots between phases */
+      .moon-phase + .moon-phase::before {
+        content: '·';
+        position: absolute; left: -.1rem;
+        color: var(--border); font-size: 1.5rem; top: 50%; transform: translateY(-50%);
+        pointer-events: none;
       }
 
       /* ─── How it works ─────────────────────────────── */
-      .how-section { padding: 80px 0; background: var(--sand); }
+      .how-section { padding: 90px 0; background: var(--sand); }
       .step-card {
-        background: #fff; border-radius: 20px;
-        padding: 2.25rem 1.75rem; text-align: center;
-        box-shadow: 0 4px 20px rgba(107,63,160,.06);
-        height: 100%; position: relative;
-        border: 1px solid var(--border);
-        transition: box-shadow .25s, transform .25s;
+        background: #fff; border-radius: 22px; padding: 2.5rem 1.75rem; text-align: center;
+        border: 1px solid var(--border); height: 100%;
+        transition: box-shadow .3s, transform .3s;
+        position: relative;
       }
-      .step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(107,63,160,.12); }
+      .step-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(107,63,160,.13);
+      }
       .step-num {
-        width: 54px; height: 54px; border-radius: 50%;
+        width: 56px; height: 56px; border-radius: 50%;
         background: linear-gradient(135deg, var(--plum), var(--rose));
         color: #fff; font-family: 'Playfair Display', serif;
-        font-size: 1.3rem; font-weight: 700;
+        font-size: 1.4rem; font-weight: 700;
         display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 1.25rem;
+        margin: 0 auto 1rem;
+        box-shadow: 0 6px 20px rgba(107,63,160,.3);
       }
-      .step-icon { font-size: 1.8rem; margin-bottom: .5rem; }
-      .step-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--plum-dk); margin-bottom: .5rem; }
-      .step-text { color: var(--muted); font-size: .88rem; line-height: 1.7; }
-      /* connector line between cards on md+ */
-      .steps-row { position: relative; }
-      .steps-row::before {
-        content: '';
-        position: absolute; top: 27px; left: calc(16.666% + 27px); right: calc(16.666% + 27px);
-        height: 2px;
-        background: linear-gradient(90deg, var(--border), var(--plum) 50%, var(--border));
-        pointer-events: none;
-        z-index: 0;
-      }
-      @media (max-width: 767px) { .steps-row::before { display: none; } }
-      .step-card { position: relative; z-index: 1; }
+      .step-icon { font-size: 2rem; margin-bottom: .6rem; display: block; }
+      .step-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--plum-dk); margin-bottom: .5rem; }
+      .step-text { color: var(--muted); font-size: .88rem; line-height: 1.75; }
 
       /* ─── Agents ───────────────────────────────────── */
-      .agents-section { padding: 80px 0; background: var(--cream); }
+      .agents-section { padding: 90px 0; background: var(--cream); }
       .agent-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 2rem 1.5rem;
-        text-align: center;
-        transition: box-shadow .25s, transform .25s;
-        height: 100%;
+        background: #fff; border: 1px solid var(--border); border-radius: 22px;
+        padding: 2rem 1.5rem; text-align: center;
+        transition: box-shadow .3s, transform .3s; height: 100%;
         display: flex; flex-direction: column;
       }
-      .agent-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 40px rgba(107,63,160,.12);
-      }
+      .agent-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(107,63,160,.12); }
       .agent-avatar {
-        width: 72px; height: 72px; border-radius: 50%;
+        width: 74px; height: 74px; border-radius: 50%;
         background: linear-gradient(135deg, var(--lavender), var(--blush));
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Playfair Display', serif;
-        font-size: 1.7rem; font-weight: 700; color: var(--plum);
-        margin: 0 auto 1rem;
+        font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700;
+        color: var(--plum); margin: 0 auto 1rem;
         border: 3px solid var(--border);
+        box-shadow: 0 4px 16px rgba(107,63,160,.1);
       }
-      .agent-name {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.1rem; color: var(--plum-dk); margin-bottom: .2rem;
-      }
+      .agent-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--plum-dk); margin-bottom: .2rem; }
       .agent-spec { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
-      .btn-call-rose {
-        background: var(--plum); color: #fff !important;
-        border: none; border-radius: 30px;
-        padding: .5rem 1rem; font-size: .9rem; font-weight: 600;
+      .btn-call {
+        background: var(--plum); color: #fff !important; border: none; border-radius: 30px;
+        padding: .55rem 1rem; font-size: .9rem; font-weight: 600;
         width: 100%; margin-top: auto; display: block; text-align: center;
-        text-decoration: none;
-        transition: background .2s, box-shadow .2s;
+        text-decoration: none; transition: background .2s, box-shadow .2s;
       }
-      .btn-call-rose:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.3); }
+      .btn-call:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.3); }
       .btn-busy-soft {
-        background: var(--sand); color: var(--muted) !important;
-        border: none; border-radius: 30px;
-        padding: .5rem 1rem; font-size: .9rem;
-        width: 100%; margin-top: auto; display: block; cursor: default;
-        text-align: center;
+        background: var(--sand); color: var(--muted) !important; border: none; border-radius: 30px;
+        padding: .55rem 1rem; font-size: .9rem; width: 100%; margin-top: auto;
+        display: block; cursor: default; text-align: center;
       }
 
       /* ─── Plans ─────────────────────────────────────── */
-      .plans-section { padding: 80px 0; background: #fff; }
+      .plans-section { padding: 90px 0; background: #fff; }
       .plan-card {
-        border: 2px solid var(--border);
-        border-radius: 20px; padding: 2rem 1.5rem;
+        border: 2px solid var(--border); border-radius: 22px; padding: 2rem 1.5rem;
         text-align: center; background: var(--cream);
-        transition: transform .25s, box-shadow .25s;
-        height: 100%; display: flex; flex-direction: column;
+        transition: transform .3s, box-shadow .3s; height: 100%; display: flex; flex-direction: column;
       }
       .plan-card.featured {
         border-color: var(--plum);
         background: linear-gradient(160deg, #f0e8ff 0%, #fff5f8 100%);
-        box-shadow: 0 8px 30px rgba(107,63,160,.15);
+        box-shadow: 0 12px 40px rgba(107,63,160,.18);
       }
-      .plan-card:hover { transform: translateY(-4px); }
+      .plan-card:hover { transform: translateY(-5px); }
       .plan-popular {
-        background: var(--rose); color: #fff;
-        border-radius: 20px; font-size: .7rem; font-weight: 700;
-        padding: 3px 12px; display: inline-block; margin-bottom: 1rem;
-        letter-spacing: .08em; text-transform: uppercase;
+        background: var(--rose); color: #fff; border-radius: 20px;
+        font-size: .68rem; font-weight: 700; padding: 3px 12px;
+        display: inline-block; margin-bottom: 1rem;
+        letter-spacing: .1em; text-transform: uppercase;
       }
       .plan-min-num {
-        font-family: 'Playfair Display', serif;
-        font-size: 2.8rem; font-weight: 700; color: var(--plum-dk); line-height: 1;
+        font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700;
+        color: var(--plum-dk); line-height: 1;
       }
       .plan-min-num small { font-size: 1.1rem; color: var(--muted); font-weight: 400; }
       .plan-clp { font-size: 1.4rem; font-weight: 700; color: var(--rose); margin: .5rem 0; }
       .plan-clp span { font-size: .85rem; color: var(--muted); font-weight: 400; }
-      .plan-desc-txt { font-size: .88rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.65; }
-      .btn-plan-rose {
-        background: var(--plum); color: #fff !important;
-        border: none; border-radius: 30px; padding: .55rem 0;
-        font-size: .9rem; font-weight: 600; width: 100%;
+      .plan-desc { font-size: .88rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.65; }
+      .btn-plan {
+        background: var(--plum); color: #fff !important; border: none; border-radius: 30px;
+        padding: .55rem 0; font-size: .9rem; font-weight: 600; width: 100%;
         transition: background .2s; text-decoration: none; display: block;
       }
-      .btn-plan-rose:hover { background: var(--plum-dk); }
-      .btn-plan-outline-rose {
+      .btn-plan:hover { background: var(--plum-dk); }
+      .btn-plan-outline {
         background: transparent; color: var(--plum) !important;
         border: 2px solid var(--plum); border-radius: 30px; padding: .55rem 0;
         font-size: .9rem; font-weight: 600; width: 100%;
         transition: background .2s; text-decoration: none; display: block;
       }
-      .btn-plan-outline-rose:hover { background: rgba(107,63,160,.07); }
+      .btn-plan-outline:hover { background: rgba(107,63,160,.07); }
 
-      /* ── Minute packs slider ───────────────────────── */
-      .packs-slider-wrapper { position: relative; padding: 0 2.5rem; }
-      .packs-slider {
-        display: flex;
-        gap: 1.25rem;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: .75rem;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(107,63,160,.4) transparent;
+      /* Packs slider */
+      .packs-wrap { position: relative; padding: 0 2.5rem; }
+      .packs-track {
+        display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch; padding-bottom: .75rem;
+        scrollbar-width: thin; scrollbar-color: rgba(107,63,160,.3) transparent;
       }
-      .packs-slider::-webkit-scrollbar { height: 4px; }
-      .packs-slider::-webkit-scrollbar-track { background: transparent; }
-      .packs-slider::-webkit-scrollbar-thumb { background: rgba(107,63,160,.4); border-radius: 2px; }
-      .pack-slide { flex: 0 0 270px; scroll-snap-align: start; }
-      @media (min-width: 576px) { .pack-slide { flex: 0 0 calc(50% - .625rem); } }
-      @media (min-width: 992px) { .pack-slide { flex: 0 0 calc(25% - .94rem); } }
+      .packs-track::-webkit-scrollbar { height: 4px; }
+      .packs-track::-webkit-scrollbar-thumb { background: rgba(107,63,160,.35); border-radius: 2px; }
+      .pack-item { flex: 0 0 270px; scroll-snap-align: start; }
+      @media (min-width: 576px)  { .pack-item { flex: 0 0 calc(50% - .625rem); } }
+      @media (min-width: 992px)  { .pack-item { flex: 0 0 calc(25% - .94rem); } }
       .slider-btn {
         position: absolute; top: 50%; transform: translateY(-50%);
-        background: rgba(107,63,160,.15); border: 1px solid rgba(107,63,160,.3);
+        background: rgba(107,63,160,.12); border: 1px solid rgba(107,63,160,.25);
         color: var(--plum); width: 2.2rem; height: 2.2rem; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: background .2s; z-index: 2; font-size: 1.1rem;
+        cursor: pointer; transition: background .2s; z-index: 2;
       }
-      .slider-btn:hover { background: rgba(107,63,160,.3); }
-      .slider-btn-prev { left: 0; }
-      .slider-btn-next { right: 0; }
+      .slider-btn:hover { background: rgba(107,63,160,.25); }
+      .slider-prev { left: 0; }
+      .slider-next { right: 0; }
       @media (min-width: 992px) { .slider-btn { display: none; } }
       .btn-cart-sm {
         border-radius: 30px; padding: .35rem 0; font-weight: 600; font-size: .78rem; width: 100%;
@@ -351,175 +472,160 @@
 
       /* ─── Testimonials ─────────────────────────────── */
       .testimonials-section {
-        padding: 80px 0;
+        padding: 90px 0;
         background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%);
       }
-      .testi-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+      .testi-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
       @media (min-width: 768px) { .testi-grid { grid-template-columns: repeat(2, 1fr); } }
       @media (min-width: 992px) { .testi-grid { grid-template-columns: repeat(3, 1fr); } }
       .testi-card {
-        background: #fff;
-        border-radius: 20px;
-        padding: 2rem 1.75rem;
+        background: #fff; border-radius: 20px; padding: 2rem 1.75rem;
         box-shadow: 0 10px 30px rgba(107,63,160,.08);
         display: flex; flex-direction: column;
+        transition: transform .25s, box-shadow .25s;
       }
-      .stars-sm { font-size: 1rem; color: #f59e0b; letter-spacing: .1em; margin-bottom: 1rem; }
+      .testi-card:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(107,63,160,.14); }
+      .stars-row { color: #f59e0b; font-size: .95rem; letter-spacing: .1em; margin-bottom: 1rem; }
       .t-quote {
-        font-family: 'Playfair Display', serif;
-        font-style: italic; font-size: 1rem;
-        color: var(--text); line-height: 1.75; margin-bottom: 1.25rem;
-        flex: 1;
+        font-family: 'Playfair Display', serif; font-style: italic; font-size: .97rem;
+        color: var(--text); line-height: 1.75; flex: 1; margin-bottom: 1.25rem;
       }
-      .t-who { font-weight: 700; color: var(--plum-dk); font-size: .9rem; }
-      .t-where { color: var(--muted); font-size: .8rem; }
+      .t-who { font-weight: 700; color: var(--plum-dk); font-size: .88rem; }
+      .t-city { color: var(--muted); font-size: .78rem; }
 
       /* ─── FAQ ──────────────────────────────────────── */
-      .faq-section { padding: 80px 0; background: var(--cream); }
+      .faq-section { padding: 90px 0; background: var(--cream); }
       .faq-accordion .accordion-button {
-        font-family: 'Source Sans 3', sans-serif;
-        font-weight: 600; font-size: .98rem;
-        color: var(--text); background: #fff;
+        font-weight: 600; font-size: .98rem; color: var(--text); background: #fff;
       }
-      .faq-accordion .accordion-button:not(.collapsed) {
-        color: var(--plum); background: var(--lavender); box-shadow: none;
-      }
-      .faq-accordion .accordion-button::after {
-        filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg);
-      }
-      .faq-accordion .accordion-item {
-        border: 1px solid var(--border); border-radius: 12px !important;
-        margin-bottom: .75rem; overflow: hidden;
-      }
-      .faq-accordion .accordion-body { color: var(--muted); font-size: .93rem; line-height: 1.7; }
+      .faq-accordion .accordion-button:not(.collapsed) { color: var(--plum); background: var(--lavender); box-shadow: none; }
+      .faq-accordion .accordion-button::after { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
+      .faq-accordion .accordion-item { border: 1px solid var(--border); border-radius: 14px !important; margin-bottom: .75rem; overflow: hidden; }
+      .faq-accordion .accordion-body { color: var(--muted); font-size: .92rem; line-height: 1.75; }
 
       /* ─── CTA ──────────────────────────────────────── */
       .cta-section {
-        padding: 80px 0;
-        background: var(--plum);
-        text-align: center; color: #fff;
+        padding: 90px 0; background: var(--plum); text-align: center; color: #fff;
+        position: relative; overflow: hidden;
       }
-      .cta-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: .75rem; }
-      .cta-section p { opacity: .85; font-size: 1.05rem; margin-bottom: 2rem; }
-      .btn-cta-white {
-        background: #fff; color: var(--plum) !important;
-        border: none; border-radius: 30px; padding: .7rem 2rem;
-        font-size: 1rem; font-weight: 700;
+      .cta-section::before {
+        content: '🌙';
+        position: absolute; font-size: 24rem; opacity: .05;
+        right: 2%; top: 50%; transform: translateY(-50%);
+        pointer-events: none; line-height: 1;
+      }
+      .cta-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: .75rem; }
+      .cta-section p { opacity: .82; font-size: 1.05rem; margin-bottom: 2rem; }
+      .btn-white {
+        background: #fff; color: var(--plum) !important; border: none; border-radius: 30px;
+        padding: .75rem 2.25rem; font-size: 1rem; font-weight: 700;
         transition: box-shadow .2s; text-decoration: none;
       }
-      .btn-cta-white:hover { box-shadow: 0 8px 24px rgba(0,0,0,.2); }
-      .btn-cta-outline-white {
-        background: transparent; color: #fff !important;
-        border: 2px solid rgba(255,255,255,.6); border-radius: 30px; padding: .65rem 2rem;
-        font-size: 1rem; font-weight: 600;
+      .btn-white:hover { box-shadow: 0 8px 28px rgba(0,0,0,.22); }
+      .btn-white-outline {
+        background: transparent; color: #fff !important; border: 2px solid rgba(255,255,255,.55);
+        border-radius: 30px; padding: .7rem 2.25rem; font-size: 1rem; font-weight: 600;
         transition: border-color .2s; text-decoration: none;
       }
-      .btn-cta-outline-white:hover { border-color: #fff; }
+      .btn-white-outline:hover { border-color: #fff; }
 
       /* ─── Footer ───────────────────────────────────── */
       footer {
-        background: var(--plum-dk);
-        color: rgba(255,255,255,.65);
-        padding: 3rem 0 2rem; font-size: .88rem;
+        background: var(--plum-dk); color: rgba(255,255,255,.6);
+        padding: 3.5rem 0 2rem; font-size: .88rem;
       }
-      .footer-brand {
-        font-family: 'Playfair Display', serif;
-        color: #fff; font-size: 1.3rem; font-weight: 700;
-        text-decoration: none;
-        display: inline-block; margin-bottom: .5rem;
-      }
-      .footer-tagline { color: rgba(255,255,255,.55); font-size: .85rem; margin-bottom: 1.5rem; }
-      .footer-links a {
-        color: rgba(255,255,255,.6); text-decoration: none;
-        font-size: .85rem; transition: color .2s;
-      }
-      .footer-links a:hover { color: #fff; }
-      .footer-divider { border-color: rgba(255,255,255,.1); margin: 1.5rem 0; }
-      .footer-copy { color: rgba(255,255,255,.4); font-size: .78rem; }
+      .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.35rem; font-weight: 700; text-decoration: none; display: block; margin-bottom: .4rem; }
+      .footer-tagline { color: rgba(255,255,255,.45); font-size: .83rem; line-height: 1.6; margin-bottom: 1.25rem; }
+      .footer-phone { color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem; transition: color .2s; }
+      .footer-phone:hover { color: #fff; }
+      .footer-col-title { color: rgba(255,255,255,.35); font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; margin-bottom: .75rem; }
+      .footer-links { display: flex; flex-direction: column; gap: .4rem; }
+      .footer-links a { color: rgba(255,255,255,.55); text-decoration: none; font-size: .85rem; transition: color .2s; }
+      .footer-links a:hover { color: rgba(255,255,255,.9); }
+      .footer-areas { color: rgba(255,255,255,.5); font-size: .83rem; line-height: 2; }
+      hr.footer-hr { border-color: rgba(255,255,255,.08); margin: 1.75rem 0 1.25rem; }
+      .footer-copy { color: rgba(255,255,255,.3); font-size: .78rem; text-align: center; }
 
-      /* ─── Off-canvas agent panel ───────────────────── */
+      /* ─── Off-canvas ────────────────────────────────── */
       .offcanvas-agents { background: #fff; border-left: 1px solid var(--border); color: var(--text); }
       .offcanvas-agents .offcanvas-header { background: var(--lavender); border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; }
       .offcanvas-agents .offcanvas-title { font-family: 'Playfair Display', serif; color: var(--plum-dk); font-size: 1.1rem; }
       .offcanvas-agents .btn-close { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
       .offcanvas-agents .offcanvas-body { padding: 1.25rem 1.5rem; }
-      .oc-agent-row { display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-      .oc-agent-row:last-child { border-bottom: none; }
+      .oc-row { display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+      .oc-row:last-child { border-bottom: none; }
       .oc-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--lavender), var(--blush)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--plum); flex-shrink: 0; border: 2px solid var(--border); }
       .oc-info { flex: 1; min-width: 0; }
       .oc-name { font-family: 'Playfair Display', serif; font-size: .9rem; color: var(--plum-dk); margin-bottom: 2px; }
       .oc-spec { font-size: .78rem; color: var(--muted); }
-      .oc-filter-tabs .nav-link { font-size: .82rem; color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: .3rem .9rem; margin-right: .4rem; transition: all .2s; }
-      .oc-filter-tabs .nav-link.active { background: var(--plum); color: #fff; border-color: transparent; font-weight: 600; }
-      .oc-filter-tabs .nav-link:hover:not(.active) { color: var(--plum); border-color: var(--plum); }
+      .oc-tabs .nav-link { font-size: .82rem; color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: .3rem .9rem; margin-right: .4rem; transition: all .2s; }
+      .oc-tabs .nav-link.active { background: var(--plum); color: #fff; border-color: transparent; font-weight: 600; }
+      .oc-tabs .nav-link:hover:not(.active) { color: var(--plum); border-color: var(--plum); }
       .btn-oc-call { background: var(--plum); color: #fff !important; border: none; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; font-weight: 700; transition: background .2s; white-space: nowrap; text-decoration: none; }
       .btn-oc-call:hover { background: var(--plum-dk); }
       .btn-oc-busy { background: transparent; border: 1px solid var(--border); color: var(--muted) !important; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; white-space: nowrap; cursor: default; }
-      .btn-oc-trigger { background: rgba(107,63,160,.1); color: var(--plum) !important; border: 1px solid rgba(107,63,160,.3); border-radius: 20px; padding: .38rem 1rem; font-size: .85rem; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: .4rem; }
+      .btn-oc-trigger { background: rgba(107,63,160,.1); color: var(--plum) !important; border: 1px solid rgba(107,63,160,.28); border-radius: 20px; padding: .38rem 1rem; font-size: .85rem; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: .4rem; }
       .btn-oc-trigger:hover { background: rgba(107,63,160,.18); }
-      .oc-online-dot { width: 8px; height: 8px; border-radius: 50%; background: #059669; display: inline-block; margin-right: 3px; }
-      .oc-busy-dot  { width: 8px; height: 8px; border-radius: 50%; background: #b45309; display: inline-block; margin-right: 3px; }
-
-      /* ─── Dark theme overrides ──────────────────────── */
-      [data-theme="dark"] {
-        --cream:   #0d0d1a;
-        --sand:    #141428;
-        --blush:   #1a1030;
-        --lavender:#1e1535;
-        --plum:    #a87dd4;
-        --plum-dk: #c4a0e8;
-        --rose:    #d98aaa;
-        --text:    #e8e0ff;
-        --muted:   #9d8fbe;
-        --border:  rgba(168,125,212,.25);
-      }
-      [data-theme="dark"] body { background: var(--cream); color: var(--text); }
-      [data-theme="dark"] .site-nav { background: rgba(13,13,26,.92); border-color: var(--border); }
-      [data-theme="dark"] .brand { color: var(--plum); }
-      [data-theme="dark"] .agent-widget { background: #1a1535; border-color: var(--border); }
-      [data-theme="dark"] .aw-cta { background: var(--plum); }
-      [data-theme="dark"] .step-card { background: #141428; }
-      [data-theme="dark"] .agent-card { background: #141428; }
-      [data-theme="dark"] .testi-card { background: #1a1535; }
-      [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
-      [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
-      [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
-      [data-theme="dark"] footer { background: #080810; }
-      [data-theme="dark"] .plan-card { background: #141428; }
-      [data-theme="dark"] .plan-card.featured { background: linear-gradient(160deg, #2a1a45 0%, #1a1535 100%); }
-
-      /* ─── Theme toggle ──────────────────────────────── */
-      .btn-theme-toggle {
-        background: none; border: 1px solid rgba(107,63,160,.35); border-radius: 20px;
-        padding: .3rem .65rem; cursor: pointer; color: var(--plum);
-        font-size: 1rem; line-height: 1; transition: border-color .2s, background .2s;
-        display: inline-flex; align-items: center;
-      }
-      .btn-theme-toggle:hover { border-color: var(--plum); background: rgba(107,63,160,.08); }
-      .btn-theme-toggle .icon-sun  { display: none; }
-      .btn-theme-toggle .icon-moon { display: inline; }
-      [data-theme="dark"] .btn-theme-toggle { border-color: rgba(168,125,212,.35); color: var(--plum); }
-      [data-theme="dark"] .btn-theme-toggle .icon-sun  { display: inline; }
-      [data-theme="dark"] .btn-theme-toggle .icon-moon { display: none; }
+      .oc-dot-online { width: 8px; height: 8px; border-radius: 50%; background: #059669; display: inline-block; margin-right: 3px; }
+      .oc-dot-busy   { width: 8px; height: 8px; border-radius: 50%; background: #b45309; display: inline-block; margin-right: 3px; }
 
       /* ─── Back to top ───────────────────────────────── */
       .btn-back-top {
         position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1020;
-        width: 44px; height: 44px; border-radius: 50%;
+        width: 46px; height: 46px; border-radius: 50%;
         background: var(--plum); color: #fff; border: none; cursor: pointer;
         display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-        box-shadow: 0 4px 16px rgba(107,63,160,.35);
+        box-shadow: 0 4px 20px rgba(107,63,160,.4);
         opacity: 0; visibility: hidden; transform: translateY(8px);
-        transition: opacity .25s, visibility .25s, transform .25s, background .2s;
+        transition: opacity .3s, visibility .3s, transform .3s, background .2s;
       }
       .btn-back-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
       .btn-back-top:hover { background: var(--plum-dk); }
+
+      /* ─── Theme toggle ──────────────────────────────── */
+      .btn-theme-toggle {
+        background: none; border: 1px solid rgba(107,63,160,.3); border-radius: 20px;
+        padding: .3rem .65rem; cursor: pointer; color: var(--plum); font-size: 1rem;
+        line-height: 1; transition: all .2s; display: inline-flex; align-items: center;
+      }
+      .btn-theme-toggle:hover { border-color: var(--plum); background: rgba(107,63,160,.08); }
+      .icon-sun { display: none; }
+      .icon-moon { display: inline; }
+
+      /* ─── Dark mode ──────────────────────────────────── */
+      [data-theme="dark"] {
+        --cream:    #0d0d1a;
+        --sand:     #141428;
+        --blush:    #1a1030;
+        --lavender: #1e1535;
+        --plum:     #a87dd4;
+        --plum-dk:  #c4a0e8;
+        --rose:     #d98aaa;
+        --text:     #e8e0ff;
+        --muted:    #9d8fbe;
+        --border:   rgba(168,125,212,.22);
+      }
+      [data-theme="dark"] .site-nav { background: rgba(13,13,26,.93); }
+      [data-theme="dark"] .agent-widget { background: rgba(26,21,53,.92); }
+      [data-theme="dark"] .step-card,
+      [data-theme="dark"] .agent-card,
+      [data-theme="dark"] .testi-card { background: #141428; }
+      [data-theme="dark"] .plan-card { background: #141428; }
+      [data-theme="dark"] .plan-card.featured { background: linear-gradient(160deg, #2a1a48 0%, #1a1535 100%); }
+      [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
+      [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
+      [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
+      [data-theme="dark"] footer { background: #080810; }
+      [data-theme="dark"] .icon-sun  { display: inline; }
+      [data-theme="dark"] .icon-moon { display: none; }
+      [data-theme="dark"] .btn-theme-toggle { border-color: rgba(168,125,212,.3); color: var(--plum); }
     </style>
   </head>
   <body>
 
     <!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
-    <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
+    <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas"
+         aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
           <i class="ti ti-stars me-2"></i>Especialistas
@@ -527,25 +633,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
       </div>
       <div class="offcanvas-body">
-        <ul class="nav oc-filter-tabs mb-4" id="ocFilterTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="oc-tab-all" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="oc-tab-online" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab">
-              <span class="oc-online-dot"></span>Disponibles
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="oc-tab-busy" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab">
-              <span class="oc-busy-dot"></span>En consulta
-            </button>
-          </li>
+        <ul class="nav oc-tabs mb-4" role="tablist">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab"><span class="oc-dot-online"></span>Disponibles</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab"><span class="oc-dot-busy"></span>En consulta</button></li>
         </ul>
         <div class="tab-content">
           <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
             {% for agent in agents %}
-            <div class="oc-agent-row">
+            <div class="oc-row">
               <div class="oc-avatar">{{ agent.name[0] }}</div>
               <div class="oc-info">
                 <div class="oc-name">{{ agent.name }}</div>
@@ -556,57 +652,54 @@
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
                 </div>
               </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-              {% else %}
-              <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
-              {% endif %}
+              {% if agent.status == 'online' %}<a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
             </div>
             {% endfor %}
           </div>
           <div class="tab-pane fade" id="oc-online" role="tabpanel">
-            {% set online_agents = agents | selectattr('status', 'eq', 'online') | list %}
-            {% if online_agents %}
-            {% for agent in online_agents %}
-            <div class="oc-agent-row">
-              <div class="oc-avatar">{{ agent.name[0] }}</div>
-              <div class="oc-info">
-                <div class="oc-name">{{ agent.name }}</div>
-                <div class="oc-spec">{{ agent.specialty }}</div>
-                <div class="mt-1"><span class="s-online">● Disponible</span></div>
+            {% set online = agents | selectattr('status', 'eq', 'online') | list %}
+            {% if online %}
+              {% for agent in online %}
+              <div class="oc-row">
+                <div class="oc-avatar">{{ agent.name[0] }}</div>
+                <div class="oc-info">
+                  <div class="oc-name">{{ agent.name }}</div>
+                  <div class="oc-spec">{{ agent.specialty }}</div>
+                  <div class="mt-1"><span class="s-online">● Disponible</span></div>
+                </div>
+                <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               </div>
-              <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-            </div>
-            {% endfor %}
+              {% endfor %}
             {% else %}
-            <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
+              <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
             {% endif %}
           </div>
           <div class="tab-pane fade" id="oc-busy" role="tabpanel">
-            {% set busy_agents = agents | selectattr('status', 'eq', 'busy') | list %}
-            {% if busy_agents %}
-            {% for agent in busy_agents %}
-            <div class="oc-agent-row">
-              <div class="oc-avatar">{{ agent.name[0] }}</div>
-              <div class="oc-info">
-                <div class="oc-name">{{ agent.name }}</div>
-                <div class="oc-spec">{{ agent.specialty }}</div>
-                <div class="mt-1"><span class="s-busy">● En consulta</span></div>
+            {% set busy = agents | selectattr('status', 'eq', 'busy') | list %}
+            {% if busy %}
+              {% for agent in busy %}
+              <div class="oc-row">
+                <div class="oc-avatar">{{ agent.name[0] }}</div>
+                <div class="oc-info">
+                  <div class="oc-name">{{ agent.name }}</div>
+                  <div class="oc-spec">{{ agent.specialty }}</div>
+                  <div class="mt-1"><span class="s-busy">● En consulta</span></div>
+                </div>
+                <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
               </div>
-              <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
-            </div>
-            {% endfor %}
+              {% endfor %}
             {% else %}
-            <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta en este momento.</p>
+              <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta ahora.</p>
             {% endif %}
           </div>
         </div>
         <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
-          <a href="tel:600XXXXXXX" class="btn-call-rose d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-decoration:none; text-align:center;">
+          <a href="tel:600XXXXXXX" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
           </a>
-          <a href="#planes" class="btn-plan-outline-rose d-block" style="padding:.55rem 0; text-decoration:none; text-align:center;" data-bs-dismiss="offcanvas">
-            <i class="ti ti-wallet me-2"></i>Ver Planes y Carga Minutos
+          <a href="#planes" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
+            <i class="ti ti-wallet me-2"></i>Ver Planes
           </a>
         </div>
       </div>
@@ -619,15 +712,15 @@
         <div class="d-flex align-items-center gap-3">
           <a href="#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
           <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
-          <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Ayuda</a>
-          <a href="tel:600XXXXXXX" class="btn btn-outline-secondary btn-sm d-none d-md-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
+          <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
+          <a href="tel:600XXXXXXX" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
             <i class="ti ti-phone me-1"></i>600 XXX XXX
           </a>
-          <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas" aria-controls="agentsOffcanvas">
-            <span class="oc-online-dot"></span>Especialistas
+          <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
+            <span class="oc-dot-online"></span>Especialistas
           </button>
           <a href="#planes" class="btn-rose">Carga Minutos</a>
-          <button class="btn-theme-toggle" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
+          <button class="btn-theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
             <span class="icon-moon">🌙</span>
             <span class="icon-sun">☀️</span>
           </button>
@@ -636,26 +729,25 @@
     </nav>
 
     <!-- ── HERO ────────────────────────────────────── -->
-    <section class="hero">
-      <div class="container">
+    <section class="hero" id="hero-section">
+      <div class="container" style="position:relative; z-index:1;">
         <div class="row g-5 align-items-center">
           <div class="col-lg-6">
-            <div class="hero-eyebrow">🌟 Orientación Espiritual · Chile</div>
+            <div class="hero-eyebrow">✦ Orientación Espiritual · Chile</div>
             <h1>
               Encuentra claridad<br>
               en los momentos<br>
               <em>que más importan</em>
             </h1>
             <p class="hero-lead">
-              Nuestras especialistas en tarot te acompañan en las decisiones
-              importantes de tu vida — amor, trabajo, familia y más.
-              Disponibles ahora mismo, sin citas ni esperas.
+              Nuestras especialistas en tarot te acompañan sin esperas, sin citas.
+              Amor, trabajo, familia — cuando más lo necesitas.
             </p>
             <div class="d-flex gap-3 flex-wrap">
-              <a href="tel:600XXXXXXX" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+              <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
                 <i class="ti ti-phone me-2"></i>Llama Ahora
               </a>
-              <a href="#planes" class="btn btn-lg btn-plan-outline-rose px-5" style="display:inline-flex; align-items:center;">
+              <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
                 <i class="ti ti-wallet me-2"></i>Carga Minutos
               </a>
             </div>
@@ -666,19 +758,18 @@
               <span class="hero-badge">✔ Minutos sin vencimiento</span>
             </div>
           </div>
-
-          <!-- Live agent widget -->
           <div class="col-lg-6">
+            <!-- Live agent status widget -->
             <div class="agent-widget">
               <div class="agent-widget-header">
                 <span>Especialistas disponibles ahora</span>
-                <span class="online-pulse">En línea</span>
+                <span class="live-badge"><span class="live-dot"></span>En vivo</span>
               </div>
               <div class="agent-widget-body">
                 {% for agent in agents[:4] %}
-                <div class="aw-agent-row">
+                <div class="aw-row">
                   <div class="aw-avatar">{{ agent.name[0] }}</div>
-                  <div class="aw-info">
+                  <div style="flex:1; min-width:0;">
                     <div class="aw-name">{{ agent.name }}</div>
                     <div class="aw-spec">{{ agent.specialty }}</div>
                   </div>
@@ -702,21 +793,98 @@
       <div class="container">
         <div class="row text-center g-4">
           <div class="col-6 col-md-3">
-            <div class="stat-big">+50.000</div>
+            <div class="stat-big" data-count="50000" data-prefix="+" data-suffix=".000">+50.000</div>
             <div class="stat-label">Consultas realizadas</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="stat-big">98%</div>
+            <div class="stat-big" data-count="98" data-suffix="%">98%</div>
             <div class="stat-label">Satisfacción</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="stat-big">+20</div>
+            <div class="stat-big" data-count="20" data-prefix="+">+20</div>
             <div class="stat-label">Especialistas</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-big">24/7</div>
             <div class="stat-label">Disponibilidad</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FREE TRIAL ─────────────────────────────────── -->
+    <section class="trial-section">
+      <div class="container">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-7 reveal">
+            <div class="trial-badge">Oferta de bienvenida</div>
+            <h2 class="trial-title">
+              Tu primera consulta:<br>
+              <em>5 minutos gratis</em>
+            </h2>
+            <p class="trial-desc">
+              Sabemos que dar el primer paso puede generar dudas. Por eso te ofrecemos
+              5 minutos completamente gratuitos para que conozcas a nuestras especialistas
+              y compruebes por ti mismo/a la calidad de cada lectura.
+            </p>
+            <a href="tel:600XXXXXXX" class="btn-trial">
+              <i class="ti ti-sparkles"></i>
+              Obtener mis 5 minutos gratis
+            </a>
+            <p class="trial-terms">Sin compromisos · Sin tarjeta de crédito requerida · Solo para nuevos usuarios</p>
+          </div>
+          <div class="col-lg-5 reveal reveal-d2">
+            <div class="trial-card">
+              <div class="trial-num">5</div>
+              <div class="trial-num-label">Minutos Gratis</div>
+              <ul class="trial-features">
+                <li>Lectura con especialista real</li>
+                <li>Sin cargos ocultos</li>
+                <li>Elige la tarotista que prefieras</li>
+                <li>100% privado y confidencial</li>
+                <li>Disponible las 24 horas</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MOON PHASES ────────────────────────────────── -->
+    <section class="moon-section" aria-label="Fases lunares">
+      <p class="moon-section-title">Las fases de la luna guían cada lectura</p>
+      <div class="moon-phases">
+        <div class="moon-phase" style="--mg-dur:3.5s; --mg-del:0s;">
+          <span class="moon-emoji">🌑</span>
+          <span class="moon-label">Luna Nueva</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:4s; --mg-del:.4s;">
+          <span class="moon-emoji">🌒</span>
+          <span class="moon-label">Creciente</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:3.8s; --mg-del:.8s;">
+          <span class="moon-emoji">🌓</span>
+          <span class="moon-label">Cuarto Creciente</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:4.2s; --mg-del:1.2s;">
+          <span class="moon-emoji">🌔</span>
+          <span class="moon-label">Gibosa Creciente</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:3.6s; --mg-del:1.6s;">
+          <span class="moon-emoji">🌕</span>
+          <span class="moon-label">Luna Llena</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:4.4s; --mg-del:2s;">
+          <span class="moon-emoji">🌖</span>
+          <span class="moon-label">Gibosa Menguante</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:3.9s; --mg-del:2.4s;">
+          <span class="moon-emoji">🌗</span>
+          <span class="moon-label">Cuarto Menguante</span>
+        </div>
+        <div class="moon-phase" style="--mg-dur:4.1s; --mg-del:2.8s;">
+          <span class="moon-emoji">🌘</span>
+          <span class="moon-label">Menguante</span>
         </div>
       </div>
     </section>
@@ -728,39 +896,92 @@
           <div class="eyebrow">¿Cómo funciona?</div>
           <h2 class="sec-title">En tres pasos simples</h2>
           <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Rápido, seguro y sin complicaciones</p>
+          <p class="sec-sub">Rápido, seguro y sin complicaciones desde cualquier teléfono</p>
         </div>
-        <div class="row g-4 steps-row">
-          <div class="col-md-4">
+        <div class="row g-4">
+          <div class="col-md-4 reveal reveal-d1">
             <div class="step-card">
               <div class="step-num">1</div>
-              <div class="step-icon">💳</div>
+              <span class="step-icon">💳</span>
               <div class="step-title">Carga tu saldo</div>
-              <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago en línea, de forma rápida y segura con cualquier medio de pago disponible en Chile.</p>
+              <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago en línea de forma rápida y segura con cualquier medio de pago chileno.</p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 reveal reveal-d2">
             <div class="step-card">
               <div class="step-num">2</div>
-              <div class="step-icon">🔮</div>
+              <span class="step-icon">🔮</span>
               <div class="step-title">Elige tu especialista</div>
-              <p class="step-text">Revisa quién está disponible ahora mismo y elige a quien más resuene contigo. Si tu favorita está ocupada, inténtalo unos minutos después.</p>
+              <p class="step-text">Revisa quién está disponible ahora mismo. Elige a quien más resuene contigo — si está ocupada, inténtalo unos minutos después.</p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 reveal reveal-d3">
             <div class="step-card">
               <div class="step-num">3</div>
-              <div class="step-icon">📞</div>
+              <span class="step-icon">📞</span>
               <div class="step-title">Consulta con tranquilidad</div>
-              <p class="step-text">Llama al 600 XXX XXX y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas; el saldo restante nunca expira.</p>
+              <p class="step-text">Llama al 600 XXX XXX y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
             </div>
           </div>
         </div>
-        <div class="text-center mt-5">
-          <a href="#planes" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-            <i class="ti ti-wallet me-2"></i>Ver Planes
-          </a>
+      </div>
+    </section>
+
+    <!-- ── PLANS ─────────────────────────────────────── -->
+    <section id="planes" class="plans-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="eyebrow">Tarifas</div>
+          <h2 class="sec-title">Planes a tu medida</h2>
+          <div class="divider-rose mx-auto"></div>
+          <p class="sec-sub">Tus minutos son tuyos — sin fecha de vencimiento, sin letra chica</p>
         </div>
+        {% if minute_packs %}
+        <div class="packs-wrap">
+          <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <div class="packs-track" id="packsSlider">
+            {% for pack in minute_packs %}
+            <div class="pack-item">
+              <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
+                {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+                <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
+                <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
+                <p class="plan-desc">{{ pack.description or '' }}</p>
+                <div class="mt-auto d-flex flex-column gap-2">
+                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
+                    <i class="ti ti-bolt me-1"></i>Compra Ahora
+                  </a>
+                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
+                    <input type="hidden" name="item_type" value="minute_pack"/>
+                    <input type="hidden" name="item_id" value="{{ pack.id }}"/>
+                    <input type="hidden" name="quantity" value="1"/>
+                    <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                    <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+        {% else %}
+        <div class="row g-4 justify-content-center">
+          {% for plan in plans %}
+          <div class="col-sm-6 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
+            <div class="plan-card {% if plan.featured %}featured{% endif %}">
+              {% if plan.featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+              <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
+              <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
+              <p class="plan-desc">{{ plan.description }}</p>
+              <a href="{{ url_for('tienda.minutos') }}" class="{% if plan.featured %}btn-plan{% else %}btn-plan-outline{% endif %}">
+                <i class="ti ti-wallet me-1"></i>Carga Minutos
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -775,7 +996,7 @@
         </div>
         <div class="row g-4">
           {% for agent in agents %}
-          <div class="col-sm-6 col-lg-4">
+          <div class="col-sm-6 col-lg-4 reveal" style="transition-delay:{{ loop.index0 * 0.08 }}s">
             <div class="agent-card">
               <div class="agent-avatar">{{ agent.name[0] }}</div>
               <div class="agent-name">{{ agent.name }}</div>
@@ -786,91 +1007,19 @@
                 {% else %}<span class="s-offline">● No disponible</span>{% endif %}
               </div>
               {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn-call-rose">
-                <i class="ti ti-phone me-1"></i>Llama Ahora
-              </a>
+              <a href="tel:600XXXXXXX" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
               {% elif agent.status == 'busy' %}
-              <button class="btn-busy-soft" disabled>
-                <i class="ti ti-clock me-1"></i>En consulta ahora
-              </button>
+              <button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>
               {% endif %}
             </div>
           </div>
           {% endfor %}
         </div>
         <div class="text-center mt-5">
-          <a href="tel:600XXXXXXX" class="btn btn-lg btn-call-rose px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+          <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- ── PLANS ─────────────────────────────────────── -->
-    <section id="planes" class="plans-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">Tarifas</div>
-          <h2 class="sec-title">Planes a tu medida</h2>
-          <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Carga los minutos que necesitas — son tuyos sin fecha de vencimiento</p>
-        </div>
-        {% if minute_packs %}
-        <div class="packs-slider-wrapper">
-          <button class="slider-btn slider-btn-prev" id="packsPrev" aria-label="Anterior">
-            <i class="ti ti-chevron-left"></i>
-          </button>
-          <div class="packs-slider" id="packsSlider">
-            {% for pack in minute_packs %}
-            <div class="pack-slide">
-              <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
-                {% if pack.is_featured %}
-                <div><span class="plan-popular">✨ Más popular</span></div>
-                {% endif %}
-                <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-                <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
-                <p class="plan-desc-txt">{{ pack.description or '' }}</p>
-                <div class="mt-auto d-flex flex-column gap-2">
-                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}" class="btn btn-plan-rose">
-                    <i class="ti ti-bolt me-1"></i>Compra Ahora
-                  </a>
-                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
-                    <input type="hidden" name="item_type" value="minute_pack"/>
-                    <input type="hidden" name="item_id" value="{{ pack.id }}"/>
-                    <input type="hidden" name="quantity" value="1"/>
-                    <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
-                    <button type="submit" class="btn btn-cart-sm">
-                      <i class="ti ti-shopping-cart me-1"></i>Agregar al Carro
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          <button class="slider-btn slider-btn-next" id="packsNext" aria-label="Siguiente">
-            <i class="ti ti-chevron-right"></i>
-          </button>
-        </div>
-        {% else %}
-        <div class="row g-4 justify-content-center">
-          {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="plan-popular">✨ Más popular</span></div>
-              {% endif %}
-              <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="plan-desc-txt">{{ plan.description }}</p>
-              <a href="{{ url_for('tienda.minutos') }}" class="{% if plan.featured %}btn-plan-rose{% else %}btn-plan-outline-rose{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
       </div>
     </section>
 
@@ -884,32 +1033,32 @@
         </div>
         <div class="testi-grid">
           {% for t in testimonials[:3] %}
-          <div class="testi-card">
-            <div class="stars-sm">★★★★★</div>
+          <div class="testi-card reveal" style="transition-delay:{{ loop.index0 * 0.12 }}s">
+            <div class="stars-row">★★★★★</div>
             <p class="t-quote">"{{ t.text }}"</p>
             <div>
               <div class="t-who">{{ t.author }}</div>
-              <div class="t-where">{{ t.city }}</div>
+              <div class="t-city">{{ t.city }}</div>
             </div>
           </div>
           {% endfor %}
         </div>
         {% if testimonials|length > 3 %}
         <div class="text-center mt-4">
-          <button class="btn btn-plan-outline-rose px-4" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#moreTestimonials"
-                  aria-expanded="false" style="width:auto;">
+          <button class="btn btn-plan-outline px-4" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#moreTestis"
+                  aria-expanded="false" style="width:auto; border-radius:30px;">
             Ver más opiniones
           </button>
-          <div class="collapse mt-4" id="moreTestimonials">
+          <div class="collapse mt-4" id="moreTestis">
             <div class="testi-grid">
               {% for t in testimonials[3:] %}
               <div class="testi-card">
-                <div class="stars-sm">★★★★★</div>
+                <div class="stars-row">★★★★★</div>
                 <p class="t-quote">"{{ t.text }}"</p>
                 <div>
                   <div class="t-who">{{ t.author }}</div>
-                  <div class="t-where">{{ t.city }}</div>
+                  <div class="t-city">{{ t.city }}</div>
                 </div>
               </div>
               {% endfor %}
@@ -933,62 +1082,50 @@
             <div class="accordion faq-accordion" id="faqAccordion">
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                    ¿Cómo funciona el servicio?
-                  </button>
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
                 </h2>
                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">
-                    Elige un plan de minutos, carga tu saldo en línea y llama al 600 XXX XXX. Serás conectado/a de inmediato con una de nuestras especialistas disponibles. Todo es privado y confidencial.
-                  </div>
+                  <div class="accordion-body">Elige un plan de minutos, carga tu saldo en línea y llama al 600 XXX XXX. Serás conectado/a de inmediato con una de nuestras especialistas disponibles. Todo es privado y confidencial.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                    ¿Está disponible las 24 horas?
-                  </button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Está disponible las 24 horas?</button>
                 </h2>
                 <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">
-                    Sí. Contamos con especialistas disponibles las 24 horas del día, los 7 días de la semana, incluyendo fines de semana y festivos.
-                  </div>
+                  <div class="accordion-body">Sí. Contamos con especialistas disponibles las 24 horas del día, los 7 días de la semana, incluyendo fines de semana y festivos.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                    ¿Los minutos que cargo tienen fecha de vencimiento?
-                  </button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Los minutos tienen fecha de vencimiento?</button>
                 </h2>
                 <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">
-                    No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más lo necesites.
-                  </div>
+                  <div class="accordion-body">No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más lo necesites.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                    ¿Es confidencial mi consulta?
-                  </button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es confidencial mi consulta?</button>
                 </h2>
                 <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">
-                    Absolutamente. Toda la información compartida durante la consulta es estrictamente privada. Nunca compartimos datos con terceros.
-                  </div>
+                  <div class="accordion-body">Absolutamente. Toda la información compartida durante la consulta es estrictamente privada. Nunca compartimos datos con terceros.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                    ¿Qué formas de pago aceptan?
-                  </button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Qué formas de pago aceptan?</button>
                 </h2>
                 <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">
-                    Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros métodos de pago populares en Chile.
-                  </div>
+                  <div class="accordion-body">Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros métodos de pago populares en Chile.</div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Cómo funciona la prueba gratuita de 5 minutos?</button>
+                </h2>
+                <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">Si eres nuevo/a usuario, tus primeros 5 minutos de consulta son completamente gratis. Sin tarjeta de crédito requerida. Solo llama al 600 XXX XXX e indícale a la especialista que deseas usar tu bienvenida gratuita.</div>
                 </div>
               </div>
             </div>
@@ -999,16 +1136,12 @@
 
     <!-- ── CTA ──────────────────────────────────────── -->
     <section class="cta-section">
-      <div class="container">
+      <div class="container" style="position:relative; z-index:1;">
         <h2>Da el primer paso hacia la claridad</h2>
-        <p>Nuestras especialistas están listas para recibirte en este momento.</p>
+        <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <a href="tel:600XXXXXXX" class="btn btn-cta-white btn-lg">
-            <i class="ti ti-phone me-2"></i>Llama Ahora
-          </a>
-          <a href="#planes" class="btn btn-cta-outline-white btn-lg">
-            <i class="ti ti-wallet me-2"></i>Carga Minutos
-          </a>
+          <a href="tel:600XXXXXXX" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
+          <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
         </div>
       </div>
     </section>
@@ -1016,17 +1149,15 @@
     <!-- ── FOOTER ───────────────────────────────────── -->
     <footer>
       <div class="container">
-        <div class="row g-4">
+        <div class="row g-5">
           <div class="col-md-4">
             <a href="/" class="footer-brand">🌙 Fonotarot</a>
-            <p class="footer-tagline">Servicio de orientación espiritual<br>telefónica · Chile</p>
-            <a href="tel:600XXXXXXX" style="color:rgba(255,255,255,.7); text-decoration:none; font-size:.9rem;">
-              <i class="ti ti-phone me-1"></i>600 XXX XXX
-            </a>
+            <p class="footer-tagline">Servicio de orientación espiritual<br>telefónica · Chile · Desde 2010</p>
+            <a href="tel:600XXXXXXX" class="footer-phone"><i class="ti ti-phone me-1"></i>600 XXX XXX</a>
           </div>
-          <div class="col-md-4">
-            <p class="footer-tagline mb-2" style="text-transform:uppercase; letter-spacing:.1em; font-size:.75rem;">Navegación</p>
-            <div class="footer-links d-flex flex-column gap-1">
+          <div class="col-6 col-md-4">
+            <p class="footer-col-title">Navegación</p>
+            <div class="footer-links">
               <a href="#tarotistas">Tarotistas</a>
               <a href="#planes">Planes y Precios</a>
               <a href="#ayuda">Cómo Funciona</a>
@@ -1034,9 +1165,9 @@
               <a href="/blog/">Blog</a>
             </div>
           </div>
-          <div class="col-md-4">
-            <p class="footer-tagline mb-2" style="text-transform:uppercase; letter-spacing:.1em; font-size:.75rem;">Áreas de consulta</p>
-            <div style="color:rgba(255,255,255,.55); font-size:.85rem; line-height:1.9;">
+          <div class="col-6 col-md-4">
+            <p class="footer-col-title">Áreas de consulta</p>
+            <div class="footer-areas">
               💕 Amor y Relaciones<br>
               💼 Trabajo y Finanzas<br>
               🏥 Salud y Bienestar<br>
@@ -1045,69 +1176,93 @@
             </div>
           </div>
         </div>
-        <hr class="footer-divider">
-        <p class="footer-copy text-center mb-0">
-          &copy; 2025 Fonotarot Chile · Todos los derechos reservados
-        </p>
+        <hr class="footer-hr">
+        <p class="footer-copy">&copy; 2025 Fonotarot Chile · Todos los derechos reservados</p>
       </div>
     </footer>
 
     <!-- ── BACK TO TOP ──────────────────────────────── -->
-    <button class="btn-back-top" id="back-top" aria-label="Volver arriba" title="Volver arriba">
+    <button class="btn-back-top" id="back-top" aria-label="Volver arriba">
       <i class="ti ti-arrow-up"></i>
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
     <script>
-      // ── Theme toggle ──────────────────────────────────────────────
-      (function () {
-        var html = document.documentElement;
-        var btn  = document.getElementById('theme-toggle');
-        if (!btn) return;
-        var saved = localStorage.getItem('ft-theme');
-        if (saved === 'dark' || saved === 'light') {
-          html.setAttribute('data-theme', saved);
-          html.setAttribute('data-bs-theme', saved);
-        }
-        btn.addEventListener('click', function () {
-          var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-          var next    = current === 'dark' ? 'light' : 'dark';
-          html.setAttribute('data-theme', next);
-          html.setAttribute('data-bs-theme', next);
-          localStorage.setItem('ft-theme', next);
-        });
-      })();
+    (function () {
+      /* ── Theme toggle ───────────────────────────────── */
+      var html = document.documentElement;
+      var themeBtn = document.getElementById('theme-toggle');
+      var saved = localStorage.getItem('ft-theme');
+      if (saved === 'dark' || saved === 'light') {
+        html.setAttribute('data-theme', saved);
+        html.setAttribute('data-bs-theme', saved);
+      }
+      if (themeBtn) themeBtn.addEventListener('click', function () {
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        html.setAttribute('data-bs-theme', next);
+        localStorage.setItem('ft-theme', next);
+      });
 
-      // ── Back to top ───────────────────────────────────────────────
-      (function () {
-        var btn = document.getElementById('back-top');
-        if (!btn) return;
+      /* ── Back to top ────────────────────────────────── */
+      var backTop = document.getElementById('back-top');
+      if (backTop) {
         window.addEventListener('scroll', function () {
-          btn.classList.toggle('visible', window.scrollY > 400);
+          backTop.classList.toggle('visible', window.scrollY > 400);
         }, { passive: true });
-        btn.addEventListener('click', function () {
+        backTop.addEventListener('click', function () {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-      })();
+      }
 
-      // ── Minute packs slider ───────────────────────────────────────
-      (function () {
-        var slider = document.getElementById('packsSlider');
-        var prev = document.getElementById('packsPrev');
-        var next = document.getElementById('packsNext');
-        if (!slider) return;
+      /* ── Hero particles ─────────────────────────────── */
+      var hero = document.getElementById('hero-section');
+      if (hero) {
+        for (var i = 0; i < 22; i++) {
+          var p = document.createElement('span');
+          p.className = 'hero-particle';
+          var size = (Math.random() * 4 + 2) + 'px';
+          p.style.cssText = [
+            'width:' + size, 'height:' + size,
+            'left:' + (Math.random() * 100) + '%',
+            'top:' + (Math.random() * 100) + '%',
+            '--dur:' + (Math.random() * 8 + 6) + 's',
+            '--del:' + (Math.random() * 6) + 's'
+          ].join(';');
+          hero.appendChild(p);
+        }
+      }
+
+      /* ── Scroll reveal ──────────────────────────────── */
+      var reveals = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        var revealObs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              revealObs.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        reveals.forEach(function (el) { revealObs.observe(el); });
+      } else {
+        reveals.forEach(function (el) { el.classList.add('visible'); });
+      }
+
+      /* ── Minute packs slider ────────────────────────── */
+      var slider = document.getElementById('packsSlider');
+      if (slider) {
         var gap = 20;
-        function slideWidth() {
-          var slide = slider.querySelector('.pack-slide');
+        function slideW() {
+          var slide = slider.querySelector('.pack-item');
           return slide ? slide.offsetWidth + gap : 290;
         }
-        if (prev) prev.addEventListener('click', function () {
-          slider.scrollBy({ left: -slideWidth(), behavior: 'smooth' });
-        });
-        if (next) next.addEventListener('click', function () {
-          slider.scrollBy({ left: slideWidth(), behavior: 'smooth' });
-        });
-      })();
+        var prev = document.getElementById('packsPrev');
+        var next = document.getElementById('packsNext');
+        if (prev) prev.addEventListener('click', function () { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
+        if (next) next.addEventListener('click', function () { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
+      }
+    })();
     </script>
   </body>
 </html>
