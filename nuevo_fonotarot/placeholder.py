@@ -4,12 +4,12 @@ Replace with DB-backed content once pages are managed via StaticPage.
 """
 
 AGENTS = [
-    {"name": "Paulina", "specialty": "Opcion 1", "status": "busy"},
-    {"name": "Violeta", "specialty": "Opcion 15", "status": "online"},
-    {"name": "Alex", "specialty": "Opcion 14", "status": "busy"},
-    {"name": "Simone", "specialty": "Opcion 13", "status": "busy"},
-    {"name": "Alvaro", "specialty": "Opcion 12", "status": "busy"},
-    {"name": "Paola", "specialty": "Opcion 6", "status": "online"},
+    {"name": "Paulina", "option": "01", "number": "7001", "status": "busy"},
+    {"name": "Violeta", "option": "15", "number": "7015", "status": "available"},
+    {"name": "Alex",    "option": "14", "number": "7014", "status": "busy"},
+    {"name": "Simone",  "option": "13", "number": "7013", "status": "busy"},
+    {"name": "Alvaro",  "option": "12", "number": "7012", "status": "busy"},
+    {"name": "Paola",   "option": "06", "number": "7006", "status": "available"},
 ]
 
 TESTIMONIALS = [

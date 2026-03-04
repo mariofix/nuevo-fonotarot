@@ -53,6 +53,9 @@ class Config:
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
 
+    # Redis — used for live agent state (firenze writes, fonotarot reads)
+    REDIS_URL: str = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 

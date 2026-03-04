@@ -645,27 +645,27 @@
               <div class="oc-avatar">{{ agent.name[0] }}</div>
               <div class="oc-info">
                 <div class="oc-name">{{ agent.name }}</div>
-                <div class="oc-spec">{{ agent.specialty }}</div>
+                <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                 <div class="mt-1">
-                  {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                  {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                   {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
                 </div>
               </div>
-              {% if agent.status == 'online' %}<a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% if agent.status == 'available' %}<a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
             </div>
             {% endfor %}
           </div>
           <div class="tab-pane fade" id="oc-online" role="tabpanel">
-            {% set online = agents | selectattr('status', 'eq', 'online') | list %}
+            {% set online = agents | selectattr('status', 'eq', 'available') | list %}
             {% if online %}
               {% for agent in online %}
               <div class="oc-row">
                 <div class="oc-avatar">{{ agent.name[0] }}</div>
                 <div class="oc-info">
                   <div class="oc-name">{{ agent.name }}</div>
-                  <div class="oc-spec">{{ agent.specialty }}</div>
+                  <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   <div class="mt-1"><span class="s-online">● Disponible</span></div>
                 </div>
                 <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
@@ -683,7 +683,7 @@
                 <div class="oc-avatar">{{ agent.name[0] }}</div>
                 <div class="oc-info">
                   <div class="oc-name">{{ agent.name }}</div>
-                  <div class="oc-spec">{{ agent.specialty }}</div>
+                  <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   <div class="mt-1"><span class="s-busy">● En consulta</span></div>
                 </div>
                 <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
@@ -771,9 +771,9 @@
                   <div class="aw-avatar">{{ agent.name[0] }}</div>
                   <div style="flex:1; min-width:0;">
                     <div class="aw-name">{{ agent.name }}</div>
-                    <div class="aw-spec">{{ agent.specialty }}</div>
+                    <div class="aw-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   </div>
-                  {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                  {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                   {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
                 </div>
@@ -1000,13 +1000,13 @@
             <div class="agent-card">
               <div class="agent-avatar">{{ agent.name[0] }}</div>
               <div class="agent-name">{{ agent.name }}</div>
-              <div class="agent-spec">{{ agent.specialty }}</div>
+              <div class="agent-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
               <div class="mb-3">
-                {% if agent.status == 'online' %}<span class="s-online">● Disponible</span>
+                {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                 {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                 {% else %}<span class="s-offline">● No disponible</span>{% endif %}
               </div>
-              {% if agent.status == 'online' %}
+              {% if agent.status == 'available' %}
               <a href="tel:600XXXXXXX" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
               {% elif agent.status == 'busy' %}
               <button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>

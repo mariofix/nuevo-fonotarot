@@ -3,7 +3,8 @@
 from flask import Blueprint, abort, make_response, render_template
 
 from ..models import BlogPost, MinutePack, SiteSettings, StaticPage
-from ..placeholder import AGENTS, PLANS, TESTIMONIALS
+from ..placeholder import PLANS, TESTIMONIALS
+from ..utils import get_agents
 
 blog_bp = Blueprint("blog", __name__)
 content_bp = Blueprint("content", __name__)
@@ -48,7 +49,7 @@ def index():
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
     return render_template(
         "index.html",
-        agents=AGENTS,
+        agents=get_agents(),
         testimonials=TESTIMONIALS,
         plans=PLANS,
         minute_packs=minute_packs,
