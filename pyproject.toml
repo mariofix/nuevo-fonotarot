@@ -16,6 +16,7 @@ dependencies = [
     "merchants @ git+https://github.com/mariofix/merchants.git",
     "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git",
     "flask-debugtoolbar (>=0.16.0,<0.17.0)",
+    "redis (>=7.2.1,<8.0.0)",
 ]
 
 [project.scripts]
