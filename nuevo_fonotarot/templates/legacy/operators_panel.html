@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+  body { background: #000418; color: #fff; font-family: Arial, sans-serif; padding: 10px; }
+  h2 { color: #fff; margin-bottom: 20px; }
+  .panel { background: #00071f; border: 1px solid #1a2a5a; border-radius: 4px; margin-bottom: 12px; padding: 12px 16px; }
+  .op-name { font-size: 1.2em; font-weight: bold; }
+  .op-desc { color: #aaa; font-size: 0.9em; margin-top: 4px; }
+  .badge-disponible { background: #5cb85c; padding: 4px 10px; border-radius: 3px; font-size: 0.85em; }
+  .badge-ocupado    { background: #d9534f; padding: 4px 10px; border-radius: 3px; font-size: 0.85em; }
+  .badge-offline    { background: #555;    padding: 4px 10px; border-radius: 3px; font-size: 0.85em; }
+  .op-meta { font-size: 0.8em; color: #778; margin-top: 6px; }
+  .footer  { color: #556; font-size: 0.8em; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <h2>{{ title }} <small style="color:#556">({{ operators|length }} operadores)</small></h2>
+  {% if operators %}
+    {% for op in operators %}
+    <div class="panel">
+      <div class="row">
+        <div class="col-xs-9">
+          <div class="op-name">
+            {% if show_link and link_base %}
+              <a href="{{ link_base }}" target="_blank" style="color:#fff;text-decoration:none">{{ op.name }}</a>
+            {% else %}
+              {{ op.name }}
+            {% endif %}
+          </div>
+          {% if op.description %}
+            <div class="op-desc">{{ op.description }}</div>
+          {% endif %}
+          <div class="op-meta">
+            ext: {{ op.extension }} &nbsp;|&nbsp; ID: {{ op.id }}
+            {% if op.online_since %}
+              &nbsp;|&nbsp; desde: {{ op.online_since }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-xs-3 text-right" style="padding-top:6px">
+          {% if op.available == '1' or op.available == 1 %}
+            <span class="badge-disponible">DISPONIBLE</span>
+          {% elif op.loggedin == '1' or op.loggedin == 1 %}
+            <span class="badge-ocupado">OCUPADO</span>
+          {% else %}
+            <span class="badge-offline">DESCONECTADO</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p style="color:#778">No hay operadores conectados.</p>
+  {% endif %}
+  <div class="footer">Actualización automática cada {{ refresh_secs }} segundos.</div>
+</div>
+<script>
+  setTimeout(function(){ location.href = "{{ refresh_url }}"; }, {{ refresh_secs * 1000 }});
+</script>
+</body>
+</html>

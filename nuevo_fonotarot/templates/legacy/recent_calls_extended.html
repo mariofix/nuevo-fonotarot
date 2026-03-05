@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimas Llamadas (extendido)</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+  body { background: #000418; color: #fff; font-family: Arial, sans-serif; padding: 10px; }
+  h2 { color: #fff; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+  th { background: #0a1240; color: #aac; padding: 7px 10px; text-align: left; border-bottom: 2px solid #1a2a5a; white-space: nowrap; }
+  td { padding: 5px 10px; border-bottom: 1px solid #0d1630; }
+  tr:hover td { background: #00071f; }
+  .footer { color: #556; font-size: 0.8em; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <h2>Ultimas Llamadas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>HORA</th>
+        <th>DURACION</th>
+        <th>OPERADORA</th>
+        <th>ESTADO</th>
+        <th>CLIENTID</th>
+        <th>DCONTEXT</th>
+        <th>LASTDATA</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.calldate }}</td>
+        <td>{{ row.duration }}</td>
+        <td>{{ row.dst }}</td>
+        <td>{{ row.disposition }}</td>
+        <td>{{ row.zvn_clientid }}</td>
+        <td>{{ row.dcontext }}</td>
+        <td>{{ row.lastdata }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="color:#556;text-align:center">Sin registros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="footer">Actualización automática cada {{ refresh_secs }} segundos.</div>
+</div>
+<script>
+  setTimeout(function(){ location.href = "{{ refresh_url }}"; }, {{ refresh_secs * 1000 }});
+</script>
+</body>
+</html>

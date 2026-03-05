@@ -1,0 +1,693 @@
+"""LegacyPHP blueprint views — Python port of the old PHP admin reports.
+
+Each route corresponds to one PHP file in php-legacy/.
+The original PHP ran one query per day (up to 93 per page); this port
+consolidates those into single GROUP BY queries for performance.
+
+HTML output intentionally preserves the original dark-theme styling.
+No site template is applied — each view is a standalone page.
+"""
+
+import calendar
+
+from flask import render_template
+
+from . import legacy_bp
+from .db import audiotex_conn, firenze_conn, portal_conn
+
+
+# ---------------------------------------------------------------------------
+# Internal query helpers
+# ---------------------------------------------------------------------------
+
+
+def _fetch_monthly_3carrier(year: int, month: int, entel_field: str = "fonotarot-cl") -> dict:
+    """Return per-day minute totals for 3 carriers from the CDR table.
+
+    Replaces 93 individual daily SELECT queries with 3 GROUP BY queries.
+
+    Returns:
+        dict with keys ``days`` (list of daily row dicts) and
+        ``totals`` (dict with keys entel/alotarot/latam/total).
+    """
+    _, days_in_month = calendar.monthrange(year, month)
+    start = f"{year}-{month:02d}-01"
+    next_month = month % 12 + 1
+    next_year = year + (1 if month == 12 else 0)
+    end = f"{next_year}-{next_month:02d}-01"
+
+    carriers = {
+        "entel": entel_field,
+        "alotarot": "alotarot",
+        "latam": "latam",
+    }
+    by_day: dict[int, dict] = {}
+
+    with portal_conn() as conn:
+        with conn.cursor() as cur:
+            for key, userfield in carriers.items():
+                cur.execute(
+                    """
+                    SELECT DAY(calldate) AS dia,
+                           FLOOR(SUM(billsec) / 60) AS minutos
+                    FROM cdr
+                    WHERE disposition = 'ANSWERED'
+                      AND zvn_clientid > 1
+                      AND userfield = %s
+                      AND calldate >= %s
+                      AND calldate < %s
+                    GROUP BY DAY(calldate)
+                    """,
+                    (userfield, start, end),
+                )
+                for row in cur.fetchall():
+                    d = int(row["dia"])
+                    by_day.setdefault(d, {"entel": 0, "alotarot": 0, "latam": 0})
+                    by_day[d][key] = int(row["minutos"] or 0)
+
+    days = []
+    totals = {"entel": 0, "alotarot": 0, "latam": 0, "total": 0}
+    for d in range(1, days_in_month + 1):
+        row = by_day.get(d, {"entel": 0, "alotarot": 0, "latam": 0})
+        row_total = row["entel"] + row["alotarot"] + row["latam"]
+        days.append(
+            {
+                "date": f"{d:02d}-{month:02d}-{year}",
+                "entel": row["entel"],
+                "alotarot": row["alotarot"],
+                "latam": row["latam"],
+                "total": row_total,
+            }
+        )
+        totals["entel"] += row["entel"]
+        totals["alotarot"] += row["alotarot"]
+        totals["latam"] += row["latam"]
+        totals["total"] += row_total
+
+    return {"days": days, "totals": totals}
+
+
+def _fetch_agent_monthly_cdr(
+    year: int,
+    month: int,
+    dst_numbers: tuple,
+    duration_col: str = "billsec",
+    min_duration: int = 90,
+) -> dict:
+    """Return per-day minute totals for a single agent from the CDR table.
+
+    Replaces 31 individual daily SELECT queries with one GROUP BY query.
+    duration_col is 'billsec' for most agents, 'duration' for paulina01.
+    """
+    _, days_in_month = calendar.monthrange(year, month)
+    start = f"{year}-{month:02d}-01"
+    next_month = month % 12 + 1
+    next_year = year + (1 if month == 12 else 0)
+    end = f"{next_year}-{next_month:02d}-01"
+
+    placeholders = ", ".join(["%s"] * len(dst_numbers))
+
+    with portal_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT DAY(calldate) AS dia,
+                       FLOOR(SUM({duration_col}) / 60) AS minutos
+                FROM cdr
+                WHERE disposition = 'ANSWERED'
+                  AND zvn_clientid > 1
+                  AND dst IN ({placeholders})
+                  AND {duration_col} > %s
+                  AND calldate >= %s
+                  AND calldate < %s
+                GROUP BY DAY(calldate)
+                """,
+                (*dst_numbers, min_duration, start, end),
+            )
+            by_day = {int(r["dia"]): int(r["minutos"] or 0) for r in cur.fetchall()}
+
+    days = []
+    total = 0
+    for d in range(1, days_in_month + 1):
+        mins = by_day.get(d, 0)
+        days.append({"date": f"{d:02d}-{month:02d}-{year}", "minutos": mins})
+        total += mins
+
+    return {"days": days, "total": total}
+
+
+def _fetch_prepago_ddi(year: int, month: int, ddi_numbers: tuple) -> dict:
+    """Return per-day minute totals from callsprepago filtered by ddi.
+
+    Used by alotarot.php (prepago lines).
+    """
+    _, days_in_month = calendar.monthrange(year, month)
+    start = f"{year}-{month:02d}-01"
+    next_month = month % 12 + 1
+    next_year = year + (1 if month == 12 else 0)
+    end = f"{next_year}-{next_month:02d}-01"
+
+    placeholders = ", ".join(["%s"] * len(ddi_numbers))
+
+    with portal_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT DAY(time) AS dia,
+                       FLOOR(SUM(billsec) / 60) AS minutos
+                FROM callsprepago
+                WHERE SUBSTRING(time, 1, 10) >= %s
+                  AND SUBSTRING(time, 1, 10) < %s
+                  AND duration > 60
+                  AND ddi IN ({placeholders})
+                GROUP BY DAY(time)
+                """,
+                (start, end, *ddi_numbers),
+            )
+            by_day = {int(r["dia"]): int(r["minutos"] or 0) for r in cur.fetchall()}
+
+    days = []
+    total = 0
+    for d in range(1, days_in_month + 1):
+        mins = by_day.get(d, 0)
+        days.append({"date": f"{d:02d}-{month:02d}-{year}", "minutos": mins})
+        total += mins
+
+    return {"days": days, "total": total}
+
+
+def _fetch_prepago_ssi(year: int, month: int, ssi_numbers: tuple) -> dict:
+    """Return per-day minute totals from callsprepago filtered by ssi.
+
+    Used by pedromaritza.php.
+    """
+    _, days_in_month = calendar.monthrange(year, month)
+    start = f"{year}-{month:02d}-01"
+    next_month = month % 12 + 1
+    next_year = year + (1 if month == 12 else 0)
+    end = f"{next_year}-{next_month:02d}-01"
+
+    placeholders = ", ".join(["%s"] * len(ssi_numbers))
+
+    with portal_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                SELECT DAY(time) AS dia,
+                       FLOOR(SUM(duration) / 60) AS minutos
+                FROM callsprepago
+                WHERE SUBSTRING(time, 1, 10) >= %s
+                  AND SUBSTRING(time, 1, 10) < %s
+                  AND duration > 60
+                  AND ssi IN ({placeholders})
+                GROUP BY DAY(time)
+                """,
+                (start, end, *ssi_numbers),
+            )
+            by_day = {int(r["dia"]): int(r["minutos"] or 0) for r in cur.fetchall()}
+
+    days = []
+    total = 0
+    for d in range(1, days_in_month + 1):
+        mins = by_day.get(d, 0)
+        days.append({"date": f"{d:02d}-{month:02d}-{year}", "minutos": mins})
+        total += mins
+
+    return {"days": days, "total": total}
+
+
+def _db_error(exc: Exception) -> str:
+    """Render a plain error page when the legacy DB is unreachable."""
+    return (
+        f"<html><body style='background:#000418;color:#f74129;font-family:monospace;"
+        f"padding:2rem'><h2>Legacy DB unavailable</h2><pre>{exc}</pre></body></html>"
+    ), 503
+
+
+# ---------------------------------------------------------------------------
+# Operator status panels  (zvn_audiotex_legacy → operators table)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/ejecutivosfonotarot.php")
+def ejecutivosfonotarot():
+    """Operator panel for Fonotarot — auto-refreshes every 10 s."""
+    try:
+        with audiotex_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT *
+                    FROM operators
+                    WHERE type IN (7) AND loggedin = '1'
+                    ORDER BY available DESC, loggedin DESC
+                    """
+                )
+                operators = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/operators_panel.html",
+        title="Ejecutivos Fonotarot",
+        operators=operators,
+        refresh_url="/legacy/ejecutivosfonotarot.php",
+        refresh_secs=10,
+        link_base="https://www.fonotarot.com",
+        show_link=True,
+    )
+
+
+@legacy_bp.route("/ejecutivosalotarottest.php")
+def ejecutivosalotarottest():
+    """Operator panel for Alotarot (test) — alternates with testx on refresh."""
+    try:
+        with audiotex_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT *
+                    FROM operators
+                    WHERE type IN (7) AND loggedin = '1'
+                    ORDER BY available DESC, loggedin DESC
+                    """
+                )
+                operators = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/operators_panel.html",
+        title="Ejecutivos Alotarot",
+        operators=operators,
+        refresh_url="/legacy/ejecutivosalotarottestx.php",
+        refresh_secs=10,
+        link_base=None,
+        show_link=False,
+    )
+
+
+@legacy_bp.route("/ejecutivosalotarottestx.php")
+def ejecutivosalotarottestx():
+    """Operator panel for Alotarot (testx) — alternates with test on refresh."""
+    try:
+        with audiotex_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT *
+                    FROM operators
+                    WHERE type IN (7) AND loggedin = '1'
+                    ORDER BY available DESC, loggedin DESC
+                    """
+                )
+                operators = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/operators_panel.html",
+        title="Ejecutivos Alotarot",
+        operators=operators,
+        refresh_url="/legacy/ejecutivosalotarottest.php",
+        refresh_secs=10,
+        link_base=None,
+        show_link=False,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Live calls panel  (zvn_firenze → onlinecalls)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/indexfirenzex.php")
+def indexfirenzex():
+    """Live calls in progress — auto-refreshes every 5 s."""
+    try:
+        with firenze_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT TIMEDIFF(NOW(), modified_at) AS resultado,
+                           operator,
+                           client_id
+                    FROM onlinecalls
+                    """
+                )
+                calls = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/live_calls.html",
+        calls=calls,
+        refresh_url="/legacy/indexfirenzex.php",
+        refresh_secs=5,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Recent CDR views  (zvn_asterisk → cdr)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/ultimas.php")
+def ultimas():
+    """Last 100 CDR records — calldate, dst, duration — auto-refreshes 15 s."""
+    try:
+        with portal_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT calldate, dst, duration, disposition, zvn_clientid
+                    FROM cdr
+                    ORDER BY calldate DESC
+                    LIMIT 100
+                    """
+                )
+                rows = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/recent_calls.html",
+        rows=rows,
+        refresh_url="/legacy/ultimas.php",
+        refresh_secs=15,
+    )
+
+
+@legacy_bp.route("/laatste.php")
+def laatste():
+    """Last 100 CDR records with extra columns — auto-refreshes 15 s."""
+    try:
+        with portal_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT calldate, dst, duration, disposition,
+                           zvn_clientid, dcontext, lastdata
+                    FROM cdr
+                    ORDER BY calldate DESC
+                    LIMIT 100
+                    """
+                )
+                rows = cur.fetchall()
+    except Exception as exc:
+        return _db_error(exc)
+
+    return render_template(
+        "legacy/recent_calls_extended.html",
+        rows=rows,
+        refresh_url="/legacy/laatste.php",
+        refresh_secs=15,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Monthly 3-carrier CDR reports  (fonotarot-cl / alotarot / latam)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/ene26.php")
+def ene26():
+    """January 2026 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2026, 1)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="ENE 2026", **data)
+
+
+@legacy_bp.route("/feb26.php")
+def feb26():
+    """February 2026 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2026, 2)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="FEB 2026", **data)
+
+
+@legacy_bp.route("/maart26.php")
+def maart26():
+    """March 2026 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2026, 3)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="MAR 2026", **data)
+
+
+@legacy_bp.route("/oct25.php")
+def oct25():
+    """October 2025 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2025, 10)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="OCT 2025", **data)
+
+
+@legacy_bp.route("/nov25.php")
+def nov25():
+    """November 2025 — fonotarot-clx variant, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2025, 11, entel_field="fonotarot-clx")
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="NOV 2025", **data)
+
+
+@legacy_bp.route("/DIC25.php")
+def dic25():
+    """December 2025 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2025, 12)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="DIC 2025", **data)
+
+
+@legacy_bp.route("/sept25.php")
+def sept25():
+    """September 2025 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2025, 9)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="SEPT 2025", **data)
+
+
+@legacy_bp.route("/sept24.php")
+def sept24():
+    """September 2024 — fonotarot-cl, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2024, 9)
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="SEPT 2024", **data)
+
+
+@legacy_bp.route("/alotarotoct.php")
+def alotarotoct():
+    """November 2025 alternate view — fonotarot-clx, alotarot, latam."""
+    try:
+        data = _fetch_monthly_3carrier(2025, 11, entel_field="fonotarot-clx")
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/monthly_3carriers.html", title="NOV 2025", **data)
+
+
+# ---------------------------------------------------------------------------
+# Individual agent monthly reports  (zvn_asterisk → cdr, filtered by dst)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/alex14.php")
+def alex14():
+    """Alex — March 2026, dst 56991023392 / 56352411071."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56991023392, 56352411071)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Alex", **data)
+
+
+@legacy_bp.route("/angela7.php")
+def angela7():
+    """Angela — March 2026, dst 56232500587 / 56984597737."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56232500587, 56984597737)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Angela", **data)
+
+
+@legacy_bp.route("/karla9.php")
+def karla9():
+    """Karla — March 2026, dst 56947739514 / 56225064742."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56947739514, 56225064742)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Karla", **data)
+
+
+@legacy_bp.route("/karla99.php")
+def karla99():
+    """Karla — October 2025, dst 56947739514 / 56225064742."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2025, 10, (56947739514, 56225064742)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Karla (oct)", **data)
+
+
+@legacy_bp.route("/maite5.php")
+def maite5():
+    """Maite — March 2026, dst 56997130343."""
+    try:
+        data = _fetch_agent_monthly_cdr(2026, 3, (56997130343,))
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Maite", **data)
+
+
+@legacy_bp.route("/marilina.php")
+def marilina():
+    """Marilina — March 2026, dst 56332541220 / 56990238293 / 56999679182."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56332541220, 56990238293, 56999679182)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Marilina", **data)
+
+
+@legacy_bp.route("/paola6.php")
+def paola6():
+    """Paola — March 2026, dst 56652893541 / 56994871981 / 56952379063."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56652893541, 56994871981, 56952379063)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Paola", **data)
+
+
+@legacy_bp.route("/paulina01.php")
+def paulina01():
+    """Paulina — February 2024.
+
+    Uses ``duration`` column instead of ``billsec``; no min_duration filter.
+    Original PHP also used duration, not billsec.
+    """
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2024, 2, (56976341921, 56232326345),
+            duration_col="duration",
+            min_duration=0,
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Paulina (feb24)", **data)
+
+
+@legacy_bp.route("/paulina1.php")
+def paulina1():
+    """Paulina — March 2026, dst 56976341921 / 56232326345."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56976341921, 56232326345)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Paulina", **data)
+
+
+@legacy_bp.route("/pedro12.php")
+def pedro12():
+    """Pedro — March 2026, dst 56233134177 / 56959516081 / 56999047069.
+
+    The original PHP had a typo ``03-2026`` as one of the dst values
+    (which MySQL would evaluate as the integer -2023).  That value is
+    omitted here; only the three valid phone numbers are kept.
+    """
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56233134177, 56959516081, 56999047069)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Pedro", **data)
+
+
+@legacy_bp.route("/violeta15.php")
+def violeta15():
+    """Violeta — March 2026, dst 56967654876 / 56352410599."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56967654876, 56352410599)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Violeta", **data)
+
+
+@legacy_bp.route("/altair8.php")
+def altair8():
+    """Altair — March 2026, dst 56994662528 / 56227239476."""
+    try:
+        data = _fetch_agent_monthly_cdr(
+            2026, 3, (56994662528, 56227239476)
+        )
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template("legacy/agent_monthly.html", title="Altair", **data)
+
+
+# ---------------------------------------------------------------------------
+# Prepago reports  (zvn_asterisk → callsprepago)
+# ---------------------------------------------------------------------------
+
+
+@legacy_bp.route("/alotarot.php")
+def alotarot():
+    """Alotarot prepago — October 2025, ddi 56222301555 / 1555."""
+    try:
+        data = _fetch_prepago_ddi(2025, 10, (56222301555, 1555))
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template(
+        "legacy/prepago_monthly.html",
+        title="ALOTAROT",
+        col_label="56222301555, 1555",
+        **data,
+    )
+
+
+@legacy_bp.route("/pedromaritza.php")
+def pedromaritza():
+    """Pedro/Maritza prepago — February 2024, ssi 7012 / 6001 / 7013 / 8012."""
+    try:
+        data = _fetch_prepago_ssi(2024, 2, (7012, 6001, 7013, 8012))
+    except Exception as exc:
+        return _db_error(exc)
+    return render_template(
+        "legacy/prepago_monthly.html",
+        title="Pedro / Maritza",
+        col_label="7012, 6001, 7013, 8012",
+        **data,
+    )

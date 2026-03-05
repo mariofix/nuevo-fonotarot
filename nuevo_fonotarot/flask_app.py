@@ -138,6 +138,7 @@ def _register_blueprints(app: Flask) -> None:
     from .account import account_bp
     from .content import blog_bp, content_bp
     from .lab import lab_bp
+    from .legacy import legacy_bp
     from .tienda import tienda_bp
 
     app.register_blueprint(content_bp)
@@ -145,6 +146,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(tienda_bp)
     app.register_blueprint(account_bp)
     app.register_blueprint(lab_bp)
+    app.register_blueprint(legacy_bp)
 
     from .cli import lang_cli
 

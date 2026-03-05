@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} — Reporte Mensual</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+  body { background: #000418; color: #fff; font-family: Arial, sans-serif; padding: 10px; }
+  h2 { color: #fff; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+  th { background: #0a1240; color: #aac; padding: 8px 12px; text-align: right; border-bottom: 2px solid #1a2a5a; }
+  th:first-child { text-align: left; }
+  td { padding: 6px 12px; border-bottom: 1px solid #0d1630; text-align: right; }
+  td:first-child { text-align: left; color: #aab; }
+  tr:hover td { background: #00071f; }
+  tfoot td { background: #0a1240; font-weight: bold; border-top: 2px solid #1a2a5a; }
+  .zero { color: #334; }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <h2>{{ title }}</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Día</th>
+        <th>FONOTAROT</th>
+        <th>ALOTAROT</th>
+        <th>NADA (latam)</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in days %}
+      <tr>
+        <td>{{ row.date }}</td>
+        <td>{% if row.entel %}{{ row.entel }}{% else %}<span class="zero">0</span>{% endif %}</td>
+        <td>{% if row.alotarot %}{{ row.alotarot }}{% else %}<span class="zero">0</span>{% endif %}</td>
+        <td>{% if row.latam %}{{ row.latam }}{% else %}<span class="zero">0</span>{% endif %}</td>
+        <td>{% if row.total %}{{ row.total }}{% else %}<span class="zero">0</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Totales</td>
+        <td>{{ totals.entel }}</td>
+        <td>{{ totals.alotarot }}</td>
+        <td>{{ totals.latam }}</td>
+        <td>{{ totals.total }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+</body>
+</html>

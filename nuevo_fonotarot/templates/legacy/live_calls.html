@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Llamadas en Curso</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+  body { background: #000418; color: #fff; font-family: Arial, sans-serif; padding: 10px; }
+  h2 { color: #fff; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #0a1240; color: #aac; padding: 8px 12px; text-align: left; border-bottom: 2px solid #1a2a5a; }
+  td { padding: 7px 12px; border-bottom: 1px solid #0d1630; }
+  tr:hover td { background: #00071f; }
+  .footer { color: #556; font-size: 0.8em; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <h2>Llamadas en Curso <small style="color:#556">({{ calls|length }})</small></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tarotista</th>
+        <th>ClientID</th>
+        <th>Duracion</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for call in calls %}
+      <tr>
+        <td>{{ call.operator }}</td>
+        <td>{{ call.client_id }}</td>
+        <td>{{ call.resultado }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" style="color:#556;text-align:center">Sin llamadas activas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="footer">Actualización automática cada {{ refresh_secs }} segundos.</div>
+</div>
+<script>
+  setTimeout(function(){ location.href = "{{ refresh_url }}"; }, {{ refresh_secs * 1000 }});
+</script>
+</body>
+</html>
