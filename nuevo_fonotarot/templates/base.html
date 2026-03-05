@@ -49,9 +49,9 @@
     <meta name="apple-mobile-web-app-capable"          content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title"            content="Fonotarot" />
-    <meta name="theme-color"                           content="#1a1a2e" />
-    <meta name="msapplication-TileColor"               content="#1a1a2e" />
-    <meta name="msapplication-navbutton-color"         content="#7c3aed" />
+    <meta name="theme-color"                           content="#faf7f3" />
+    <meta name="msapplication-TileColor"               content="#6b3fa0" />
+    <meta name="msapplication-navbutton-color"         content="#6b3fa0" />
     <meta name="format-detection" content="telephone=yes" />
 
     <!-- ── Favicons ──────────────────────────────────────────────── -->
@@ -68,67 +68,69 @@
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-flags.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap");
 
-      /* ─── Dark theme (default) ─────────────────────── */
-      :root,
-      [data-theme="dark"] {
-        --deep:   #0d0d1a;
-        --void:   #13132b;
-        --cosmic: #1e1e40;
-        --gold:   #c9a84c;
-        --gold-lt:#f0d080;
-        --violet: #7c3aed;
-        --star:   #e8e0ff;
-        --muted:  #9090b8;
-        --nav-bg: rgba(13,13,26,.92);
-        --footer-bg: #08080f;
-        --stars-gradient: radial-gradient(ellipse at 20% 30%, #1e1e50 0%, #0d0d1a 60%);
-        --star-dot-color: #fff;
-        --star-dot-opacity-min: .2;
+      /* ─── Light theme (default) ────────────────────── */
+      :root {
+        --cream:    #faf7f3;
+        --sand:     #f0e8dc;
+        --blush:    #f5e6e8;
+        --lavender: #e8e0f0;
+        --plum:     #6b3fa0;
+        --plum-dk:  #4a2872;
+        --rose:     #c06080;
+        --warm:     #8b5e3c;
+        --text:     #2d2233;
+        --muted:    #8a7a8e;
+        --border:   #e0d4e8;
+        --gold:     #c9a84c;
+        --gold-lt:  #e8c56a;
+
+        /* Compatibility aliases — tienda templates use these names */
+        --deep:   var(--cream);
+        --void:   var(--sand);
+        --cosmic: var(--lavender);
+        --star:   var(--text);
+        --violet: var(--plum);
+
+        --nav-bg:    rgba(250,247,243,.95);
+        --footer-bg: var(--plum-dk);
       }
 
-      /* ─── Light theme ──────────────────────────────── */
-      [data-theme="light"] {
-        --deep:   #f5f0e8;
-        --void:   #ede5d8;
-        --cosmic: #e2d8c8;
-        --gold:   #8b6510;
-        --gold-lt:#a67c1a;
-        --violet: #5b21b6;
-        --star:   #1a1428;
-        --muted:  #6b5d7a;
-        --nav-bg: rgba(245,240,232,.95);
-        --footer-bg: #e0d8c8;
-        --stars-gradient: radial-gradient(ellipse at 20% 30%, #d8cfe8 0%, #f5f0e8 60%);
-        --star-dot-color: #9880c0;
-        --star-dot-opacity-min: .05;
+      /* ─── Dark theme ───────────────────────────────── */
+      [data-theme="dark"] {
+        --cream:    #0d0d1a;
+        --sand:     #141428;
+        --blush:    #1a1030;
+        --lavender: #1e1535;
+        --plum:     #a87dd4;
+        --plum-dk:  #c4a0e8;
+        --rose:     #d98aaa;
+        --warm:     #c49a6c;
+        --text:     #e8e0ff;
+        --muted:    #9d8fbe;
+        --border:   rgba(168,125,212,.22);
+        --gold:     #c9a84c;
+        --gold-lt:  #e8c56a;
+
+        /* Compatibility aliases */
+        --deep:   #0d0d1a;
+        --void:   #141428;
+        --cosmic: #1e1535;
+        --star:   #e8e0ff;
+        --violet: #a87dd4;
+
+        --nav-bg:    rgba(13,13,26,.93);
+        --footer-bg: #080810;
       }
 
       * { box-sizing: border-box; }
       body {
-        font-family: 'Lato', sans-serif;
-        background: var(--deep);
-        color: var(--star);
+        font-family: 'Source Sans 3', sans-serif;
+        background: var(--cream);
+        color: var(--text);
         margin: 0;
-        transition: background .35s, color .35s;
-      }
-
-      /* ─── Stars canvas ─────────────────────────────── */
-      #stars-bg {
-        position: fixed; inset: 0; z-index: 0;
-        background: var(--stars-gradient);
-        overflow: hidden;
-        pointer-events: none;
-        transition: background .35s;
-      }
-      .star-dot {
-        position: absolute; border-radius: 50%;
-        background: var(--star-dot-color);
-        animation: twinkle 3s infinite;
-      }
-      @keyframes twinkle {
-        0%,100% { opacity:.2; } 50% { opacity:1; }
+        transition: background .3s, color .3s;
       }
 
       /* ─── Navbar ───────────────────────────────────── */
@@ -136,45 +138,51 @@
         position: sticky; top: 0; z-index: 100;
         background: var(--nav-bg);
         backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(201,168,76,.25);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
         padding: .75rem 0;
-        transition: background .35s;
+        transition: background .3s, border-color .3s;
       }
       .site-nav .brand {
-        font-family: 'Cinzel', serif;
+        font-family: 'Playfair Display', serif;
         font-size: 1.4rem;
         font-weight: 700;
-        color: var(--gold);
+        color: var(--plum);
         text-decoration: none;
-        letter-spacing: .05em;
+        letter-spacing: -.01em;
       }
       .site-nav .nav-link {
-        color: var(--star); opacity: .8;
+        color: var(--text);
+        opacity: .75;
         transition: opacity .2s, color .2s;
         text-decoration: none;
+        font-size: .95rem;
       }
-      .site-nav .nav-link:hover { opacity: 1; color: var(--gold); }
+      .site-nav .nav-link:hover { opacity: 1; color: var(--plum); }
+
+      /* Primary CTA button */
       .btn-gold {
-        background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+        background: var(--plum);
         color: #fff !important;
         font-weight: 700;
         border: none;
         border-radius: 30px;
         padding: .45rem 1.4rem;
-        transition: box-shadow .2s;
+        transition: background .2s, box-shadow .2s;
         text-decoration: none;
         display: inline-block;
+        font-size: .9rem;
       }
-      .btn-gold:hover { box-shadow: 0 0 18px rgba(201,168,76,.6); }
+      .btn-gold:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.35); }
 
       /* ─── Theme toggle button ──────────────────────── */
       .btn-theme-toggle {
         background: none;
-        border: 1px solid rgba(201,168,76,.35);
+        border: 1px solid rgba(107,63,160,.3);
         border-radius: 20px;
         padding: .3rem .65rem;
         cursor: pointer;
-        color: var(--star);
+        color: var(--plum);
         font-size: 1rem;
         line-height: 1;
         transition: border-color .2s, color .2s, background .2s;
@@ -183,14 +191,17 @@
         gap: .3rem;
       }
       .btn-theme-toggle:hover {
-        border-color: var(--gold);
-        color: var(--gold);
-        background: rgba(201,168,76,.08);
+        border-color: var(--plum);
+        background: rgba(107,63,160,.08);
       }
       .btn-theme-toggle .icon-sun  { display: none; }
       .btn-theme-toggle .icon-moon { display: inline; }
-      [data-theme="light"] .btn-theme-toggle .icon-sun  { display: inline; }
-      [data-theme="light"] .btn-theme-toggle .icon-moon { display: none; }
+      [data-theme="dark"] .btn-theme-toggle .icon-sun  { display: inline; }
+      [data-theme="dark"] .btn-theme-toggle .icon-moon { display: none; }
+      [data-theme="dark"] .btn-theme-toggle {
+        border-color: rgba(168,125,212,.35);
+        color: var(--plum);
+      }
 
       /* ─── Language switcher ────────────────────────── */
       .lang-switcher { display: flex; align-items: center; gap: .35rem; }
@@ -200,28 +211,65 @@
         opacity: .5;
         transition: opacity .2s, transform .15s;
         border-radius: 2px;
-        outline-offset: 2px;
       }
       .lang-flag:hover { opacity: 1; transform: scale(1.18); }
-      .lang-flag.active { opacity: 1; box-shadow: 0 0 0 1.5px var(--gold); border-radius: 2px; }
+      .lang-flag.active { opacity: 1; box-shadow: 0 0 0 1.5px var(--plum); border-radius: 2px; }
 
       /* ─── Page content wrapper ──────────────────────── */
-      .page-content { position: relative; z-index: 1; }
+      .page-content { position: relative; }
+
+      /* ─── Generic section helpers ───────────────────── */
+      .section-tag {
+        display: inline-flex; align-items: center; gap: .4rem;
+        font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+        font-weight: 700; color: var(--rose);
+        background: rgba(192,96,128,.08); border-radius: 20px;
+        padding: .3rem .9rem; margin-bottom: .75rem;
+      }
+      .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.7rem, 4vw, 2.5rem);
+        color: var(--plum-dk);
+        margin-bottom: .4rem;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+      .section-subtitle { color: var(--muted); font-size: .95rem; }
+      .divider-gold {
+        width: 48px; height: 3px;
+        background: linear-gradient(90deg, var(--gold), transparent);
+        margin: .75rem auto 1.5rem;
+        border-radius: 2px;
+      }
 
       /* ─── Footer ───────────────────────────────────── */
       footer.site-footer {
-        position: relative; z-index: 1;
         background: var(--footer-bg);
-        border-top: 1px solid rgba(201,168,76,.15);
+        border-top: 1px solid rgba(107,63,160,.15);
         padding: 2.5rem 0;
         text-align: center;
-        color: var(--muted);
+        color: rgba(255,255,255,.5);
         font-size: .85rem;
-        transition: background .35s;
+        transition: background .3s;
       }
-      footer.site-footer .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--gold); }
-      footer.site-footer a { color: var(--muted); }
-      footer.site-footer a:hover { color: var(--gold); }
+      footer.site-footer .brand {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: #fff;
+        display: block;
+        margin-bottom: .5rem;
+      }
+      footer.site-footer a { color: rgba(255,255,255,.5); }
+      footer.site-footer a:hover { color: rgba(255,255,255,.9); }
+
+      /* ─── Dark mode card adjustments ───────────────── */
+      [data-theme="dark"] .card {
+        background: var(--sand);
+        border-color: var(--border);
+        color: var(--text);
+      }
+      [data-theme="dark"] .card .text-secondary { color: var(--muted) !important; }
+      [data-theme="dark"] .text-white { color: var(--text) !important; }
     </style>
 
     <!-- ── Per-page extra CSS ─────────────────────────────────────── -->
@@ -229,13 +277,10 @@
   </head>
   <body>
 
-    <!-- Stars background -->
-    <div id="stars-bg"></div>
-
     <!-- ── NAVBAR ──────────────────────────────────── -->
     <nav class="site-nav">
       <div class="container d-flex align-items-center justify-content-between">
-        <a href="/" class="brand">🔮 Fonotarot</a>
+        <a href="/" class="brand">🌙 Fonotarot</a>
         <div class="d-flex align-items-center gap-3">
           {% block nav_links %}
           <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
@@ -262,7 +307,7 @@
     {% block footer %}
     <footer class="site-footer">
       <div class="container">
-        <div class="brand mb-2">🔮 Fonotarot</div>
+        <div class="brand">🌙 Fonotarot</div>
         <p class="mb-1">{{ _("Servicio de consulta esotérica telefónica · Chile") }}</p>
         <p class="mb-0">
           <a href="/blog/">{{ _("Blog") }}</a>
@@ -277,30 +322,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
     <script>
-      // Generate stars background
-      (function () {
-        var bg = document.getElementById('stars-bg');
-        if (!bg) return;
-        for (var i = 0; i < 120; i++) {
-          var s = document.createElement('div');
-          s.className = 'star-dot';
-          var size = Math.random() * 2.5 + .5;
-          s.style.cssText = 'width:' + size + 'px;height:' + size + 'px;' +
-            'left:' + (Math.random() * 100) + '%;top:' + (Math.random() * 100) + '%;' +
-            'animation-delay:' + (Math.random() * 4) + 's;' +
-            'animation-duration:' + (2 + Math.random() * 4) + 's;' +
-            'opacity:' + (Math.random() * .5) + ';';
-          bg.appendChild(s);
-        }
-      })();
-    </script>
-    <script>
       // ── Theme toggle ──────────────────────────────────────────────
       (function () {
         var html = document.documentElement;
         var btn  = document.getElementById('theme-toggle');
 
-        // Apply saved user preference (overrides server-side default).
+        // Override server-set theme with user's saved preference.
         var saved = localStorage.getItem('ft-theme');
         if (saved === 'dark' || saved === 'light') {
           html.setAttribute('data-theme', saved);
