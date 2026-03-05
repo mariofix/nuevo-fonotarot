@@ -14,6 +14,7 @@ from flask import render_template
 
 from . import legacy_bp
 from .db import audiotex_conn, firenze_conn, portal_conn
+from ..decorators import login_required_modal
 
 
 # ---------------------------------------------------------------------------
@@ -230,6 +231,7 @@ def _db_error(exc: Exception) -> str:
 
 
 @legacy_bp.route("/ejecutivosfonotarot.php")
+@login_required_modal
 def ejecutivosfonotarot():
     """Operator panel for Fonotarot — auto-refreshes every 10 s."""
     try:
@@ -259,6 +261,7 @@ def ejecutivosfonotarot():
 
 
 @legacy_bp.route("/ejecutivosalotarottest.php")
+@login_required_modal
 def ejecutivosalotarottest():
     """Operator panel for Alotarot (test) — alternates with testx on refresh."""
     try:
@@ -288,6 +291,7 @@ def ejecutivosalotarottest():
 
 
 @legacy_bp.route("/ejecutivosalotarottestx.php")
+@login_required_modal
 def ejecutivosalotarottestx():
     """Operator panel for Alotarot (testx) — alternates with test on refresh."""
     try:
@@ -322,6 +326,7 @@ def ejecutivosalotarottestx():
 
 
 @legacy_bp.route("/indexfirenzex.php")
+@login_required_modal
 def indexfirenzex():
     """Live calls in progress — auto-refreshes every 5 s."""
     try:
@@ -353,6 +358,7 @@ def indexfirenzex():
 
 
 @legacy_bp.route("/ultimas.php")
+@login_required_modal
 def ultimas():
     """Last 100 CDR records — calldate, dst, duration — auto-refreshes 15 s."""
     try:
@@ -379,6 +385,7 @@ def ultimas():
 
 
 @legacy_bp.route("/laatste.php")
+@login_required_modal
 def laatste():
     """Last 100 CDR records with extra columns — auto-refreshes 15 s."""
     try:
@@ -411,6 +418,7 @@ def laatste():
 
 
 @legacy_bp.route("/ene26.php")
+@login_required_modal
 def ene26():
     """January 2026 — fonotarot-cl, alotarot, latam."""
     try:
@@ -421,6 +429,7 @@ def ene26():
 
 
 @legacy_bp.route("/feb26.php")
+@login_required_modal
 def feb26():
     """February 2026 — fonotarot-cl, alotarot, latam."""
     try:
@@ -431,6 +440,7 @@ def feb26():
 
 
 @legacy_bp.route("/maart26.php")
+@login_required_modal
 def maart26():
     """March 2026 — fonotarot-cl, alotarot, latam."""
     try:
@@ -441,6 +451,7 @@ def maart26():
 
 
 @legacy_bp.route("/oct25.php")
+@login_required_modal
 def oct25():
     """October 2025 — fonotarot-cl, alotarot, latam."""
     try:
@@ -451,6 +462,7 @@ def oct25():
 
 
 @legacy_bp.route("/nov25.php")
+@login_required_modal
 def nov25():
     """November 2025 — fonotarot-clx variant, alotarot, latam."""
     try:
@@ -461,6 +473,7 @@ def nov25():
 
 
 @legacy_bp.route("/DIC25.php")
+@login_required_modal
 def dic25():
     """December 2025 — fonotarot-cl, alotarot, latam."""
     try:
@@ -471,6 +484,7 @@ def dic25():
 
 
 @legacy_bp.route("/sept25.php")
+@login_required_modal
 def sept25():
     """September 2025 — fonotarot-cl, alotarot, latam."""
     try:
@@ -481,6 +495,7 @@ def sept25():
 
 
 @legacy_bp.route("/sept24.php")
+@login_required_modal
 def sept24():
     """September 2024 — fonotarot-cl, alotarot, latam."""
     try:
@@ -491,6 +506,7 @@ def sept24():
 
 
 @legacy_bp.route("/alotarotoct.php")
+@login_required_modal
 def alotarotoct():
     """November 2025 alternate view — fonotarot-clx, alotarot, latam."""
     try:
@@ -506,6 +522,7 @@ def alotarotoct():
 
 
 @legacy_bp.route("/alex14.php")
+@login_required_modal
 def alex14():
     """Alex — March 2026, dst 56991023392 / 56352411071."""
     try:
@@ -518,6 +535,7 @@ def alex14():
 
 
 @legacy_bp.route("/angela7.php")
+@login_required_modal
 def angela7():
     """Angela — March 2026, dst 56232500587 / 56984597737."""
     try:
@@ -530,6 +548,7 @@ def angela7():
 
 
 @legacy_bp.route("/karla9.php")
+@login_required_modal
 def karla9():
     """Karla — March 2026, dst 56947739514 / 56225064742."""
     try:
@@ -542,6 +561,7 @@ def karla9():
 
 
 @legacy_bp.route("/karla99.php")
+@login_required_modal
 def karla99():
     """Karla — October 2025, dst 56947739514 / 56225064742."""
     try:
@@ -554,6 +574,7 @@ def karla99():
 
 
 @legacy_bp.route("/maite5.php")
+@login_required_modal
 def maite5():
     """Maite — March 2026, dst 56997130343."""
     try:
@@ -564,6 +585,7 @@ def maite5():
 
 
 @legacy_bp.route("/marilina.php")
+@login_required_modal
 def marilina():
     """Marilina — March 2026, dst 56332541220 / 56990238293 / 56999679182."""
     try:
@@ -576,6 +598,7 @@ def marilina():
 
 
 @legacy_bp.route("/paola6.php")
+@login_required_modal
 def paola6():
     """Paola — March 2026, dst 56652893541 / 56994871981 / 56952379063."""
     try:
@@ -588,6 +611,7 @@ def paola6():
 
 
 @legacy_bp.route("/paulina01.php")
+@login_required_modal
 def paulina01():
     """Paulina — February 2024.
 
@@ -606,6 +630,7 @@ def paulina01():
 
 
 @legacy_bp.route("/paulina1.php")
+@login_required_modal
 def paulina1():
     """Paulina — March 2026, dst 56976341921 / 56232326345."""
     try:
@@ -618,6 +643,7 @@ def paulina1():
 
 
 @legacy_bp.route("/pedro12.php")
+@login_required_modal
 def pedro12():
     """Pedro — March 2026, dst 56233134177 / 56959516081 / 56999047069.
 
@@ -635,6 +661,7 @@ def pedro12():
 
 
 @legacy_bp.route("/violeta15.php")
+@login_required_modal
 def violeta15():
     """Violeta — March 2026, dst 56967654876 / 56352410599."""
     try:
@@ -647,6 +674,7 @@ def violeta15():
 
 
 @legacy_bp.route("/altair8.php")
+@login_required_modal
 def altair8():
     """Altair — March 2026, dst 56994662528 / 56227239476."""
     try:
@@ -664,6 +692,7 @@ def altair8():
 
 
 @legacy_bp.route("/alotarot.php")
+@login_required_modal
 def alotarot():
     """Alotarot prepago — October 2025, ddi 56222301555 / 1555."""
     try:
@@ -679,6 +708,7 @@ def alotarot():
 
 
 @legacy_bp.route("/pedromaritza.php")
+@login_required_modal
 def pedromaritza():
     """Pedro/Maritza prepago — February 2024, ssi 7012 / 6001 / 7013 / 8012."""
     try:
