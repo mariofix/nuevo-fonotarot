@@ -999,7 +999,7 @@
           <p class="sec-sub">Elige a quien más resuene contigo</p>
         </div>
         <div class="row g-4">
-          {% for agent in agents %}
+          {% for agent in agent_profiles %}
           <div class="col-sm-6 col-lg-4 reveal" style="transition-delay:{{ loop.index0 * 0.08 }}s">
             <div class="agent-card" data-agent-option="{{ agent.option }}">
               <div class="agent-avatar">{{ agent.name[0] }}</div>

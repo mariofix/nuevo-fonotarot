@@ -65,4 +65,61 @@ def get_agents() -> list[dict]:
         return list(AGENTS)
 
 
-__all__ = ["_flag_class", "_LangEntry", "_FALLBACK_LANGUAGES", "get_agents"]
+def _redis_client():
+    """Return a configured Redis client, or raise if unavailable."""
+    import redis as redis_lib
+    from flask import current_app
+
+    return redis_lib.from_url(
+        current_app.config.get("REDIS_URL", "redis://localhost:6379/0"),
+        decode_responses=True,
+        socket_connect_timeout=1,
+    )
+
+
+def get_agent_statuses() -> dict[str, str]:
+    """Return {option: status} from Redis.
+
+    Used to overlay live status onto DB-sourced agent profiles.
+    Returns an empty dict when Redis is unavailable — callers fall back
+    to whatever default status the profile data carries.
+    """
+    try:
+        r = _redis_client()
+        agent_ids = r.smembers("agents:all")
+        if not agent_ids:
+            return {}
+        pipe = r.pipeline()
+        for aid in sorted(agent_ids):
+            pipe.hget(f"agent:{aid}", "status")
+        return {
+            aid: (status or "offline")
+            for aid, status in zip(sorted(agent_ids), pipe.execute())
+        }
+    except Exception:
+        return {}
+
+
+def get_agent_profiles() -> list[dict]:
+    """Return agent profiles from the DB, enriched with live status from Redis.
+
+    Profile data (name, option, number, description, specialty …) comes from
+    the DB — currently the placeholder until the Agent model exists.
+    The ``status`` field is overlaid from Redis so the cards always reflect
+    the live operational state.  Falls back to the placeholder ``status``
+    value when Redis is unavailable.
+    """
+    from .placeholder import AGENTS
+
+    profiles = [dict(a) for a in AGENTS]
+    statuses = get_agent_statuses()
+    for profile in profiles:
+        if profile["option"] in statuses:
+            profile["status"] = statuses[profile["option"]]
+    return profiles
+
+
+__all__ = [
+    "_flag_class", "_LangEntry", "_FALLBACK_LANGUAGES",
+    "get_agents", "get_agent_statuses", "get_agent_profiles",
+]
