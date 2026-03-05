@@ -5,6 +5,7 @@ from decimal import Decimal
 from flask import abort, current_app, flash, redirect, render_template, request, session, url_for
 from flask_security import current_user
 
+from ..decorators import login_required_modal
 from ..models import MinutePack, Order, OrderItem, Product, SubscriptionPlan
 from ..extensions import db, merchants_ext
 from . import tienda_bp
@@ -330,11 +331,9 @@ def comprar_minutos(pack_id: int):
 
 
 @tienda_bp.route("/perfil/", methods=["GET", "POST"])
+@login_required_modal
 def perfil():
     """View and update the logged-in customer's profile."""
-    if not current_user.is_authenticated:
-        flash("Debes iniciar sesión para ver tu perfil.", "warning")
-        return redirect(url_for("security.login"))
 
     if request.method == "POST":
         current_user.full_name = request.form.get("full_name", "").strip() or None
@@ -362,6 +361,7 @@ def perfil():
 
 
 @tienda_bp.route("/suscripciones/<int:plan_id>/link-pago", methods=["GET", "POST"])
+@login_required_modal
 def suscripcion_link_pago(plan_id: int):
     """Generate a one-off payment link for a subscription renewal.
 
@@ -369,9 +369,6 @@ def suscripcion_link_pago(plan_id: int):
     POST creates an order and surfaces the payment link via flash message
     (in production this would be emailed by the admin/scheduler).
     """
-    if not current_user.is_authenticated:
-        flash("Debes iniciar sesión para gestionar tu suscripción.", "warning")
-        return redirect(url_for("security.login"))
 
     plan = SubscriptionPlan.query.filter_by(id=plan_id, is_active=True).first_or_404()
 

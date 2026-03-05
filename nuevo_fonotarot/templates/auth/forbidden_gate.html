@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+  .gate-wrap {
+    position: relative;
+    min-height: 70vh;
+    overflow: hidden;
+  }
+
+  .gate-skeleton {
+    filter: blur(7px) saturate(0.4);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.55;
+    padding: 3rem 0 5rem;
+  }
+
+  .gate-backdrop {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(250,247,243,.72) 0%,
+      rgba(232,224,240,.68) 60%,
+      rgba(245,230,232,.72) 100%
+    );
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .gate-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow:
+      0 32px 80px rgba(192,96,128,.18),
+      0 8px 24px rgba(192,96,128,.1);
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 11;
+    text-align: center;
+    border: 1px solid rgba(192,96,128,.15);
+  }
+
+  [data-theme="dark"] .gate-card {
+    background: var(--sand);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .gate-icon { font-size: 3.5rem; line-height: 1; margin-bottom: .75rem; display: block; }
+
+  .gate-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    color: var(--plum-dk);
+    margin: 0 0 .4rem;
+  }
+  [data-theme="dark"] .gate-card h2 { color: var(--plum); }
+
+  .gate-card .gate-sub {
+    color: var(--muted);
+    font-size: .95rem;
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .roles-badge {
+    display: inline-block;
+    background: rgba(107,63,160,.1);
+    color: var(--plum);
+    border-radius: 20px;
+    padding: .2rem .75rem;
+    font-size: .8rem;
+    font-weight: 700;
+    margin: .15rem .1rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  [data-theme="dark"] .roles-badge { background: rgba(168,125,212,.15); color: var(--plum-dk); }
+
+  .btn-gate-back {
+    display: inline-block;
+    background: var(--plum);
+    color: #fff !important;
+    text-decoration: none;
+    border-radius: 30px;
+    padding: .7rem 1.75rem;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: background .2s, box-shadow .2s;
+    margin-top: .5rem;
+  }
+  .btn-gate-back:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107,63,160,.3);
+  }
+
+  .skel {
+    background: linear-gradient(90deg, var(--lavender) 25%, var(--blush) 50%, var(--lavender) 75%);
+    background-size: 200% 100%;
+    animation: skel-shimmer 1.6s infinite;
+    border-radius: 8px;
+  }
+  @keyframes skel-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .skel-h1   { height: 2.4rem; width: 55%; margin-bottom: 1rem; }
+  .skel-sub  { height: 1rem;   width: 35%; margin-bottom: 2rem; }
+  .skel-card { height: 160px;  width: 100%; margin-bottom: 1.25rem; border-radius: 12px; }
+  .skel-btn  { height: 2.75rem; width: 40%; border-radius: 30px; }
+  .skel-label{ height: .75rem; width: 25%; margin-bottom: .4rem; }
+  .skel-input{ height: 2.4rem; width: 100%; margin-bottom: 1.1rem; border-radius: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gate-wrap">
+
+  <div class="gate-skeleton">
+    <div class="container py-4" style="max-width:720px">
+      <div class="skel skel-h1"></div>
+      <div class="skel skel-sub"></div>
+      <div class="skel skel-card"></div>
+      <div class="skel skel-label"></div>
+      <div class="skel skel-input"></div>
+      <div class="skel skel-label"></div>
+      <div class="skel skel-input"></div>
+      <div class="skel skel-btn mt-2"></div>
+    </div>
+  </div>
+
+  <div class="gate-backdrop">
+    <div class="gate-card">
+      <span class="gate-icon">🚫</span>
+      <h2>Acceso restringido</h2>
+      <p class="gate-sub">
+        Tu cuenta no tiene los permisos necesarios para ver esta sección.
+        {% if required_roles %}
+        <br><br>
+        <span style="font-size:.85rem">Se requiere uno de los roles:</span><br>
+        {% for role in required_roles %}
+          <span class="roles-badge">{{ role }}</span>
+        {% endfor %}
+        {% endif %}
+      </p>
+
+      <a href="{{ url_for('content.index') }}" class="btn-gate-back">
+        <i class="ti ti-arrow-left me-1"></i>Volver al inicio
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
