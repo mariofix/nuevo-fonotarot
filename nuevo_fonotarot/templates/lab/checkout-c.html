@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout Opción C – Split Screen · Fonotarot Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ─── Split Screen Checkout ─────────────────────────── */
+
+  .ck-split {
+    display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - 60px);
+  }
+  @media (max-width:991px) {
+    .ck-split { grid-template-columns:1fr; min-height:auto; }
+  }
+
+  /* Left panel – summary/branding */
+  .ck-left {
+    background:linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
+    color:#fff; padding:3rem 2.5rem; display:flex; flex-direction:column; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .ck-left::before {
+    content:''; position:absolute; top:-60px; right:-60px;
+    width:200px; height:200px; border-radius:50%;
+    background:rgba(255,255,255,.06);
+  }
+  .ck-left::after {
+    content:''; position:absolute; bottom:-40px; left:-40px;
+    width:150px; height:150px; border-radius:50%;
+    background:rgba(255,255,255,.04);
+  }
+  [data-theme="dark"] .ck-left {
+    background:linear-gradient(135deg, #0d0d1a 0%, #1e1535 100%);
+  }
+
+  .ck-left-brand {
+    font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700;
+    margin-bottom:2rem; opacity:.9;
+  }
+  .ck-left-item {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:.65rem 0; border-bottom:1px solid rgba(255,255,255,.12);
+    font-size:.9rem;
+  }
+  .ck-left-item:last-child { border:none; }
+  .ck-left-item .item-name { opacity:.85; }
+  .ck-left-item .item-price { font-weight:700; }
+  .ck-left-total {
+    margin-top:1.5rem; padding-top:1rem; border-top:2px solid rgba(255,255,255,.2);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .ck-left-total .total-label { font-size:1rem; opacity:.7; }
+  .ck-left-total .total-value {
+    font-family:'Playfair Display',serif; font-size:2rem; font-weight:800;
+  }
+  .ck-left-secure {
+    margin-top:2rem; font-size:.8rem; opacity:.5; text-align:center;
+  }
+
+  /* Right panel – form */
+  .ck-right {
+    background:var(--cream); padding:2.5rem;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .ck-right-inner { max-width:480px; margin:0 auto; width:100%; }
+
+  .ck-right h2 {
+    font-family:'Playfair Display',serif; color:var(--plum-dk); font-size:1.5rem;
+    margin-bottom:.25rem;
+  }
+  [data-theme="dark"] .ck-right h2 { color:var(--plum); }
+  .ck-right .subtitle { color:var(--muted); font-size:.88rem; margin-bottom:1.75rem; }
+
+  /* Sections */
+  .ck-form-section {
+    margin-bottom:1.5rem;
+  }
+  .ck-form-section .section-label {
+    font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--rose); margin-bottom:.75rem; display:flex; align-items:center; gap:.4rem;
+  }
+
+  /* Customer notes */
+  .ck-info {
+    border-radius:8px; padding:.6rem .9rem; font-size:.8rem; margin-bottom:1rem;
+  }
+  .ck-info.anon { background:rgba(107,63,160,.06); color:var(--plum); border:1px solid rgba(107,63,160,.12); }
+  .ck-info.known { background:rgba(16,185,129,.06); color:#065f46; border:1px solid rgba(16,185,129,.18); }
+  .ck-info.physical { background:rgba(192,96,128,.06); color:var(--rose); border:1px solid rgba(192,96,128,.15); }
+  [data-theme="dark"] .ck-info.known { color:#6ee7b7; }
+
+  /* Form inputs */
+  .ck-right .form-control {
+    background:var(--sand); border-color:var(--border); color:var(--text);
+    border-radius:8px; padding:.55rem .85rem; font-size:.9rem;
+  }
+  .ck-right .form-control:focus {
+    border-color:var(--plum); box-shadow:0 0 0 .2rem rgba(107,63,160,.12);
+  }
+  .ck-right .form-label { font-size:.82rem; color:var(--muted); font-weight:600; }
+
+  /* Payment pills */
+  .ck-pay-pills { display:flex; gap:.75rem; }
+  .ck-pill {
+    flex:1; cursor:pointer; border:2px solid var(--border); border-radius:10px;
+    padding:.75rem; text-align:center; transition:all .25s; position:relative;
+  }
+  .ck-pill:hover { border-color:var(--plum); transform:translateY(-2px); }
+  .ck-pill.selected {
+    border-color:var(--plum); background:var(--blush);
+    box-shadow:0 4px 12px rgba(107,63,160,.15);
+  }
+  .ck-pill-icon { font-size:1.3rem; color:var(--plum); margin-bottom:.25rem; }
+  .ck-pill-name { font-weight:700; font-size:.85rem; color:var(--text); }
+  .ck-pill-desc { font-size:.72rem; color:var(--muted); }
+  .ck-pill-check {
+    position:absolute; top:6px; right:8px; font-size:.8rem; color:var(--plum);
+    opacity:0; transition:opacity .2s;
+  }
+  .ck-pill.selected .ck-pill-check { opacity:1; }
+
+  /* Submit button */
+  .ck-submit {
+    background:var(--plum); color:#fff; border:none; border-radius:10px;
+    padding:.7rem; font-weight:700; font-size:1rem; width:100%;
+    cursor:pointer; transition:all .25s; margin-top:.5rem;
+  }
+  .ck-submit:hover { background:var(--plum-dk); box-shadow:0 6px 20px rgba(107,63,160,.3); transform:translateY(-1px); }
+
+  /* Anonymous shipping */
+  .ck-anon-ship {
+    background:rgba(16,185,129,.05); border:1px solid rgba(16,185,129,.15);
+    border-radius:8px; padding:.55rem .85rem; font-size:.8rem; color:#065f46;
+  }
+  [data-theme="dark"] .ck-anon-ship { color:#6ee7b7; }
+
+  .ck-edit-link { font-size:.78rem; color:var(--muted); }
+  .ck-edit-link:hover { color:var(--plum); }
+
+  /* Lab controls */
+  .lab-tag {
+    position:fixed; top:70px; right:16px; z-index:200;
+    background:var(--gold); color:#fff; font-size:.7rem; font-weight:700;
+    padding:.3rem .7rem; border-radius:0 0 8px 8px; letter-spacing:.05em;
+  }
+  .lab-switcher {
+    border:2px dashed var(--rose); border-radius:10px; padding:.75rem;
+    margin-top:1.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lab-tag">LAB / Checkout C – Split Screen</div>
+
+<div class="ck-split">
+
+  <!-- ── LEFT: Order summary ──────────────── -->
+  <div class="ck-left">
+    <div class="ck-left-brand">Fonotarot</div>
+
+    <div class="ck-left-item">
+      <span class="item-name"><i class="ti ti-clock me-2"></i>30 minutos de tarot x1</span>
+      <span class="item-price">$9.990</span>
+    </div>
+    <div class="ck-left-item">
+      <span class="item-name"><i class="ti ti-cards me-2"></i>Mazo Rider-Waite x1</span>
+      <span class="item-price">$12.990</span>
+    </div>
+    <div class="ck-left-item">
+      <span class="item-name"><i class="ti ti-flame me-2"></i>Vela ritual lavanda x2</span>
+      <span class="item-price">$5.980</span>
+    </div>
+
+    <div class="ck-left-total">
+      <span class="total-label">Total a pagar</span>
+      <span class="total-value">$28.960</span>
+    </div>
+
+    <div class="ck-left-secure">
+      <i class="ti ti-shield-check me-1"></i>Pago seguro · Envío anónimo · Datos encriptados
+    </div>
+  </div>
+
+  <!-- ── RIGHT: Checkout form ─────────────── -->
+  <div class="ck-right">
+    <div class="ck-right-inner">
+
+      <h2>Finalizar compra</h2>
+      <p class="subtitle">Completa tus datos y elige cómo pagar.</p>
+
+      <!-- ── Customer section ──────────── -->
+      <div class="ck-form-section">
+        <div class="section-label"><i class="ti ti-user"></i> Datos del cliente</div>
+
+        <!-- Anonymous -->
+        <div id="sc-anon">
+          <div class="ck-info anon">
+            <i class="ti ti-ghost me-1"></i>
+            <strong>Compra anónima.</strong> Solo necesitamos tu email.
+            <a href="#" style="color:var(--plum)">¿Tienes cuenta?</a>
+          </div>
+          <div class="row g-2">
+            <div class="col-7">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" placeholder="tu@email.com"/>
+            </div>
+            <div class="col-5">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" placeholder="+56 9 ..."/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Known -->
+        <div id="sc-known" style="display:none">
+          <div class="ck-info known">
+            <i class="ti ti-user-check me-1"></i>
+            <strong>Hola, María.</strong> Comprobante a <strong>maria@email.com</strong>.
+          </div>
+          <div class="row g-2">
+            <div class="col-7">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="maria@email.com" readonly/>
+            </div>
+            <div class="col-5">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" value="+56 9 8765 4321"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Physical -->
+        <div id="sc-physical" style="display:none">
+          <div class="ck-info physical">
+            <i class="ti ti-star me-1"></i>
+            <strong>Hola, Valentina.</strong> Perfil completo verificado.
+          </div>
+          <div class="row g-2">
+            <div class="col-7">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="valentina@email.com" readonly/>
+            </div>
+            <div class="col-5">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" value="+56 9 1111 2222" readonly/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Shipping section ──────────── -->
+      <div class="ck-form-section">
+        <div class="section-label"><i class="ti ti-truck"></i> Envío</div>
+
+        <!-- Digital -->
+        <div id="sc-ship-digital">
+          <div class="ck-info known">
+            <i class="ti ti-sparkles me-1"></i>
+            Pedido <strong>100% digital</strong>. Acreditación inmediata tras el pago.
+          </div>
+        </div>
+
+        <!-- Physical shipping -->
+        <div id="sc-ship-physical" style="display:none">
+          <div class="ck-anon-ship mb-2">
+            <i class="ti ti-eye-off me-1"></i>
+            <strong>Envío anónimo</strong> – Caja sin marcas ni etiquetas identificativas.
+          </div>
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" value="Valentina Rojas" readonly/>
+            </div>
+            <div class="col-4">
+              <label class="form-label">RUT</label>
+              <input type="text" class="form-control" value="12.345.678-9" readonly/>
+            </div>
+            <div class="col-8">
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-control" value="Av. Providencia 1234, Depto 56" readonly/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Comuna</label>
+              <input type="text" class="form-control" value="Providencia" readonly/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Código postal</label>
+              <input type="text" class="form-control" value="7500000" readonly/>
+            </div>
+          </div>
+          <a href="#" class="ck-edit-link mt-1 d-inline-block"><i class="ti ti-pencil me-1"></i>Modificar</a>
+        </div>
+      </div>
+
+      <!-- ── Payment section ──────────── -->
+      <div class="ck-form-section">
+        <div class="section-label"><i class="ti ti-credit-card"></i> Método de pago</div>
+        <div class="ck-pay-pills">
+          <div class="ck-pill" id="c_flow" onclick="cPay('flow')">
+            <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
+            <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
+            <div class="ck-pill-name">Flow</div>
+            <div class="ck-pill-desc">Débito / Crédito</div>
+          </div>
+          <div class="ck-pill" id="c_khipu" onclick="cPay('khipu')">
+            <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
+            <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
+            <div class="ck-pill-name">Khipu</div>
+            <div class="ck-pill-desc">Transferencia</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Submit ───────────────────── -->
+      <button class="ck-submit">
+        <i class="ti ti-lock me-2"></i>Pagar ahora – $28.960
+      </button>
+      <p class="text-center mt-2 mb-0" style="font-size:.78rem;color:var(--muted)">
+        <i class="ti ti-shield-check me-1"></i>Transacción encriptada via Flow o Khipu
+      </p>
+
+      <!-- Lab switcher -->
+      <div class="lab-switcher">
+        <div class="small fw-bold text-center mb-2" style="color:var(--rose)">
+          <i class="ti ti-flask me-1"></i>Lab: Tipo de cliente
+        </div>
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
+          <button class="btn btn-sm btn-outline-secondary" onclick="scCustomer('anon')">Anónimo</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="scCustomer('known')">Conocido</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="scCustomer('physical')">Físico</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function cPay(method) {
+    document.querySelectorAll('.ck-pill').forEach(function(p){ p.classList.remove('selected'); });
+    document.getElementById('c_'+method).classList.add('selected');
+  }
+
+  function scCustomer(type) {
+    ['sc-anon','sc-known','sc-physical'].forEach(function(id){ document.getElementById(id).style.display='none'; });
+    document.getElementById('sc-ship-digital').style.display='';
+    document.getElementById('sc-ship-physical').style.display='none';
+    if (type==='anon') {
+      document.getElementById('sc-anon').style.display='';
+    } else if (type==='known') {
+      document.getElementById('sc-known').style.display='';
+    } else {
+      document.getElementById('sc-physical').style.display='';
+      document.getElementById('sc-ship-digital').style.display='none';
+      document.getElementById('sc-ship-physical').style.display='';
+    }
+  }
+</script>
+{% endblock %}

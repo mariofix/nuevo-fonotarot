@@ -69,3 +69,26 @@ def home7():
 def home8():
     """Índigo Místico (bento grid)."""
     return render_template("old-experiments/home8.html", **_ctx())
+
+
+# ---------------------------------------------------------------------------
+# Checkout design experiments
+# ---------------------------------------------------------------------------
+
+
+@lab_bp.route("/checkout-a")
+def checkout_a():
+    """Checkout A – Stepper (multi-step wizard with progress bar)."""
+    return render_template("lab/checkout-a.html")
+
+
+@lab_bp.route("/checkout-b")
+def checkout_b():
+    """Checkout B – Accordion (collapsible sections, single page)."""
+    return render_template("lab/checkout-b.html")
+
+
+@lab_bp.route("/checkout-c")
+def checkout_c():
+    """Checkout C – Split Screen (immersive two-panel layout)."""
+    return render_template("lab/checkout-c.html")

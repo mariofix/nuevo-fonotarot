@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout Opción A – Stepper · Fonotarot Lab{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ─── Stepper Checkout ──────────────────────────────── */
+  .ck-stepper { max-width:780px; margin:0 auto; }
+
+  /* Progress bar */
+  .ck-steps { display:flex; gap:0; margin-bottom:2.5rem; position:relative; }
+  .ck-step {
+    flex:1; text-align:center; position:relative; z-index:1;
+  }
+  .ck-step-dot {
+    width:38px; height:38px; border-radius:50%; margin:0 auto .5rem;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem;
+    background:var(--sand); color:var(--muted); border:2px solid var(--border);
+    transition:all .3s;
+  }
+  .ck-step.active .ck-step-dot { background:var(--plum); color:#fff; border-color:var(--plum); }
+  .ck-step.done .ck-step-dot { background:var(--rose); color:#fff; border-color:var(--rose); }
+  .ck-step-label { font-size:.78rem; color:var(--muted); font-weight:600; letter-spacing:.03em; }
+  .ck-step.active .ck-step-label { color:var(--plum); }
+  .ck-step.done .ck-step-label { color:var(--rose); }
+  .ck-steps-line {
+    position:absolute; top:19px; left:15%; right:15%; height:2px;
+    background:var(--border); z-index:0;
+  }
+  .ck-steps-progress {
+    height:100%; background:var(--plum); transition:width .4s ease;
+  }
+
+  /* Panels */
+  .ck-panel { display:none; animation:ckFadeIn .35s ease; }
+  .ck-panel.active { display:block; }
+  @keyframes ckFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+  .ck-card {
+    background:var(--sand); border:1px solid var(--border); border-radius:12px;
+    padding:1.75rem; margin-bottom:1.25rem;
+  }
+  .ck-card h5 { font-family:'Playfair Display',serif; color:var(--plum-dk); margin-bottom:1rem; }
+  [data-theme="dark"] .ck-card h5 { color:var(--plum); }
+
+  /* Payment method boxes */
+  .pay-box {
+    cursor:pointer; border:2px solid var(--border); border-radius:10px;
+    padding:1rem; text-align:center; transition:border-color .2s, background .2s;
+  }
+  .pay-box:hover { border-color:var(--plum); }
+  .pay-box.selected { border-color:var(--plum); background:var(--blush); }
+  .pay-box .fw-bold { color:var(--text); }
+
+  /* Anonymous / customer notes */
+  .customer-note {
+    border-radius:8px; padding:.75rem 1rem; font-size:.85rem; margin-bottom:1rem;
+  }
+  .customer-note.anon { background:rgba(107,63,160,.08); color:var(--plum); border:1px solid rgba(107,63,160,.2); }
+  .customer-note.known { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); }
+  .customer-note.physical { background:rgba(192,96,128,.08); color:var(--rose); border:1px solid rgba(192,96,128,.2); }
+  [data-theme="dark"] .customer-note.known { color:#6ee7b7; }
+
+  /* Summary sidebar */
+  .ck-summary {
+    background:var(--sand); border:1px solid var(--border); border-radius:12px;
+    padding:1.5rem; position:sticky; top:90px;
+  }
+  .ck-total {
+    font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:800; color:var(--plum);
+  }
+  .ck-badge {
+    display:inline-block; font-size:.68rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; padding:.2rem .6rem; border-radius:12px;
+    background:rgba(107,63,160,.1); color:var(--plum);
+  }
+
+  /* Navigation buttons */
+  .ck-nav { display:flex; gap:.75rem; margin-top:1.5rem; }
+  .ck-nav .btn-back {
+    background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px;
+    padding:.55rem 1.5rem; cursor:pointer; font-weight:600; transition:all .2s;
+  }
+  .ck-nav .btn-back:hover { border-color:var(--plum); color:var(--plum); }
+  .ck-nav .btn-next {
+    background:var(--plum); color:#fff; border:none; border-radius:8px;
+    padding:.55rem 1.5rem; cursor:pointer; font-weight:700; flex:1; transition:background .2s;
+  }
+  .ck-nav .btn-next:hover { background:var(--plum-dk); }
+
+  /* Anon-ship toggle */
+  .anon-ship {
+    background:rgba(16,185,129,.06); border:1px solid rgba(16,185,129,.2);
+    border-radius:8px; padding:.65rem 1rem; font-size:.85rem; color:#065f46;
+  }
+  [data-theme="dark"] .anon-ship { color:#6ee7b7; }
+
+  /* Form inputs theme */
+  .ck-card .form-control, .ck-card .form-select {
+    background:var(--cream); border-color:var(--border); color:var(--text);
+  }
+  .ck-card .form-control:focus, .ck-card .form-select:focus {
+    border-color:var(--plum); box-shadow:0 0 0 .2rem rgba(107,63,160,.15);
+  }
+
+  .lab-tag {
+    position:fixed; top:70px; right:16px; z-index:200;
+    background:var(--rose); color:#fff; font-size:.7rem; font-weight:700;
+    padding:.3rem .7rem; border-radius:0 0 8px 8px; letter-spacing:.05em;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lab-tag">LAB / Checkout A – Stepper</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Main column -->
+    <div class="col-lg-8">
+      <div class="ck-stepper">
+
+        <!-- ── Step indicators ──────────────── -->
+        <div class="ck-steps">
+          <div class="ck-steps-line"><div class="ck-steps-progress" id="stepsProgress" style="width:0%"></div></div>
+          <div class="ck-step active" data-step="1">
+            <div class="ck-step-dot">1</div>
+            <div class="ck-step-label">Cliente</div>
+          </div>
+          <div class="ck-step" data-step="2">
+            <div class="ck-step-dot">2</div>
+            <div class="ck-step-label">Envío</div>
+          </div>
+          <div class="ck-step" data-step="3">
+            <div class="ck-step-dot">3</div>
+            <div class="ck-step-label">Pago</div>
+          </div>
+        </div>
+
+        <!-- ── STEP 1 – Customer identification ─── -->
+        <div class="ck-panel active" id="panel1">
+          <div class="ck-card">
+            <h5><i class="ti ti-user me-2"></i>Identificación</h5>
+
+            <!-- Anonymous customer -->
+            <div id="blk-anon">
+              <div class="customer-note anon">
+                <i class="ti ti-ghost me-1"></i>
+                <strong>Compra anónima</strong> – No necesitas cuenta.
+                Solo tu email para el comprobante.
+                <a href="#" class="ms-1" style="color:var(--plum)">¿Ya tienes cuenta?</a>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-7">
+                  <label class="form-label">Email *</label>
+                  <input type="email" class="form-control" placeholder="tu@email.com" required/>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" placeholder="+56 9 1234 5678"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Known customer -->
+            <div id="blk-known" style="display:none">
+              <div class="customer-note known">
+                <i class="ti ti-user-check me-1"></i>
+                <strong>Hola, María</strong> – Tu email ya está registrado. Los comprobantes se enviarán a <strong>maria@email.com</strong>.
+              </div>
+              <div class="row g-3">
+                <div class="col-md-7">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" value="maria@email.com" readonly/>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" value="+56 9 8765 4321"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Physical customer -->
+            <div id="blk-physical" style="display:none">
+              <div class="customer-note physical">
+                <i class="ti ti-star me-1"></i>
+                <strong>Hola, Valentina</strong> – Perfil completo verificado. Tus datos de envío están listos.
+              </div>
+              <div class="row g-3">
+                <div class="col-md-7">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" value="valentina@email.com" readonly/>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" value="+56 9 1111 2222" readonly/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ck-nav">
+            <a href="/tienda/carrito/" class="btn-back"><i class="ti ti-arrow-left me-1"></i>Carrito</a>
+            <button class="btn-next" onclick="goStep(2)">Continuar <i class="ti ti-arrow-right ms-1"></i></button>
+          </div>
+        </div>
+
+        <!-- ── STEP 2 – Shipping ──────────────── -->
+        <div class="ck-panel" id="panel2">
+          <div class="ck-card">
+            <h5><i class="ti ti-truck me-2"></i>Datos de envío</h5>
+
+            <!-- Digital-only (anonymous/known) -->
+            <div id="ship-digital">
+              <div class="customer-note known">
+                <i class="ti ti-sparkles me-1"></i>
+                Tu pedido es <strong>100% digital</strong>. Los minutos se acreditan inmediatamente tras el pago. No se requiere envío.
+              </div>
+            </div>
+
+            <!-- Physical customer shipping -->
+            <div id="ship-physical" style="display:none">
+              <div class="anon-ship mb-3">
+                <i class="ti ti-eye-off me-1"></i>
+                <strong>Envío anónimo:</strong> La caja llega sin marcas ni etiquetas que identifiquen el contenido.
+              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nombre completo</label>
+                  <input type="text" class="form-control" value="Valentina Rojas" readonly/>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">RUT</label>
+                  <input type="text" class="form-control" value="12.345.678-9" readonly/>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Dirección</label>
+                  <input type="text" class="form-control" value="Av. Providencia 1234, Depto 56" readonly/>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Comuna</label>
+                  <input type="text" class="form-control" value="Providencia" readonly/>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Código postal</label>
+                  <input type="text" class="form-control" value="7500000" readonly/>
+                </div>
+              </div>
+              <div class="mt-2">
+                <a href="#" class="text-secondary small"><i class="ti ti-pencil me-1"></i>Cambiar datos de envío</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="ck-nav">
+            <button class="btn-back" onclick="goStep(1)"><i class="ti ti-arrow-left me-1"></i>Atrás</button>
+            <button class="btn-next" onclick="goStep(3)">Continuar <i class="ti ti-arrow-right ms-1"></i></button>
+          </div>
+        </div>
+
+        <!-- ── STEP 3 – Payment ──────────────── -->
+        <div class="ck-panel" id="panel3">
+          <div class="ck-card">
+            <h5><i class="ti ti-credit-card me-2"></i>Método de pago</h5>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="pay-box" id="flow_box" onclick="selectPay('flow')">
+                  <i class="ti ti-credit-card mb-2" style="font-size:1.5rem;color:var(--plum)"></i>
+                  <div class="fw-bold">Flow</div>
+                  <div class="small text-secondary">Débito / Crédito / Transferencia</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="pay-box" id="khipu_box" onclick="selectPay('khipu')">
+                  <i class="ti ti-building-bank mb-2" style="font-size:1.5rem;color:var(--plum)"></i>
+                  <div class="fw-bold">Khipu</div>
+                  <div class="small text-secondary">Transferencia simplificada</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ck-nav">
+            <button class="btn-back" onclick="goStep(2)"><i class="ti ti-arrow-left me-1"></i>Atrás</button>
+            <button class="btn-next" id="btnPay">
+              <i class="ti ti-lock me-1"></i>Pagar ahora
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Summary sidebar -->
+    <div class="col-lg-4">
+      <div class="ck-summary">
+        <h5 style="font-family:'Playfair Display',serif;color:var(--plum-dk)">Resumen</h5>
+        <div class="d-flex justify-content-between text-secondary small mb-2">
+          <span>30 minutos de tarot x1</span><span>$9.990</span>
+        </div>
+        <div class="d-flex justify-content-between text-secondary small mb-2">
+          <span>Mazo Rider-Waite x1</span><span>$12.990</span>
+        </div>
+        <hr style="border-color:var(--border)"/>
+        <div class="d-flex justify-content-between ck-total mb-3">
+          <span>Total</span><span>$22.980</span>
+        </div>
+        <p class="text-secondary small text-center mb-0">
+          <i class="ti ti-shield-check me-1"></i>Pago seguro via Flow o Khipu
+        </p>
+      </div>
+
+      <!-- Customer type switcher (lab only) -->
+      <div class="ck-card mt-3" style="border:2px dashed var(--rose)">
+        <div class="small fw-bold text-center mb-2" style="color:var(--rose)">
+          <i class="ti ti-flask me-1"></i>Lab: Tipo de cliente
+        </div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="switchCustomer('anon')">Anónimo</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="switchCustomer('known')">Conocido (digital)</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="switchCustomer('physical')">Físico (perfil completo)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var currentStep = 1;
+  function goStep(n) {
+    document.querySelectorAll('.ck-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('panel'+n).classList.add('active');
+    document.querySelectorAll('.ck-step').forEach(function(s){
+      var sn = parseInt(s.dataset.step);
+      s.classList.remove('active','done');
+      if (sn === n) s.classList.add('active');
+      else if (sn < n) s.classList.add('done');
+    });
+    document.getElementById('stepsProgress').style.width = ((n-1)*50)+'%';
+    currentStep = n;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function selectPay(method) {
+    document.querySelectorAll('.pay-box').forEach(function(b){ b.classList.remove('selected'); });
+    document.getElementById(method+'_box').classList.add('selected');
+  }
+
+  function switchCustomer(type) {
+    ['blk-anon','blk-known','blk-physical'].forEach(function(id){ document.getElementById(id).style.display='none'; });
+    document.getElementById('ship-digital').style.display='';
+    document.getElementById('ship-physical').style.display='none';
+    if (type==='anon') { document.getElementById('blk-anon').style.display=''; }
+    else if (type==='known') { document.getElementById('blk-known').style.display=''; }
+    else {
+      document.getElementById('blk-physical').style.display='';
+      document.getElementById('ship-digital').style.display='none';
+      document.getElementById('ship-physical').style.display='';
+    }
+    goStep(1);
+  }
+</script>
+{% endblock %}
