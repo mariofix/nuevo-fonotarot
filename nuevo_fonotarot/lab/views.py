@@ -69,3 +69,32 @@ def home7():
 def home8():
     """Índigo Místico (bento grid)."""
     return render_template("old-experiments/home8.html", **_ctx())
+
+
+# ---------------------------------------------------------------------------
+# Checkout design experiments – one per customer type
+# ---------------------------------------------------------------------------
+
+
+@lab_bp.route("/checkout")
+def checkout_index():
+    """Overview of all three checkout design options."""
+    return render_template("lab/checkout-index.html", **_ctx())
+
+
+@lab_bp.route("/checkout/anonimo")
+def checkout_anonimo():
+    """Checkout · Opción 1: Visitante anónimo (solo email, productos digitales)."""
+    return render_template("lab/checkout-anonimo.html", **_ctx())
+
+
+@lab_bp.route("/checkout/conocido")
+def checkout_conocido():
+    """Checkout · Opción 2: Cliente registrado (email pre-llenado, pago favorito)."""
+    return render_template("lab/checkout-conocido.html", **_ctx())
+
+
+@lab_bp.route("/checkout/fisico")
+def checkout_fisico():
+    """Checkout · Opción 3: Cliente físico (dirección completa, envío anónimo)."""
+    return render_template("lab/checkout-fisico.html", **_ctx())
