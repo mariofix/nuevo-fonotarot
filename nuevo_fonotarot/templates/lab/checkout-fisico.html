@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Lab · Checkout Cliente Físico – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Option 3: Physical Customer ────────────────────────────────── */
+  .co-fisico .section-card {
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--cream);
+    transition: background .3s, border-color .3s;
+  }
+  [data-theme="dark"] .co-fisico .section-card { background: var(--sand); }
+  .co-fisico .section-card h6 {
+    font-size: .95rem; font-weight: 700;
+    color: var(--plum-dk); margin-bottom: .9rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  [data-theme="dark"] .co-fisico .section-card h6 { color: var(--plum); }
+
+  /* Anonymous shipping banner (prominent) */
+  .co-fisico .anon-banner {
+    background: rgba(16,185,129,.07);
+    border: 1px solid rgba(16,185,129,.3);
+    border-left: 4px solid #10b981;
+    border-radius: 8px;
+    padding: .85rem 1.1rem;
+    font-size: .875rem;
+    color: #065f46;
+    display: flex; align-items: flex-start; gap: .65rem;
+    margin-bottom: 1rem;
+  }
+  [data-theme="dark"] .co-fisico .anon-banner {
+    background: rgba(16,185,129,.1);
+    color: #6ee7b7;
+    border-color: rgba(16,185,129,.4);
+    border-left-color: #10b981;
+  }
+  .co-fisico .address-detail {
+    background: var(--sand);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    font-size: .9rem;
+    color: var(--text);
+  }
+  [data-theme="dark"] .co-fisico .address-detail { background: var(--blush); }
+  .co-fisico .address-detail .row-item {
+    display: flex; align-items: center; gap: .5rem;
+    margin-bottom: .45rem;
+    color: var(--muted);
+  }
+  .co-fisico .address-detail .row-item:last-child { margin-bottom: 0; }
+  .co-fisico .address-detail .row-item i { color: var(--plum); width: 1.1rem; flex-shrink: 0; }
+  .co-fisico .address-detail .row-item span { color: var(--text); }
+
+  .co-fisico .payment-option {
+    cursor: pointer;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1rem;
+    transition: border-color .2s, background .2s;
+    text-align: center;
+  }
+  .co-fisico .payment-option:hover { border-color: var(--plum); }
+  .co-fisico .payment-option.selected { border-color: var(--plum); background: var(--blush); }
+
+  .co-fisico .total-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem; font-weight: 800; color: var(--plum);
+  }
+  .co-fisico .btn-pay {
+    background: var(--plum);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: .85rem 2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background .2s, box-shadow .2s;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+  }
+  .co-fisico .btn-pay:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107,63,160,.35);
+  }
+  .co-fisico .cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .9rem;
+  }
+  .co-fisico .cart-item:last-child { border-bottom: none; }
+  .co-fisico .item-type-badge {
+    display: inline-block;
+    font-size: .65rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: .15rem .5rem; border-radius: 20px; margin-left: .4rem;
+  }
+  .co-fisico .badge-product { background: var(--lavender); color: var(--plum-dk); }
+  [data-theme="dark"] .co-fisico .badge-product { background: rgba(168,125,212,.2); color: var(--plum); }
+  .co-fisico .badge-minutes { background: rgba(16,185,129,.1); color: #065f46; }
+  [data-theme="dark"] .co-fisico .badge-minutes { color: #6ee7b7; }
+
+  .lab-notice {
+    background: var(--lavender);
+    border: 1px dashed var(--plum);
+    border-radius: 8px;
+    padding: .55rem 1rem;
+    font-size: .78rem;
+    color: var(--plum);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 co-fisico">
+
+  <div class="lab-notice">
+    <i class="ti ti-flask me-1"></i>
+    <strong>Lab · Opción 3:</strong> Checkout para <strong>Cliente Físico (perfil completo, envío a domicilio)</strong> — dirección pre-llenada, paquete anónimo destacado.
+  </div>
+
+  <h1 class="fw-bold mb-4" style="font-family:'Playfair Display',serif;color:var(--plum-dk)">
+    Finalizar compra
+  </h1>
+
+  <div class="row g-4">
+
+    <!-- ── Left ──────────────────────────────────────────────── -->
+    <div class="col-lg-7">
+
+      <!-- Shipping info (from profile) -->
+      <div class="section-card">
+        <h6>
+          <i class="ti ti-truck" style="color:var(--plum)"></i>Datos de envío
+        </h6>
+
+        <!-- Anonymous shipping note (prominent for privacy) -->
+        <div class="anon-banner">
+          <i class="ti ti-eye-off" style="font-size:1.1rem;flex-shrink:0;margin-top:.05rem"></i>
+          <div>
+            <strong>Envío 100% anónimo:</strong> La caja llega sin logotipos,
+            etiquetas ni marcas que identifiquen el contenido o el remitente.
+            Tu discreción es nuestra prioridad.
+          </div>
+        </div>
+
+        <!-- Pre-filled address from profile (mockup) -->
+        <div class="address-detail">
+          <div class="row-item">
+            <i class="ti ti-user"></i>
+            <span>María García López</span>
+          </div>
+          <div class="row-item">
+            <i class="ti ti-id-badge"></i>
+            <span>12.345.678-9</span>
+          </div>
+          <div class="row-item">
+            <i class="ti ti-map-pin"></i>
+            <span>Av. Providencia 1234, Providencia, 7500000</span>
+          </div>
+          <div class="row-item">
+            <i class="ti ti-phone"></i>
+            <span>+56 9 8765 4321</span>
+          </div>
+        </div>
+
+        <div class="mt-2" style="font-size:.82rem">
+          <a href="#" style="color:var(--plum)">
+            <i class="ti ti-pencil me-1"></i>Actualizar datos de envío
+          </a>
+        </div>
+      </div><!-- /shipping section -->
+
+      <!-- Email (pre-filled) -->
+      <div class="section-card">
+        <h6>
+          <i class="ti ti-mail" style="color:var(--plum)"></i>Comprobante de pago
+        </h6>
+        <div style="background:var(--sand);border:1.5px solid var(--border);border-radius:8px;padding:.7rem 1rem;color:var(--text);display:flex;align-items:center;gap:.5rem;opacity:.85">
+          <i class="ti ti-lock-filled" style="color:var(--plum)"></i>
+          <span>maria@email.com</span>
+        </div>
+        <div class="mt-1" style="font-size:.8rem;color:var(--muted)">
+          El comprobante y el seguimiento del pedido se enviarán a este email.
+        </div>
+      </div><!-- /email section -->
+
+      <!-- Payment method -->
+      <div class="section-card">
+        <h6>
+          <i class="ti ti-credit-card" style="color:var(--plum)"></i>Método de pago
+        </h6>
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="d-block">
+              <input type="radio" name="payment_method" value="flow" class="d-none pay-radio" id="fis_flow"/>
+              <div class="payment-option" id="fis_flow_box">
+                <i class="ti ti-credit-card" style="font-size:1.3rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                <div class="fw-bold" style="font-size:.95rem">Flow</div>
+                <div class="small" style="color:var(--muted)">Débito · Crédito · Transferencia</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-6">
+            <label class="d-block">
+              <input type="radio" name="payment_method" value="khipu" class="d-none pay-radio" id="fis_khipu"/>
+              <div class="payment-option" id="fis_khipu_box">
+                <i class="ti ti-building-bank" style="font-size:1.3rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                <div class="fw-bold" style="font-size:.95rem">Khipu</div>
+                <div class="small" style="color:var(--muted)">Transferencia simplificada</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div><!-- /payment section -->
+
+    </div><!-- /col-lg-7 -->
+
+    <!-- ── Right: order summary ──────────────────────────────── -->
+    <div class="col-lg-5">
+      <div class="card p-4 sticky-top" style="top:84px;border:1.5px solid var(--border);border-radius:14px;background:var(--sand)">
+        <h5 class="fw-bold mb-3" style="font-family:'Playfair Display',serif">Resumen del pedido</h5>
+
+        <!-- Mixed cart mockup: physical + digital -->
+        <div class="cart-item">
+          <span>
+            <i class="ti ti-package me-1" style="color:var(--plum)"></i>
+            Mazo Rider-Waite
+            <span class="item-type-badge badge-product">Físico</span>
+          </span>
+          <span style="font-weight:600">$25.000</span>
+        </div>
+        <div class="cart-item">
+          <span>
+            <i class="ti ti-package me-1" style="color:var(--plum)"></i>
+            Vela de cuarzo rosa
+            <span class="item-type-badge badge-product">Físico</span>
+          </span>
+          <span style="font-weight:600">$8.900</span>
+        </div>
+        <div class="cart-item">
+          <span>
+            <i class="ti ti-clock me-1" style="color:#10b981"></i>
+            Pack 30 minutos
+            <span class="item-type-badge badge-minutes">Digital</span>
+          </span>
+          <span style="font-weight:600">$10.000</span>
+        </div>
+
+        <hr style="border-color:var(--border);margin:1rem 0"/>
+
+        <div class="d-flex justify-content-between align-items-baseline mb-4">
+          <span class="fw-semibold">Total</span>
+          <span class="total-display">$43.900</span>
+        </div>
+
+        <button type="submit" class="btn-pay">
+          <i class="ti ti-lock"></i>Confirmar y pagar
+        </button>
+
+        <p class="text-center mt-3 mb-0" style="font-size:.8rem;color:var(--muted)">
+          <i class="ti ti-shield-check me-1"></i>Pago seguro vía Flow o Khipu
+        </p>
+      </div>
+
+      <!-- Shipping timeline note -->
+      <div class="mt-3 p-3" style="background:var(--blush);border-radius:10px;font-size:.82rem;border:1px solid var(--border)">
+        <div class="mb-1" style="font-weight:700;color:var(--plum-dk)">
+          <i class="ti ti-truck me-1"></i>Estimación de envío
+        </div>
+        <div style="color:var(--muted)">3–5 días hábiles · Caja sellada sin identificación · Todo Chile</div>
+      </div>
+    </div><!-- /col-lg-5 -->
+
+  </div><!-- /row -->
+
+  <div class="mt-4 text-center" style="font-size:.85rem;color:var(--muted)">
+    <a href="{{ url_for('lab.checkout_index') }}" style="color:var(--plum)">
+      <i class="ti ti-arrow-left me-1"></i>Ver todas las opciones de checkout
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.pay-radio').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(function(b) { b.classList.remove('selected'); });
+      var box = document.getElementById(this.id + '_box');
+      if (box) box.classList.add('selected');
+    });
+  });
+</script>
+{% endblock %}

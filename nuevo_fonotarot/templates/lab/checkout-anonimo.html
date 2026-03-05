@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Lab · Checkout Visitante – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Option 1: Visitante (Anonymous Customer) ────────────────────── */
+  .co-anon .step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: var(--plum); color: #fff;
+    font-size: .8rem; font-weight: 700; flex-shrink: 0;
+  }
+  .co-anon .step-row {
+    display: flex; align-items: flex-start; gap: .85rem; margin-bottom: 1.5rem;
+  }
+  .co-anon .step-body { flex: 1; }
+  .co-anon .privacy-banner {
+    background: rgba(16,185,129,.07);
+    border: 1px solid rgba(16,185,129,.25);
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+    font-size: .875rem;
+    color: #065f46;
+    display: flex; align-items: flex-start; gap: .6rem;
+  }
+  [data-theme="dark"] .co-anon .privacy-banner {
+    background: rgba(16,185,129,.1);
+    color: #6ee7b7;
+    border-color: rgba(16,185,129,.3);
+  }
+  .co-anon .payment-option {
+    cursor: pointer;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color .2s, background .2s;
+    text-align: center;
+  }
+  .co-anon .payment-option:hover { border-color: var(--plum); }
+  .co-anon .payment-option.selected { border-color: var(--plum); background: var(--blush); }
+  .co-anon .total-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem; font-weight: 800; color: var(--plum);
+  }
+  .co-anon .form-control {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--sand);
+    color: var(--text);
+    padding: .7rem 1rem;
+    font-size: 1rem;
+    transition: border-color .2s;
+  }
+  .co-anon .form-control:focus {
+    outline: none;
+    border-color: var(--plum);
+    box-shadow: 0 0 0 3px rgba(107,63,160,.12);
+  }
+  .co-anon .btn-pay {
+    background: var(--plum);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: .8rem 2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background .2s, box-shadow .2s;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+  }
+  .co-anon .btn-pay:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107,63,160,.35);
+  }
+  .co-anon .cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .6rem 0; border-bottom: 1px solid var(--border);
+    font-size: .9rem; color: var(--muted);
+  }
+  .co-anon .cart-item:last-child { border-bottom: none; }
+  .lab-notice {
+    background: var(--lavender);
+    border: 1px dashed var(--plum);
+    border-radius: 8px;
+    padding: .55rem 1rem;
+    font-size: .78rem;
+    color: var(--plum);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 co-anon">
+
+  <div class="lab-notice">
+    <i class="ti ti-flask me-1"></i>
+    <strong>Lab · Opción 1:</strong> Checkout para <strong>Visitante (cliente anónimo)</strong> — sólo necesita un email para comprar minutos digitales.
+  </div>
+
+  <h1 class="fw-bold mb-1" style="font-family:'Playfair Display',serif;color:var(--plum-dk)">
+    Finalizar compra
+  </h1>
+  <p class="mb-4" style="color:var(--muted)">Sin cuenta requerida — compra en segundos.</p>
+
+  <div class="row g-4">
+
+    <!-- ── Left: steps ───────────────────────────────────────── -->
+    <div class="col-lg-7">
+
+      <!-- Step 1: privacy note -->
+      <div class="step-row">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h6 class="mb-2 fw-semibold">Tu privacidad</h6>
+          <div class="privacy-banner">
+            <i class="ti ti-shield-check" style="font-size:1.1rem;flex-shrink:0;margin-top:.1rem"></i>
+            <span>
+              No necesitas crear una cuenta. Tu email sólo se usará para enviarte
+              el comprobante de pago y los datos de activación de tus minutos.
+              <strong>No compartimos tu información con terceros.</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: email -->
+      <div class="step-row">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h6 class="mb-2 fw-semibold">Correo de contacto</h6>
+          <label class="form-label small text-muted" for="anon_email">
+            <i class="ti ti-mail me-1"></i>Email *
+          </label>
+          <input
+            type="email"
+            id="anon_email"
+            name="shipping_email"
+            class="form-control"
+            placeholder="tu@email.com"
+            autocomplete="email"
+          />
+          <div class="form-text" style="color:var(--muted)">
+            Te enviaremos el comprobante y el código de activación aquí.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: payment method -->
+      <div class="step-row">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h6 class="mb-2 fw-semibold">Método de pago</h6>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="d-block">
+                <input type="radio" name="payment_method" value="flow" class="d-none pay-radio" id="anon_flow"/>
+                <div class="payment-option" id="anon_flow_box">
+                  <i class="ti ti-credit-card" style="font-size:1.4rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                  <div class="fw-bold" style="font-size:.95rem">Flow</div>
+                  <div class="small" style="color:var(--muted)">Débito · Crédito · Transferencia</div>
+                </div>
+              </label>
+            </div>
+            <div class="col-6">
+              <label class="d-block">
+                <input type="radio" name="payment_method" value="khipu" class="d-none pay-radio" id="anon_khipu"/>
+                <div class="payment-option" id="anon_khipu_box">
+                  <i class="ti ti-building-bank" style="font-size:1.4rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                  <div class="fw-bold" style="font-size:.95rem">Khipu</div>
+                  <div class="small" style="color:var(--muted)">Transferencia simplificada</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-lg-7 -->
+
+    <!-- ── Right: order summary ──────────────────────────────── -->
+    <div class="col-lg-5">
+      <div class="card p-4 sticky-top" style="top:84px;border:1.5px solid var(--border);border-radius:14px;background:var(--sand)">
+        <h5 class="fw-bold mb-3" style="font-family:'Playfair Display',serif">Tu pedido</h5>
+
+        <!-- Sample cart items (static mockup) -->
+        <div class="cart-item">
+          <span><i class="ti ti-clock me-1"></i>Pack 30 minutos</span>
+          <span>$10.000</span>
+        </div>
+
+        <hr style="border-color:var(--border);margin:1rem 0"/>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <span class="fw-semibold" style="color:var(--text)">Total</span>
+          <span class="total-display">$10.000</span>
+        </div>
+
+        <button type="submit" class="btn-pay">
+          <i class="ti ti-lock"></i>Pagar ahora
+        </button>
+
+        <p class="text-center mt-3 mb-0" style="font-size:.8rem;color:var(--muted)">
+          <i class="ti ti-shield-check me-1"></i>Pago procesado de forma segura
+        </p>
+
+        <div class="mt-3 pt-3" style="border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);text-align:center">
+          <i class="ti ti-eye-off me-1"></i>Compra 100% discreta · Sin cuenta necesaria
+        </div>
+      </div>
+    </div><!-- /col-lg-5 -->
+
+  </div><!-- /row -->
+
+  <div class="mt-4 text-center" style="font-size:.85rem;color:var(--muted)">
+    <a href="{{ url_for('lab.checkout_index') }}" style="color:var(--plum)">
+      <i class="ti ti-arrow-left me-1"></i>Ver todas las opciones de checkout
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.pay-radio').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(function(b) { b.classList.remove('selected'); });
+      var box = document.getElementById(this.id + '_box');
+      if (box) box.classList.add('selected');
+    });
+  });
+</script>
+{% endblock %}

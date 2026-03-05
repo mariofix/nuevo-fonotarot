@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Lab · Opciones de Checkout – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .checkout-option-card {
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+    background: var(--sand);
+    height: 100%;
+  }
+  .checkout-option-card:hover {
+    border-color: var(--plum);
+    box-shadow: 0 8px 32px rgba(107,63,160,.15);
+    transform: translateY(-4px);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .checkout-option-card .option-icon {
+    width: 3.5rem; height: 3.5rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1.25rem;
+  }
+  .checkout-option-card .option-badge {
+    display: inline-block;
+    font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; padding: .2rem .65rem;
+    border-radius: 20px; margin-bottom: .5rem;
+  }
+  .checkout-option-card h5 {
+    font-family: 'Playfair Display', serif;
+    color: var(--plum-dk); font-weight: 700; margin-bottom: .6rem;
+  }
+  [data-theme="dark"] .checkout-option-card h5 { color: var(--plum); }
+  .checkout-option-card p { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
+  .checkout-option-card .feature-list {
+    list-style: none; padding: 0; margin: 0 0 1.25rem;
+    font-size: .85rem; color: var(--muted);
+  }
+  .checkout-option-card .feature-list li {
+    display: flex; align-items: flex-start; gap: .45rem;
+    margin-bottom: .4rem;
+  }
+  .checkout-option-card .feature-list li i { color: var(--plum); flex-shrink: 0; margin-top: .1rem; }
+  .checkout-option-card .btn-view {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: var(--plum); color: #fff;
+    border-radius: 30px; padding: .5rem 1.3rem;
+    font-size: .88rem; font-weight: 700;
+    text-decoration: none;
+    transition: background .2s;
+  }
+  .checkout-option-card .btn-view:hover { background: var(--plum-dk); color: #fff; }
+
+  /* Card accent colours per option */
+  .card-anon  { border-color: rgba(16,185,129,.3); }
+  .card-anon:hover { border-color: #10b981; }
+  .card-anon .option-icon  { background: rgba(16,185,129,.1); color: #10b981; }
+  .card-anon .option-badge { background: rgba(16,185,129,.1); color: #065f46; }
+  [data-theme="dark"] .card-anon .option-badge { color: #6ee7b7; }
+
+  .card-digital { border-color: var(--lavender); }
+  .card-digital .option-icon { background: var(--lavender); color: var(--plum); }
+  .card-digital .option-badge { background: var(--lavender); color: var(--plum-dk); }
+  [data-theme="dark"] .card-digital .option-badge { color: var(--plum); }
+
+  .card-fisico { border-color: var(--blush); }
+  .card-fisico .option-icon { background: var(--blush); color: var(--rose); }
+  .card-fisico .option-badge { background: var(--blush); color: var(--rose); }
+
+  .lab-header {
+    background: linear-gradient(135deg, var(--lavender) 0%, var(--blush) 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border);
+  }
+  .lab-header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--plum-dk);
+    margin-bottom: .3rem;
+  }
+  [data-theme="dark"] .lab-header h1 { color: var(--plum); }
+  .comparison-table th, .comparison-table td {
+    vertical-align: middle; padding: .75rem 1rem;
+    border-color: var(--border); color: var(--text); font-size: .9rem;
+  }
+  .comparison-table thead th { background: var(--sand); color: var(--muted); font-weight: 600; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; }
+  .check { color: #10b981; }
+  .cross { color: var(--muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Lab header -->
+  <div class="lab-header">
+    <div class="d-flex align-items-start gap-3">
+      <i class="ti ti-flask" style="font-size:2rem;color:var(--plum);flex-shrink:0;margin-top:.25rem"></i>
+      <div>
+        <h1>Opciones de Checkout</h1>
+        <p class="mb-0" style="color:var(--muted)">
+          Tres diseños de pago para los tres tipos de clientes de Fonotarot.
+          Cada variante usa el mismo sistema de tema claro/oscuro del sitio.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 option cards -->
+  <div class="row g-4 mb-5">
+
+    <!-- Option 1: Anonymous -->
+    <div class="col-md-4">
+      <a href="{{ url_for('lab.checkout_anonimo') }}" class="checkout-option-card card-anon">
+        <div class="option-icon">
+          <i class="ti ti-user-off"></i>
+        </div>
+        <span class="option-badge">Opción 1</span>
+        <h5>Visitante Anónimo</h5>
+        <p>Cliente sin cuenta. Compra minutos digitales de forma rápida con sólo su email.</p>
+        <ul class="feature-list">
+          <li><i class="ti ti-check"></i> Solo requiere email</li>
+          <li><i class="ti ti-check"></i> Sin necesidad de registrarse</li>
+          <li><i class="ti ti-check"></i> Nota de privacidad prominente</li>
+          <li><i class="ti ti-check"></i> Flujo mínimo de 3 pasos</li>
+          <li><i class="ti ti-check"></i> Flow y Khipu disponibles</li>
+        </ul>
+        <span class="btn-view">
+          <i class="ti ti-eye"></i>Ver diseño
+        </span>
+      </a>
+    </div>
+
+    <!-- Option 2: Known / Digital -->
+    <div class="col-md-4">
+      <a href="{{ url_for('lab.checkout_conocido') }}" class="checkout-option-card card-digital">
+        <div class="option-icon">
+          <i class="ti ti-user-check"></i>
+        </div>
+        <span class="option-badge">Opción 2</span>
+        <h5>Cliente Registrado</h5>
+        <p>Usuario autenticado que compra packs de minutos. Email y pago favorito pre-seleccionados.</p>
+        <ul class="feature-list">
+          <li><i class="ti ti-check"></i> Saludo personalizado</li>
+          <li><i class="ti ti-check"></i> Email pre-llenado (solo lectura)</li>
+          <li><i class="ti ti-check"></i> Método de pago favorito destacado</li>
+          <li><i class="ti ti-check"></i> Minutos activan en cuenta</li>
+          <li><i class="ti ti-check"></i> Acceso a historial de compras</li>
+        </ul>
+        <span class="btn-view">
+          <i class="ti ti-eye"></i>Ver diseño
+        </span>
+      </a>
+    </div>
+
+    <!-- Option 3: Physical -->
+    <div class="col-md-4">
+      <a href="{{ url_for('lab.checkout_fisico') }}" class="checkout-option-card card-fisico">
+        <div class="option-icon">
+          <i class="ti ti-package"></i>
+        </div>
+        <span class="option-badge">Opción 3</span>
+        <h5>Cliente Físico</h5>
+        <p>Perfil completo con RUT y dirección. Compra productos físicos + digitales. Envío anónimo.</p>
+        <ul class="feature-list">
+          <li><i class="ti ti-check"></i> Dirección de envío pre-llenada</li>
+          <li><i class="ti ti-check"></i> Banner de envío anónimo</li>
+          <li><i class="ti ti-check"></i> Carrito mixto (físico + digital)</li>
+          <li><i class="ti ti-check"></i> Estimación de plazo de entrega</li>
+          <li><i class="ti ti-check"></i> Datos RUT y dirección mostrados</li>
+        </ul>
+        <span class="btn-view">
+          <i class="ti ti-eye"></i>Ver diseño
+        </span>
+      </a>
+    </div>
+
+  </div><!-- /row -->
+
+  <!-- Comparison table -->
+  <h2 class="fw-bold mb-3" style="font-family:'Playfair Display',serif;color:var(--plum-dk);font-size:1.4rem">
+    Comparación rápida
+  </h2>
+  <div class="table-responsive" style="border-radius:12px;overflow:hidden;border:1.5px solid var(--border)">
+    <table class="table comparison-table mb-0">
+      <thead>
+        <tr>
+          <th>Característica</th>
+          <th>Visitante Anónimo</th>
+          <th>Cliente Registrado</th>
+          <th>Cliente Físico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Requiere cuenta</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Email pre-llenado</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Pago favorito</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+          <td><i class="ti ti-x cross"></i></td>
+        </tr>
+        <tr>
+          <td>Datos de envío</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Productos físicos</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Carrito mixto</td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-x cross"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Envío anónimo</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+        <tr>
+          <td>Flow y Khipu</td>
+          <td><i class="ti ti-check check"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+          <td><i class="ti ti-check check"></i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 text-center" style="font-size:.85rem;color:var(--muted)">
+    <a href="{{ url_for('lab.home_full') }}" style="color:var(--plum)">
+      <i class="ti ti-arrow-left me-1"></i>Volver al Lab
+    </a>
+  </div>
+
+</div>
+{% endblock %}

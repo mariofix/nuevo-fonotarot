@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Lab · Checkout Cliente Digital – Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Option 2: Known Customer (authenticated, digital products) ─── */
+  .co-digital .welcome-bar {
+    background: linear-gradient(135deg, var(--lavender) 0%, var(--blush) 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex; align-items: center; gap: .85rem;
+    margin-bottom: 1.75rem;
+  }
+  .co-digital .avatar {
+    width: 2.8rem; height: 2.8rem; border-radius: 50%;
+    background: var(--plum);
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .co-digital .welcome-text strong { color: var(--plum-dk); }
+  [data-theme="dark"] .co-digital .welcome-text strong { color: var(--plum); }
+  .co-digital .email-field {
+    background: var(--sand);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: .7rem 1rem;
+    color: var(--text);
+    font-size: 1rem;
+    display: flex; align-items: center; gap: .5rem;
+    cursor: not-allowed;
+    opacity: .85;
+  }
+  .co-digital .payment-option {
+    cursor: pointer;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1rem;
+    transition: border-color .2s, background .2s, transform .15s;
+    position: relative;
+  }
+  .co-digital .payment-option:hover {
+    border-color: var(--plum);
+    transform: translateY(-2px);
+  }
+  .co-digital .payment-option.selected {
+    border-color: var(--plum);
+    background: var(--blush);
+  }
+  .co-digital .payment-option.preferred::after {
+    content: 'Favorito';
+    position: absolute;
+    top: -.6rem; right: .8rem;
+    background: var(--gold);
+    color: #fff;
+    font-size: .65rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: .15rem .5rem;
+    border-radius: 20px;
+  }
+  .co-digital .total-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem; font-weight: 800; color: var(--plum);
+  }
+  .co-digital .btn-pay {
+    background: var(--plum);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: .85rem 2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background .2s, box-shadow .2s;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+  }
+  .co-digital .btn-pay:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107,63,160,.35);
+  }
+  .co-digital .cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .65rem 0; border-bottom: 1px solid var(--border);
+    font-size: .9rem;
+  }
+  .co-digital .cart-item:last-child { border-bottom: none; }
+  .co-digital .history-link {
+    font-size: .82rem; color: var(--rose);
+    text-decoration: none;
+  }
+  .co-digital .history-link:hover { text-decoration: underline; }
+  .lab-notice {
+    background: var(--lavender);
+    border: 1px dashed var(--plum);
+    border-radius: 8px;
+    padding: .55rem 1rem;
+    font-size: .78rem;
+    color: var(--plum);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 co-digital">
+
+  <div class="lab-notice">
+    <i class="ti ti-flask me-1"></i>
+    <strong>Lab · Opción 2:</strong> Checkout para <strong>Cliente Conocido (usuario registrado, productos digitales)</strong> — email pre-llenado, pago preferido destacado.
+  </div>
+
+  <!-- Welcome bar (mockup: authenticated user) -->
+  <div class="welcome-bar">
+    <div class="avatar">M</div>
+    <div class="welcome-text">
+      <div><strong>¡Hola, María!</strong> Tu email ya está listo.</div>
+      <div style="font-size:.82rem;color:var(--muted)">
+        Tus minutos se activarán automáticamente en tu cuenta.
+        <a href="#" class="history-link ms-2">Ver mis compras anteriores</a>
+      </div>
+    </div>
+  </div>
+
+  <h1 class="fw-bold mb-4" style="font-family:'Playfair Display',serif;color:var(--plum-dk)">
+    Finalizar compra
+  </h1>
+
+  <div class="row g-4">
+
+    <!-- ── Left ──────────────────────────────────────────────── -->
+    <div class="col-lg-7">
+
+      <!-- Email (pre-filled, read-only) -->
+      <div class="card p-4 mb-4" style="border:1.5px solid var(--border);border-radius:14px">
+        <h6 class="fw-semibold mb-3">
+          <i class="ti ti-mail me-2" style="color:var(--plum)"></i>Datos de contacto
+        </h6>
+        <label class="form-label small" style="color:var(--muted)">
+          Email registrado
+        </label>
+        <!-- Read-only pre-filled field (mockup) -->
+        <div class="email-field">
+          <i class="ti ti-lock-filled" style="color:var(--plum);flex-shrink:0"></i>
+          <span>maria@email.com</span>
+        </div>
+        <div class="form-text mt-1" style="color:var(--muted)">
+          El comprobante se enviará a esta dirección.
+          <a href="#" style="color:var(--plum)">Cambiar email</a>
+        </div>
+      </div>
+
+      <!-- Payment method (with preferred highlight) -->
+      <div class="card p-4" style="border:1.5px solid var(--border);border-radius:14px">
+        <h6 class="fw-semibold mb-3">
+          <i class="ti ti-credit-card me-2" style="color:var(--plum)"></i>Método de pago
+        </h6>
+        <div class="row g-3">
+          <!-- Flow (marked as preferred for this mockup) -->
+          <div class="col-6">
+            <label class="d-block">
+              <input type="radio" name="payment_method" value="flow" class="d-none pay-radio" id="dig_flow" checked/>
+              <div class="payment-option preferred selected" id="dig_flow_box">
+                <i class="ti ti-credit-card" style="font-size:1.3rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                <div class="fw-bold" style="font-size:.95rem">Flow</div>
+                <div class="small" style="color:var(--muted)">Débito · Crédito · Transferencia</div>
+              </div>
+            </label>
+          </div>
+          <!-- Khipu -->
+          <div class="col-6">
+            <label class="d-block">
+              <input type="radio" name="payment_method" value="khipu" class="d-none pay-radio" id="dig_khipu"/>
+              <div class="payment-option" id="dig_khipu_box">
+                <i class="ti ti-building-bank" style="font-size:1.3rem;color:var(--plum);display:block;margin-bottom:.35rem"></i>
+                <div class="fw-bold" style="font-size:.95rem">Khipu</div>
+                <div class="small" style="color:var(--muted)">Transferencia simplificada</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <p class="mt-3 mb-0" style="font-size:.8rem;color:var(--muted)">
+          <i class="ti ti-star me-1" style="color:var(--gold)"></i>
+          Tu método preferido está seleccionado. Puedes cambiarlo en tu
+          <a href="#" style="color:var(--plum)">perfil</a>.
+        </p>
+      </div>
+
+    </div><!-- /col-lg-7 -->
+
+    <!-- ── Right: order summary ──────────────────────────────── -->
+    <div class="col-lg-5">
+      <div class="card p-4 sticky-top" style="top:84px;border:1.5px solid var(--border);border-radius:14px;background:var(--sand)">
+        <h5 class="fw-bold mb-3" style="font-family:'Playfair Display',serif">Resumen del pedido</h5>
+
+        <!-- Sample cart items (static mockup) -->
+        <div class="cart-item">
+          <span>
+            <i class="ti ti-clock me-1" style="color:var(--plum)"></i>Pack 30 minutos
+          </span>
+          <span style="font-weight:600">$10.000</span>
+        </div>
+        <div class="cart-item">
+          <span>
+            <i class="ti ti-clock me-1" style="color:var(--plum)"></i>Pack 15 minutos
+          </span>
+          <span style="font-weight:600">$5.000</span>
+        </div>
+
+        <hr style="border-color:var(--border);margin:1rem 0"/>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <span class="fw-semibold">Total</span>
+          <span class="total-display">$15.000</span>
+        </div>
+
+        <button type="submit" class="btn-pay">
+          <i class="ti ti-lock"></i>Pagar ahora
+        </button>
+
+        <p class="text-center mt-3 mb-0" style="font-size:.8rem;color:var(--muted)">
+          <i class="ti ti-shield-check me-1"></i>Pago seguro vía Flow o Khipu
+        </p>
+      </div>
+
+      <!-- Loyalty note -->
+      <div class="mt-3 p-3" style="background:var(--blush);border-radius:10px;font-size:.82rem;border:1px solid var(--border)">
+        <i class="ti ti-sparkles me-1" style="color:var(--gold)"></i>
+        <strong style="color:var(--plum-dk)">Cliente registrado:</strong>
+        <span style="color:var(--muted)"> tus minutos se activarán automáticamente y los verás en tu cuenta.</span>
+      </div>
+    </div><!-- /col-lg-5 -->
+
+  </div><!-- /row -->
+
+  <div class="mt-4 text-center" style="font-size:.85rem;color:var(--muted)">
+    <a href="{{ url_for('lab.checkout_index') }}" style="color:var(--plum)">
+      <i class="ti ti-arrow-left me-1"></i>Ver todas las opciones de checkout
+    </a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.pay-radio').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(function(b) { b.classList.remove('selected'); });
+      var box = document.getElementById(this.id + '_box');
+      if (box) box.classList.add('selected');
+    });
+  });
+</script>
+{% endblock %}
