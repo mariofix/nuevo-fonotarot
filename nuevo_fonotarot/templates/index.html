@@ -768,6 +768,7 @@
                 <span class="live-badge"><span class="live-dot"></span>En vivo</span>
               </div>
               <div class="agent-widget-body">
+                <div id="hero-agent-rows">
                 {% for agent in agents[:4] %}
                 <div class="aw-row" data-agent-option="{{ agent.option }}">
                   <div class="aw-avatar">{{ agent.name[0] }}</div>
@@ -782,6 +783,7 @@
                   </span>
                 </div>
                 {% endfor %}
+                </div><!-- #hero-agent-rows -->
                 <a href="tel:600XXXXXXX" class="aw-cta">
                   <i class="ti ti-phone me-2"></i>Consultar Ahora – 600 XXX XXX
                 </a>
@@ -1339,41 +1341,72 @@
         return row;
       }
 
-      function applyAgents(agents) {
-        agents.forEach(function (a) {
-          var opt = a.option;
-          /* status badges — hero widget + agent cards */
-          document.querySelectorAll('[data-agent-option="' + esc(opt) + '"] .agent-status-wrap')
-            .forEach(function (el) { el.innerHTML = statusBadge(a.status); });
-          /* call buttons — agent cards */
-          document.querySelectorAll('.agent-card[data-agent-option="' + esc(opt) + '"] .agent-action-wrap')
-            .forEach(function (el) { el.innerHTML = cardAction(a.status); });
-          /* call buttons — offcanvas all-tab */
-          document.querySelectorAll('.oc-row[data-agent-option="' + esc(opt) + '"] .agent-action-wrap')
-            .forEach(function (el) { el.innerHTML = ocAction(a.status); });
-        });
+      /* Build a hero widget row from agent data */
+      function awRowHTML(a) {
+        var avatar = document.createElement('div');
+        avatar.className = 'aw-avatar';
+        avatar.textContent = a.name[0];
 
-        /* rebuild offcanvas available / busy tabs using DOM nodes */
+        var nameEl = document.createElement('div');
+        nameEl.className = 'aw-name';
+        nameEl.textContent = a.name;
+
+        var spec = document.createElement('div');
+        spec.className = 'aw-spec';
+        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
+
+        var info = document.createElement('div');
+        info.style.cssText = 'flex:1; min-width:0;';
+        info.appendChild(nameEl);
+        info.appendChild(spec);
+
+        var statusWrap = document.createElement('span');
+        statusWrap.className = 'agent-status-wrap';
+        statusWrap.innerHTML = statusBadge(a.status);
+
+        var row = document.createElement('div');
+        row.className = 'aw-row';
+        row.dataset.agentOption = a.option;
+        row.appendChild(avatar);
+        row.appendChild(info);
+        row.appendChild(statusWrap);
+        return row;
+      }
+
+      /* Rebuild any list container from a data array using a row builder fn */
+      function rebuildList(id, list, rowFn, emptyMsg) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        while (el.firstChild) el.removeChild(el.firstChild);
+        if (list.length) {
+          list.forEach(function (a) { el.appendChild(rowFn(a)); });
+        } else if (emptyMsg) {
+          var p = document.createElement('p');
+          p.className = 'text-center py-4';
+          p.style.color = 'var(--muted)';
+          p.textContent = emptyMsg;
+          el.appendChild(p);
+        }
+      }
+
+      function applyAgents(agents) {
         var available = agents.filter(function (a) { return a.status === 'available'; });
         var busy      = agents.filter(function (a) { return a.status === 'busy'; });
 
-        function rebuildTab(id, list, emptyMsg) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          while (el.firstChild) el.removeChild(el.firstChild);
-          if (list.length) {
-            list.forEach(function (a) { el.appendChild(ocRowHTML(a)); });
-          } else {
-            var p = document.createElement('p');
-            p.className = 'text-center py-4';
-            p.style.color = 'var(--muted)';
-            p.textContent = emptyMsg;
-            el.appendChild(p);
-          }
-        }
+        /* Full rebuild — handles new agents appearing without a page refresh */
+        rebuildList('hero-agent-rows', agents.slice(0, 4), awRowHTML, null);
+        rebuildList('oc-all',    agents,    ocRowHTML, null);
+        rebuildList('oc-online', available, ocRowHTML, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
+        rebuildList('oc-busy',   busy,      ocRowHTML, 'No hay especialistas en consulta ahora.');
 
-        rebuildTab('oc-online', available, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
-        rebuildTab('oc-busy',   busy,      'No hay especialistas en consulta ahora.');
+        /* Agent cards come from DB — only overlay the live status */
+        agents.forEach(function (a) {
+          var opt = esc(a.option);
+          document.querySelectorAll('.agent-card[data-agent-option="' + opt + '"] .agent-status-wrap')
+            .forEach(function (el) { el.innerHTML = statusBadge(a.status); });
+          document.querySelectorAll('.agent-card[data-agent-option="' + opt + '"] .agent-action-wrap')
+            .forEach(function (el) { el.innerHTML = cardAction(a.status); });
+        });
       }
 
       function poll() {
