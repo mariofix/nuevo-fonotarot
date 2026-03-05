@@ -4,20 +4,15 @@
 
 {% block extra_css %}
 <style>
-  .card-featured { border-color:#6d28d9; box-shadow:0 0 24px rgba(109,40,217,.35); transform:scale(1.03); }
-  .price-tag { font-size:2.2rem; font-weight:800; color:#a78bfa; }
-  .badge-pop { background:#d97706; color:#000; font-size:.7rem; }
-  .cart-btn { position:relative; }
-  .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
-  .never-expire { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
+  .card-featured { border-color:var(--plum); box-shadow:0 0 24px rgba(107,63,160,.2); transform:scale(1.03); }
+  .price-tag { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:800; color:var(--plum); }
+  .badge-pop { background:var(--rose); color:#fff; font-size:.7rem; }
+  .never-expire { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page">
-  <div class="page-wrapper">
-    <div class="page-body py-5">
-      <div class="container-xl">
+<div class="container py-5">
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
@@ -28,7 +23,7 @@
         {% endwith %}
 
         <div class="text-center mb-5">
-          <h1 class="fw-bold text-white">Minutos de Tarot Prepagados</h1>
+          <h1 class="fw-bold">Minutos de Tarot Prepagados</h1>
           <p class="text-secondary fs-5 mt-2">Recarga tu cuenta y consulta cuando quieras</p>
           <span class="never-expire"><i class="ti ti-infinity me-1"></i>Los minutos <strong>nunca vencen</strong> — úsalos a tu ritmo</span>
         </div>
@@ -41,9 +36,9 @@
               <div class="mb-2"><span class="badge badge-pop">⭐ Más popular</span></div>
               {% endif %}
               <div class="mb-3">
-                <i class="ti ti-clock" style="font-size:2.5rem;color:#a78bfa"></i>
+                <i class="ti ti-clock" style="font-size:2.5rem;color:var(--plum)"></i>
               </div>
-              <h2 class="text-white fw-bold mb-0">{{ pack.minutes }}</h2>
+              <h2 class="fw-bold mb-0">{{ pack.minutes }}</h2>
               <p class="text-secondary">minutos</p>
               <div class="price-tag">${{ pack.price_display }}</div>
               <p class="text-secondary small mb-0">CLP · pago único</p>
@@ -84,29 +79,26 @@
         <div class="row g-3 mt-5">
           <div class="col-md-4">
             <div class="card p-3 text-center h-100">
-              <i class="ti ti-infinity" style="font-size:2rem;color:#a78bfa"></i>
-              <h6 class="text-white mt-2">Sin vencimiento</h6>
+              <i class="ti ti-infinity" style="font-size:2rem;color:var(--plum)"></i>
+              <h6 class="mt-2">Sin vencimiento</h6>
               <p class="text-secondary small mb-0">Los minutos que compras quedan en tu cuenta para siempre.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="card p-3 text-center h-100">
-              <i class="ti ti-layers-linked" style="font-size:2rem;color:#a78bfa"></i>
-              <h6 class="text-white mt-2">Acumulables</h6>
+              <i class="ti ti-layers-linked" style="font-size:2rem;color:var(--plum)"></i>
+              <h6 class="mt-2">Acumulables</h6>
               <p class="text-secondary small mb-0">Puedes comprar varias veces y los minutos se suman.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="card p-3 text-center h-100">
-              <i class="ti ti-shield-lock" style="font-size:2rem;color:#a78bfa"></i>
-              <h6 class="text-white mt-2">100% anónimo</h6>
+              <i class="ti ti-shield-lock" style="font-size:2rem;color:var(--plum)"></i>
+              <h6 class="mt-2">100% anónimo</h6>
               <p class="text-secondary small mb-0">Pagos discretos. Sin suscripciones ni cargos automáticos.</p>
             </div>
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}

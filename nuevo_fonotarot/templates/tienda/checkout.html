@@ -4,24 +4,16 @@
 
 {% block extra_css %}
 <style>
-  .form-control, .form-select { background:#2d2d4e; color:#e5e7eb; border-color:#4b5563; }
-  .form-control:focus, .form-select:focus { background:#3a3a5c; color:#e5e7eb; border-color:#6d28d9; box-shadow:0 0 0 .2rem rgba(109,40,217,.25); }
-  .form-label { color:#d1d5db; }
-  .payment-option { cursor:pointer; border:2px solid #2d2d4e; border-radius:8px; padding:1rem; transition:border-color .2s; }
-  .payment-option:hover { border-color:#6d28d9; }
-  .payment-option input[type=radio]:checked + label .payment-option,
-  .payment-option.selected { border-color:#6d28d9; background:#2d1a4e; }
-  .payment-radio:checked ~ .payment-option { border-color:#6d28d9; }
-  .total-display { font-size:1.6rem; font-weight:800; color:#a78bfa; }
-  .anonymous-note { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
+  .payment-option { cursor:pointer; border:2px solid var(--border); border-radius:8px; padding:1rem; transition:border-color .2s,background .2s; }
+  .payment-option:hover { border-color:var(--plum); }
+  .payment-option.selected { border-color:var(--plum); background:var(--blush); }
+  .total-display { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:800; color:var(--plum); }
+  .anonymous-note { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page">
-  <div class="page-wrapper">
-    <div class="page-body py-5">
-      <div class="container-xl">
+<div class="container py-5">
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
@@ -31,7 +23,7 @@
           {% endfor %}
         {% endwith %}
 
-        <h1 class="fw-bold text-white mb-4">Finalizar compra</h1>
+        <h1 class="fw-bold mb-4">Finalizar compra</h1>
 
         <form method="post" action="{{ url_for('tienda.checkout') }}">
           <div class="row g-4">
@@ -42,7 +34,7 @@
               {% if has_physical %}
               <!-- Physical goods: shipping from profile -->
               <div class="card p-4 mb-4">
-                <h5 class="text-white mb-3"><i class="ti ti-truck me-2"></i>Datos de envío</h5>
+                <h5 class="mb-3"><i class="ti ti-truck me-2"></i>Datos de envío</h5>
                 <div class="anonymous-note mb-3">
                   <i class="ti ti-eye-off me-1"></i>
                   <strong>Envío anónimo:</strong> La caja llega sin marcas ni etiquetas que identifiquen el contenido.
@@ -60,7 +52,7 @@
               {% else %}
               <!-- Digital products: only need email -->
               <div class="card p-4 mb-4">
-                <h5 class="text-white mb-3"><i class="ti ti-mail me-2"></i>Datos de contacto</h5>
+                <h5 class="mb-3"><i class="ti ti-mail me-2"></i>Datos de contacto</h5>
                 <div class="mb-3">
                   <label class="form-label" for="shipping_email">Email *</label>
                   <input type="email" id="shipping_email" name="shipping_email" class="form-control" required
@@ -72,13 +64,13 @@
 
               <!-- Payment method -->
               <div class="card p-4">
-                <h5 class="text-white mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago</h5>
+                <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago</h5>
                 <div class="row g-3">
                   <div class="col-6">
                     <label class="d-block">
                       <input type="radio" name="payment_method" value="flow" class="d-none payment-radio" id="pay_flow" required/>
                       <div class="payment-option text-center" id="flow_box">
-                        <div class="fw-bold text-white mb-1">Flow</div>
+                        <div class="fw-bold mb-1">Flow</div>
                         <div class="small text-secondary">Tarjeta débito / crédito / transferencia</div>
                       </div>
                     </label>
@@ -87,7 +79,7 @@
                     <label class="d-block">
                       <input type="radio" name="payment_method" value="khipu" class="d-none payment-radio" id="pay_khipu"/>
                       <div class="payment-option text-center" id="khipu_box">
-                        <div class="fw-bold text-white mb-1">Khipu</div>
+                        <div class="fw-bold mb-1">Khipu</div>
                         <div class="small text-secondary">Transferencia bancaria simplificada</div>
                       </div>
                     </label>
@@ -99,14 +91,14 @@
             <!-- Right: order summary -->
             <div class="col-md-5">
               <div class="card p-4 sticky-top" style="top:80px">
-                <h5 class="text-white mb-3">Resumen del pedido</h5>
+                <h5 class="mb-3">Resumen del pedido</h5>
                 {% for item in cart %}
                 <div class="d-flex justify-content-between text-secondary small mb-2">
                   <span>{{ item.name }} x{{ item.quantity }}</span>
                   <span>${{ "{:,}".format(item.unit_price * item.quantity).replace(",", ".") }}</span>
                 </div>
                 {% endfor %}
-                <hr style="border-color:#2d2d4e"/>
+                <hr style="border-color:var(--border)"/>
                 <div class="d-flex justify-content-between total-display mb-4">
                   <span>Total</span>
                   <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
@@ -123,9 +115,6 @@
           </div>
         </form>
 
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}
 

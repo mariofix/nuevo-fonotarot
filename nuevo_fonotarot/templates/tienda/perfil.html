@@ -4,20 +4,14 @@
 
 {% block extra_css %}
 <style>
-  .form-control, .form-select { background:#2d2d4e; color:#e5e7eb; border-color:#4b5563; }
-  .form-control:focus, .form-select:focus { background:#3a3a5c; color:#e5e7eb; border-color:#6d28d9; box-shadow:0 0 0 .2rem rgba(109,40,217,.25); }
-  .form-label { color:#d1d5db; }
-  .section-title { color:#a78bfa; font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:.05em; }
-  .profile-complete { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
-  .profile-incomplete { background:#7f1d1d; color:#fca5a5; border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
+  .section-title { color:var(--plum); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:.05em; }
+  .profile-complete { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
+  .profile-incomplete { background:rgba(220,38,38,.06); color:#991b1b; border:1px solid rgba(220,38,38,.2); border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page">
-  <div class="page-wrapper">
-    <div class="page-body py-5">
-      <div class="container-xl" style="max-width:720px">
+<div class="container py-5" style="max-width:720px">
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
@@ -27,7 +21,7 @@
           {% endfor %}
         {% endwith %}
 
-        <h1 class="fw-bold text-white mb-1">Mi Perfil</h1>
+        <h1 class="fw-bold mb-1">Mi Perfil</h1>
         <p class="text-secondary mb-4">{{ user.email }}</p>
 
         <!-- Profile completeness -->
@@ -131,8 +125,5 @@
 
         </form>
 
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}

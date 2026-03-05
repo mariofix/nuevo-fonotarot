@@ -9,14 +9,14 @@
     position: relative; z-index: 1;
     padding: 80px 0 60px;
     text-align: center;
-    background: linear-gradient(160deg, var(--void) 0%, var(--cosmic) 100%);
-    border-bottom: 1px solid rgba(201,168,76,.2);
+    background: linear-gradient(160deg, var(--cream) 0%, var(--lavender) 100%);
+    border-bottom: 1px solid rgba(107,63,160,.15);
   }
   .tienda-hero h1 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Playfair Display', serif;
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 900;
-    color: #fff;
+    color: var(--plum-dk);
     margin-bottom: .75rem;
   }
 
@@ -25,13 +25,13 @@
     position: relative; z-index: 1;
     padding: 60px 0;
   }
-  .tienda-section:nth-child(even) { background: var(--void); }
-  .tienda-section:nth-child(odd)  { background: var(--cosmic); }
+  .tienda-section:nth-child(even) { background: var(--cream); }
+  .tienda-section:nth-child(odd)  { background: var(--sand); }
 
   /* ─── Pack / plan cards ─────────────────────────── */
   .pack-card {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(201,168,76,.18);
+    background: #fff;
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.75rem 1.25rem;
     text-align: center;
@@ -41,26 +41,25 @@
   }
   .pack-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 36px rgba(124,58,237,.22);
-    border-color: rgba(201,168,76,.4);
+    box-shadow: 0 10px 36px rgba(107,63,160,.18);
+    border-color: var(--plum);
   }
   .pack-card.featured {
-    background: linear-gradient(160deg, rgba(124,58,237,.22) 0%, rgba(201,168,76,.07) 100%);
-    border-color: var(--gold);
-    box-shadow: 0 0 32px rgba(201,168,76,.12);
+    background: linear-gradient(160deg, var(--blush) 0%, var(--lavender) 100%);
+    border-color: var(--plum);
+    box-shadow: 0 0 32px rgba(107,63,160,.15);
   }
   .pack-price {
-    font-family: 'Cinzel', serif;
+    font-family: 'Playfair Display', serif;
     font-size: 2rem; font-weight: 900;
-    color: var(--gold); line-height: 1;
+    color: var(--plum); line-height: 1;
     margin: .5rem 0 .25rem;
   }
   .pack-price small { font-size: 1rem; color: var(--muted); font-weight: 400; }
-  .pack-mins { font-size: 1.5rem; font-weight: 700; color: #fff; }
+  .pack-mins { font-size: 1.5rem; font-weight: 700; color: var(--text); }
   .pack-badge {
-    font-family: 'Cinzel', serif;
-    font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
-    background: var(--gold); color: #0d0d1a;
+    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+    background: var(--plum); color: #fff;
     border-radius: 20px; padding: 3px 12px;
     font-weight: 700; display: inline-block; margin-bottom: .75rem;
   }
@@ -68,20 +67,20 @@
     border-radius: 30px; padding: .5rem 0; font-weight: 700; font-size: .9rem; width: 100%; margin-top: auto;
   }
   .btn-pack-primary {
-    background: linear-gradient(135deg, var(--gold), var(--gold-lt));
-    color: #0d0d1a !important; border: none;
+    background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+    color: #fff !important; border: none;
   }
   .btn-pack-outline {
     background: transparent;
-    border: 1px solid rgba(201,168,76,.45);
-    color: var(--gold) !important;
+    border: 1px solid rgba(107,63,160,.45);
+    color: var(--plum) !important;
   }
-  .btn-pack-outline:hover { background: rgba(201,168,76,.08); }
+  .btn-pack-outline:hover { background: rgba(107,63,160,.06); }
 
   /* ─── Product cards ─────────────────────────────── */
   .product-card {
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(201,168,76,.15);
+    background: #fff;
+    border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
     height: 100%;
@@ -89,34 +88,33 @@
   }
   .product-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 28px rgba(124,58,237,.2);
-    border-color: rgba(201,168,76,.35);
+    box-shadow: 0 8px 28px rgba(107,63,160,.15);
+    border-color: var(--plum);
   }
   .product-img { width:100%; height:130px; object-fit:cover; }
   .product-img-ph {
     width:100%; height:130px;
-    background: rgba(124,58,237,.12);
+    background: var(--lavender);
     display:flex; align-items:center; justify-content:center;
   }
 
   /* ─── Privacy banner ─────────────────────────────── */
   .privacy-banner {
-    background: rgba(52,211,153,.06);
-    border: 1px solid rgba(52,211,153,.2);
+    background: rgba(16,185,129,.06);
+    border: 1px solid rgba(16,185,129,.25);
     border-radius: 14px;
     padding: 1.5rem 2rem;
   }
 
   /* ─── Payment badges ─────────────────────────────── */
   .pay-badge {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(201,168,76,.2);
+    background: #fff;
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: .5rem 1.5rem;
-    font-family: 'Cinzel', serif;
     font-size: .85rem;
-    color: var(--star);
-    letter-spacing: .06em;
+    color: var(--text);
+    letter-spacing: .04em;
   }
 </style>
 {% endblock %}
@@ -163,7 +161,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <div class="pack-card {% if pack.is_featured %}featured{% endif %}">
             {% if pack.is_featured %}<span class="pack-badge">{{ _("Más popular") }}</span>{% endif %}
-            <i class="ti ti-clock mb-2" style="font-size:2rem;color:var(--violet)"></i>
+            <i class="ti ti-clock mb-2" style="font-size:2rem;color:var(--plum)"></i>
             <div class="pack-mins">{{ pack.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
             <div class="pack-price">${{ pack.price_display }}<small> CLP</small></div>
             {% if pack.description %}<p class="section-subtitle small mt-2 mb-0">{{ pack.description }}</p>{% endif %}
@@ -210,8 +208,8 @@
             <div class="agent-name mb-1">{{ plan.name }}</div>
             <div class="pack-price">${{ plan.price_display }}<small>/{{ _("mes") }}</small></div>
             <p class="section-subtitle small my-2">
-              <i class="ti ti-clock me-1" style="color:var(--violet)"></i>
-              <strong style="color:#fff">{{ plan.minutes_per_month }} {{ _("minutos") }}</strong> {{ _("por mes") }}
+              <i class="ti ti-clock me-1" style="color:var(--plum)"></i>
+              <strong>{{ plan.minutes_per_month }} {{ _("minutos") }}</strong> {{ _("por mes") }}
             </p>
             {% if plan.description %}<p class="section-subtitle small mb-2">{{ plan.description }}</p>{% endif %}
             {% if plan.features_list %}
@@ -269,8 +267,8 @@
             </div>
             {% endif %}
             <div class="p-3">
-              <div class="fw-bold small" style="color:#fff">{{ product.name }}</div>
-              <div class="mt-1 mb-2" style="color:var(--gold);font-weight:700">${{ product.price_display }}</div>
+              <div class="fw-bold small">{{ product.name }}</div>
+              <div class="mt-1 mb-2" style="color:var(--plum);font-weight:700">${{ product.price_display }}</div>
               <a href="{{ url_for('tienda.producto_detalle', slug=product.slug) }}"
                  class="btn btn-pack-outline btn-sm w-100" style="border-radius:20px;font-size:.8rem;padding:.3rem 0">
                 <i class="ti ti-eye me-1"></i>{{ _("Ver") }}
@@ -298,10 +296,10 @@
           <div class="privacy-banner h-100 d-flex align-items-center gap-3">
             <i class="ti ti-eye-off flex-shrink-0" style="font-size:2.5rem;color:#34d399"></i>
             <div>
-              <h5 style="color:#fff;margin-bottom:.25rem">{{ _("Privacidad garantizada en cada envío") }}</h5>
+              <h5 style="margin-bottom:.25rem">{{ _("Privacidad garantizada en cada envío") }}</h5>
               <p style="color:var(--muted);margin:0;font-size:.9rem">
                 {{ _("Todos los productos físicos se envían en cajas sin marcas ni etiquetas que identifiquen el contenido. Puedes elegir entrega en un") }}
-                <strong style="color:#fff">{{ _("punto de retiro") }}</strong>
+                <strong>{{ _("punto de retiro") }}</strong>
                 {{ _("en vez de tu domicilio para mayor discreción.") }}
               </p>
             </div>
@@ -310,7 +308,7 @@
         <!-- Payment methods -->
         <div class="col-md-4">
           <div class="pack-card h-100 justify-content-center align-items-center text-center gap-3">
-            <i class="ti ti-credit-card mb-1" style="font-size:2rem;color:var(--gold)"></i>
+            <i class="ti ti-credit-card mb-1" style="font-size:2rem;color:var(--plum)"></i>
             <p class="section-subtitle small mb-3">{{ _("Métodos de pago aceptados") }}</p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
               <span class="pay-badge"><i class="ti ti-bolt me-1"></i>Flow</span>
