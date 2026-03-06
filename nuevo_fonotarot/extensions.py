@@ -10,7 +10,9 @@ from flask_security.core import Security
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_wtf.csrf import CSRFProtect
 
+csrf = CSRFProtect()
 db = SQLAlchemy()
 migrate = Migrate()
 limiter = Limiter(

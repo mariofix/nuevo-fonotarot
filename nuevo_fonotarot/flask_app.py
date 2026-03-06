@@ -12,6 +12,7 @@ from .admin import SecureAdminIndexView, init_admin
 from .extensions import (
     admin,
     babel,
+    csrf,
     db,
     limiter,
     merchants_ext,
@@ -43,6 +44,7 @@ def create_flask(config_name: str | None = None) -> Flask:
 
 
 def _init_extensions(app: Flask) -> None:
+    csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
     limiter.init_app(app)
