@@ -113,6 +113,49 @@
   }
   .gate-register-link a:hover { text-decoration: underline; }
 
+  /* ── Inline form ── */
+  .gate-form-group {
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+  .gate-form-group label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: .3rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .gate-form-group input {
+    width: 100%;
+    border: 1.5px solid rgba(107,63,160,.2);
+    border-radius: 10px;
+    padding: .6rem .9rem;
+    font-size: .97rem;
+    outline: none;
+    background: #faf8fc;
+    color: var(--text, #222);
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+  }
+  .gate-form-group input:focus {
+    border-color: var(--plum);
+    box-shadow: 0 0 0 3px rgba(107,63,160,.12);
+  }
+  [data-theme="dark"] .gate-form-group input {
+    background: rgba(255,255,255,.07);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .gate-error {
+    color: #c0392b;
+    font-size: .85rem;
+    margin-bottom: .75rem;
+    display: none;
+  }
+  .gate-error.visible { display: block; }
+
   /* ── Skeleton placeholders ── */
   .skel {
     background: linear-gradient(90deg, var(--lavender) 25%, var(--blush) 50%, var(--lavender) 75%);
@@ -161,24 +204,85 @@
     <div class="gate-card">
       <span class="gate-icon">🔮</span>
       <h2>Contenido privado</h2>
-      <p class="gate-sub">
-        Esta sección requiere que hayas iniciado sesión.<br>
-        Ingresa a tu cuenta para continuar.
-      </p>
+      <p class="gate-sub">Ingresa tus credenciales para continuar.</p>
 
-      <a
-        href="{{ url_for_security('login') }}?next={{ next_url | urlencode }}"
-        class="btn-gate-login"
-      >
-        <i class="ti ti-login me-1"></i>Iniciar sesión
-      </a>
+      <form id="gate-login-form" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="gate-form-group">
+          <label for="gate-email">Correo electrónico</label>
+          <input type="email" id="gate-email" name="email" autocomplete="email" required placeholder="tu@correo.com">
+        </div>
+        <div class="gate-form-group">
+          <label for="gate-password">Contraseña</label>
+          <input type="password" id="gate-password" name="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <p class="gate-error" id="gate-error-msg">Correo o contraseña incorrectos.</p>
+        <button type="submit" class="btn-gate-login">
+          <i class="ti ti-login me-1" aria-hidden="true"></i><span id="gate-btn-label">Iniciar sesión</span>
+        </button>
+      </form>
 
       <p class="gate-register-link">
-        ¿No tienes cuenta?
-        <a href="{{ url_for_security('register') }}">Regístrate gratis</a>
+        <a href="{{ url_for_security('forgot_password') }}">¿Olvidaste tu contraseña?</a>
       </p>
+
     </div>
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const form     = document.getElementById('gate-login-form');
+  const errMsg   = document.getElementById('gate-error-msg');
+  const btnLabel = document.getElementById('gate-btn-label');
+  const nextUrl  = {{ next_url | tojson }};
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    errMsg.classList.remove('visible');
+
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btnLabel.textContent = 'Verificando…';
+
+    const payload = {
+      email:    document.getElementById('gate-email').value,
+      password: document.getElementById('gate-password').value,
+    };
+
+    try {
+      const resp = await fetch('{{ url_for_security("login") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRFToken': form.querySelector('[name="csrf_token"]').value,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await resp.json();
+
+      if (resp.ok && data?.response?.user) {
+        window.location.href = nextUrl || '/';
+      } else {
+        const errors = data?.response?.errors;
+        const first  = errors ? Object.values(errors).flat()[0] : null;
+        errMsg.textContent = first || 'Correo o contraseña incorrectos.';
+        errMsg.classList.add('visible');
+        btn.disabled = false;
+        btnLabel.textContent = 'Iniciar sesión';
+      }
+    } catch (_) {
+      errMsg.textContent = 'Error de red, intenta de nuevo.';
+      errMsg.classList.add('visible');
+      btn.disabled = false;
+      btnLabel.textContent = 'Iniciar sesión';
+    }
+  });
+})();
+</script>
 {% endblock %}
