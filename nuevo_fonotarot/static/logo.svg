@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140">
+  <defs>
+    <linearGradient id="l_iris" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a2872"/>
+      <stop offset="100%" stop-color="#6b3fa0"/>
+    </linearGradient>
+    <linearGradient id="l_plum" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a87dd4"/>
+      <stop offset="100%" stop-color="#d98aaa"/>
+    </linearGradient>
+    <linearGradient id="l_gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8c56a"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <radialGradient id="l_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── ICON (El Mundo compact at 70×70 centered at 70,70) ── -->
+  <g transform="translate(5,5)">
+    <!-- Glow -->
+    <circle cx="65" cy="65" r="65" fill="url(#l_glow)"/>
+
+    <!-- Wreath plum band -->
+    <ellipse cx="65" cy="65" rx="56" ry="56"
+             fill="none" stroke="url(#l_plum)" stroke-width="14"
+             stroke-dasharray="15 7" stroke-linecap="round"/>
+    <!-- Wreath gold highlights -->
+    <ellipse cx="65" cy="65" rx="56" ry="56"
+             fill="none" stroke="url(#l_gold)" stroke-width="7"
+             stroke-dasharray="10 12" stroke-dashoffset="11" stroke-linecap="round"
+             opacity=".65"/>
+
+    <!-- Inner ring -->
+    <ellipse cx="65" cy="65" rx="48" ry="48"
+             fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+
+    <!-- Cardinal dots -->
+    <circle cx="65" cy="10" r="3"  fill="#c9a84c"/>
+    <circle cx="120" cy="65" r="3" fill="#c9a84c" opacity=".8"/>
+    <circle cx="65" cy="120" r="3" fill="#c9a84c" opacity=".8"/>
+    <circle cx="10" cy="65" r="3"  fill="#c9a84c" opacity=".8"/>
+
+    <!-- Eye almond -->
+    <path d="M 16 65 Q 40 35 65 35 Q 90 35 114 65 Q 90 95 65 95 Q 40 95 16 65 Z"
+          fill="#faf7f3" stroke="url(#l_iris)" stroke-width="1.5"/>
+
+    <!-- Iris -->
+    <circle cx="65" cy="65" r="19" fill="url(#l_iris)"/>
+    <circle cx="65" cy="65" r="19" fill="none" stroke="url(#l_gold)" stroke-width="1.2"/>
+    <!-- Iris hex -->
+    <path d="M 65,54 L 72.5,58.5 L 72.5,67.5 L 65,72 L 57.5,67.5 L 57.5,58.5 Z"
+          fill="none" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+    <!-- Pupil -->
+    <circle cx="65" cy="65" r="9.5" fill="#080810"/>
+    <!-- Highlight -->
+    <circle cx="71" cy="59" r="3.5" fill="white" opacity=".8"/>
+  </g>
+
+  <!-- ── WORDMARK ── -->
+  <text x="152" y="72" font-family="Playfair Display, Georgia, serif"
+        font-size="52" font-weight="700" fill="#4a2872"
+        letter-spacing="-1">fono</text>
+  <text x="152" y="108" font-family="Playfair Display, Georgia, serif"
+        font-size="52" font-weight="700" fill="url(#l_iris)"
+        letter-spacing="-1">tarot</text>
+
+  <!-- Gold rule -->
+  <line x1="152" y1="116" x2="516" y2="116" stroke="url(#l_gold)" stroke-width="1"/>
+
+  <!-- Tagline -->
+  <text x="153" y="132" font-family="Montserrat, Arial, sans-serif"
+        font-size="13" font-style="italic" fill="#c9a84c" letter-spacing=".5">
+    El universo marca el camino, ¡descúbrelo!
+  </text>
+</svg>

@@ -291,7 +291,28 @@
     <!-- ── NAVBAR ──────────────────────────────────── -->
     <nav class="site-nav">
       <div class="container d-flex align-items-center justify-content-between">
-        <a href="/" class="brand">🌙 Fonotarot</a>
+        <a href="/" class="brand d-flex align-items-center gap-2" style="line-height:1; text-decoration:none;">
+          <svg width="28" height="28" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="256" cy="256" r="256" fill="#1e1535"/>
+            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="url(#bnb_p)" stroke-width="52" stroke-dasharray="56 26" stroke-linecap="round"/>
+            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="url(#bnb_g)" stroke-width="26" stroke-dasharray="38 44" stroke-dashoffset="40" stroke-linecap="round" opacity=".65"/>
+            <ellipse cx="256" cy="256" rx="183" ry="183" fill="none" stroke="rgba(201,168,76,.3)" stroke-width="2"/>
+            <circle cx="256" cy="42"  r="10" fill="#c9a84c"/>
+            <circle cx="470" cy="256" r="10" fill="#c9a84c" opacity=".8"/>
+            <circle cx="256" cy="470" r="10" fill="#c9a84c" opacity=".8"/>
+            <circle cx="42"  cy="256" r="10" fill="#c9a84c" opacity=".8"/>
+            <path d="M 60 256 Q 158 128 256 128 Q 354 128 452 256 Q 354 384 256 384 Q 158 384 60 256 Z" fill="#080810" stroke="url(#bnb_p)" stroke-width="6"/>
+            <circle cx="256" cy="256" r="72" fill="#4a2872"/>
+            <circle cx="256" cy="256" r="72" fill="none" stroke="#c9a84c" stroke-width="4"/>
+            <circle cx="256" cy="256" r="36" fill="#080810"/>
+            <circle cx="278" cy="234" r="13" fill="white" opacity=".75"/>
+            <defs>
+              <linearGradient id="bnb_p" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a87dd4"/><stop offset="100%" stop-color="#d98aaa"/></linearGradient>
+              <linearGradient id="bnb_g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c56a"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient>
+            </defs>
+          </svg>
+          <span>fonotarot</span>
+        </a>
         <div class="d-flex align-items-center gap-3">
           {% block nav_links %}
           <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
@@ -318,7 +339,19 @@
     {% block footer %}
     <footer class="site-footer">
       <div class="container">
-        <div class="brand">🌙 Fonotarot</div>
+        <div class="brand d-inline-flex align-items-center gap-2" style="line-height:1;">
+          <svg width="22" height="22" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="256" cy="256" r="256" fill="#1e1535"/>
+            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="#a87dd4" stroke-width="52" stroke-dasharray="56 26" stroke-linecap="round"/>
+            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="#c9a84c" stroke-width="26" stroke-dasharray="38 44" stroke-dashoffset="40" stroke-linecap="round" opacity=".6"/>
+            <path d="M 60 256 Q 158 128 256 128 Q 354 128 452 256 Q 354 384 256 384 Q 158 384 60 256 Z" fill="#080810" stroke="#a87dd4" stroke-width="6"/>
+            <circle cx="256" cy="256" r="72" fill="#4a2872"/>
+            <circle cx="256" cy="256" r="72" fill="none" stroke="#c9a84c" stroke-width="4"/>
+            <circle cx="256" cy="256" r="36" fill="#080810"/>
+            <circle cx="278" cy="234" r="13" fill="white" opacity=".7"/>
+          </svg>
+          fonotarot
+        </div>
         <p class="mb-1">{{ _("Servicio de consulta esotérica telefónica · Chile") }}</p>
         <p class="mb-0">
           <a href="/blog/">{{ _("Blog") }}</a>

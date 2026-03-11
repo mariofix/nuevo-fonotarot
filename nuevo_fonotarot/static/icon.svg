@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="i_iris" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a2872"/>
+      <stop offset="100%" stop-color="#6b3fa0"/>
+    </linearGradient>
+    <linearGradient id="i_plum" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a87dd4"/>
+      <stop offset="100%" stop-color="#d98aaa"/>
+    </linearGradient>
+    <linearGradient id="i_gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8c56a"/>
+      <stop offset="100%" stop-color="#c9a84c"/>
+    </linearGradient>
+    <radialGradient id="i_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c9a84c" stop-opacity=".3"/>
+      <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="256" cy="256" r="256" fill="#1e1535"/>
+
+  <!-- Glow -->
+  <circle cx="256" cy="256" r="240" fill="url(#i_glow)"/>
+
+  <!-- Wreath: plum leaf band -->
+  <ellipse cx="256" cy="256" rx="210" ry="210"
+           fill="none" stroke="url(#i_plum)" stroke-width="52"
+           stroke-dasharray="56 26" stroke-linecap="round"/>
+  <!-- Wreath: gold highlight layer -->
+  <ellipse cx="256" cy="256" rx="210" ry="210"
+           fill="none" stroke="url(#i_gold)" stroke-width="26"
+           stroke-dasharray="38 44" stroke-dashoffset="40" stroke-linecap="round"
+           opacity=".65"/>
+
+  <!-- Inner ring -->
+  <ellipse cx="256" cy="256" rx="183" ry="183"
+           fill="none" stroke="rgba(201,168,76,.35)" stroke-width="2"/>
+
+  <!-- Four guardian dots at cardinal points -->
+  <circle cx="256" cy="42"  r="10" fill="#c9a84c"/>
+  <circle cx="470" cy="256" r="10" fill="#c9a84c" opacity=".8"/>
+  <circle cx="256" cy="470" r="10" fill="#c9a84c" opacity=".8"/>
+  <circle cx="42"  cy="256" r="10" fill="#c9a84c" opacity=".8"/>
+
+  <!-- Eye almond -->
+  <path d="M 60 256 Q 158 128 256 128 Q 354 128 452 256 Q 354 384 256 384 Q 158 384 60 256 Z"
+        fill="#080810" stroke="url(#i_plum)" stroke-width="6"/>
+
+  <!-- Iris -->
+  <circle cx="256" cy="256" r="72" fill="url(#i_iris)"/>
+  <circle cx="256" cy="256" r="72" fill="none" stroke="url(#i_gold)" stroke-width="4"/>
+  <!-- Iris dash ring -->
+  <circle cx="256" cy="256" r="72" fill="none" stroke="rgba(201,168,76,.4)"
+          stroke-width="2" stroke-dasharray="12 18"/>
+
+  <!-- Sacred geometry hexagon in iris -->
+  <path d="M 256,222 L 283.7,239 L 283.7,273 L 256,290 L 228.3,273 L 228.3,239 Z"
+        fill="none" stroke="rgba(201,168,76,.3)" stroke-width="1.5"/>
+
+  <!-- Pupil -->
+  <circle cx="256" cy="256" r="36" fill="#080810"/>
+  <!-- Reflection highlight -->
+  <circle cx="278" cy="234" r="13" fill="white" opacity=".75"/>
+</svg>
