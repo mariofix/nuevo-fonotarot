@@ -362,20 +362,6 @@
       .btn-white-outline { background: transparent; color: #fff !important; border: 2px solid rgba(255,255,255,.55); border-radius: 30px; padding: .7rem 2.25rem; font-size: 1rem; font-weight: 600; transition: border-color .2s; text-decoration: none; }
       .btn-white-outline:hover { border-color: #fff; }
 
-      /* ─── Footer ───────────────────────────────────── */
-      footer.site-footer { background: var(--plum-dk); color: rgba(255,255,255,.6); padding: 3.5rem 0 2rem; font-size: .88rem; }
-      .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.35rem; font-weight: 700; text-decoration: none; display: block; margin-bottom: .4rem; }
-      .footer-tagline { color: rgba(255,255,255,.45); font-size: .83rem; line-height: 1.6; margin-bottom: 1.25rem; }
-      .footer-phone { color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem; transition: color .2s; }
-      .footer-phone:hover { color: #fff; }
-      .footer-col-title { color: rgba(255,255,255,.35); font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; margin-bottom: .75rem; }
-      .footer-links { display: flex; flex-direction: column; gap: .4rem; }
-      .footer-links a { color: rgba(255,255,255,.55); text-decoration: none; font-size: .85rem; transition: color .2s; }
-      .footer-links a:hover { color: rgba(255,255,255,.9); }
-      .footer-areas { color: rgba(255,255,255,.5); font-size: .83rem; line-height: 2; }
-      hr.footer-hr { border-color: rgba(255,255,255,.08); margin: 1.75rem 0 1.25rem; }
-      .footer-copy { color: rgba(255,255,255,.3); font-size: .78rem; text-align: center; }
-
       /* ─── Off-canvas ────────────────────────────────── */
       .offcanvas-agents { background: #fff; border-left: 1px solid var(--border); color: var(--text); }
       .offcanvas-agents .offcanvas-header { background: var(--lavender); border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; }
@@ -410,7 +396,6 @@
       [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
       [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
       [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
-      [data-theme="dark"] footer.site-footer { background: #080810; }
 </style>
 {% endblock %}
 
@@ -510,7 +495,7 @@
           <a href="tel:+56222301515" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – +56 2 2230 1515
           </a>
-          <a href="#planes" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
+          <a href="{{ url_for('tienda.minutos') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
             <i class="ti ti-wallet me-2"></i>Ver Planes
           </a>
         </div>
@@ -991,97 +976,6 @@
       <i class="ti ti-arrow-up"></i>
     </button>
 
-{% endblock %}
-
-{# ── Homepage footer (rich 3-column) ──────────────────────────────────── #}
-{% block footer %}
-    <footer class="site-footer">
-      <div class="container">
-        <div class="row g-5">
-          <div class="col-md-4">
-            <a href="/" class="footer-brand d-inline-flex align-items-center gap-2" style="line-height:1; text-decoration:none;">
-              <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="fonotarot">
-            <defs>
-              <linearGradient id="ftb_card" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-card-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-card-b)"/>
-              </linearGradient>
-              <linearGradient id="ftb_gold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#e8c56a"/>
-                <stop offset="100%" stop-color="#c9a84c"/>
-              </linearGradient>
-              <linearGradient id="ftb_iris" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-iris-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-iris-b)"/>
-              </linearGradient>
-              <linearGradient id="ftb_text" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-text-b)"/>
-                <stop offset="100%" style="stop-color:var(--logo-text-b2)"/>
-              </linearGradient>
-              <radialGradient id="ftb_glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25"/>
-                <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#ftb_card)"/>
-            <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#ftb_gold)" stroke-width="1"/>
-            <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".5"/>
-            <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#ftb_glow)"/>
-            <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z" style="fill:var(--logo-almond)" stroke="url(#ftb_gold)" stroke-width="1.2"/>
-            <circle cx="41" cy="60" r="12" fill="url(#ftb_iris)"/>
-            <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)"/>
-            <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85"/>
-            <circle cx="41" cy="60" r="12" fill="none" stroke="url(#ftb_gold)" stroke-width=".6" stroke-dasharray="2 3"/>
-            <g transform="translate(17,17)">
-              <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#ftb_gold)"/>
-              <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#ftb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#ftb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#ftb_gold)" stroke-width="1" stroke-linecap="round"/>
-            </g>
-            <g transform="translate(65,17)">
-              <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#ftb_gold)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#ftb_gold)"/>
-            </g>
-            <g transform="translate(17,103)">
-              <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#ftb_iris)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#ftb_gold)" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#ftb_gold)"/>
-            </g>
-            <g transform="translate(65,103)">
-              <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#ftb_gold)"/>
-            </g>
-            <text x="96" y="40" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
-            <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40" font-weight="600" fill="url(#ftb_text)">Tarot</text>
-          </svg>
-            </a>
-            <p class="footer-tagline">Servicio de orientación espiritual telefónica · Chile · Desde 2010</p>
-            <a href="tel:+56222301515" class="footer-phone"><i class="ti ti-phone me-1"></i>+56 2 2230 1515</a>
-          </div>
-          <div class="col-6 col-md-4">
-            <p class="footer-col-title">Navegación</p>
-            <div class="footer-links">
-              <a href="#tarotistas">Tarotistas</a>
-              <a href="#planes">Planes y Precios</a>
-              <a href="#ayuda">Cómo Funciona</a>
-              <a href="#faq">Preguntas Frecuentes</a>
-              <a href="/blog/">Blog</a>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <p class="footer-col-title">Áreas de consulta</p>
-            <div class="footer-areas">
-              💕 Amor y Relaciones<br>
-              💼 Trabajo y Finanzas<br>
-              🏥 Salud y Bienestar<br>
-              👨‍👩‍👧 Familia<br>
-              🌱 Crecimiento Personal
-            </div>
-          </div>
-        </div>
-        <hr class="footer-hr">
-        <p class="footer-copy">&copy; 2025 Fonotarot Chile · Todos los derechos reservados</p>
-      </div>
-    </footer>
 {% endblock %}
 
 {# ── Homepage JavaScript ───────────────────────────────────────────────── #}

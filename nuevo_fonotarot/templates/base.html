@@ -293,25 +293,35 @@
         border-radius: 2px;
       }
 
+      /* ─── Mobile nav ───────────────────────────────── */
+      .btn-hamburger {
+        background: none; border: 1px solid rgba(107,63,160,.3);
+        border-radius: 8px; padding: .3rem .5rem;
+        cursor: pointer; color: var(--text); line-height: 1; font-size: 1.1rem;
+        align-items: center; justify-content: center; transition: border-color .2s, color .2s;
+      }
+      .btn-hamburger:hover { border-color: var(--plum); color: var(--plum); }
+      .mobile-nav-offcanvas { background: var(--cream); color: var(--text); }
+      .mobile-nav-offcanvas .offcanvas-header { border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+      .mobile-nav-offcanvas .offcanvas-title { font-family: 'Playfair Display', serif; color: var(--plum-dk); font-size: 1.15rem; font-weight: 700; }
+      .mobile-nav-offcanvas .btn-close { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
+      .mobile-nav-link { display: block; padding: .8rem 0; color: var(--text); text-decoration: none; font-size: 1rem; font-weight: 500; border-bottom: 1px solid var(--border); transition: color .2s; }
+      .mobile-nav-link:hover { color: var(--plum); }
+
       /* ─── Footer ───────────────────────────────────── */
-      footer.site-footer {
-        background: var(--footer-bg);
-        border-top: 1px solid rgba(107,63,160,.15);
-        padding: 2.5rem 0;
-        text-align: center;
-        color: rgba(255,255,255,.5);
-        font-size: .85rem;
-        transition: background .3s;
-      }
-      footer.site-footer .brand {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.2rem;
-        color: #fff;
-        display: block;
-        margin-bottom: .5rem;
-      }
-      footer.site-footer a { color: rgba(255,255,255,.5); }
-      footer.site-footer a:hover { color: rgba(255,255,255,.9); }
+      footer.site-footer { background: var(--plum-dk); color: rgba(255,255,255,.6); padding: 3.5rem 0 2rem; font-size: .88rem; transition: background .3s; }
+      .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.35rem; font-weight: 700; text-decoration: none; display: block; margin-bottom: .4rem; }
+      .footer-tagline { color: rgba(255,255,255,.45); font-size: .83rem; line-height: 1.6; margin-bottom: 1.25rem; }
+      .footer-phone { color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem; transition: color .2s; }
+      .footer-phone:hover { color: #fff; }
+      .footer-col-title { color: rgba(255,255,255,.35); font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; margin-bottom: .75rem; }
+      .footer-links { display: flex; flex-direction: column; gap: .4rem; }
+      .footer-links a { color: rgba(255,255,255,.55); text-decoration: none; font-size: .85rem; transition: color .2s; }
+      .footer-links a:hover { color: rgba(255,255,255,.9); }
+      .footer-areas { color: rgba(255,255,255,.5); font-size: .83rem; line-height: 2; }
+      hr.footer-hr { border-color: rgba(255,255,255,.08); margin: 1.75rem 0 1.25rem; }
+      .footer-copy { color: rgba(255,255,255,.3); font-size: .78rem; text-align: center; }
+      [data-theme="dark"] footer.site-footer { background: #080810; }
 
       /* ─── Dark mode card adjustments ───────────────── */
       [data-theme="dark"] .card {
@@ -388,29 +398,59 @@
             <g transform="translate(65,103)">
               <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#bnb_gold)"/>
             </g>
-            <!-- Wordmark -->
-            <text x="96" y="50" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="700" style="fill:var(--logo-text-a)">fono</text>
-            <text x="96" y="76" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="700" fill="url(#bnb_text)">tarot</text>
-            <line x1="96" y1="82" x2="210" y2="82" stroke="url(#bnb_gold)" stroke-width=".8"/>
-            <text x="96" y="100" font-family="'Montserrat', Arial, sans-serif" font-size="7" font-style="italic" fill="#c9a84c" letter-spacing=".5">El universo marca el camino, ¡descúbrelo!</text>
+            <!-- Wordmark (Fono/Tarot: matches the original modified logo design;
+                 the 24px right-offset on "Tarot" is intentional for visual cascade) -->
+            <text x="96"  y="40" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
+            <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40" font-weight="600" fill="url(#bnb_text)">Tarot</text>
           </svg>
         </a>
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
           {% block nav_links %}
           <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
           <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
           <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
           <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
           {% endblock %}
-          {% block nav_cta %}<a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
-          {{ lang_switcher(get_locale(), site_languages) }}
+          <div class="d-none d-md-block">
+            {% block nav_cta %}<a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
+          </div>
+          <div class="d-none d-md-flex">{{ lang_switcher(get_locale(), site_languages) }}</div>
           <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
             <span class="icon-moon">🌙</span>
             <span class="icon-sun">☀️</span>
           </button>
+          <!-- Mobile hamburger (hidden on md+) -->
+          <button class="btn-hamburger d-flex d-md-none" type="button"
+                  data-bs-toggle="offcanvas" data-bs-target="#mobileNavCanvas"
+                  aria-controls="mobileNavCanvas" aria-label="{{ _('Abrir menú') }}">
+            <i class="ti ti-menu-2"></i>
+          </button>
         </div>
       </div>
     </nav>
+
+    <!-- ── MOBILE NAV OFFCANVAS ──────────────────────── -->
+    <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1"
+         id="mobileNavCanvas" aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
+      <div class="offcanvas-header">
+        <span class="offcanvas-title" id="mobileNavLabel">FonoTarot</span>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ _('Cerrar') }}"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column gap-0 p-0">
+        <div class="px-3 pt-2">
+          <a href="/#tarotistas" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
+          <a href="/#planes"     class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
+          <a href="/blog/"       class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Blog") }}</a>
+          <a href="/#faq"        class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
+        </div>
+        <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
+          <a href="{{ url_for('tienda.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
+          <div class="d-flex align-items-center gap-3">
+            {{ lang_switcher(get_locale(), site_languages) }}
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ── PAGE CONTENT ────────────────────────────── -->
     <div class="page-content">
@@ -421,27 +461,35 @@
     {% block footer %}
     <footer class="site-footer">
       <div class="container">
-        <div class="brand d-inline-flex align-items-center gap-2" style="line-height:1;">
-          <svg width="22" height="22" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="256" cy="256" r="256" fill="#1e1535"/>
-            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="#a87dd4" stroke-width="52" stroke-dasharray="56 26" stroke-linecap="round"/>
-            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="#c9a84c" stroke-width="26" stroke-dasharray="38 44" stroke-dashoffset="40" stroke-linecap="round" opacity=".6"/>
-            <path d="M 60 256 Q 158 128 256 128 Q 354 128 452 256 Q 354 384 256 384 Q 158 384 60 256 Z" fill="#080810" stroke="#a87dd4" stroke-width="6"/>
-            <circle cx="256" cy="256" r="72" fill="#4a2872"/>
-            <circle cx="256" cy="256" r="72" fill="none" stroke="#c9a84c" stroke-width="4"/>
-            <circle cx="256" cy="256" r="36" fill="#080810"/>
-            <circle cx="278" cy="234" r="13" fill="white" opacity=".7"/>
-          </svg>
-          fonotarot
+        <div class="row g-5">
+          <div class="col-md-4">
+            <a href="/" class="footer-brand">FonoTarot</a>
+            <p class="footer-tagline">{{ _("Servicio de orientación espiritual telefónica · Chile · Desde 2010") }}</p>
+            <a href="tel:+56222301515" class="footer-phone"><i class="ti ti-phone me-1"></i>+56 2 2230 1515</a>
+          </div>
+          <div class="col-6 col-md-4">
+            <p class="footer-col-title">{{ _("Navegación") }}</p>
+            <div class="footer-links">
+              <a href="/#tarotistas">{{ _("Tarotistas") }}</a>
+              <a href="/#planes">{{ _("Planes y Precios") }}</a>
+              <a href="/#faq">{{ _("Preguntas Frecuentes") }}</a>
+              <a href="/blog/">{{ _("Blog") }}</a>
+              <a href="{{ url_for('tienda.index') }}">{{ _("Tienda") }}</a>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <p class="footer-col-title">{{ _("Áreas de consulta") }}</p>
+            <div class="footer-areas">
+              💕 {{ _("Amor y Relaciones") }}<br>
+              💼 {{ _("Trabajo y Finanzas") }}<br>
+              🏥 {{ _("Salud y Bienestar") }}<br>
+              👨‍👩‍👧 {{ _("Familia") }}<br>
+              🌱 {{ _("Crecimiento Personal") }}
+            </div>
+          </div>
         </div>
-        <p class="mb-1">{{ _("Servicio de consulta esotérica telefónica · Chile") }}</p>
-        <p class="mb-0">
-          <a href="/blog/">{{ _("Blog") }}</a>
-          <span class="mx-2">·</span>
-          <a href="/#faq">{{ _("Ayuda") }}</a>
-          <span class="mx-2">·</span>
-          <a href="{{ url_for('tienda.index') }}">{{ _("Tienda") }}</a>
-        </p>
+        <hr class="footer-hr">
+        <p class="footer-copy">&copy; 2025 Fonotarot Chile · {{ _("Todos los derechos reservados") }}</p>
       </div>
     </footer>
     {% endblock %}
