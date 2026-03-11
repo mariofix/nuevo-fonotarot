@@ -32,7 +32,15 @@ class TablerTheme(Theme):
         admin = Admin(app, name="my app", theme=theme)
     """
 
-    folder: typing.Literal["tabler"] = "tabler"
+    # Flask-Admin 2.x uses theme.folder to set its admin blueprint's
+    # template_folder: os.path.join("templates", folder).  Only "bootstrap4"
+    # exists in Flask-Admin's bundled templates, so this must stay "bootstrap4"
+    # for Flask-Admin to find admin/index.html, admin/model/list.html, etc.
+    # Our own blueprint (registered first) overrides admin/base.html and
+    # admin/layout.html with the Tabler versions, while every other template
+    # (index, model/list, model/edit, …) still comes from Flask-Admin's
+    # bootstrap4 bundle.
+    folder: str = "bootstrap4"
     base_template: str = "admin/base.html"
     tabler_icons: bool = True
 
