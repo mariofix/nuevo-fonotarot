@@ -33,12 +33,13 @@ class Config:
     SECURITY_PASSWORD_HASH: str = "bcrypt"
 
     # Custom login/logout routing
+    SECURITY_REGISTRABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
     SECURITY_POST_LOGIN_VIEW: str = "/admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 
     # Flask-Admin locale
-    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "en_US")
+    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "es_CL")
 
     # Default public-facing locale used when no language is set in the
     # session and Accept-Language negotiation yields no match.
@@ -53,12 +54,27 @@ class Config:
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
 
-    # Redis — used for live agent state (firenze writes, fonotarot reads)
-    REDIS_URL: str = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 
+    LEGACY_PORTAL_DB_URL: str = ""
+    LEGACY_AUDIOTEX_DB_URL: str = ""
+    LEGACY_FIRENZE_DB_URL: str = ""
+
+    DEBUG_TB_PANELS = (
+        "flask_debugtoolbar.panels.versions.VersionDebugPanel",
+        "flask_debugtoolbar.panels.timer.TimerDebugPanel",
+        "flask_debugtoolbar.panels.headers.HeaderDebugPanel",
+        "flask_debugtoolbar.panels.request_vars.RequestVarsDebugPanel",
+        "flask_debugtoolbar.panels.config_vars.ConfigVarsDebugPanel",
+        "flask_debugtoolbar.panels.template.TemplateDebugPanel",
+        "flask_debugtoolbar.panels.sqlalchemy.SQLAlchemyDebugPanel",
+        "flask_debugtoolbar.panels.logger.LoggingPanel",
+        "flask_debugtoolbar.panels.route_list.RouteListDebugPanel",
+        "flask_debugtoolbar.panels.profiler.ProfilerDebugPanel",
+        "flask_debugtoolbar.panels.g.GDebugPanel",
+        "flask_debugtoolbar_extrapanels.SignalsPanel",
+    )
 
 class DevelopmentConfig(Config):
     DEBUG: bool = True

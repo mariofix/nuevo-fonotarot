@@ -1,3 +1,10 @@
+import json
+import urllib.request
+from urllib.error import URLError
+
+_EJECUTIVOS_URL = "https://firenze.156.cl/audiotex/ejecutivos"
+
+
 def _flag_class(locale: str) -> str:
     """Derive a Tabler flag CSS class from a locale string.
 
@@ -30,96 +37,69 @@ _FALLBACK_LANGUAGES = [
 ]
 
 
+def _normalize_agent(raw: dict) -> dict:
+    """Map a firenze API agent record to the dict shape templates expect.
+
+    Firenze fields:
+        nombre      → name
+        opcion      → option  (zero-padded string: "01", "15", …)
+        ingreso     → logged-in flag
+        disponible  → availability flag
+        descripcion → description
+
+    Derived:
+        number  = "7" + zero-padded opcion  ("7001", "7015", …)
+        status  = "available" | "busy" | "offline"
+    """
+    opcion = int(raw.get("opcion", 0))
+    ingreso = bool(raw.get("ingreso", False))
+    disponible = bool(raw.get("disponible", False))
+
+    if not ingreso:
+        status = "offline"
+    elif disponible:
+        status = "available"
+    else:
+        status = "busy"
+
+    return {
+        "name": raw.get("nombre", ""),
+        "option": f"{opcion:02d}",
+        "number": f"7{opcion:03d}",
+        "status": status,
+        "description": raw.get("descripcion", ""),
+    }
+
+
 def get_agents() -> list[dict]:
-    """Return the live agent list.
+    """Return the live agent list from the firenze API.
 
-    Reads from Redis using a two-step pipeline (SMEMBERS + HGETALL batch).
-    Falls back to placeholder data when Redis is unavailable or empty — e.g.
-    during development or on a cold start before firenze has written any state.
-
-    Redis layout expected (written by firenze):
-        agents:all          → Set of option codes  {"01", "06", "15", ...}
-        agent:{option}      → Hash {name, option, number, status, since}
-            status values: "available" | "busy" | "offline"
+    Falls back to placeholder data when the API is unavailable — e.g.
+    during development or a network outage.
     """
     try:
-        import redis as redis_lib
-        from flask import current_app
-
-        r = redis_lib.from_url(
-            current_app.config.get("REDIS_URL", "redis://localhost:6379/0"),
-            decode_responses=True,
-            socket_connect_timeout=1,
+        req = urllib.request.Request(
+            _EJECUTIVOS_URL,
+            headers={"Accept": "application/json"},
         )
-        agent_ids = r.smembers("agents:all")
-        if not agent_ids:
-            raise LookupError("agents:all is empty — Redis has no agent state yet")
-
-        pipe = r.pipeline()
-        for aid in sorted(agent_ids):
-            pipe.hgetall(f"agent:{aid}")
-        return [row for row in pipe.execute() if row]
-
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            data = json.loads(resp.read().decode())
+        return [_normalize_agent(row) for row in data]
     except Exception:
         from .placeholder import AGENTS
         return list(AGENTS)
 
 
-def _redis_client():
-    """Return a configured Redis client, or raise if unavailable."""
-    import redis as redis_lib
-    from flask import current_app
-
-    return redis_lib.from_url(
-        current_app.config.get("REDIS_URL", "redis://localhost:6379/0"),
-        decode_responses=True,
-        socket_connect_timeout=1,
-    )
-
-
-def get_agent_statuses() -> dict[str, str]:
-    """Return {option: status} from Redis.
-
-    Used to overlay live status onto DB-sourced agent profiles.
-    Returns an empty dict when Redis is unavailable — callers fall back
-    to whatever default status the profile data carries.
-    """
-    try:
-        r = _redis_client()
-        agent_ids = r.smembers("agents:all")
-        if not agent_ids:
-            return {}
-        pipe = r.pipeline()
-        for aid in sorted(agent_ids):
-            pipe.hget(f"agent:{aid}", "status")
-        return {
-            aid: (status or "offline")
-            for aid, status in zip(sorted(agent_ids), pipe.execute())
-        }
-    except Exception:
-        return {}
-
-
 def get_agent_profiles() -> list[dict]:
-    """Return agent profiles from the DB, enriched with live status from Redis.
+    """Return agent profiles for the agent cards section.
 
-    Profile data (name, option, number, description, specialty …) comes from
-    the DB — currently the placeholder until the Agent model exists.
-    The ``status`` field is overlaid from Redis so the cards always reflect
-    the live operational state.  Falls back to the placeholder ``status``
-    value when Redis is unavailable.
+    Delegates to get_agents() so that both the hero widget and the
+    agent cards section always reflect the same live data.
     """
-    from .placeholder import AGENTS
-
-    profiles = [dict(a) for a in AGENTS]
-    statuses = get_agent_statuses()
-    for profile in profiles:
-        if profile["option"] in statuses:
-            profile["status"] = statuses[profile["option"]]
-    return profiles
+    return get_agents()
 
 
 __all__ = [
     "_flag_class", "_LangEntry", "_FALLBACK_LANGUAGES",
-    "get_agents", "get_agent_statuses", "get_agent_profiles",
+    "get_agents", "get_agent_profiles",
 ]
