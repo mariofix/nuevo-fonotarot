@@ -1,64 +1,12 @@
-<!doctype html>
-<html lang="es" data-theme="{{ default_theme }}" data-bs-theme="{{ default_theme }}">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+{% extends "base.html" %}
 
-    <!-- ── Primary SEO ─────────────────────────────────────────── -->
-    <title>Fonotarot - El universo marca un camino, descubrelo! | Chile</title>
-    <meta name="description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Orientación en amor, trabajo, salud y vida personal. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-    <meta name="keywords" content="tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot, tarot telefónico, orientación espiritual, tarot amor, tarot trabajo" />
-    <meta name="author" content="Fonotarot" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="revisit-after" content="7 days" />
-    <meta name="language" content="Spanish" />
-    <meta name="geo.region" content="CL" />
-    <meta name="geo.country" content="Chile" />
-    <meta name="geo.placename" content="Chile" />
-    <meta name="distribution" content="Chile" />
-    <meta name="rating" content="general" />
-    <meta name="copyright" content="Fonotarot" />
-    <link rel="canonical" href="https://www.fonotarot.cl/" />
-    <link rel="alternate" hreflang="es-CL" href="https://www.fonotarot.cl/" />
-    <link rel="alternate" hreflang="x-default" href="https://www.fonotarot.cl/" />
+{% block title %}Fonotarot - El universo marca un camino, descubrelo! | Chile{% endblock %}
+{% block description %}Consulta tarot por teléfono en Chile con tarotistas reales. Orientación en amor, trabajo, salud y vida personal. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!{% endblock %}
+{% block keywords %}tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot, tarot telefónico, orientación espiritual, tarot amor, tarot trabajo{% endblock %}
+{% block og_title %}Fonotarot - El universo marca un camino, descubrelo! | Chile{% endblock %}
+{% block og_description %}Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!{% endblock %}
 
-    <!-- ── Open Graph / Facebook ────────────────────────────────── -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://www.fonotarot.cl/" />
-    <meta property="og:site_name"   content="Fonotarot" />
-    <meta property="og:locale"      content="es_CL" />
-    <meta property="og:title"       content="Fonotarot - El universo marca un camino, descubrelo! | Chile" />
-    <meta property="og:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-    <meta property="og:image"       content="https://www.fonotarot.cl/static/og-image.png" />
-    <meta property="og:image:width"  content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt"    content="Fonotarot - El universo marca un camino, descubrelo! | Chile" />
-
-    <!-- ── Twitter / X Card ─────────────────────────────────────── -->
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:site"        content="@fonotarot" />
-    <meta name="twitter:creator"     content="@fonotarot" />
-    <meta name="twitter:title"       content="Fonotarot - El universo marca un camino, descubrelo! | Chile" />
-    <meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
-    <meta name="twitter:image"       content="https://www.fonotarot.cl/static/og-image.png" />
-
-    <!-- ── Apple / Mobile / PWA ─────────────────────────────────── -->
-    <meta name="apple-mobile-web-app-capable"          content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title"            content="Fonotarot" />
-    <meta name="theme-color"                           content="#6b3fa0" />
-    <meta name="msapplication-TileColor"               content="#6b3fa0" />
-    <meta name="msapplication-navbutton-color"         content="#6b3fa0" />
-    <meta name="format-detection" content="telephone=yes" />
-
-    <!-- ── Favicons ─────────────────────────────────────────────── -->
-    <link rel="icon"             href="/static/favicon.ico" sizes="any" />
-    <link rel="icon"             href="/static/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
-    <link rel="manifest"         href="/static/site.webmanifest" />
-
-    <!-- ── Schema.org JSON-LD ───────────────────────────────────── -->
+{% block extra_head %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -116,15 +64,16 @@
       ]
     }
     </script>
+<meta property="og:image" content="https://www.fonotarot.cl/static/og-image.png" />
+<meta property="og:image:alt" content="Fonotarot - El universo marca un camino, descubrelo! | Chile" />
+<meta name="twitter:title" content="Fonotarot - El universo marca un camino, descubrelo! | Chile" />
+<meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
+<meta name="twitter:image" content="https://www.fonotarot.cl/static/og-image.png" />
+<meta name="theme-color" content="#6b3fa0" />
+{% endblock %}
 
-    <!-- ── Styles & Fonts ────────────────────────────────────────── -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
-    <style>
-
+{% block extra_css %}
+<style>
       /* ─── Tokens ───────────────────────────────────── */
       :root {
         --cream:    #faf7f3;
@@ -762,10 +711,22 @@
       [data-theme="dark"] .icon-sun  { display: inline; }
       [data-theme="dark"] .icon-moon { display: none; }
       [data-theme="dark"] .btn-theme-toggle { border-color: rgba(168,125,212,.3); color: var(--plum); }
-    </style>
-  </head>
-  <body>
+</style>
+{% endblock %}
 
+{% block nav_links %}
+<a href="#tarotistas" class="nav-link nav-link-soft d-none d-md-inline">Tarotistas</a>
+<a href="#planes" class="nav-link nav-link-soft d-none d-md-inline">Planes</a>
+<a href="#ayuda" class="nav-link nav-link-soft d-none d-md-inline">Cómo funciona</a>
+<a href="tel:+56222301515" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
+  <i class="ti ti-phone me-1"></i>+56 2 2230 1515
+</a>
+<button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
+  <span class="oc-dot-online"></span>Especialistas
+</button>
+{% endblock %}
+
+{% block content %}
     <!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
     <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas"
          aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
@@ -849,84 +810,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ── NAV ─────────────────────────────────────── -->
-    <nav class="site-nav">
-      <div class="container d-flex align-items-center justify-content-between">
-        <a href="/" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
-          <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="fonotarot">
-            <defs>
-              <linearGradient id="inb_card" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-card-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-card-b)"/>
-              </linearGradient>
-              <linearGradient id="inb_gold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#e8c56a"/>
-                <stop offset="100%" stop-color="#c9a84c"/>
-              </linearGradient>
-              <linearGradient id="inb_iris" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-iris-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-iris-b)"/>
-              </linearGradient>
-              <linearGradient id="inb_text" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-text-b)"/>
-                <stop offset="100%" style="stop-color:var(--logo-text-b2)"/>
-              </linearGradient>
-              <radialGradient id="inb_glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25"/>
-                <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#inb_card)"/>
-            <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#inb_gold)" stroke-width="1"/>
-            <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".5"/>
-            <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#inb_glow)"/>
-            <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z" style="fill:var(--logo-almond)" stroke="url(#inb_gold)" stroke-width="1.2"/>
-            <circle cx="41" cy="60" r="12" fill="url(#inb_iris)"/>
-            <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)"/>
-            <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85"/>
-            <circle cx="41" cy="60" r="12" fill="none" stroke="url(#inb_gold)" stroke-width=".6" stroke-dasharray="2 3"/>
-            <g transform="translate(17,17)">
-              <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#inb_gold)"/>
-              <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#inb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#inb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#inb_gold)" stroke-width="1" stroke-linecap="round"/>
-            </g>
-            <g transform="translate(65,17)">
-              <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#inb_gold)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#inb_gold)"/>
-            </g>
-            <g transform="translate(17,103)">
-              <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#inb_iris)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#inb_gold)" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#inb_gold)"/>
-            </g>
-            <g transform="translate(65,103)">
-              <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#inb_gold)"/>
-            </g>
-            <text x="96" y="40" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
-            <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40" font-weight="600" fill="url(#inb_text)">Tarot</text>
-            
-          </svg>
-        </a>
-        <div class="d-flex align-items-center gap-3">
-          <a href="#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
-          <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
-          <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
-          <a href="tel:+56222301515" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
-            <i class="ti ti-phone me-1"></i>+56 2 2230 1515
-          </a>
-          <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
-            <span class="oc-dot-online"></span>Especialistas
-          </button>
-          <a href="#planes" class="btn-rose">Carga Minutos</a>
-          <button class="btn-theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
-            <span class="icon-moon">🌙</span>
-            <span class="icon-sun">☀️</span>
-          </button>
-        </div>
-      </div>
-    </nav>
 
     <!-- ── HERO ────────────────────────────────────── -->
     <section class="hero" id="hero-section">
@@ -1397,7 +1280,9 @@
         </div>
       </div>
     </section>
+{% endblock %}
 
+{% block footer %}
     <!-- ── FOOTER ───────────────────────────────────── -->
     <footer>
       <div class="container">
@@ -1492,25 +1377,11 @@
     <button class="btn-back-top" id="back-top" aria-label="Volver arriba">
       <i class="ti ti-arrow-up"></i>
     </button>
+{% endblock %}
 
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+{% block extra_js %}
     <script>
     (function () {
-      /* ── Theme toggle ───────────────────────────────── */
-      var html = document.documentElement;
-      var themeBtn = document.getElementById('theme-toggle');
-      var saved = localStorage.getItem('ft-theme');
-      if (saved === 'dark' || saved === 'light') {
-        html.setAttribute('data-theme', saved);
-        html.setAttribute('data-bs-theme', saved);
-      }
-      if (themeBtn) themeBtn.addEventListener('click', function () {
-        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        html.setAttribute('data-bs-theme', next);
-        localStorage.setItem('ft-theme', next);
-      });
-
       /* ── Back to top ────────────────────────────────── */
       var backTop = document.getElementById('back-top');
       if (backTop) {
@@ -1739,5 +1610,4 @@
       setInterval(poll, 5000);
     })();
     </script>
-  </body>
-</html>
+{% endblock %}
