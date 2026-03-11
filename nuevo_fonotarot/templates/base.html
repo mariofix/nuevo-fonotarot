@@ -88,13 +88,16 @@
         --gold:     #c9a84c;
         --gold-lt:  #e8c56a;
 
-        /* Logo icon colour tokens */
-        --logo-bg:      transparent;
-        --logo-wreath:  #6b3fa0;
-        --logo-wreath2: #c06080;
-        --logo-eye-bg:  #faf7f3;
-        --logo-iris:    #4a2872;
-        --logo-pupil:   #2d2233;
+        /* Logo colour tokens — 2A La Carta Viva */
+        --logo-card-a:  #4a2872;
+        --logo-card-b:  #6b3fa0;
+        --logo-almond:  #0d0d1a;
+        --logo-iris-a:  #6b3fa0;
+        --logo-iris-b:  #c06080;
+        --logo-pupil:   #080810;
+        --logo-text-a:  #4a2872;
+        --logo-text-b:  #6b3fa0;
+        --logo-text-b2: #c06080;
 
         /* Compatibility aliases — tienda templates use these names */
         --deep:   var(--cream);
@@ -123,13 +126,16 @@
         --gold:     #c9a84c;
         --gold-lt:  #e8c56a;
 
-        /* Logo icon colour tokens */
-        --logo-bg:      #1e1535;
-        --logo-wreath:  #a87dd4;
-        --logo-wreath2: #d98aaa;
-        --logo-eye-bg:  #080810;
-        --logo-iris:    #6b3fa0;
+        /* Logo colour tokens — 2A La Carta Viva */
+        --logo-card-a:  #1e1535;
+        --logo-card-b:  #2a1545;
+        --logo-almond:  #080810;
+        --logo-iris-a:  #4a2872;
+        --logo-iris-b:  #a87dd4;
         --logo-pupil:   #080810;
+        --logo-text-a:  #c4a0e8;
+        --logo-text-b:  #a87dd4;
+        --logo-text-b2: #d98aaa;
 
         /* Compatibility aliases */
         --deep:   #0d0d1a;
@@ -307,27 +313,69 @@
     <!-- ── NAVBAR ──────────────────────────────────── -->
     <nav class="site-nav">
       <div class="container d-flex align-items-center justify-content-between">
-        <a href="/" class="brand d-flex align-items-center gap-2" style="line-height:1; text-decoration:none;">
-          <svg width="28" height="28" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="256" cy="256" r="256" style="fill:var(--logo-bg)"/>
-            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="url(#bnb_p)" stroke-width="52" stroke-dasharray="56 26" stroke-linecap="round"/>
-            <ellipse cx="256" cy="256" rx="210" ry="210" fill="none" stroke="url(#bnb_g)" stroke-width="26" stroke-dasharray="38 44" stroke-dashoffset="40" stroke-linecap="round" opacity=".65"/>
-            <ellipse cx="256" cy="256" rx="183" ry="183" fill="none" stroke="rgba(201,168,76,.3)" stroke-width="2"/>
-            <circle cx="256" cy="42"  r="10" fill="#c9a84c"/>
-            <circle cx="470" cy="256" r="10" fill="#c9a84c" opacity=".8"/>
-            <circle cx="256" cy="470" r="10" fill="#c9a84c" opacity=".8"/>
-            <circle cx="42"  cy="256" r="10" fill="#c9a84c" opacity=".8"/>
-            <path d="M 60 256 Q 158 128 256 128 Q 354 128 452 256 Q 354 384 256 384 Q 158 384 60 256 Z" style="fill:var(--logo-eye-bg)" stroke="url(#bnb_p)" stroke-width="6"/>
-            <circle cx="256" cy="256" r="72" style="fill:var(--logo-iris)"/>
-            <circle cx="256" cy="256" r="72" fill="none" stroke="#c9a84c" stroke-width="4"/>
-            <circle cx="256" cy="256" r="36" style="fill:var(--logo-pupil)"/>
-            <circle cx="278" cy="234" r="13" fill="white" opacity=".75"/>
+        <a href="/" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
+          <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="fonotarot">
             <defs>
-              <linearGradient id="bnb_p" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" style="stop-color:var(--logo-wreath)"/><stop offset="100%" style="stop-color:var(--logo-wreath2)"/></linearGradient>
-              <linearGradient id="bnb_g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c56a"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient>
+              <linearGradient id="bnb_card" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" style="stop-color:var(--logo-card-a)"/>
+                <stop offset="100%" style="stop-color:var(--logo-card-b)"/>
+              </linearGradient>
+              <linearGradient id="bnb_gold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e8c56a"/>
+                <stop offset="100%" stop-color="#c9a84c"/>
+              </linearGradient>
+              <linearGradient id="bnb_iris" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" style="stop-color:var(--logo-iris-a)"/>
+                <stop offset="100%" style="stop-color:var(--logo-iris-b)"/>
+              </linearGradient>
+              <linearGradient id="bnb_text" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" style="stop-color:var(--logo-text-b)"/>
+                <stop offset="100%" style="stop-color:var(--logo-text-b2)"/>
+              </linearGradient>
+              <radialGradient id="bnb_glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+              </radialGradient>
             </defs>
+            <!-- Card -->
+            <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#bnb_card)"/>
+            <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#bnb_gold)" stroke-width="1"/>
+            <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".5"/>
+            <!-- Eye -->
+            <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#bnb_glow)"/>
+            <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z" style="fill:var(--logo-almond)" stroke="url(#bnb_gold)" stroke-width="1.2"/>
+            <circle cx="41" cy="60" r="12" fill="url(#bnb_iris)"/>
+            <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)"/>
+            <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85"/>
+            <circle cx="41" cy="60" r="12" fill="none" stroke="url(#bnb_gold)" stroke-width=".6" stroke-dasharray="2 3"/>
+            <!-- Copas NW -->
+            <g transform="translate(17,17)">
+              <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#bnb_gold)"/>
+              <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
+              <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
+              <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
+            </g>
+            <!-- Bastos NE -->
+            <g transform="translate(65,17)">
+              <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#bnb_gold)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#bnb_gold)"/>
+            </g>
+            <!-- Espadas SW -->
+            <g transform="translate(17,103)">
+              <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#bnb_iris)" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#bnb_gold)" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#bnb_gold)"/>
+            </g>
+            <!-- Pentáculos SE -->
+            <g transform="translate(65,103)">
+              <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#bnb_gold)"/>
+            </g>
+            <!-- Wordmark -->
+            <text x="96" y="50" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="700" style="fill:var(--logo-text-a)">fono</text>
+            <text x="96" y="76" font-family="'Playfair Display', Georgia, serif" font-size="27" font-weight="700" fill="url(#bnb_text)">tarot</text>
+            <line x1="96" y1="82" x2="210" y2="82" stroke="url(#bnb_gold)" stroke-width=".8"/>
+            <text x="96" y="100" font-family="'Montserrat', Arial, sans-serif" font-size="7" font-style="italic" fill="#c9a84c" letter-spacing=".5">El universo marca el camino, ¡descúbrelo!</text>
           </svg>
-          <span>fonotarot</span>
         </a>
         <div class="d-flex align-items-center gap-3">
           {% block nav_links %}
