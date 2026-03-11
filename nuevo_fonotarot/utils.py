@@ -82,7 +82,7 @@ def get_agents() -> tuple[list[dict], str | None]:
     with one of these error codes:
 
     * ``None``      — success
-    * ``"timeout"`` — connection timed out (very short 0.5 s window)
+    * ``"timeout"`` — connection timed out (very short 1 s window)
     * ``"503"``     — HTTP or application-level error
     """
     try:
@@ -90,7 +90,7 @@ def get_agents() -> tuple[list[dict], str | None]:
             _EJECUTIVOS_URL,
             headers={"Accept": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=0.5) as resp:
+        with urllib.request.urlopen(req, timeout=1) as resp:
             data = json.loads(resp.read().decode())
         agents = [_normalize_agent(row) for row in data]
         return sorted(agents, key=lambda a: _STATUS_ORDER.get(a["status"], 99)), None

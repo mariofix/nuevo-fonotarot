@@ -22,7 +22,7 @@ class Config:
         "DATABASE_URL", "sqlite:///fonotarot.db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-
+    SQLALCHEMY_RECORD_QUERIES: bool = True
     # Flask-Limiter
     RATELIMIT_STORAGE_URI: str = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
