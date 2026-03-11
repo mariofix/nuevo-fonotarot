@@ -1,4 +1,5 @@
 import json
+import socket
 import urllib.request
 from urllib.error import URLError
 
@@ -71,26 +72,39 @@ def _normalize_agent(raw: dict) -> dict:
     }
 
 
-def get_agents() -> list[dict]:
-    """Return the live agent list from the firenze API.
+_STATUS_ORDER = {"available": 0, "busy": 1, "offline": 2}
 
-    Falls back to placeholder data when the API is unavailable — e.g.
-    during development or a network outage.
+
+def get_agents() -> tuple[list[dict], str | None]:
+    """Return ``(agents, error_code)`` from the firenze API.
+
+    Agents are sorted available-first.  On failure returns an empty list
+    with one of these error codes:
+
+    * ``None``      — success
+    * ``"timeout"`` — connection timed out (very short 0.5 s window)
+    * ``"503"``     — HTTP or application-level error
     """
     try:
         req = urllib.request.Request(
             _EJECUTIVOS_URL,
             headers={"Accept": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=3) as resp:
+        with urllib.request.urlopen(req, timeout=0.5) as resp:
             data = json.loads(resp.read().decode())
-        return [_normalize_agent(row) for row in data]
+        agents = [_normalize_agent(row) for row in data]
+        return sorted(agents, key=lambda a: _STATUS_ORDER.get(a["status"], 99)), None
+    except (TimeoutError, socket.timeout):
+        return [], "timeout"
+    except URLError as e:
+        if isinstance(e.reason, (TimeoutError, socket.timeout)):
+            return [], "timeout"
+        return [], "503"
     except Exception:
-        from .placeholder import AGENTS
-        return list(AGENTS)
+        return [], "503"
 
 
-def get_agent_profiles() -> list[dict]:
+def get_agent_profiles() -> tuple[list[dict], str | None]:
     """Return agent profiles for the agent cards section.
 
     Delegates to get_agents() so that both the hero widget and the

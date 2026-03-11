@@ -3,50 +3,56 @@
 Replace with DB-backed content once pages are managed via StaticPage.
 """
 
-AGENTS = [
-    {"name": "Paulina", "option": "01", "number": "7001", "status": "busy"},
-    {"name": "Violeta", "option": "15", "number": "7015", "status": "available"},
-    {"name": "Alex",    "option": "14", "number": "7014", "status": "busy"},
-    {"name": "Simone",  "option": "13", "number": "7013", "status": "busy"},
-    {"name": "Alvaro",  "option": "12", "number": "7012", "status": "busy"},
-    {"name": "Paola",   "option": "06", "number": "7006", "status": "available"},
-]
-
 TESTIMONIALS = [
     {
-        "text": "Tengo dos tarotistas favoritas: Simone y Paulina. Explico por qué… Simone es muy acertiva, clara para dar respuestas y muy atenta. Ya somos casi amigas, es excelente tarotista, 100% recomendable. Paulina es muy cariñosa, es acertiva; también 100 % recomendable",
-        "author": "Lissette Andrade (47 años)",
-        "city": "Técnico en construcción civil",
+        "text": "Tengo dos tarotistas favoritas: Simone y Paulina. Simone es muy acertiva, clara para dar respuestas y muy atenta. Ya somos casi amigas, es excelente tarotista, 100% recomendable. Paulina es muy cariñosa y asertiva; también 100% recomendable.",
+        "author": "Lissette Andrade, 47 años",
+        "city": "Técnico en construcción civil · Clienta hace 8 años",
     },
     {
-        "text": "Mis tarotistas preferidas son Altair y Simone. La verdad es que son asertivas en la mayoría de las preguntas. Tampoco descarto a Álvaro, Paulina y Verónica, también son muy buenos. Lo mejor es que también saben dar consejos y nos son nada antipáticos. Saben llegar al corazón de las personas.",
-        "author": "Susan (48 años)",
-        "city": "Peluquera",
+        "text": "Mis tarotistas preferidas son Altair y Simone. Son asertivas en la mayoría de las preguntas. También recomiendo a Álvaro, Paulina y Verónica. Lo mejor es que saben dar consejos y no son nada antipáticos. Saben llegar al corazón de las personas.",
+        "author": "Susan, 48 años",
+        "city": "Peluquera · Clienta hace varios años",
     },
     {
-        "text": "Mis favoritos son: Altair y Paola. Siempre me responde bien mis dudas y es bien asertiva y da muy buenos consejos. Dice las cosas como son y no lo que uno quiere.",
-        "author": "Jorge Andres (51 años)",
-        "city": "Comerciante",
+        "text": "Mi favorita es la Altair porque es directa, dice las cosas como son, da mucha confianza y es como una amiga.",
+        "author": "Marcela Medina, 49 años",
+        "city": "Repostera · Clienta hace 8 años",
     },
     {
-        "text": "Valentina fue increíble, me dio una lectura muy precisa sobre mi situación laboral. ¡Totalmente recomendada!",
-        "author": "María G.",
-        "city": "Santiago",
+        "text": "Mis favoritos son Altair y Álvaro. Altair es mi favorita porque es muy certera, sus consejos ayudan mucho y te escucha con buena disposición.",
+        "author": "Patricia, 37 años",
+        "city": "Técnico en párvulos · Clienta hace muchos años",
     },
     {
-        "text": "Llevaba meses con dudas sobre mi relación y Camila me ayudó a verlo todo con claridad. Una experiencia única.",
-        "author": "Daniela R.",
-        "city": "Valparaíso",
+        "text": "Mis favoritas son Paola y Paulina. Paola es muy asertiva, cercana, con excelente trato y experiencia notoria. Paulina es muy dulce, asertiva, cálida y muy agradable.",
+        "author": "Jornada Pavez",
+        "city": "Médico Veterinario · Clienta hace 5 años",
     },
     {
-        "text": "Nunca había llamado a un servicio de tarot y quedé gratamente sorprendida. La consulta fue muy profesional y reveladora.",
-        "author": "Andrea M.",
-        "city": "Concepción",
+        "text": "Paola y Alex porque ambos son muy comprensivos, amables, saben escuchar y aconsejar de la mejor manera. Son asertivos en sus lecturas.",
+        "author": "Sibella Varas Carvajal, 28 años",
+        "city": "Enfermera · Clienta hace 5 años",
     },
     {
-        "text": "Francisca tiene un don especial. Me habló de cosas que nadie podría saber. La llamo cada vez que necesito orientación.",
-        "author": "Carolina P.",
-        "city": "Viña del Mar",
+        "text": "Paulina es mi tarotista favorita: muy dulce, amable y muy certera en lo que dice. Sabe cómo hacer sentir bien y transmite una enorme tranquilidad.",
+        "author": "Soledad Henríquez, 46 años",
+        "city": "Diseñadora · Clienta hace 4 años",
+    },
+    {
+        "text": "Mis favoritas son Paola y Maite porque son respetuosas y asertivas al 100%.",
+        "author": "Cecilia, 35 años",
+        "city": "Contadora · Clienta hace 5 años",
+    },
+    {
+        "text": "Mi favorita es la Paulina. Angelical consejera que se preocupa por uno como ser humano; hace sentir que hay alguien a quien le importas.",
+        "author": "Miriam Riquelme",
+        "city": "Asesora comercial inmobiliaria · Clienta hace 10 años",
+    },
+    {
+        "text": "Mis Tarotistas favoritos son Alex, asertivo y directo, y Paola, que junta lectura con energía.",
+        "author": "Marcelo, 44 años",
+        "city": "Ingeniero · Cliente hace 4 años",
     },
 ]
 

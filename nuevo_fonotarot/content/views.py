@@ -4,8 +4,8 @@ from flask import Blueprint, abort, jsonify, make_response, render_template
 
 from ..extensions import limiter
 from ..models import BlogPost, MinutePack, SiteSettings, StaticPage
-from ..placeholder import PLANS, TESTIMONIALS
-from ..utils import get_agent_profiles, get_agents
+from ..placeholder import TESTIMONIALS
+from ..utils import get_agents
 
 blog_bp = Blueprint("blog", __name__)
 content_bp = Blueprint("content", __name__)
@@ -48,12 +48,13 @@ def index():
 
     # Default: hardcoded home template.
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    agents, agents_error = get_agents()
     return render_template(
         "index.html",
-        agents=get_agents(),                    # Redis operational list → hero widget + offcanvas
-        agent_profiles=get_agent_profiles(),    # DB profiles + Redis status → agent cards section
+        agents=agents,
+        agent_profiles=agents,
+        agents_error=agents_error,
         testimonials=TESTIMONIALS,
-        plans=PLANS,
         minute_packs=minute_packs,
     )
 
@@ -67,7 +68,12 @@ def index():
 @limiter.exempt
 def api_agents():
     """Return the live agent list as JSON (consumed by the homepage poller)."""
-    return jsonify(get_agents())
+    agents, error = get_agents()
+    if error == "timeout":
+        return jsonify({"error": "timeout"}), 504
+    if error:
+        return jsonify({"error": "503"}), 503
+    return jsonify(agents)
 
 
 # ---------------------------------------------------------------------------

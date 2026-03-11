@@ -8,8 +8,10 @@
     <link rel="canonical" href="https://www.fonotarot.cl/" />
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap");
 
       /* ─── Tokens ───────────────────────────────────── */
       :root {
@@ -160,7 +162,6 @@
         display: flex; align-items: center; justify-content: space-between;
       }
       .agent-widget-header span {
-        font-family: 'Playfair Display', serif;
         color: #fff; font-size: 1rem; font-weight: 700;
       }
       .live-badge {
@@ -769,6 +770,23 @@
               </div>
               <div class="agent-widget-body">
                 <div id="hero-agent-rows">
+                {% if agents_error == 'timeout' %}
+                <div class="alert alert-warning mb-0 py-2" role="alert">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-clock-exclamation"></i>
+                    <span>Listado de agentes no disponible. Cod. Timeout</span>
+                  </div>
+                </div>
+                {% elif agents_error %}
+                <div class="alert alert-danger mb-0 py-2" role="alert">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-alert-triangle"></i>
+                    <span>Listado de agentes no disponible. Cod. 503</span>
+                  </div>
+                </div>
+                {% elif not agents %}
+                <p class="text-center py-3 mb-0" style="color:var(--muted); font-size:.9rem;">Sin tarotistas disponibles</p>
+                {% else %}
                 {% for agent in agents[:4] %}
                 <div class="aw-row" data-agent-option="{{ agent.option }}">
                   <div class="aw-avatar">{{ agent.name[0] }}</div>
@@ -783,6 +801,7 @@
                   </span>
                 </div>
                 {% endfor %}
+                {% endif %}
                 </div><!-- #hero-agent-rows -->
                 <a href="tel:600XXXXXXX" class="aw-cta">
                   <i class="ti ti-phone me-2"></i>Consultar Ahora – 600 XXX XXX
@@ -972,20 +991,8 @@
           <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
         </div>
         {% else %}
-        <div class="row g-4 justify-content-center">
-          {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
-              <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="plan-desc">{{ plan.description }}</p>
-              <a href="{{ url_for('tienda.minutos') }}" class="{% if plan.featured %}btn-plan{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
-            </div>
-          </div>
-          {% endfor %}
+        <div class="text-center py-5">
+          <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
         </div>
         {% endif %}
       </div>
@@ -1000,6 +1007,28 @@
           <div class="divider-rose mx-auto"></div>
           <p class="sec-sub">Elige a quien más resuene contigo</p>
         </div>
+        {% if agents_error == 'timeout' %}
+        <div class="alert alert-warning" role="alert">
+          <div class="d-flex align-items-center gap-2">
+            <i class="ti ti-clock-exclamation"></i>
+            <div><strong>Listado de agentes no disponible. Cod. Timeout</strong><br>
+            <span class="text-muted" style="font-size:.88rem;">El servicio de estado en tiempo real no responde. Intenta recargar la página en unos momentos.</span></div>
+          </div>
+        </div>
+        {% elif agents_error %}
+        <div class="alert alert-danger" role="alert">
+          <div class="d-flex align-items-center gap-2">
+            <i class="ti ti-alert-triangle"></i>
+            <div><strong>Listado de agentes no disponible. Cod. 503</strong><br>
+            <span class="text-muted" style="font-size:.88rem;">No se pudo obtener el estado de las especialistas. Por favor intenta más tarde.</span></div>
+          </div>
+        </div>
+        {% elif not agent_profiles %}
+        <div class="text-center py-5">
+          <i class="ti ti-moon-stars" style="font-size:3rem; color:var(--muted); display:block; margin-bottom:1rem;"></i>
+          <p class="sec-sub">Sin tarotistas disponibles en este momento.<br>Vuelve pronto.</p>
+        </div>
+        {% else %}
         <div class="row g-4">
           {% for agent in agent_profiles %}
           <div class="col-sm-6 col-lg-4 reveal" style="transition-delay:{{ loop.index0 * 0.08 }}s">
@@ -1023,6 +1052,7 @@
           </div>
           {% endfor %}
         </div>
+        {% endif %}
         <div class="text-center mt-5">
           <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
@@ -1093,15 +1123,15 @@
                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
                 </h2>
                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Elige un plan de minutos, carga tu saldo en línea y llama al 600 XXX XXX. Serás conectado/a de inmediato con una de nuestras especialistas disponibles. Todo es privado y confidencial.</div>
+                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al 600 XXX XXX y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Está disponible las 24 horas?</button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Puedo elegir con qué especialista hablar?</button>
                 </h2>
                 <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Sí. Contamos con especialistas disponibles las 24 horas del día, los 7 días de la semana, incluyendo fines de semana y festivos.</div>
+                  <div class="accordion-body">Sí. En nuestra página puedes ver en tiempo real quién está disponible, en consulta o desconectada. Al llamar, el sistema te pedirá el número de conexión de la especialista que prefieras. También puedes pedir que te asignen una al azar.</div>
                 </div>
               </div>
               <div class="accordion-item">
@@ -1109,31 +1139,47 @@
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Los minutos tienen fecha de vencimiento?</button>
                 </h2>
                 <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más lo necesites.</div>
+                  <div class="accordion-body">No. Los minutos que compres quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más los necesites, sin apuros. Si compras más minutos, se suman a tu saldo existente.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es confidencial mi consulta?</button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es completamente confidencial?</button>
                 </h2>
                 <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Absolutamente. Toda la información compartida durante la consulta es estrictamente privada. Nunca compartimos datos con terceros.</div>
+                  <div class="accordion-body">Sí, totalmente. Al llamar, la tarotista no tiene acceso a tu número ni a ningún dato personal. Puedes usar un seudónimo si lo prefieres. Está estrictamente prohibido compartir información de contacto entre clientes y especialistas, y toda la información de la consulta es confidencial.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Qué formas de pago aceptan?</button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Realizan rituales, amarras u otros trabajos espirituales?</button>
                 </h2>
                 <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros métodos de pago populares en Chile.</div>
+                  <div class="accordion-body">No, absolutamente no. Nuestro servicio es exclusivamente de consulta de tarot por teléfono. Ninguna de nuestras especialistas está autorizada para ofrecer ni realizar trabajos adicionales. Si alguna lo hiciera, te pedimos nos lo comuniques.</div>
                 </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Cómo funciona la prueba gratuita de 5 minutos?</button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Qué hago si la llamada se corta inesperadamente?</button>
                 </h2>
                 <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Si eres nuevo/a usuario, tus primeros 5 minutos de consulta son completamente gratis. Sin tarjeta de crédito requerida. Solo llama al 600 XXX XXX e indícale a la especialista que deseas usar tu bienvenida gratuita.</div>
+                  <div class="accordion-body">Si tus minutos se agotaron o hubo un problema de red, comunícate con nuestro supervisor por WhatsApp al +56963349072. Si fue un fallo técnico, te repondrán los minutos sin problema.</div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">¿Puedo llamar desde el extranjero?</button>
+                </h2>
+                <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">Sí, por lo general puedes llamar al +56222301515 desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">¿Cuál es el horario de atención?</button>
+                </h2>
+                <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">Atendemos los 365 días del año. El horario general es de 9:00 a 23:00 horas, aunque con frecuencia es posible encontrar especialistas disponibles fuera de ese horario. El estado en tiempo real siempre está visible en nuestra página web.</div>
                 </div>
               </div>
             </div>
@@ -1409,11 +1455,32 @@
         });
       }
 
+      function agentErrorHTML(code) {
+        var icon = code === 'timeout' ? 'ti-clock-exclamation' : 'ti-alert-triangle';
+        var cls  = code === 'timeout' ? 'alert-warning' : 'alert-danger';
+        var msg  = 'Listado de agentes no disponible. Cod. ' + (code === 'timeout' ? 'Timeout' : '503');
+        var el = document.createElement('div');
+        el.className = 'alert ' + cls + ' mb-0 py-2';
+        el.setAttribute('role', 'alert');
+        el.innerHTML = '<div class="d-flex align-items-center gap-2"><i class="ti ' + icon + '"></i><span>' + msg + '</span></div>';
+        return el;
+      }
+
+      function showAgentError(code) {
+        var heroRows = document.getElementById('hero-agent-rows');
+        if (heroRows) {
+          while (heroRows.firstChild) heroRows.removeChild(heroRows.firstChild);
+          heroRows.appendChild(agentErrorHTML(code));
+        }
+      }
+
       function poll() {
         fetch('/api/agents')
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (agents) { if (agents) applyAgents(agents); })
-          .catch(function () { /* silent — don't break page if API is down */ });
+          .then(function (r) {
+            if (r.ok) return r.json().then(function (agents) { applyAgents(agents); });
+            return r.json().then(function (body) { showAgentError(body && body.error ? body.error : '503'); });
+          })
+          .catch(function () { showAgentError('timeout'); });
       }
 
       setInterval(poll, 5000);

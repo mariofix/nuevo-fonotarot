@@ -3,12 +3,12 @@
 from flask import render_template
 
 from . import lab_bp
-from ..placeholder import AGENTS, PLANS, TESTIMONIALS
+from ..placeholder import PLANS, TESTIMONIALS
 
 
 def _ctx():
     """Shared template context for all lab views."""
-    return {"agents": AGENTS, "testimonials": TESTIMONIALS, "plans": PLANS}
+    return {"agents": [], "testimonials": TESTIMONIALS, "plans": PLANS}
 
 
 @lab_bp.route("/home-full")
