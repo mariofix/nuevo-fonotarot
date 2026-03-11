@@ -69,7 +69,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
     <style>
 
       /* ─── Light theme (default) ────────────────────── */
@@ -150,21 +150,37 @@
 
       * { box-sizing: border-box; }
       body {
-        font-family: 'Montserrat', 'Inter', Verdana, Helvetica, sans-serif;
+        font-family: 'Source Sans 3', 'Montserrat', sans-serif;
         background: var(--cream);
         color: var(--text);
         margin: 0;
+        padding-top: 65px;
         transition: background .3s, color .3s;
       }
 
+      /* ─── Scroll-reveal base ────────────────────────── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity .6s ease, transform .6s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-d1 { transition-delay: .1s; }
+      .reveal-d2 { transition-delay: .2s; }
+      .reveal-d3 { transition-delay: .3s; }
+      .reveal-d4 { transition-delay: .4s; }
+
       /* ─── Navbar ───────────────────────────────────── */
       .site-nav {
-        position: sticky; top: 0; z-index: 100;
+        position: fixed; top: 0; left: 0; right: 0; z-index: 1030;
         background: var(--nav-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
-        padding: .75rem 0;
+        padding: 1rem 0;
         transition: background .3s, border-color .3s;
       }
       .site-nav .brand {
@@ -192,9 +208,11 @@
         font-size: .95rem;
       }
       .site-nav .nav-link:hover { opacity: 1; color: var(--plum); }
+      .nav-link-soft { color: var(--muted); text-decoration: none; font-size: .95rem; transition: color .2s; }
+      .nav-link-soft:hover { color: var(--plum); }
 
-      /* Primary CTA button */
-      .btn-gold {
+      /* Primary CTA buttons */
+      .btn-gold, .btn-rose {
         background: var(--plum);
         color: #fff !important;
         font-weight: 700;
@@ -206,7 +224,7 @@
         display: inline-block;
         font-size: .9rem;
       }
-      .btn-gold:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.35); }
+      .btn-gold:hover, .btn-rose:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.35); }
 
       /* ─── Theme toggle button ──────────────────────── */
       .btn-theme-toggle {
@@ -384,7 +402,7 @@
           <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
           <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
           {% endblock %}
-          <a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>
+          {% block nav_cta %}<a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
           {{ lang_switcher(get_locale(), site_languages) }}
           <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
             <span class="icon-moon">🌙</span>
