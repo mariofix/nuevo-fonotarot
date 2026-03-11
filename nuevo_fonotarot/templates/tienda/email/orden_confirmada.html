@@ -1,0 +1,114 @@
+{#
+  Context:
+    order   — Order model instance (order.id, order.total_display, order.items,
+               order.shipping_name, order.shipping_email, order.created_at)
+    recipient_name — display name string (may fall back to email)
+#}
+{% extends "email/base.html" %}
+
+{% block email_title %}Orden #{{ order.id }} confirmada — fonotarot{% endblock %}
+{% block preview_text %}Tu orden fue recibida y está siendo procesada. ¡Gracias por tu consulta!{% endblock %}
+
+{% block content %}
+
+  {# ── Heading ── #}
+  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
+              font-weight:700; color:#4a2872; line-height:1.2;">
+    ¡Orden recibida!
+  </h1>
+  <div style="width:40px; height:3px; background:#c9a84c;
+               border-radius:2px; margin:0 0 20px;"></div>
+
+  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.7; color:#2d2233;">
+    Hola{% if recipient_name %}, <strong>{{ recipient_name }}</strong>{% endif %}.
+    Confirmamos que hemos recibido tu orden.
+    Cuando el pago sea validado, recibirás otro correo con la confirmación final.
+  </p>
+
+  {# ── Order summary box ── #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin:0 0 28px; border:1px solid #e0d4e8; border-radius:10px;
+                overflow:hidden;">
+    {# Box header #}
+    <tr>
+      <td colspan="2"
+          style="background-color:#f5f0fa; padding:12px 20px;
+                 border-bottom:1px solid #e0d4e8;">
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                   font-weight:700; color:#4a2872; letter-spacing:.5px;">
+          RESUMEN DE ORDEN&nbsp;
+          <span style="color:#8a7a8e; font-weight:400;">#{{ order.id }}</span>
+        </p>
+      </td>
+    </tr>
+
+    {# Line items #}
+    {% for item in order.items %}
+    <tr style="border-bottom:1px solid #f0e8f8;">
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233;">
+        {{ item.name }}
+        {% if item.quantity > 1 %}
+          <span style="color:#8a7a8e; font-size:12px;">× {{ item.quantity }}</span>
+        {% endif %}
+      </td>
+      <td align="right"
+          style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233; white-space:nowrap;">
+        $&nbsp;{{ item.subtotal_display }}&nbsp;CLP
+      </td>
+    </tr>
+    {% endfor %}
+
+    {# Total row #}
+    <tr>
+      <td style="padding:14px 20px; font-family:Arial,sans-serif; font-size:15px;
+                  font-weight:700; color:#4a2872;">
+        Total
+      </td>
+      <td align="right"
+          style="padding:14px 20px; font-family:Georgia,serif; font-size:18px;
+                  font-weight:700; color:#6b3fa0; white-space:nowrap;">
+        $&nbsp;{{ order.total_display }}&nbsp;CLP
+      </td>
+    </tr>
+  </table>
+
+  {# ── Payment method info ── #}
+  {% if order.payment_method %}
+  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:14px;
+             color:#8a7a8e;">
+    Método de pago:
+    <strong style="color:#2d2233;">
+      {{ order.payment_method | capitalize }}
+    </strong>
+  </p>
+  {% endif %}
+
+  {# ── CTA ── #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 28px;">
+    <tr>
+      <td align="center" style="border-radius:30px; background-color:#6b3fa0;">
+        <a href="https://www.fonotarot.cl/tienda/orden/{{ order.id }}"
+           style="display:inline-block; padding:13px 32px; font-family:Arial,sans-serif;
+                  font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;
+                  border-radius:30px;">
+          Ver estado de mi orden
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
+
+  <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+             color:#8a7a8e; line-height:1.7;">
+    ¿Tienes dudas? Visita
+    <a href="https://www.fonotarot.cl/#faq"
+       style="color:#6b3fa0; text-decoration:none;">nuestras preguntas frecuentes</a>
+    o escríbenos.
+  </p>
+
+{% endblock %}

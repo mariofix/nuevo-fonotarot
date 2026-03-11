@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>{% block email_title %}fonotarot{% endblock %}</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; display: block; outline: none; }
+    body { margin: 0 !important; padding: 0 !important; background-color: #f5f0fa; }
+    a { color: #6b3fa0; }
+    @media only screen and (max-width: 640px) {
+      .email-container { width: 100% !important; }
+      .fluid { max-width: 100% !important; height: auto !important; }
+      .stack-col { display: block !important; width: 100% !important; }
+      .pad-20 { padding: 24px 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#f5f0fa;">
+
+  {# ── Preheader: shown in inbox preview, hidden in email body ── #}
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; color:#f5f0fa; line-height:1px;">
+    {% block preview_text %}El universo marca el camino, ¡descúbrelo! — fonotarot.cl{% endblock %}
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  {# ── Outer wrapper ── #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="background-color:#f5f0fa;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        {# ── Email container 600px ── #}
+        <table class="email-container" role="presentation" border="0" cellpadding="0"
+               cellspacing="0" width="600"
+               style="max-width:600px; width:100%; border-radius:14px;
+                      box-shadow:0 4px 24px rgba(107,63,160,.12);">
+
+          {# ── HEADER ── #}
+          <tr>
+            <td align="center"
+                style="background-color:#1e1535; border-radius:14px 14px 0 0;
+                       padding:28px 40px;">
+              <a href="https://www.fonotarot.cl" style="text-decoration:none;">
+                <img src="https://www.fonotarot.cl/static/logo.png"
+                     alt="fonotarot" width="220" height="59"
+                     style="max-width:220px; height:auto;" />
+              </a>
+            </td>
+          </tr>
+
+          {# ── CONTENT BLOCK ── #}
+          <tr>
+            <td class="pad-20"
+                style="background-color:#ffffff; padding:40px 48px;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+
+          {# ── FOOTER ── #}
+          <tr>
+            <td align="center"
+                style="background-color:#1e1535; border-radius:0 0 14px 14px;
+                       padding:24px 40px;">
+              <p style="margin:0 0 6px; font-family:Georgia,serif; font-size:13px;
+                         font-style:italic; color:#c9a84c; letter-spacing:.3px;">
+                El universo marca el camino, ¡descúbrelo!
+              </p>
+              <p style="margin:0 0 10px; font-family:Arial,sans-serif;
+                         font-size:11px; color:rgba(255,255,255,.4); letter-spacing:.5px;">
+                TAROT HOLÍSTICO · CHILE
+              </p>
+              <p style="margin:0; font-family:Arial,sans-serif;
+                         font-size:11px; color:rgba(255,255,255,.3);">
+                © fonotarot ·
+                <a href="https://www.fonotarot.cl" style="color:#c9a84c; text-decoration:none;">
+                  www.fonotarot.cl
+                </a>
+                &nbsp;·&nbsp;
+                <a href="https://www.fonotarot.cl/privacidad"
+                   style="color:rgba(255,255,255,.3); text-decoration:none;">
+                  Privacidad
+                </a>
+              </p>
+            </td>
+          </tr>
+
+        </table>{# /email-container #}
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

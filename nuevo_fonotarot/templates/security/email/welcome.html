@@ -1,0 +1,62 @@
+{#
+  Context: user, confirmation_link, confirmation_token, security
+#}
+{% extends "email/base.html" %}
+
+{% block email_title %}Bienvenida a fonotarot{% endblock %}
+{% block preview_text %}Tu cuenta está lista. Confirma tu correo para comenzar.{% endblock %}
+
+{% block content %}
+  {# Heading #}
+  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
+              font-weight:700; color:#4a2872; line-height:1.2;">
+    Bienvenida, {{ user.email.split('@')[0] }}
+  </h1>
+  <div style="width:40px; height:3px; background:#c9a84c;
+               border-radius:2px; margin:0 0 20px;"></div>
+
+  <p style="margin:0 0 16px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.7; color:#2d2233;">
+    Nos alegra que estés aquí. Tu cuenta en <strong>fonotarot</strong> ha sido creada
+    y ya puedes acceder a nuestras tarotistas para orientarte en amor, trabajo, salud
+    y desarrollo personal.
+  </p>
+
+  {% if security.confirmable %}
+  <p style="margin:0 0 24px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.7; color:#2d2233;">
+    Para activar tu cuenta confirma tu correo electrónico haciendo clic en el botón:
+  </p>
+
+  {# CTA Button #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 28px;">
+    <tr>
+      <td align="center" style="border-radius:30px; background-color:#6b3fa0;">
+        <a href="{{ confirmation_link }}"
+           style="display:inline-block; padding:14px 36px; font-family:Arial,sans-serif;
+                  font-size:15px; font-weight:700; color:#ffffff; text-decoration:none;
+                  border-radius:30px; letter-spacing:.3px;">
+          Confirmar mi correo
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin:0 0 8px; font-family:Arial,sans-serif; font-size:12px;
+             color:#8a7a8e; line-height:1.6;">
+    Si el botón no funciona, copia y pega esta URL en tu navegador:
+  </p>
+  <p style="margin:0 0 28px; font-family:Arial,sans-serif; font-size:11px;
+             word-break:break-all; color:#6b3fa0;">
+    {{ confirmation_link }}
+  </p>
+  {% endif %}
+
+  <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
+
+  <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+             color:#8a7a8e; line-height:1.6;">
+    Si no creaste esta cuenta, puedes ignorar este correo con total tranquilidad.
+  </p>
+{% endblock %}

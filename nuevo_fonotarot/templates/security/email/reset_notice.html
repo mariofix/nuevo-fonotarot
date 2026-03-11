@@ -1,0 +1,64 @@
+{#
+  Context: user, security
+#}
+{% extends "email/base.html" %}
+
+{% block email_title %}Tu contraseña fue cambiada — fonotarot{% endblock %}
+{% block preview_text %}Tu contraseña de fonotarot ha sido restablecida exitosamente.{% endblock %}
+
+{% block content %}
+  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
+              font-weight:700; color:#4a2872; line-height:1.2;">
+    Contraseña restablecida
+  </h1>
+  <div style="width:40px; height:3px; background:#c9a84c;
+               border-radius:2px; margin:0 0 20px;"></div>
+
+  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.7; color:#2d2233;">
+    La contraseña de tu cuenta <strong>fonotarot</strong> ha sido restablecida
+    correctamente. Ya puedes iniciar sesión con tu nueva contraseña.
+  </p>
+
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 28px;">
+    <tr>
+      <td align="center" style="border-radius:30px; background-color:#6b3fa0;">
+        <a href="https://www.fonotarot.cl/login"
+           style="display:inline-block; padding:14px 36px; font-family:Arial,sans-serif;
+                  font-size:15px; font-weight:700; color:#ffffff; text-decoration:none;
+                  border-radius:30px; letter-spacing:.3px;">
+          Iniciar sesión
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin:0 0 20px;">
+    <tr>
+      <td style="background-color:#fff5f8; border-left:3px solid #c06080;
+                  border-radius:0 8px 8px 0; padding:14px 18px;">
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                   color:#2d2233; line-height:1.6;">
+          ¿No realizaste este cambio?
+          {% if security.recoverable %}
+            <a href="{{ url_for_security('forgot_password', _external=True) }}"
+               style="color:#6b3fa0; font-weight:700;">
+              Restablece tu contraseña de nuevo
+            </a>.
+          {% else %}
+            Contáctanos de inmediato en
+            <a href="https://www.fonotarot.cl" style="color:#6b3fa0;">fonotarot.cl</a>.
+          {% endif %}
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
+
+  <p style="margin:0; font-family:Arial,sans-serif; font-size:13px; color:#8a7a8e;">
+    Este es un correo automático de seguridad. No respondas a este mensaje.
+  </p>
+{% endblock %}
