@@ -67,8 +67,10 @@
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-flags.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap");
 
       /* ─── Light theme (default) ────────────────────── */
       :root {
@@ -126,7 +128,7 @@
 
       * { box-sizing: border-box; }
       body {
-        font-family: 'Source Sans 3', sans-serif;
+        font-family: 'Montserrat', 'Inter', Verdana, Helvetica, sans-serif;
         background: var(--cream);
         color: var(--text);
         margin: 0;
@@ -150,6 +152,15 @@
         color: var(--plum);
         text-decoration: none;
         letter-spacing: -.01em;
+        transition: color .2s;
+      }
+      .site-nav .brand:hover {
+        color: var(--plum-dk);
+        text-decoration: none;
+      }
+      [data-theme="dark"] .site-nav .brand:hover {
+        color: var(--plum);
+        opacity: .8;
       }
       .site-nav .nav-link {
         color: var(--text);
