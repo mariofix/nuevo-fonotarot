@@ -72,7 +72,9 @@ class StaticPage(db.Model):
     """A static HTML page served from a configurable URL path.
 
     The ``content`` field stores raw HTML and is served directly to the
-    browser.  Access to create or edit pages must be restricted to trusted
+    browser.  When ``template_name`` is set, the view renders that Jinja2
+    template (with full homepage context) instead of the raw ``content``.
+    Access to create or edit pages must be restricted to trusted
     administrators only.
     """
 
@@ -82,6 +84,7 @@ class StaticPage(db.Model):
     path = db.Column(db.String(255), unique=True, nullable=False, index=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False, default="")
+    template_name = db.Column(db.String(255), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False

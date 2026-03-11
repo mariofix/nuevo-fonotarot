@@ -7,6 +7,20 @@ from ..models import BlogPost, MinutePack, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..utils import get_agents
 
+
+def _homepage_ctx() -> dict:
+    """Return the shared context dict used by all homepage template variants."""
+    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    agents, agents_error = get_agents()
+    return {
+        "agents": agents,
+        "agent_profiles": agents,
+        "agents_error": agents_error,
+        "testimonials": TESTIMONIALS,
+        "minute_packs": minute_packs,
+        "plans": minute_packs,  # alias used by older experiment templates
+    }
+
 blog_bp = Blueprint("blog", __name__)
 content_bp = Blueprint("content", __name__)
 
@@ -34,7 +48,10 @@ def index():
         page = StaticPage.query.filter_by(path=slug, is_active=True).first()
         if page is None:
             abort(404)
-        response = make_response(render_template("pages/page.html", page=page))
+        if page.template_name:
+            response = make_response(render_template(page.template_name, **_homepage_ctx()))
+        else:
+            response = make_response(render_template("pages/page.html", page=page))
         response.headers["Cache-Control"] = "no-store"
         return response
 
@@ -47,16 +64,7 @@ def index():
         return render_template("blog/index.html", posts=posts)
 
     # Default: hardcoded home template.
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-    agents, agents_error = get_agents()
-    return render_template(
-        "index.html",
-        agents=agents,
-        agent_profiles=agents,
-        agents_error=agents_error,
-        testimonials=TESTIMONIALS,
-        minute_packs=minute_packs,
-    )
+    return render_template("index.html", **_homepage_ctx())
 
 
 # ---------------------------------------------------------------------------
@@ -119,6 +127,9 @@ def static_page(page_path: str):
     page = StaticPage.query.filter_by(path=normalised, is_active=True).first()
     if page is None:
         abort(404)
-    response = make_response(render_template("pages/page.html", page=page))
+    if page.template_name:
+        response = make_response(render_template(page.template_name, **_homepage_ctx()))
+    else:
+        response = make_response(render_template("pages/page.html", page=page))
     response.headers["Cache-Control"] = "no-store"
     return response

@@ -334,6 +334,14 @@
         to   { filter: drop-shadow(0 0 10px rgba(168,125,212,.35)); }
       }
       .moon-label { font-size: .68rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+      .moon-phase--active .moon-emoji {
+        filter: drop-shadow(0 0 14px rgba(168,125,212,.75)) !important;
+        animation: none;
+      }
+      .moon-phase--active .moon-label {
+        color: var(--plum);
+        font-weight: 700;
+      }
       /* Separator dots between phases */
       .moon-phase + .moon-phase::before {
         content: '·';
@@ -654,7 +662,7 @@
                 </div>
               </div>
               <span class="agent-action-wrap">
-              {% if agent.status == 'available' %}<a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% if agent.status == 'available' %}<a href="tel:+56222301515" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
               </span>
             </div>
@@ -671,7 +679,7 @@
                   <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   <div class="mt-1"><span class="s-online">● Disponible</span></div>
                 </div>
-                <a href="tel:600XXXXXXX" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+                <a href="tel:+56222301515" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               </div>
               {% endfor %}
             {% else %}
@@ -698,8 +706,8 @@
           </div>
         </div>
         <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
-          <a href="tel:600XXXXXXX" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
+          <a href="tel:+56222301515" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
+            <i class="ti ti-phone me-2"></i>Llama Ahora – +56 2 2230 1515
           </a>
           <a href="#planes" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
             <i class="ti ti-wallet me-2"></i>Ver Planes
@@ -716,8 +724,8 @@
           <a href="#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
           <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
           <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
-          <a href="tel:600XXXXXXX" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
-            <i class="ti ti-phone me-1"></i>600 XXX XXX
+          <a href="tel:+56222301515" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
+            <i class="ti ti-phone me-1"></i>+56 2 2230 1515
           </a>
           <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
             <span class="oc-dot-online"></span>Especialistas
@@ -747,7 +755,7 @@
               Amor, trabajo, familia — cuando más lo necesitas.
             </p>
             <div class="d-flex gap-3 flex-wrap">
-              <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+              <a href="tel:+56222301515" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
                 <i class="ti ti-phone me-2"></i>Llama Ahora
               </a>
               <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
@@ -803,8 +811,8 @@
                 {% endfor %}
                 {% endif %}
                 </div><!-- #hero-agent-rows -->
-                <a href="tel:600XXXXXXX" class="aw-cta">
-                  <i class="ti ti-phone me-2"></i>Consultar Ahora – 600 XXX XXX
+                <a href="tel:+56222301515" class="aw-cta">
+                  <i class="ti ti-phone me-2"></i>Consultar Ahora – +56 2 2230 1515
                 </a>
               </div>
             </div>
@@ -852,7 +860,7 @@
               5 minutos completamente gratuitos para que conozcas a nuestras especialistas
               y compruebes por ti mismo/a la calidad de cada lectura.
             </p>
-            <a href="tel:600XXXXXXX" class="btn-trial">
+            <a href="tel:+56222301515" class="btn-trial">
               <i class="ti ti-sparkles"></i>
               Obtener mis 5 minutos gratis
             </a>
@@ -907,7 +915,7 @@
           <span class="moon-emoji">🌗</span>
           <span class="moon-label">Cuarto Menguante</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:4.1s; --mg-del:2.8s;">
+        <div class="moon-phase moon-phase--active" style="--mg-dur:4.1s; --mg-del:2.8s;">
           <span class="moon-emoji">🌘</span>
           <span class="moon-label">Menguante</span>
         </div>
@@ -945,7 +953,7 @@
               <div class="step-num">3</div>
               <span class="step-icon">📞</span>
               <div class="step-title">Consulta con tranquilidad</div>
-              <p class="step-text">Llama al 600 XXX XXX y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
+              <p class="step-text">Llama al +56 2 2230 1515 y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
             </div>
           </div>
         </div>
@@ -1043,7 +1051,7 @@
               </div>
               <span class="agent-action-wrap">
               {% if agent.status == 'available' %}
-              <a href="tel:600XXXXXXX" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
+              <a href="tel:+56222301515" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
               {% elif agent.status == 'busy' %}
               <button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>
               {% endif %}
@@ -1054,8 +1062,8 @@
         </div>
         {% endif %}
         <div class="text-center mt-5">
-          <a href="tel:600XXXXXXX" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX
+          <a href="tel:+56222301515" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+            <i class="ti ti-phone me-2"></i>Llama Ahora – +56 2 2230 1515
           </a>
         </div>
       </div>
@@ -1123,7 +1131,7 @@
                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
                 </h2>
                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al 600 XXX XXX y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
+                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al +56 2 2230 1515 y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
                 </div>
               </div>
               <div class="accordion-item">
@@ -1194,7 +1202,7 @@
         <h2>Da el primer paso hacia la claridad</h2>
         <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <a href="tel:600XXXXXXX" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
+          <a href="tel:+56222301515" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
           <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
         </div>
       </div>
@@ -1207,7 +1215,7 @@
           <div class="col-md-4">
             <a href="/" class="footer-brand">🌙 Fonotarot</a>
             <p class="footer-tagline">Servicio de orientación espiritual<br>telefónica · Chile · Desde 2010</p>
-            <a href="tel:600XXXXXXX" class="footer-phone"><i class="ti ti-phone me-1"></i>600 XXX XXX</a>
+            <a href="tel:+56222301515" class="footer-phone"><i class="ti ti-phone me-1"></i>+56 2 2230 1515</a>
           </div>
           <div class="col-6 col-md-4">
             <p class="footer-col-title">Navegación</p>
@@ -1322,7 +1330,7 @@
     <script>
     /* ── Agent status poller (every 5 s) ───────────────── */
     (function () {
-      var PHONE = 'tel:600XXXXXXX';
+      var PHONE = 'tel:+56222301515';
 
       /* Escape user-supplied strings before inserting into the DOM */
       function esc(s) {

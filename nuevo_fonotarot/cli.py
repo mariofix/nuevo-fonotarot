@@ -222,3 +222,60 @@ def lang_update(locale: str | None) -> None:
 
     if len(targets) > 1:
         click.echo(click.style("✓ All locales updated.", fg="green"))
+
+
+# ---------------------------------------------------------------------------
+# Page seed command
+# ---------------------------------------------------------------------------
+
+@click.command("seed-pages")
+@with_appcontext
+def seed_pages_cli() -> None:
+    """Seed the two default homepage StaticPage records.
+
+    Creates (or updates) two pages:\n
+    - ``home-v1``  → index.html (current main homepage)\n
+    - ``home8``    → old-experiments/home8.html (Índigo Místico v8)
+    """
+    from .extensions import db
+    from .models import StaticPage
+
+    pages = [
+        {
+            "path": "home-v1",
+            "title": "Homepage – Principal (v1)",
+            "template_name": "index.html",
+            "content": "",
+        },
+        {
+            "path": "home8",
+            "title": "Homepage – Índigo Místico v8 (experimento)",
+            "template_name": "old-experiments/home8.html",
+            "content": "",
+        },
+    ]
+
+    for data in pages:
+        page = StaticPage.query.filter_by(path=data["path"]).first()
+        if page is None:
+            page = StaticPage(
+                path=data["path"],
+                title=data["title"],
+                template_name=data["template_name"],
+                content=data["content"],
+                is_active=True,
+            )
+            db.session.add(page)
+            click.echo(click.style(f"  + created  {data['path']}", fg="green"))
+        else:
+            page.title = data["title"]
+            page.template_name = data["template_name"]
+            click.echo(click.style(f"  ~ updated  {data['path']}", fg="yellow"))
+
+    db.session.commit()
+    click.echo(click.style("✓ Pages seeded.", fg="green"))
+    click.echo(
+        "  To activate a page as homepage, run:\n"
+        "    flask site-settings set homepage_type static\n"
+        "    flask site-settings set homepage_slug home-v1"
+    )

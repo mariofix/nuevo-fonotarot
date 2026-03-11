@@ -188,17 +188,17 @@
               <div class="agent-oc-nm">{{ agent.name }}</div>
               <div class="agent-oc-sp">{{ agent.specialty }}</div>
               <div class="mt-1">
-                {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                {% if agent.status == 'available' %}<span class="b-on">● Disponible</span>
                 {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
               </div>
             </div>
-            {% if agent.status == 'online' %}<a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            {% if agent.status == 'available' %}<a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
             {% else %}<button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>{% endif %}
           </div>
           {% endfor %}
         </div>
         <div class="oc-pane" id="oc-online8">
-          {% for agent in agents if agent.status == 'online' %}
+          {% for agent in agents if agent.status == 'available' %}
           <div class="agent-oc-card">
             <div class="agent-oc-av">{{ agent.name[0] }}</div>
             <div class="flex-grow-1">
@@ -206,7 +206,7 @@
               <div class="agent-oc-sp">{{ agent.specialty }}</div>
               <span class="b-on">● Disponible ahora</span>
             </div>
-            <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            <a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
           </div>
           {% endfor %}
         </div>
@@ -224,7 +224,7 @@
           {% endfor %}
         </div>
         <div class="mt-4">
-          <a href="tel:600XXXXXXX" class="btn-oc-cta"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
+          <a href="tel:+56222301515" class="btn-oc-cta"><i class="ti ti-phone me-2"></i>Llama Ahora – +56 2 2230 1515</a>
         </div>
       </div>
     </div>
@@ -322,7 +322,7 @@
                 <div class="tl-icon"><i class="ti ti-phone"></i></div>
                 <div>
                   <div class="tl-title">Llama y consulta</div>
-                  <p class="tl-text">Marca el 600 XXX XXX desde cualquier teléfono en Chile. La sesión es completamente privada. El saldo restante queda disponible para cuando lo necesites.</p>
+                  <p class="tl-text">Marca el +56 2 2230 1515 desde cualquier teléfono en Chile. La sesión es completamente privada. El saldo restante queda disponible para cuando lo necesites.</p>
                 </div>
               </div>
             </div>
@@ -394,12 +394,12 @@
         <div class="plan-pane {% if loop.first %}active{% endif %}" id="plan-{{ plan.minutes }}">
           <div class="row justify-content-center">
             <div class="col-sm-8 col-md-6 col-lg-4">
-              <div class="plan-card {% if plan.featured %}featured{% endif %}">
-                {% if plan.featured %}<div><span class="plan-badge">✨ Más popular</span></div>{% endif %}
+              <div class="plan-card {% if plan.is_featured %}featured{% endif %}">
+                {% if plan.is_featured %}<div><span class="plan-badge">✨ Más popular</span></div>{% endif %}
                 <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
                 <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
                 <p class="plan-desc">{{ plan.description }}</p>
-                <a href="#" class="btn {% if plan.featured %}btn-plan-violet{% else %}btn-plan-outline{% endif %}">
+                <a href="#" class="btn {% if plan.is_featured %}btn-plan-violet{% else %}btn-plan-outline{% endif %}">
                   <i class="ti ti-wallet me-1"></i>Carga Minutos
                 </a>
               </div>
@@ -460,7 +460,7 @@
             </div>
             <div class="faq-pane active" id="fcat-general">
               {% for q, a in [
-                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una especialista disponible."),
+                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al +56 2 2230 1515. Serás conectado/a de inmediato con una especialista disponible."),
                 ("¿Está disponible las 24 horas?","Sí, operamos todos los días del año sin excepción."),
                 ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú o el botón de la página y elige con quién prefieres consultar.")
               ] %}

@@ -150,6 +150,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)
 
-    from .cli import lang_cli
+    from .cli import lang_cli, seed_pages_cli
 
     app.cli.add_command(lang_cli)
+    app.cli.add_command(seed_pages_cli)
