@@ -96,6 +96,7 @@ def _init_extensions(app: Flask) -> None:
         theme_base="neutral",
         theme_radius="2",
         inter_font=True,
+        tabler_icons=True,
     )
     theme.init_app(app)
 
