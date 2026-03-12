@@ -9,11 +9,10 @@ class TablerTheme(Theme):
     """
     Tabler 1.4.0 theme for Flask-Admin.
 
-    Uses Tabler UI (https://tabler.io/) as the front end, loaded via CDN.
-
-    All Flask-Admin templates (base, layout, model views, file views, etc.)
-    have been copied from the upstream bootstrap4 bundle and rewritten for
-    Tabler / Bootstrap 5.  They live under
+    Ships Tabler UI assets locally (CSS, JS, icon webfonts) so no CDN is
+    required.  All Flask-Admin templates (base, layout, model views, file
+    views, etc.) have been copied from the upstream bootstrap4 bundle and
+    rewritten for Tabler / Bootstrap 5.  They live under
     ``flask_admin_tabler/templates/tabler/admin/``.
 
     ``Theme.folder`` is set to ``"tabler"`` so that Flask-Admin's admin
@@ -42,7 +41,6 @@ class TablerTheme(Theme):
     # ``templates/tabler/admin/`` so Flask-Admin resolves them directly.
     folder: str = "tabler"
     base_template: str = "admin/base.html"
-    tabler_icons: bool = True
 
     # Tabler UI theme settings — map directly to data-bs-* HTML attributes.
     # Defaults match Tabler's own defaults so existing deployments are unaffected.
@@ -51,7 +49,6 @@ class TablerTheme(Theme):
     theme_base: str = "gray"       # "gray" | "neutral" | "slate" | "zinc" | "stone"
     theme_font: str = "sans-serif" # "sans-serif" | "serif" | "monospace" | "comic"
     theme_radius: str = "1"        # "0" | "0.5" | "1" | "1.5" | "2"
-    inter_font: bool = False       # load Inter font from rsms.me CDN
 
     def init_app(self, app: Flask) -> None:
         """Register Tabler theme templates and static files with the Flask app.
