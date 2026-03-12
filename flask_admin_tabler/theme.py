@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+import typing as t
 
 from flask import Blueprint, Flask
 from flask_admin.theme import Theme
+from markupsafe import Markup
 
 
 @dataclass
@@ -49,6 +51,16 @@ class TablerTheme(Theme):
     theme_base: str = "gray"       # "gray" | "neutral" | "slate" | "zinc" | "stone"
     theme_font: str = "sans-serif" # "sans-serif" | "serif" | "monospace" | "comic"
     theme_radius: str = "1"        # "0" | "0.5" | "1" | "1.5" | "2"
+
+    @staticmethod
+    def bool_formatter(view: t.Any, value: t.Any, name: str) -> str:
+        """Format boolean values using Tabler icons instead of FontAwesome."""
+        icon = "circle-check" if value else "circle-minus"
+        color = "text-success" if value else "text-muted"
+        label = f'{name}: {"true" if value else "false"}'
+        return Markup(
+            f'<span class="ti ti-{icon} {color}" title="{label}"></span>'
+        )
 
     def init_app(self, app: Flask) -> None:
         """Register Tabler theme templates and static files with the Flask app.
