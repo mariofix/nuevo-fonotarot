@@ -4,10 +4,23 @@ from flask import redirect, request, url_for
 from flask_admin import AdminIndexView, expose
 from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.model import typefmt
 from flask_babel import lazy_gettext as _l
+from markupsafe import Markup
 from flask_security import current_user
 
 from .extensions import db
+
+
+def _tabler_bool_formatter(view, value, name):
+    """Render boolean values with Tabler icons instead of FA/Glyphicon."""
+    icon = "circle-check" if value else "circle-minus"
+    label = f'{name}: {"true" if value else "false"}'
+    return Markup(f'<i class="ti ti-{icon}" title="{label}"></i>')
+
+
+_TABLER_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+_TABLER_FORMATTERS[bool] = _tabler_bool_formatter
 
 
 class SecureAdminIndexView(AdminIndexView):
@@ -25,6 +38,7 @@ class SecureModelView(ModelView):
     """ModelView accessible only to authenticated users with the 'admin' role."""
 
     can_view_details = True
+    column_type_formatters = _TABLER_FORMATTERS
 
     def is_accessible(self):
         # return current_user.is_authenticated and current_user.has_role("admin")
