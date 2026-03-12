@@ -61,6 +61,12 @@ class Config:
     LEGACY_AUDIOTEX_DB_URL: str = ""
     LEGACY_FIRENZE_DB_URL: str = ""
 
+    # Firenze API (external telephony platform for promotions)
+    FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "https://firenze.156.cl")
+    FIRENZE_API_USER: str = os.environ.get("FIRENZE_API_USER", "")
+    FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
+    FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "")
+
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",

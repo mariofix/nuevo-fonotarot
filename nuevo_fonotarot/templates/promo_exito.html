@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}¡Tus 5 minutos están listos! — Fonotarot{% endblock %}
+
+{% block extra_head %}
+<meta name="robots" content="noindex, nofollow" />
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ─── Success hero ──────────────────────────────── */
+  .success-hero {
+    background: linear-gradient(135deg, #1e0a35 0%, #2d1155 50%, #1a0a2e 100%);
+    padding: 80px 0 70px; position: relative; overflow: hidden; text-align: center;
+    border-bottom: 1px solid rgba(168,125,212,.2);
+  }
+  .success-hero::before { content: '✦'; position: absolute; font-size: 28rem; opacity: .03; right: -2rem; top: 50%; transform: translateY(-50%); color: #fff; pointer-events: none; line-height: 1; }
+  .success-icon {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: rgba(201,168,76,.15); border: 2px solid rgba(201,168,76,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px rgba(201,168,76,.25);
+    animation: success-pulse 3s ease-in-out infinite;
+  }
+  @keyframes success-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,.2); }
+    50%       { box-shadow: 0 0 50px rgba(201,168,76,.4); }
+  }
+  .success-badge {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(5,150,105,.15); color: #34d399;
+    border: 1px solid rgba(5,150,105,.35); border-radius: 20px;
+    padding: .3rem .9rem; font-size: .78rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .success-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 5vw, 3rem); color: #fff; line-height: 1.2;
+    margin-bottom: .85rem;
+  }
+  .success-hero h1 em { font-style: italic; color: var(--gold); }
+  .success-hero p { color: rgba(255,255,255,.72); font-size: 1.05rem; line-height: 1.75; max-width: 520px; margin: 0 auto; }
+
+  /* ─── How to use section ────────────────────────── */
+  .use-section { padding: 80px 0; background: var(--cream); }
+  .use-step { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 2rem 1.75rem; text-align: center; height: 100%; transition: box-shadow .3s, transform .3s; }
+  .use-step:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(107,63,160,.12); }
+  .use-step-num { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--plum), var(--rose)); color: #fff; font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto .9rem; box-shadow: 0 6px 20px rgba(107,63,160,.28); }
+  .use-step-icon { font-size: 1.9rem; margin-bottom: .55rem; display: block; }
+  .use-step-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--plum-dk); margin-bottom: .4rem; }
+  .use-step-text { color: var(--muted); font-size: .88rem; line-height: 1.75; }
+
+  /* ─── Email card ────────────────────────────────── */
+  .email-section { padding: 60px 0; background: var(--sand); }
+  .email-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 24px;
+    padding: 2.5rem 2rem; max-width: 540px; margin: 0 auto;
+    box-shadow: 0 12px 40px rgba(107,63,160,.09);
+  }
+  .email-card-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--lavender); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1.1rem; color: var(--plum); }
+  .email-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--plum-dk); text-align: center; margin-bottom: .5rem; }
+  .email-card p { color: var(--muted); font-size: .9rem; text-align: center; margin-bottom: 1.5rem; line-height: 1.65; }
+  .email-input-wrap { display: flex; gap: .75rem; flex-wrap: wrap; }
+  .email-input-wrap input {
+    flex: 1; min-width: 0; border-radius: 12px; border: 2px solid var(--border);
+    padding: .65rem 1rem; font-size: .92rem;
+    transition: border-color .2s; background: var(--cream); color: var(--text);
+  }
+  .email-input-wrap input:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 3px rgba(107,63,160,.1); }
+  .email-input-wrap input.is-invalid { border-color: #dc3545; }
+  .btn-send-email {
+    background: var(--plum); color: #fff; border: none; border-radius: 12px;
+    padding: .65rem 1.4rem; font-size: .92rem; font-weight: 700;
+    cursor: pointer; transition: background .2s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: .4rem;
+  }
+  .btn-send-email:hover:not(:disabled) { background: var(--plum-dk); }
+  .btn-send-email:disabled { opacity: .6; cursor: not-allowed; }
+  .email-feedback { font-size: .82rem; margin-top: .6rem; display: none; }
+  .email-feedback.is-success { display: block; color: #059669; }
+  .email-feedback.is-error { display: block; color: #dc3545; }
+
+  /* ─── Plans (reused from home) ──────────────────── */
+  .plans-section-success { padding: 80px 0; background: #fff; }
+  .eyebrow { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--rose); font-weight: 700; margin-bottom: .5rem; }
+  .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 4vw, 2.5rem); color: var(--plum-dk); margin-bottom: .5rem; line-height: 1.2; }
+  .sec-sub { color: var(--muted); font-size: 1rem; }
+  .divider-rose { width: 48px; height: 3px; background: linear-gradient(90deg, var(--rose), transparent); margin: .75rem 0 1.5rem; border-radius: 2px; }
+  .plan-card { border: 2px solid var(--border); border-radius: 22px; padding: 2rem 1.5rem; text-align: center; background: var(--cream); transition: transform .3s, box-shadow .3s; height: 100%; display: flex; flex-direction: column; }
+  .plan-card.featured { border-color: var(--plum); background: linear-gradient(160deg, #f0e8ff 0%, #fff5f8 100%); box-shadow: 0 12px 40px rgba(107,63,160,.18); }
+  .plan-card:hover { transform: translateY(-5px); }
+  .plan-popular { background: var(--rose); color: #fff; border-radius: 20px; font-size: .68rem; font-weight: 700; padding: 3px 12px; display: inline-block; margin-bottom: 1rem; letter-spacing: .1em; text-transform: uppercase; }
+  .plan-min-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; color: var(--plum-dk); line-height: 1; }
+  .plan-min-num small { font-size: 1.1rem; color: var(--muted); font-weight: 400; }
+  .plan-clp { font-size: 1.4rem; font-weight: 700; color: var(--rose); margin: .5rem 0; }
+  .plan-clp span { font-size: .85rem; color: var(--muted); font-weight: 400; }
+  .plan-desc { font-size: .88rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.65; }
+  .btn-plan { background: var(--plum); color: #fff !important; border: none; border-radius: 30px; padding: .55rem 0; font-size: .9rem; font-weight: 600; width: 100%; transition: background .2s; text-decoration: none; display: block; }
+  .btn-plan:hover { background: var(--plum-dk); }
+  .btn-cart-sm { border-radius: 30px; padding: .35rem 0; font-weight: 600; font-size: .78rem; width: 100%; background: transparent; border: 2px solid var(--plum); color: var(--plum) !important; transition: background .2s; }
+  .btn-cart-sm:hover { background: rgba(107,63,160,.08); }
+  .packs-wrap { position: relative; padding: 0 2.5rem; }
+  .packs-track { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: .75rem; scrollbar-width: thin; scrollbar-color: rgba(107,63,160,.3) transparent; }
+  .packs-track::-webkit-scrollbar { height: 4px; }
+  .packs-track::-webkit-scrollbar-thumb { background: rgba(107,63,160,.35); border-radius: 2px; }
+  .pack-item { flex: 0 0 270px; scroll-snap-align: start; }
+  @media (min-width: 576px)  { .pack-item { flex: 0 0 calc(50% - .625rem); } }
+  @media (min-width: 992px)  { .pack-item { flex: 0 0 calc(25% - .94rem); } }
+  .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(107,63,160,.12); border: 1px solid rgba(107,63,160,.25); color: var(--plum); width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 2; }
+  .slider-btn:hover { background: rgba(107,63,160,.25); }
+  .slider-prev { left: 0; }
+  .slider-next { right: 0; }
+  @media (min-width: 992px) { .slider-btn { display: none; } }
+
+  /* ─── Dark mode ─────────────────────────────────── */
+  [data-theme="dark"] .use-step,
+  [data-theme="dark"] .email-card,
+  [data-theme="dark"] .plan-card { background: #141428; }
+  [data-theme="dark"] .plan-card.featured { background: linear-gradient(160deg, #2a1a48 0%, #1a1535 100%); }
+  [data-theme="dark"] .email-input-wrap input { background: #1e1a38; border-color: rgba(107,63,160,.35); color: var(--text); }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- ── SUCCESS HERO ──────────────────────────────── -->
+  <section class="success-hero">
+    <div class="container" style="position:relative; z-index:1;">
+      <div class="success-icon">🌟</div>
+      <span class="success-badge"><i class="ti ti-check me-1"></i>¡Activado con éxito!</span>
+      <h1>Tus <em>5 minutos gratis</em><br>están listos</h1>
+      <p>
+        Hemos acreditado 5 minutos en tu número. Llama ahora al
+        <strong style="color:var(--gold);">+56 2 2230 1515</strong> y comienza tu primera consulta de tarot.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── HOW TO USE ────────────────────────────────── -->
+  <section class="use-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">¿Cómo los uso?</div>
+        <h2 class="sec-title">Tres pasos y ya estás consultando</h2>
+        <div class="divider-rose mx-auto"></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="use-step">
+            <div class="use-step-num">1</div>
+            <span class="use-step-icon">📞</span>
+            <div class="use-step-title">Llama al número</div>
+            <p class="use-step-text">
+              Marca el <strong>+56 2 2230 1515</strong> desde el teléfono que registraste.
+              El sistema reconocerá tu número automáticamente.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="use-step">
+            <div class="use-step-num">2</div>
+            <span class="use-step-icon">🔮</span>
+            <div class="use-step-title">Elige tu especialista</div>
+            <p class="use-step-text">
+              Escucha el menú y selecciona la tarotista que prefieras.
+              También puedes pedir una al azar. Si está ocupada, inténtalo unos minutos después.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="use-step">
+            <div class="use-step-num">3</div>
+            <span class="use-step-icon">⏱️</span>
+            <div class="use-step-title">Disfruta la consulta</div>
+            <p class="use-step-text">
+              Tus 5 minutos corren solo mientras hablas. Al agotarse, la llamada
+              se interrumpe suavemente. Puedes comprar más minutos en cualquier momento.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-5">
+        <a href="tel:+56222301515" class="btn btn-lg px-5" style="background:var(--plum); color:#fff; border-radius:30px; font-weight:700; display:inline-flex; align-items:center; gap:.5rem;">
+          <i class="ti ti-phone"></i>Llamar ahora — +56 2 2230 1515
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EMAIL SECTION ─────────────────────────────── -->
+  <section class="email-section">
+    <div class="container">
+      <div class="email-card">
+        <div class="email-card-icon"><i class="ti ti-mail"></i></div>
+        <h3>Recibe las instrucciones por email</h3>
+        <p>
+          Ingresa tu correo y te enviamos un resumen con todo lo que necesitas saber
+          para usar tus minutos ahora y en el futuro.
+        </p>
+        <div class="email-input-wrap">
+          <input
+            type="email"
+            id="promoEmailInput"
+            placeholder="tu@correo.com"
+            autocomplete="email"
+          >
+          <button type="button" class="btn-send-email" id="promoEmailBtn">
+            <i class="ti ti-send btn-email-icon"></i><span class="btn-email-label">Enviar</span>
+          </button>
+        </div>
+        <div class="email-feedback" id="emailFeedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MINUTE PACKS ──────────────────────────────── -->
+  <section class="plans-section-success">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">¿Quieres más tiempo?</div>
+        <h2 class="sec-title">Planes a tu medida</h2>
+        <div class="divider-rose mx-auto"></div>
+        <p class="sec-sub">Cuando se acaben los 5 minutos, carga el plan que más te convenga</p>
+      </div>
+      {% if minute_packs %}
+      <div class="packs-wrap">
+        <button class="slider-btn slider-prev" id="packsPrev2" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+        <div class="packs-track" id="packsSlider2">
+          {% for pack in minute_packs %}
+          <div class="pack-item">
+            <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
+              {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+              <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
+              <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
+              <p class="plan-desc">{{ pack.description or '' }}</p>
+              <div class="mt-auto d-flex flex-column gap-2">
+                <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
+                  <i class="ti ti-bolt me-1"></i>Compra Ahora
+                </a>
+                <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
+                  <input type="hidden" name="item_type" value="minute_pack"/>
+                  <input type="hidden" name="item_id" value="{{ pack.id }}"/>
+                  <input type="hidden" name="quantity" value="1"/>
+                  <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                  <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <button class="slider-btn slider-next" id="packsNext2" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  /* ── Minute packs slider ─────────────────────────── */
+  var slider = document.getElementById('packsSlider2');
+  if (slider) {
+    var gap = 20;
+    function slideW() {
+      var slide = slider.querySelector('.pack-item');
+      return slide ? slide.offsetWidth + gap : 290;
+    }
+    var prev = document.getElementById('packsPrev2');
+    var next = document.getElementById('packsNext2');
+    if (prev) prev.addEventListener('click', function () { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
+    if (next) next.addEventListener('click', function () { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
+  }
+
+  /* ── Email update ────────────────────────────────── */
+  var emailInput    = document.getElementById('promoEmailInput');
+  var emailBtn      = document.getElementById('promoEmailBtn');
+  var emailFeedback = document.getElementById('emailFeedback');
+  var emailLabel    = emailBtn ? emailBtn.querySelector('.btn-email-label') : null;
+  if (!emailInput || !emailBtn || !emailLabel) return;
+
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+
+  function setFeedback(cls, msg) {
+    emailFeedback.className = 'email-feedback ' + cls;
+    emailFeedback.textContent = msg;
+  }
+
+  emailBtn.addEventListener('click', function () {
+    var email = emailInput.value.trim();
+    emailFeedback.className = 'email-feedback';
+    emailFeedback.textContent = '';
+
+    if (!isValidEmail(email)) {
+      emailInput.classList.add('is-invalid');
+      setFeedback('is-error', 'Ingresa un email válido.');
+      return;
+    }
+    emailInput.classList.remove('is-invalid');
+    emailBtn.disabled = true;
+    emailLabel.textContent = 'Enviando\u2026';
+
+    fetch('/api/promo/actualizar-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email }),
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+      .then(function (res) {
+        if (res.ok && res.body.success) {
+          setFeedback('is-success', '\u00a1Listo! Las instrucciones han sido enviadas a ' + email);
+          emailLabel.textContent = 'Enviado';
+          emailInput.disabled = true;
+        } else {
+          setFeedback('is-error', res.body.message || 'Error al enviar. Int\u00e9ntalo de nuevo.');
+          emailBtn.disabled = false;
+          emailLabel.textContent = 'Enviar';
+        }
+      })
+      .catch(function () {
+        setFeedback('is-error', 'Error de conexi\u00f3n. Int\u00e9ntalo de nuevo.');
+        emailBtn.disabled = false;
+        emailLabel.textContent = 'Enviar';
+      });
+  });
+})();
+</script>
+{% endblock %}

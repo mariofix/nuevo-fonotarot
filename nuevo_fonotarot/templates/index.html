@@ -396,6 +396,73 @@
       [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
       [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
       [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
+
+      /* ─── Promo Modal ────────────────────────────────── */
+      #promoModal .modal-content {
+        border: none; border-radius: 24px;
+        box-shadow: 0 32px 80px rgba(107,63,160,.22);
+        overflow: hidden;
+      }
+      #promoModal .modal-header {
+        background: linear-gradient(135deg, #1e0a35 0%, #2d1155 100%);
+        border-bottom: none; padding: 1.75rem 2rem 1.5rem;
+      }
+      #promoModal .modal-title {
+        font-family: 'Playfair Display', serif; color: #fff;
+        font-size: 1.35rem; display: flex; align-items: center; gap: .6rem;
+      }
+      #promoModal .modal-title .gold-star { color: var(--gold); font-size: 1.4rem; }
+      #promoModal .btn-close { filter: invert(1) brightness(2); opacity: .75; }
+      #promoModal .modal-body { padding: 2rem; background: var(--cream); }
+      #promoModal .modal-footer { background: var(--cream); border-top: 1px solid var(--border); padding: 1.25rem 2rem; }
+      .promo-offer-badge {
+        display: inline-flex; align-items: center; gap: .45rem;
+        background: rgba(201,168,76,.12); color: #9a7010;
+        border: 1px solid rgba(201,168,76,.35); border-radius: 20px;
+        padding: .3rem .9rem; font-size: .78rem; font-weight: 700;
+        letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1.1rem;
+      }
+      .promo-why-box {
+        background: rgba(107,63,160,.07); border: 1px solid rgba(107,63,160,.18);
+        border-radius: 14px; padding: .9rem 1.1rem; margin-top: 1.25rem;
+        font-size: .84rem; color: var(--muted); display: flex; gap: .65rem; align-items: flex-start;
+      }
+      .promo-why-box i { color: var(--plum); margin-top: 2px; flex-shrink: 0; }
+      #promoPhoneInput {
+        border-radius: 12px; border: 2px solid var(--border); padding: .7rem 1rem;
+        font-size: 1rem; width: 100%; transition: border-color .2s;
+        background: #fff; color: var(--text);
+        font-family: 'Montserrat', sans-serif; letter-spacing: .05em;
+      }
+      #promoPhoneInput:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 3px rgba(107,63,160,.12); }
+      #promoPhoneInput.is-invalid { border-color: #dc3545; box-shadow: 0 0 0 3px rgba(220,53,69,.1); }
+      #promoPhoneInput.is-valid { border-color: #059669; }
+      .promo-input-label {
+        font-size: .83rem; font-weight: 600; color: var(--plum-dk);
+        margin-bottom: .4rem; display: block;
+      }
+      .promo-error-msg {
+        font-size: .82rem; color: #dc3545; margin-top: .4rem;
+        display: none; align-items: center; gap: .35rem;
+      }
+      .promo-error-msg.visible { display: flex; }
+      .btn-cobrar {
+        background: var(--gold); color: #1e0a35 !important; border: none;
+        border-radius: 30px; padding: .65rem 2rem; font-size: .95rem;
+        font-weight: 700; transition: box-shadow .2s, transform .2s;
+        box-shadow: 0 4px 20px rgba(201,168,76,.3); cursor: pointer;
+        display: inline-flex; align-items: center; gap: .5rem;
+      }
+      .btn-cobrar:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(201,168,76,.45); transform: translateY(-1px); }
+      .btn-cobrar:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+      .promo-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(30,10,53,.25); border-top-color: #1e0a35; border-radius: 50%; animation: spin .6s linear infinite; }
+      .btn-cobrar.loading .promo-spinner { display: inline-block; }
+      .btn-cobrar.loading .btn-cobrar-icon { display: none; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      [data-theme="dark"] #promoModal .modal-body,
+      [data-theme="dark"] #promoModal .modal-footer { background: #141428; }
+      [data-theme="dark"] #promoPhoneInput { background: #1e1a38; border-color: rgba(107,63,160,.35); color: var(--text); }
+      [data-theme="dark"] .promo-offer-badge { color: var(--gold); }
 </style>
 {% endblock %}
 
@@ -623,10 +690,10 @@
               5 minutos completamente gratuitos para que conozcas a nuestras especialistas
               y compruebes por ti mismo/a la calidad de cada lectura.
             </p>
-            <a href="tel:+56222301515" class="btn-trial">
+            <button type="button" class="btn-trial" data-bs-toggle="modal" data-bs-target="#promoModal">
               <i class="ti ti-sparkles"></i>
               Obtener mis 5 minutos gratis
-            </a>
+            </button>
             <p class="trial-terms">Sin compromisos · Sin tarjeta de crédito requerida · Solo para nuevos usuarios</p>
           </div>
           <div class="col-lg-5 reveal reveal-d2">
@@ -976,6 +1043,61 @@
       <i class="ti ti-arrow-up"></i>
     </button>
 
+    <!-- ── PROMO MODAL ──────────────────────────────── -->
+    <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-modal="true" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="promoModalLabel">
+              <span class="gold-star">★</span> 5 Minutos Gratis de Bienvenida
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <span class="promo-offer-badge">✦ Oferta exclusiva · Solo nuevos usuarios</span>
+            <p style="font-size:.95rem; line-height:1.75; color:var(--warm); margin-bottom:1.25rem;">
+              Sabemos que dar el primer paso puede generar dudas. Por eso te regalamos
+              <strong>5 minutos completamente gratuitos</strong> para que conozcas a nuestras
+              especialistas y compruebes por ti mismo/a la calidad de cada lectura.
+            </p>
+            <label class="promo-input-label" for="promoPhoneInput">
+              <i class="ti ti-phone me-1"></i>Tu número de teléfono
+            </label>
+            <input
+              type="tel"
+              id="promoPhoneInput"
+              placeholder="56912345678"
+              maxlength="13"
+              autocomplete="tel"
+              inputmode="numeric"
+              pattern="\d{10,13}"
+            >
+            <div class="promo-error-msg" id="promoErrorMsg">
+              <i class="ti ti-alert-circle"></i>
+              <span id="promoErrorText">Número inválido.</span>
+            </div>
+            <div class="promo-why-box">
+              <i class="ti ti-lock"></i>
+              <span>
+                <strong>¿Por qué necesitamos tu número?</strong><br>
+                Los 5 minutos se acreditan directamente en tu número en nuestra central telefónica.
+                Solo necesitas tu teléfono para llamar al +56 2 2230 1515 y usarlos de inmediato.
+                No compartimos tu número con terceros ni te añadimos a listas de contacto.
+              </span>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal" style="text-decoration:none; font-size:.88rem;">Cancelar</button>
+            <button type="button" class="btn-cobrar" id="promoSubmitBtn" disabled>
+              <span class="promo-spinner"></span>
+              <i class="ti ti-sparkles btn-cobrar-icon"></i>
+              Cobrar Promoción
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 {% endblock %}
 
 {# ── Homepage JavaScript ───────────────────────────────────────────────── #}
@@ -1208,6 +1330,83 @@
       }
 
       setInterval(poll, 5000);
+    })();
+    </script>
+
+    <script>
+    /* ── Promo modal: phone validation + API call ───────── */
+    (function () {
+      var input   = document.getElementById('promoPhoneInput');
+      var btn     = document.getElementById('promoSubmitBtn');
+      var errBox  = document.getElementById('promoErrorMsg');
+      var errText = document.getElementById('promoErrorText');
+      if (!input || !btn) return;
+
+      function isValidPhone(v) { return /^\d{10,13}$/.test(v.trim()); }
+
+      function showError(msg) {
+        errText.textContent = msg;
+        errBox.classList.add('visible');
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+      }
+      function clearError() {
+        errBox.classList.remove('visible');
+        input.classList.remove('is-invalid');
+      }
+
+      input.addEventListener('input', function () {
+        var val = input.value.replace(/\D/g, '');
+        input.value = val;
+        clearError();
+        if (isValidPhone(val)) {
+          btn.disabled = false;
+          input.classList.add('is-valid');
+        } else {
+          btn.disabled = true;
+          input.classList.remove('is-valid');
+        }
+      });
+
+      /* Reset modal state when it opens */
+      document.getElementById('promoModal').addEventListener('show.bs.modal', function () {
+        input.value = '';
+        clearError();
+        input.classList.remove('is-valid');
+        btn.disabled = true;
+        btn.classList.remove('loading');
+        btn.disabled = true;
+      });
+
+      btn.addEventListener('click', function () {
+        var ani = input.value.trim();
+        if (!isValidPhone(ani)) { showError('Ingresa un número válido (10-13 dígitos, sin +).'); return; }
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+        clearError();
+
+        fetch('/api/promo/cobrar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ani: ani }),
+        })
+          .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
+          .then(function (res) {
+            if (res.ok && res.body.success) {
+              window.location.href = res.body.redirect;
+            } else {
+              showError(res.body.message || 'Error inesperado. Inténtalo más tarde.');
+              btn.classList.remove('loading');
+              btn.disabled = false;
+            }
+          })
+          .catch(function () {
+            showError('Error de conexión. Verifica tu internet e inténtalo de nuevo.');
+            btn.classList.remove('loading');
+            btn.disabled = false;
+          });
+      });
     })();
     </script>
 {% endblock %}
