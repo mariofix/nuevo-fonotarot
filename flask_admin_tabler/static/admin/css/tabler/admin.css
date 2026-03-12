@@ -1,0 +1,169 @@
+/* flask-admin-tabler — admin.css
+ *
+ * Inherits Flask-Admin's model-list and filter styles, then adds a CSS
+ * remapping layer that makes Bootstrap 4 / FontAwesome / Glyphicon icon
+ * classes render using the Tabler Icons webfont.
+ *
+ * Requirement: TablerTheme(tabler_icons=True)  ← default
+ *   The Tabler Icons webfont must be loaded before this file so that the
+ *   @font-face for "tabler-icons" is available.
+ */
+
+/* =========================================================
+   Flask-Admin model-list layout fixes
+   (same as Flask-Admin's built-in bootstrap4/admin.css)
+   ========================================================= */
+
+/* List View - fix trash icon inside table column */
+.model-list form.icon {
+    display: inline;
+}
+
+.model-list form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+.model-list a.icon:first-child {
+    margin-left: 10px;
+}
+
+/* List View - prevent link icons from differing from trash icon */
+.model-list a.icon {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - fix overlapping border between actions and table */
+.model-list {
+    position: static;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+/* List View - prevent word wrap on buttons column */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
+/* Filters */
+table.filters {
+    border-collapse: collapse;
+    border-spacing: 4px;
+}
+
+table.filters:not(:empty) {
+    margin: 12px 0 20px 0;
+}
+
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
+.filters .filter-op {
+    width: 130px;
+}
+
+.filters .filter-val {
+    width: 220px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+/* Form spacing */
+div.container > .admin-form {
+    margin-top: 35px;
+}
+
+.admin-form .help-block {
+    margin-bottom: 0;
+}
+
+/* Modal scroll fix */
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0 !important;
+}
+
+.fa_filter_container {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* =========================================================
+   Bootstrap 4 icon compatibility — Tabler Icons webfont
+   
+   Flask-Admin's bundled templates use FontAwesome (.fa .fa-*)
+   and Glyphicon (.glyphicon .glyphicon-*) classes.  We map the
+   classes used by Flask-Admin to their Tabler Icons equivalents
+   so no template overrides are needed.
+   
+   Codepoints from @tabler/icons-webfont@3.31.0
+   ========================================================= */
+
+/* Base: apply the Tabler Icons font to any .fa or .glyphicon element */
+.fa,
+.glyphicon {
+    font-family: "tabler-icons" !important;
+    speak: none;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: -0.125em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* eye — view/details row action */
+.fa-eye::before,
+.glyphicon-eye-open::before   { content: "\ea9a"; }
+
+/* pencil — edit row action */
+.fa-pencil::before,
+.glyphicon-pencil::before     { content: "\eb04"; }
+
+/* trash — delete row action */
+.fa-trash::before,
+.glyphicon-trash::before      { content: "\eb41"; }
+
+/* × — search-clear, inline-delete */
+.fa-times::before,
+.glyphicon-remove::before     { content: "\eb55"; }
+
+/* chevrons — sortable column headers */
+.fa-chevron-up::before,
+.glyphicon-chevron-up::before   { content: "\ea62"; }
+
+.fa-chevron-down::before,
+.glyphicon-chevron-down::before { content: "\ea5f"; }
+
+.fa-chevron-right::before,
+.glyphicon-chevron-right::before { content: "\ea61"; }
+
+/* ? — column description tooltip */
+.fa-question-circle::before,
+.glyphicon-question-sign::before { content: "\eabf"; }
+
+/* folder — file admin view */
+.fa-folder-o::before,
+.glyphicon-folder-close::before  { content: "\eaad"; }

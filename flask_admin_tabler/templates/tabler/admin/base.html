@@ -197,6 +197,22 @@
 
 {% block tail_js %}
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
+    {# Bootstrap 4 → 5 data-attribute compatibility shim.
+       Flask-Admin's bundled templates use data-toggle / data-dismiss / data-target (BS4).
+       Tabler is based on Bootstrap 5 which requires data-bs-toggle / data-bs-dismiss / data-bs-target.
+       Running this inline (synchronously, before Tabler.js) converts the attributes so that
+       all Flask-Admin dropdowns and modals work without any template overrides. #}
+    <script {{ admin_csp_nonce_attribute }}>
+      (function () {
+        var attr = [['data-toggle', 'data-bs-toggle'], ['data-target', 'data-bs-target'], ['data-dismiss', 'data-bs-dismiss']];
+        attr.forEach(function (pair) {
+          document.querySelectorAll('[' + pair[0] + ']').forEach(function (el) {
+            el.setAttribute(pair[1], el.getAttribute(pair[0]));
+            el.removeAttribute(pair[0]);
+          });
+        });
+      })();
+    </script>
     <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"

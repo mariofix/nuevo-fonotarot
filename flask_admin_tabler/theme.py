@@ -42,6 +42,11 @@ class TablerTheme(Theme):
     # bootstrap4 bundle.
     folder: str = "bootstrap4"
     base_template: str = "admin/base.html"
+    # Load the Tabler Icons webfont from CDN.  Must stay True (the default)
+    # for icon rendering to work: both the sidebar icons (ti ti-*) and the
+    # CSS compatibility layer in admin.css (which remaps Flask-Admin's
+    # FontAwesome / Glyphicon classes to Tabler Icons characters) depend on
+    # the webfont being present.
     tabler_icons: bool = True
 
     # Tabler UI theme settings — map directly to data-bs-* HTML attributes.
