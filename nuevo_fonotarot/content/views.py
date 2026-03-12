@@ -204,6 +204,7 @@ def detail(slug: str):
 
 
 @content_bp.route("/promo/exito")
+@limiter.limit("30 per hour")
 def promo_exito():
     """Success page shown after a free-trial promotion is activated."""
     ani = session.get("promo_ani")
@@ -214,6 +215,7 @@ def promo_exito():
 
 
 @content_bp.route("/api/promo/cobrar", methods=["POST"])
+@limiter.limit("5 per hour; 2 per minute")
 def api_promo_cobrar():
     """Check phone eligibility against the Firenze API and activate the promotion.
 
@@ -266,6 +268,7 @@ def api_promo_cobrar():
 
 
 @content_bp.route("/api/promo/actualizar-email", methods=["POST"])
+@limiter.limit("10 per hour")
 def api_promo_actualizar_email():
     """Update the client's email address in the Firenze API."""
     ani = session.get("promo_ani")

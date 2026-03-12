@@ -284,6 +284,11 @@
   var emailLabel    = emailBtn ? emailBtn.querySelector('.btn-email-label') : null;
   if (!emailInput || !emailBtn || !emailLabel) return;
 
+  function csrfToken() {
+    var m = document.querySelector('meta[name="csrf-token"]');
+    return m ? m.getAttribute('content') : '';
+  }
+
   function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
 
   function setFeedback(cls, msg) {
@@ -307,7 +312,7 @@
 
     fetch('/api/promo/actualizar-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
       body: JSON.stringify({ email: email }),
     })
       .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })

@@ -1342,6 +1342,11 @@
       var errText = document.getElementById('promoErrorText');
       if (!input || !btn) return;
 
+      function csrfToken() {
+        var m = document.querySelector('meta[name="csrf-token"]');
+        return m ? m.getAttribute('content') : '';
+      }
+
       function isValidPhone(v) { return /^\d{10,13}$/.test(v.trim()); }
 
       function showError(msg) {
@@ -1388,7 +1393,7 @@
 
         fetch('/api/promo/cobrar', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
           body: JSON.stringify({ ani: ani }),
         })
           .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })

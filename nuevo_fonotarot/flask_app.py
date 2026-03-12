@@ -103,6 +103,16 @@ def _init_extensions(app: Flask) -> None:
     admin.init_app(app, index_view=SecureAdminIndexView())
     init_admin(app, admin)
 
+    # Apply a per-IP rate limit to every Flask-Admin route.  The decorator
+    # wraps the check directly into the function body, so registering it as a
+    # blueprint before_request handler is enough — Flask-Limiter's automatic
+    # endpoint scanning is not required.
+    @limiter.limit("120 per hour; 20 per minute")
+    def _admin_rate_limit() -> None:
+        """Rate-limit guard for the Flask-Admin panel."""
+
+    app.before_request_funcs.setdefault("admin", []).append(_admin_rate_limit)
+
     @app.context_processor
     def inject_site_languages() -> dict:
         return {"site_languages": _parse_available_langs()}
