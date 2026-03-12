@@ -1,0 +1,158 @@
+{% extends "email/base.html" %}
+
+{% block email_title %}¡Tus 5 minutos gratuitos están listos! — Fonotarot{% endblock %}
+{% block preview_text %}Tus 5 minutos gratuitos están acreditados. Llama al +56 2 2230 1515 para comenzar tu consulta de tarot ahora.{% endblock %}
+
+{% block content %}
+  <!-- Success badge -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding-bottom:20px;">
+        <span style="display:inline-block; background-color:#ecfdf5; color:#059669;
+                     font-family:Arial,sans-serif; font-size:11px; font-weight:700;
+                     letter-spacing:.15em; text-transform:uppercase;
+                     padding:6px 18px; border-radius:20px; border:1px solid #a7f3d0;">
+          ✓ Promoción Activada
+        </span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Heading -->
+  <h1 style="margin:0 0 8px; font-family:Georgia,'Times New Roman',serif;
+             font-size:28px; font-weight:700; color:#1e1535; line-height:1.2;
+             text-align:center;">
+    ¡Tus 5 minutos<br>
+    <span style="color:#6b3fa0;">gratuitos están listos!</span>
+  </h1>
+  <p style="margin:0 0 32px; font-family:Arial,sans-serif; font-size:15px;
+            color:#6b6b8a; line-height:1.7; text-align:center;">
+    Hemos acreditado <strong>5 minutos</strong> en tu número telefónico.
+    Úsalos cuando quieras — no tienen vencimiento.
+  </p>
+
+  <!-- CTA button -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin-bottom:36px;">
+    <tr>
+      <td align="center">
+        <a href="tel:+56222301515"
+           style="display:inline-block; background-color:#6b3fa0; color:#ffffff;
+                  font-family:Arial,sans-serif; font-size:16px; font-weight:700;
+                  text-decoration:none; padding:14px 36px; border-radius:30px;
+                  letter-spacing:.03em;">
+          📞 Llamar ahora — +56 2 2230 1515
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Steps -->
+  <p style="margin:0 0 16px; font-family:Georgia,'Times New Roman',serif;
+            font-size:17px; font-weight:700; color:#1e1535;">
+    ¿Cómo usar tus 5 minutos?
+  </p>
+
+  <!-- Step 1 -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin-bottom:12px;">
+    <tr>
+      <td width="44" valign="top" style="padding-right:14px;">
+        <div style="width:36px; height:36px; border-radius:50%;
+                    background:linear-gradient(135deg,#6b3fa0,#c06080);
+                    text-align:center; line-height:36px;
+                    font-family:Georgia,serif; font-size:16px; font-weight:700;
+                    color:#fff;">1</div>
+      </td>
+      <td valign="top">
+        <p style="margin:0 0 4px; font-family:Arial,sans-serif; font-size:14px;
+                  font-weight:700; color:#1e1535;">Llama desde tu teléfono registrado</p>
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                  color:#6b6b8a; line-height:1.6;">
+          Marca el <strong>+56 2 2230 1515</strong>. El sistema reconocerá
+          automáticamente tu número.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Step 2 -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin-bottom:12px;">
+    <tr>
+      <td width="44" valign="top" style="padding-right:14px;">
+        <div style="width:36px; height:36px; border-radius:50%;
+                    background:linear-gradient(135deg,#6b3fa0,#c06080);
+                    text-align:center; line-height:36px;
+                    font-family:Georgia,serif; font-size:16px; font-weight:700;
+                    color:#fff;">2</div>
+      </td>
+      <td valign="top">
+        <p style="margin:0 0 4px; font-family:Arial,sans-serif; font-size:14px;
+                  font-weight:700; color:#1e1535;">Elige tu especialista</p>
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                  color:#6b6b8a; line-height:1.6;">
+          Escucha el menú y selecciona la tarotista que más resuene contigo,
+          o pide una al azar.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Step 3 -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin-bottom:32px;">
+    <tr>
+      <td width="44" valign="top" style="padding-right:14px;">
+        <div style="width:36px; height:36px; border-radius:50%;
+                    background:linear-gradient(135deg,#6b3fa0,#c06080);
+                    text-align:center; line-height:36px;
+                    font-family:Georgia,serif; font-size:16px; font-weight:700;
+                    color:#fff;">3</div>
+      </td>
+      <td valign="top">
+        <p style="margin:0 0 4px; font-family:Arial,sans-serif; font-size:14px;
+                  font-weight:700; color:#1e1535;">Disfruta tu consulta</p>
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                  color:#6b6b8a; line-height:1.6;">
+          Los minutos corren solo mientras hablas. Al agotarse, la llamada se
+          interrumpe suavemente. Puedes comprar más minutos en cualquier momento.
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Scarcity / remaining count -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="background-color:#fdf8ff; border:1px solid #e0d0f8;
+                border-radius:10px; margin-bottom:28px;">
+    <tr>
+      <td style="padding:16px 20px; text-align:center;">
+        <p style="margin:0; font-family:Georgia,'Times New Roman',serif;
+                  font-size:13px; font-style:italic; color:#6b3fa0; line-height:1.6;">
+          ✦ Esta promoción es limitada. Al momento de tu canje quedaban
+          <strong>{{ remaining }}</strong>
+          {% if remaining == 1 %}disponible{% else %}disponibles{% endif %}.
+          Si conoces a alguien que necesite orientación, comparte
+          <a href="https://www.fonotarot.cl" style="color:#6b3fa0;">fonotarot.cl</a>
+          con ellos — ¡puede que aún alcancen su promo!
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- More minutes link -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center">
+        <a href="https://www.fonotarot.cl/#planes"
+           style="display:inline-block; background-color:transparent; color:#6b3fa0;
+                  font-family:Arial,sans-serif; font-size:14px; font-weight:700;
+                  text-decoration:none; padding:10px 28px; border-radius:30px;
+                  border:2px solid #6b3fa0;">
+          Ver planes de minutos
+        </a>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

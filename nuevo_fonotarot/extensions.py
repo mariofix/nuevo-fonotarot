@@ -4,6 +4,7 @@ from flask_admin import Admin
 from flask_babel import Babel
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_mail import Mail
 from flask_merchants import FlaskMerchants
 from flask_migrate import Migrate
 from flask_security.core import Security
@@ -13,6 +14,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_wtf.csrf import CSRFProtect
 
 csrf = CSRFProtect()
+mail = Mail()
 db = SQLAlchemy()
 migrate = Migrate()
 limiter = Limiter(

@@ -279,3 +279,46 @@ def seed_pages_cli() -> None:
         "    flask site-settings set homepage_type static\n"
         "    flask site-settings set homepage_slug home-v1"
     )
+
+
+# ---------------------------------------------------------------------------
+# Promo stock seed command
+# ---------------------------------------------------------------------------
+
+
+@click.command("seed-promo")
+@click.option("--stock", default=36, show_default=True,
+              help="Number of free-trial promotions to make available.")
+@with_appcontext
+def seed_promo_cli() -> None:
+    """Create or reset the free-trial promotion stock counter.
+
+    Sets SiteSettings key ``promo_free_minutes_remaining`` to STOCK (default 36).
+    If the key already exists it is overwritten with the new value.
+
+    Example:\n
+        flask seed-promo              # → 36\n
+        flask seed-promo --stock 100  # → 100
+    """
+    from .extensions import db
+    from .models import SiteSettings
+
+    row = SiteSettings.query.filter_by(key="promo_free_minutes_remaining").first()
+    if row is None:
+        row = SiteSettings(
+            key="promo_free_minutes_remaining",
+            value=str(stock),
+            module="promo",
+            description="Número de canjes de 5 minutos gratuitos disponibles para nuevos usuarios",
+        )
+        db.session.add(row)
+        action = "created"
+    else:
+        row.value = str(stock)
+        action = "updated"
+
+    db.session.commit()
+    click.echo(click.style(
+        f"✓ promo_free_minutes_remaining {action} → {stock}",
+        fg="green",
+    ))

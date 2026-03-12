@@ -54,6 +54,15 @@ class Config:
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
 
+    # Email (Flask-Mail)
+    MAIL_SERVER: str = os.environ.get("MAIL_SERVER", "localhost")
+    MAIL_PORT: int = int(os.environ.get("MAIL_PORT", "25"))
+    MAIL_USE_TLS: bool = os.environ.get("MAIL_USE_TLS", "false").lower() == "true"
+    MAIL_USE_SSL: bool = os.environ.get("MAIL_USE_SSL", "false").lower() == "true"
+    MAIL_USERNAME: str | None = os.environ.get("MAIL_USERNAME")
+    MAIL_PASSWORD: str | None = os.environ.get("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", "noreply@fonotarot.cl")
+
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 

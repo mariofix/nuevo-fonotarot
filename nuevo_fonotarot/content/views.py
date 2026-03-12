@@ -20,10 +20,14 @@ from flask import (
     url_for,
 )
 
-from ..extensions import limiter
-from ..models import BlogPost, MinutePack, SiteSettings, StaticPage
+from ..extensions import db, limiter, mail
+from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
 from ..utils import get_agents
+
+# SiteSettings key that tracks how many free-trial promos are left.
+_PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
+_PROMO_INITIAL_STOCK = 36
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +99,92 @@ def _firenze_patch(path: str, token: str, payload: dict) -> tuple[int, Any]:
             return resp.status, json.loads(resp.read())
     except urllib.error.HTTPError as exc:
         return exc.code, {}
+
+
+def _promo_claim_remaining() -> tuple[bool, int]:
+    """Atomically decrement the promo stock counter.
+
+    Creates the row with the initial stock value when it does not exist yet.
+    Returns ``(decremented, new_remaining)``.  ``decremented`` is *False* when
+    the stock was already at 0 (promo exhausted).
+    """
+    # Ensure the row exists before locking it.
+    if not SiteSettings.query.filter_by(key=_PROMO_REMAINING_KEY).count():
+        row = SiteSettings(
+            key=_PROMO_REMAINING_KEY,
+            value=str(_PROMO_INITIAL_STOCK),
+            module="promo",
+            description="Número de canjes de 5 minutos gratuitos disponibles",
+        )
+        db.session.add(row)
+        try:
+            db.session.flush()
+        except Exception:
+            # Another request created the row concurrently — safe to ignore.
+            db.session.rollback()
+
+    setting = (
+        SiteSettings.query.filter_by(key=_PROMO_REMAINING_KEY)
+        .with_for_update()
+        .first()
+    )
+    current = int(setting.value or 0) if setting else 0
+    if current <= 0:
+        return False, 0
+    setting.value = str(current - 1)
+    # Caller must commit after a successful Firenze call.
+    return True, current - 1
+
+
+def _send_admin_promo_notification(ani: str, remaining: int) -> None:
+    """E-mail every active admin user when a free trial is redeemed."""
+    from datetime import datetime, timezone
+
+    from flask_mail import Message
+
+    admin_role = Role.query.filter_by(name="admin").first()
+    if not admin_role:
+        return
+    recipients = [u.email for u in admin_role.users.all() if u.active and u.email]
+    if not recipients:
+        return
+
+    # Mask the phone for the notification: show first 3 and last 3 digits.
+    masked = ani[:3] + ("*" * max(0, len(ani) - 6)) + ani[-3:] if len(ani) > 6 else ani
+    redeemed_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    try:
+        msg = Message(
+            subject="[Fonotarot] Nueva promoción de 5 minutos canjeada",
+            recipients=recipients,
+            html=render_template(
+                "email/promo_admin.html",
+                masked_ani=masked,
+                remaining=remaining,
+                redeemed_at=redeemed_at,
+            ),
+        )
+        mail.send(msg)
+    except Exception:
+        logger.exception("Failed to send admin promo notification email")
+
+
+def _send_user_promo_instructions(email: str, remaining: int) -> None:
+    """E-mail usage instructions to the user who just redeemed a free trial."""
+    from flask_mail import Message
+
+    try:
+        msg = Message(
+            subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
+            recipients=[email],
+            html=render_template(
+                "email/promo_user.html",
+                remaining=remaining,
+            ),
+        )
+        mail.send(msg)
+    except Exception:
+        logger.exception("Failed to send user promo instructions email")
 
 
 def _homepage_ctx() -> dict:
@@ -248,7 +338,12 @@ def api_promo_cobrar():
         logger.error("Unexpected Firenze phone-check status: %s", status)
         return jsonify({"error": "api_error", "message": "Error inesperado. Inténtalo más tarde."}), 503
 
-    # Phone not found → eligible → create client with 5 minutes (300 s)
+    # Check and atomically lock the promo stock counter.
+    decremented, remaining = _promo_claim_remaining()
+    if not decremented:
+        return jsonify({"error": "exhausted", "message": "La promoción ya no está disponible. ¡Llegaste tarde!"}), 409
+
+    # Phone not found and stock available → create client with 5 minutes (300 s).
     try:
         create_status, _ = _firenze_post(
             "/audiotex/fonotarot-cl/client/",
@@ -257,13 +352,22 @@ def api_promo_cobrar():
         )
     except Exception:
         logger.exception("Firenze create-client error")
+        db.session.rollback()
         return jsonify({"error": "api_error", "message": "Error al activar la promoción. Inténtalo más tarde."}), 503
 
     if create_status >= 400:
         logger.error("Firenze create-client returned %s", create_status)
+        db.session.rollback()
         return jsonify({"error": "api_error", "message": "No se pudo activar la promoción. Inténtalo más tarde."}), 503
 
+    # Commit the stock decrement only after Firenze confirms the client was created.
+    db.session.commit()
+
     session["promo_ani"] = ani
+    session["promo_remaining"] = remaining
+
+    _send_admin_promo_notification(ani, remaining)
+
     return jsonify({"success": True, "redirect": url_for("content.promo_exito")})
 
 
@@ -295,6 +399,9 @@ def api_promo_actualizar_email():
     if status >= 400:
         logger.error("Firenze update-email returned %s", status)
         return jsonify({"error": "api_error", "message": "No se pudo actualizar el email."}), 503
+
+    remaining = session.get("promo_remaining", 0)
+    _send_user_promo_instructions(email, remaining)
 
     return jsonify({"success": True})
 

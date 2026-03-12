@@ -15,6 +15,7 @@ from .extensions import (
     csrf,
     db,
     limiter,
+    mail,
     merchants_ext,
     migrate,
     security,
@@ -48,6 +49,7 @@ def _init_extensions(app: Flask) -> None:
     db.init_app(app)
     migrate.init_app(app, db)
     limiter.init_app(app)
+    mail.init_app(app)
     toolbar.init_app(app)
     default_lang: str = app.config.get("DEFAULT_LANGUAGE", "es_CL")
 
@@ -159,7 +161,8 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)
 
-    from .cli import lang_cli, seed_pages_cli
+    from .cli import lang_cli, seed_pages_cli, seed_promo_cli
 
     app.cli.add_command(lang_cli)
     app.cli.add_command(seed_pages_cli)
+    app.cli.add_command(seed_promo_cli)

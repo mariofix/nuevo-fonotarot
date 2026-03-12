@@ -436,3 +436,17 @@ class SiteSettings(db.Model):
         """Return the value for *key*, or *default* when not found."""
         row = cls.query.filter_by(key=key).first()
         return row.value if row else default
+
+    @classmethod
+    def set(cls, key: str, value: str, *, module: str = "general", description: str | None = None) -> None:
+        """Set *value* for *key*, creating the row when it does not exist.
+
+        Commits the current session.
+        """
+        row = cls.query.filter_by(key=key).first()
+        if row is None:
+            row = cls(key=key, value=value, module=module, description=description)
+            db.session.add(row)
+        else:
+            row.value = value
+        db.session.commit()
