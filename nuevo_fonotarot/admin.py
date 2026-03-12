@@ -7,6 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
+from flask_admin_tabler import tabler_bool_formatter
 from .extensions import db
 
 
@@ -23,6 +24,9 @@ class SecureAdminIndexView(AdminIndexView):
 
 class SecureModelView(ModelView):
     """ModelView accessible only to authenticated users with the 'admin' role."""
+
+    column_type_formatters = dict(ModelView.column_type_formatters)
+    column_type_formatters[bool] = tabler_bool_formatter
 
     def is_accessible(self):
         # return current_user.is_authenticated and current_user.has_role("admin")
