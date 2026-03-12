@@ -18,11 +18,9 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-        <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-themes.min.css" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-        {% if _t.tabler_icons %}
-        <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
-        {% endif %}
+        <link href="{{ url_for('flask_admin_tabler.static', filename='tabler/css/tabler.min.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+        <link href="{{ url_for('flask_admin_tabler.static', filename='tabler/css/tabler-themes.min.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+        <link href="{{ url_for('flask_admin_tabler.static', filename='tabler/icons/tabler-icons.min.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
         <link href="{{ url_for('flask_admin_tabler.static', filename='admin/css/tabler/admin.css') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
@@ -32,12 +30,6 @@
     {% endblock %}
     {% block head %}
     {% endblock %}
-    {% if _t.inter_font %}
-    <style {{ admin_csp_nonce_attribute }}>
-      @import url("https://rsms.me/inter/inter.css");
-      :root { --tblr-font-family-sans-serif: 'Inter var', system-ui, -apple-system, sans-serif; }
-    </style>
-    {% endif %}
     {% block head_tail %}
     {% endblock %}
   </head>
@@ -197,7 +189,7 @@
 
 {% block tail_js %}
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js" type="text/javascript"></script>
+    <script {{ admin_csp_nonce_attribute }} src="{{ url_for('flask_admin_tabler.static', filename='tabler/js/tabler.min.js') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
             type="text/javascript"></script>

@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from flask import Blueprint, Flask
@@ -10,12 +9,17 @@ class TablerTheme(Theme):
     """
     Tabler 1.4.0 theme for Flask-Admin.
 
-    Uses Tabler UI (https://tabler.io/) as the front end, loaded via CDN.
+    Ships Tabler UI assets locally (CSS, JS, icon webfonts) so no CDN is
+    required.  All Flask-Admin templates (base, layout, model views, file
+    views, etc.) have been copied from the upstream bootstrap4 bundle and
+    rewritten for Tabler / Bootstrap 5.  They live under
+    ``flask_admin_tabler/templates/tabler/admin/``.
 
-    Templates live in ``flask_admin_tabler/templates/tabler/`` which matches
-    ``Theme.folder = "tabler"``.  Registering the package blueprint **before**
-    Flask-Admin's admin blueprint ensures our templates are resolved first by
-    Flask's template loader.
+    ``Theme.folder`` is set to ``"tabler"`` so that Flask-Admin's admin
+    blueprint looks inside ``templates/tabler/`` for every template it
+    renders (index.html, model/list.html, …).  Registering our own package
+    blueprint **before** Flask-Admin's admin blueprint further guarantees
+    that our Tabler templates win when two blueprints ship the same path.
 
     Usage::
 
@@ -32,17 +36,11 @@ class TablerTheme(Theme):
         admin = Admin(app, name="my app", theme=theme)
     """
 
-    # Flask-Admin 2.x uses theme.folder to set its admin blueprint's
-    # template_folder: os.path.join("templates", folder).  Only "bootstrap4"
-    # exists in Flask-Admin's bundled templates, so this must stay "bootstrap4"
-    # for Flask-Admin to find admin/index.html, admin/model/list.html, etc.
-    # Our own blueprint (registered first) overrides admin/base.html and
-    # admin/layout.html with the Tabler versions, while every other template
-    # (index, model/list, model/edit, …) still comes from Flask-Admin's
-    # bootstrap4 bundle.
-    folder: str = "bootstrap4"
+    # ``folder`` tells Flask-Admin which sub-directory of ``templates/`` to
+    # use for the admin blueprint.  We ship a complete set of templates under
+    # ``templates/tabler/admin/`` so Flask-Admin resolves them directly.
+    folder: str = "tabler"
     base_template: str = "admin/base.html"
-    tabler_icons: bool = True
 
     # Tabler UI theme settings — map directly to data-bs-* HTML attributes.
     # Defaults match Tabler's own defaults so existing deployments are unaffected.
@@ -51,7 +49,6 @@ class TablerTheme(Theme):
     theme_base: str = "gray"       # "gray" | "neutral" | "slate" | "zinc" | "stone"
     theme_font: str = "sans-serif" # "sans-serif" | "serif" | "monospace" | "comic"
     theme_radius: str = "1"        # "0" | "0.5" | "1" | "1.5" | "2"
-    inter_font: bool = False       # load Inter font from rsms.me CDN
 
     def init_app(self, app: Flask) -> None:
         """Register Tabler theme templates and static files with the Flask app.
