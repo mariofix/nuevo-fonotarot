@@ -845,52 +845,7 @@
           <div class="divider-rose mx-auto"></div>
           <p class="sec-sub">Elige a quien más resuene contigo</p>
         </div>
-        {% if agents_error == 'timeout' %}
-        <div class="alert alert-warning" role="alert">
-          <div class="d-flex align-items-center gap-2">
-            <i class="ti ti-clock-exclamation"></i>
-            <div><strong>Listado de agentes no disponible. Cod. Timeout</strong><br>
-            <span class="text-muted" style="font-size:.88rem;">El servicio de estado en tiempo real no responde. Intenta recargar la página en unos momentos.</span></div>
-          </div>
-        </div>
-        {% elif agents_error %}
-        <div class="alert alert-danger" role="alert">
-          <div class="d-flex align-items-center gap-2">
-            <i class="ti ti-alert-triangle"></i>
-            <div><strong>Listado de agentes no disponible. Cod. 503</strong><br>
-            <span class="text-muted" style="font-size:.88rem;">No se pudo obtener el estado de las especialistas. Por favor intenta más tarde.</span></div>
-          </div>
-        </div>
-        {% elif not agent_profiles %}
-        <div class="text-center py-5">
-          <i class="ti ti-moon-stars" style="font-size:3rem; color:var(--muted); display:block; margin-bottom:1rem;"></i>
-          <p class="sec-sub">Sin tarotistas disponibles en este momento.<br>Vuelve pronto.</p>
-        </div>
-        {% else %}
-        <div class="row g-4">
-          {% for agent in agent_profiles %}
-          <div class="col-sm-6 col-lg-4 reveal" style="transition-delay:{{ loop.index0 * 0.08 }}s">
-            <div class="agent-card" data-agent-option="{{ agent.option }}">
-              <div class="agent-avatar">{{ agent.name[0] }}</div>
-              <div class="agent-name">{{ agent.name }}</div>
-              <div class="agent-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-              <div class="mb-3 agent-status-wrap">
-                {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
-                {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
-                {% else %}<span class="s-offline">● No disponible</span>{% endif %}
-              </div>
-              <span class="agent-action-wrap">
-              {% if agent.status == 'available' %}
-              <a href="tel:+56222301515" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>
-              {% elif agent.status == 'busy' %}
-              <button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>
-              {% endif %}
-              </span>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
+        <div id="agent-cards-grid" class="row g-4"></div>
         <div class="text-center mt-5">
           <a href="tel:+56222301515" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora – +56 2 2230 1515
@@ -1281,24 +1236,75 @@
         }
       }
 
+      /* Build an agent card for the #tarotistas section */
+      function agentCardHTML(a) {
+        var col = document.createElement('div');
+        col.className = 'col-sm-6 col-lg-4 reveal';
+
+        var card = document.createElement('div');
+        card.className = 'agent-card';
+        card.dataset.agentOption = a.option;
+
+        var avatar = document.createElement('div');
+        avatar.className = 'agent-avatar';
+        avatar.textContent = a.name[0];
+
+        var nameEl = document.createElement('div');
+        nameEl.className = 'agent-name';
+        nameEl.textContent = a.name;
+
+        var spec = document.createElement('div');
+        spec.className = 'agent-spec';
+        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
+
+        var statusWrap = document.createElement('div');
+        statusWrap.className = 'mb-3 agent-status-wrap';
+        statusWrap.innerHTML = statusBadge(a.status);
+
+        var actionWrap = document.createElement('span');
+        actionWrap.className = 'agent-action-wrap';
+        actionWrap.innerHTML = cardAction(a.status);
+
+        card.appendChild(avatar);
+        card.appendChild(nameEl);
+        card.appendChild(spec);
+        card.appendChild(statusWrap);
+        card.appendChild(actionWrap);
+        col.appendChild(card);
+        return col;
+      }
+
+      /* Normalise raw Firenze ejecutivos records to the shape templates expect */
+      function normalizeAgents(data) {
+        var statusOrder = { 'available': 0, 'busy': 1, 'offline': 2 };
+        var agents = (data || []).map(function (raw) {
+          var opcion = parseInt(raw.opcion || 0, 10);
+          var ingreso = !!raw.ingreso;
+          var disponible = !!raw.disponible;
+          var status = !ingreso ? 'offline' : disponible ? 'available' : 'busy';
+          return {
+            name: raw.nombre || '\u2605',
+            option: ('0' + opcion).slice(-2),
+            number: '7' + ('00' + opcion).slice(-3),
+            status: status,
+            description: raw.descripcion || ''
+          };
+        });
+        return agents.sort(function (a, b) {
+          return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        });
+      }
+
       function applyAgents(agents) {
         var available = agents.filter(function (a) { return a.status === 'available'; });
         var busy      = agents.filter(function (a) { return a.status === 'busy'; });
 
-        /* Full rebuild — handles new agents appearing without a page refresh */
-        rebuildList('hero-agent-rows', agents.slice(0, 4), awRowHTML, null);
-        rebuildList('oc-all',    agents,    ocRowHTML, null);
-        rebuildList('oc-online', available, ocRowHTML, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
-        rebuildList('oc-busy',   busy,      ocRowHTML, 'No hay especialistas en consulta ahora.');
-
-        /* Agent cards come from DB — only overlay the live status */
-        agents.forEach(function (a) {
-          var opt = esc(a.option);
-          document.querySelectorAll('.agent-card[data-agent-option="' + opt + '"] .agent-status-wrap')
-            .forEach(function (el) { el.innerHTML = statusBadge(a.status); });
-          document.querySelectorAll('.agent-card[data-agent-option="' + opt + '"] .agent-action-wrap')
-            .forEach(function (el) { el.innerHTML = cardAction(a.status); });
-        });
+        /* Full rebuild of all agent lists */
+        rebuildList('hero-agent-rows',  agents.slice(0, 4), awRowHTML,      null);
+        rebuildList('oc-all',           agents,             ocRowHTML,      null);
+        rebuildList('oc-online',        available,          ocRowHTML,      'Todas las especialistas están ocupadas. Inténtalo pronto.');
+        rebuildList('oc-busy',          busy,               ocRowHTML,      'No hay especialistas en consulta ahora.');
+        rebuildList('agent-cards-grid', agents,             agentCardHTML,  'Sin tarotistas disponibles en este momento.');
       }
 
       function agentErrorHTML(code) {
@@ -1313,22 +1319,32 @@
       }
 
       function showAgentError(code) {
-        var heroRows = document.getElementById('hero-agent-rows');
-        if (heroRows) {
-          while (heroRows.firstChild) heroRows.removeChild(heroRows.firstChild);
-          heroRows.appendChild(agentErrorHTML(code));
-        }
+        ['hero-agent-rows', 'agent-cards-grid'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          while (el.firstChild) el.removeChild(el.firstChild);
+          el.appendChild(agentErrorHTML(code));
+        });
       }
 
+      /* Fetch ejecutivos directly from Firenze using the token injected at page load */
+      var FIRENZE_AGENTS_URL   = {{ firenze_ejecutivos_url | tojson }};
+      var FIRENZE_AGENTS_TOKEN = {{ firenze_token | tojson }};
+
       function poll() {
-        fetch('/api/agents')
+        var headers = { 'Accept': 'application/json' };
+        if (FIRENZE_AGENTS_TOKEN) {
+          headers['Authorization'] = 'Bearer ' + FIRENZE_AGENTS_TOKEN;
+        }
+        fetch(FIRENZE_AGENTS_URL, { headers: headers })
           .then(function (r) {
-            if (r.ok) return r.json().then(function (agents) { applyAgents(agents); });
-            return r.json().then(function (body) { showAgentError(body && body.error ? body.error : '503'); });
+            if (r.ok) return r.json().then(function (data) { applyAgents(normalizeAgents(data)); });
+            showAgentError('503');
           })
           .catch(function () { showAgentError('timeout'); });
       }
 
+      poll();                      /* immediate first fetch */
       setInterval(poll, 5000);
     })();
     </script>

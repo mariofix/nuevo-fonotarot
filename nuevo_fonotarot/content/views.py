@@ -22,11 +22,12 @@ from ..extensions import db, limiter, mail
 from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
-from ..utils import get_agents
+from ..utils import get_agents  # still used by the /api/agents debug endpoint
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
 _PROMO_INITIAL_STOCK = 36
+_PROMO_DURATION_SECONDS = 300  # 5 minutes of free trial credit
 
 logger = get_logger(__name__)
 
@@ -194,13 +195,32 @@ def _send_user_promo_instructions(email: str, remaining: int) -> None:
 
 
 def _homepage_ctx() -> dict:
-    """Return the shared context dict used by all homepage template variants."""
+    """Return the shared context dict used by all homepage template variants.
+
+    The Firenze bearer token is obtained here so the browser can call the
+    ejecutivos endpoint directly via JavaScript, avoiding per-poll server-side
+    log entries.
+    """
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-    agents, agents_error = get_agents()
+
+    # Fetch a short-lived bearer token for the client to use directly.
+    firenze_token = ""
+    try:
+        firenze_token = _firenze_token()
+    except RequestException as exc:
+        logger.warning("Firenze token unavailable for homepage context: %s", exc)
+
+    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
+    firenze_ejecutivos_url = f"{api_url}/audiotex/ejecutivos" if api_url else ""
+
     return {
-        "agents": agents,
-        "agent_profiles": agents,
-        "agents_error": agents_error,
+        "firenze_token": firenze_token,
+        "firenze_ejecutivos_url": firenze_ejecutivos_url,
+        # agents/agent_profiles are no longer pre-fetched server-side; JS
+        # populates them on the first poll immediately after page load.
+        "agents": [],
+        "agent_profiles": [],
+        "agents_error": None,
         "testimonials": TESTIMONIALS,
         "minute_packs": minute_packs,
         "plans": minute_packs,  # alias used by older experiment templates
@@ -354,7 +374,7 @@ def api_promo_cobrar():
         create_status, _ = _firenze_post(
             "/audiotex/fonotarot-cl/client/",
             token,
-            {"ani": ani, "correo": f"{ani}@fonotarot.com", "segundos": 300},
+            {"telefonos": [ani], "correo": f"{ani}@fonotarot.com", "segundos": _PROMO_DURATION_SECONDS},
         )
     except RequestException as exc:
         logger.error("Firenze create-client error: %s", exc, exc_info=True)
