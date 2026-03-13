@@ -1,0 +1,107 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="row row-cards">
+
+  {# Month / year selector form #}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="ti ti-calendar-stats me-2"></i>Seleccionar período
+        </h3>
+      </div>
+      <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+          <div class="col-auto">
+            <label class="form-label">Mes</label>
+            <select name="month" class="form-select">
+              {% for m_num, m_name in months_es.items() %}
+              <option value="{{ m_num }}"{% if m_num == month %} selected{% endif %}>{{ m_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-auto">
+            <label class="form-label">Año</label>
+            <input type="number" name="year" value="{{ year }}"
+                   min="{{ min_year }}" max="{{ today.year + 1 }}"
+                   class="form-control" style="width:100px">
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+              <i class="ti ti-search me-1"></i>Ver reporte
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {# Report results #}
+  <div class="col-12">
+    {% if error %}
+    <div class="alert alert-danger">
+      <i class="ti ti-alert-circle me-2"></i>
+      Base de datos legacy no disponible: <code>{{ error }}</code>
+    </div>
+
+    {% elif data %}
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="ti ti-chart-bar me-2"></i>
+          {{ months_es[month] }} {{ year }} — Fonotarot / Alotarot / Latam
+        </h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th class="text-end">Fonotarot</th>
+              <th class="text-end">Alotarot</th>
+              <th class="text-end">Latam</th>
+              <th class="text-end fw-bold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data.days %}
+            <tr{% if row.total == 0 %} class="text-muted"{% endif %}>
+              <td class="small">{{ row.date }}</td>
+              <td class="text-end">
+                {% if row.entel %}<strong>{{ row.entel }}</strong>{% else %}<span class="text-muted">0</span>{% endif %}
+              </td>
+              <td class="text-end">
+                {% if row.alotarot %}<strong>{{ row.alotarot }}</strong>{% else %}<span class="text-muted">0</span>{% endif %}
+              </td>
+              <td class="text-end">
+                {% if row.latam %}<strong>{{ row.latam }}</strong>{% else %}<span class="text-muted">0</span>{% endif %}
+              </td>
+              <td class="text-end fw-bold">
+                {% if row.total %}{{ row.total }}{% else %}<span class="text-muted">0</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="table-active fw-bold">
+              <td>Totales</td>
+              <td class="text-end">{{ data.totals.entel }}</td>
+              <td class="text-end">{{ data.totals.alotarot }}</td>
+              <td class="text-end">{{ data.totals.latam }}</td>
+              <td class="text-end">{{ data.totals.total }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="alert alert-info">
+      <i class="ti ti-info-circle me-2"></i>Sin datos para este período.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

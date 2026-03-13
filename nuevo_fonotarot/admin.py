@@ -1,7 +1,9 @@
 """Flask-Admin configuration using Flask-Security for authentication."""
 
+from datetime import date
+
 from flask import redirect, request, url_for
-from flask_admin import AdminIndexView, expose
+from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
@@ -11,15 +13,86 @@ from flask_admin_tabler import tabler_bool_formatter
 from .extensions import db
 
 
+# Spanish month names used in legacy CDR report views
+_MONTHS_ES = {
+    1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
+    5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
+    9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre",
+}
+
+
 class SecureAdminIndexView(AdminIndexView):
     """Admin index view that requires an authenticated user with the 'admin' role."""
 
     @expose("/")
     def index(self):
-        # if not current_user.is_authenticated or not current_user.has_role("admin"):
-        #    return redirect(url_for("security.login"))
-        return super().index()
-    
+        today = date.today()
+        latest_data = None
+        latest_error = None
+        try:
+            from .legacy.views import _fetch_monthly_3carrier
+            latest_data = _fetch_monthly_3carrier(today.year, today.month)
+        except Exception as exc:
+            latest_error = str(exc)
+
+        return self.render(
+            "admin/index.html",
+            latest_year=today.year,
+            latest_month=today.month,
+            months_es=_MONTHS_ES,
+            latest_data=latest_data,
+            latest_error=latest_error,
+        )
+
+
+# Earliest year available in the legacy CDR database
+_REPORT_MIN_YEAR = 2020
+
+
+class MonthlyCarrierReportView(BaseView):
+    """Flask-Admin view for interactive monthly 3-carrier CDR reports.
+
+    Displays per-day minute totals for Fonotarot, Alotarot and Latam carriers
+    for any selected month/year, backed by the legacy portal database.
+    """
+
+    def is_accessible(self):
+        # return current_user.is_authenticated and current_user.has_role("admin")
+        return True
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        today = date.today()
+        try:
+            year = int(request.args.get("year", today.year))
+            month = int(request.args.get("month", today.month))
+        except (ValueError, TypeError):
+            year, month = today.year, today.month
+
+        month = max(1, min(12, month))
+        year = max(_REPORT_MIN_YEAR, min(today.year + 1, year))
+
+        data = None
+        error = None
+        try:
+            from .legacy.views import _fetch_monthly_3carrier
+            data = _fetch_monthly_3carrier(year, month)
+        except Exception as exc:
+            error = str(exc)
+
+        return self.render(
+            "admin/legacy/monthly_report.html",
+            year=year,
+            month=month,
+            months_es=_MONTHS_ES,
+            min_year=_REPORT_MIN_YEAR,
+            data=data,
+            error=error,
+            today=today,
+        )
 
 
 class SecureModelView(ModelView):
@@ -193,5 +266,14 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"), menu_icon_type="tabler", menu_icon_value="settings")
+    )
+    admin_ext.add_view(
+        MonthlyCarrierReportView(
+            name=_l("Reporte Mensual"),
+            endpoint="monthly_report",
+            category=_l("Reportes"),
+            menu_icon_type="tabler",
+            menu_icon_value="chart-bar",
+        )
     )
     admin_ext.add_link(MenuLink(name="Home Page", url="/",  icon_type="tabler", icon_value="home"))
