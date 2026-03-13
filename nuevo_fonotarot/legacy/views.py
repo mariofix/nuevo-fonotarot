@@ -15,6 +15,9 @@ from flask import render_template
 from . import legacy_bp
 from .db import audiotex_conn, firenze_conn, portal_conn
 from ..decorators import login_required_modal
+from ..log import get_logger
+
+logger = get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -219,6 +222,7 @@ def _fetch_prepago_ssi(year: int, month: int, ssi_numbers: tuple) -> dict:
 
 def _db_error(exc: Exception) -> str:
     """Render a plain error page when the legacy DB is unreachable."""
+    logger.error("Legacy DB unavailable: %s", exc, exc_info=True)
     return (
         f"<html><body style='background:#000418;color:#f74129;font-family:monospace;"
         f"padding:2rem'><h2>Legacy DB unavailable</h2><pre>{exc}</pre></body></html>"
@@ -234,6 +238,7 @@ def _db_error(exc: Exception) -> str:
 @login_required_modal
 def ejecutivosfonotarot():
     """Operator panel for Fonotarot — auto-refreshes every 10 s."""
+    logger.debug("legacy: ejecutivosfonotarot requested")
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
@@ -264,6 +269,7 @@ def ejecutivosfonotarot():
 @login_required_modal
 def ejecutivosalotarottest():
     """Operator panel for Alotarot (test) — alternates with testx on refresh."""
+    logger.debug("legacy: ejecutivosalotarottest requested")
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
@@ -294,6 +300,7 @@ def ejecutivosalotarottest():
 @login_required_modal
 def ejecutivosalotarottestx():
     """Operator panel for Alotarot (testx) — alternates with test on refresh."""
+    logger.debug("legacy: ejecutivosalotarottestx requested")
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
@@ -329,6 +336,7 @@ def ejecutivosalotarottestx():
 @login_required_modal
 def indexfirenzex():
     """Live calls in progress — auto-refreshes every 5 s."""
+    logger.debug("legacy: indexfirenzex requested")
     try:
         with firenze_conn() as conn:
             with conn.cursor() as cur:
@@ -361,6 +369,7 @@ def indexfirenzex():
 @login_required_modal
 def ultimas():
     """Last 100 CDR records — calldate, dst, duration — auto-refreshes 15 s."""
+    logger.debug("legacy: ultimas requested")
     try:
         with portal_conn() as conn:
             with conn.cursor() as cur:
@@ -388,6 +397,7 @@ def ultimas():
 @login_required_modal
 def laatste():
     """Last 100 CDR records with extra columns — auto-refreshes 15 s."""
+    logger.debug("legacy: laatste requested")
     try:
         with portal_conn() as conn:
             with conn.cursor() as cur:
@@ -421,6 +431,7 @@ def laatste():
 @login_required_modal
 def ene26():
     """January 2026 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: ene26 requested")
     try:
         data = _fetch_monthly_3carrier(2026, 1)
     except Exception as exc:
@@ -432,6 +443,7 @@ def ene26():
 @login_required_modal
 def feb26():
     """February 2026 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: feb26 requested")
     try:
         data = _fetch_monthly_3carrier(2026, 2)
     except Exception as exc:
@@ -443,6 +455,7 @@ def feb26():
 @login_required_modal
 def maart26():
     """March 2026 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: maart26 requested")
     try:
         data = _fetch_monthly_3carrier(2026, 3)
     except Exception as exc:
@@ -454,6 +467,7 @@ def maart26():
 @login_required_modal
 def oct25():
     """October 2025 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: oct25 requested")
     try:
         data = _fetch_monthly_3carrier(2025, 10)
     except Exception as exc:
@@ -465,6 +479,7 @@ def oct25():
 @login_required_modal
 def nov25():
     """November 2025 — fonotarot-clx variant, alotarot, latam."""
+    logger.debug("legacy: nov25 requested")
     try:
         data = _fetch_monthly_3carrier(2025, 11, entel_field="fonotarot-clx")
     except Exception as exc:
@@ -476,6 +491,7 @@ def nov25():
 @login_required_modal
 def dic25():
     """December 2025 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: dic25 requested")
     try:
         data = _fetch_monthly_3carrier(2025, 12)
     except Exception as exc:
@@ -487,6 +503,7 @@ def dic25():
 @login_required_modal
 def sept25():
     """September 2025 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: sept25 requested")
     try:
         data = _fetch_monthly_3carrier(2025, 9)
     except Exception as exc:
@@ -498,6 +515,7 @@ def sept25():
 @login_required_modal
 def sept24():
     """September 2024 — fonotarot-cl, alotarot, latam."""
+    logger.debug("legacy: sept24 requested")
     try:
         data = _fetch_monthly_3carrier(2024, 9)
     except Exception as exc:
@@ -509,6 +527,7 @@ def sept24():
 @login_required_modal
 def alotarotoct():
     """November 2025 alternate view — fonotarot-clx, alotarot, latam."""
+    logger.debug("legacy: alotarotoct requested")
     try:
         data = _fetch_monthly_3carrier(2025, 11, entel_field="fonotarot-clx")
     except Exception as exc:
@@ -525,6 +544,7 @@ def alotarotoct():
 @login_required_modal
 def alex14():
     """Alex — March 2026, dst 56991023392 / 56352411071."""
+    logger.debug("legacy: alex14 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56991023392, 56352411071)
@@ -538,6 +558,7 @@ def alex14():
 @login_required_modal
 def angela7():
     """Angela — March 2026, dst 56232500587 / 56984597737."""
+    logger.debug("legacy: angela7 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56232500587, 56984597737)
@@ -551,6 +572,7 @@ def angela7():
 @login_required_modal
 def karla9():
     """Karla — March 2026, dst 56947739514 / 56225064742."""
+    logger.debug("legacy: karla9 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56947739514, 56225064742)
@@ -564,6 +586,7 @@ def karla9():
 @login_required_modal
 def karla99():
     """Karla — October 2025, dst 56947739514 / 56225064742."""
+    logger.debug("legacy: karla99 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2025, 10, (56947739514, 56225064742)
@@ -577,6 +600,7 @@ def karla99():
 @login_required_modal
 def maite5():
     """Maite — March 2026, dst 56997130343."""
+    logger.debug("legacy: maite5 requested")
     try:
         data = _fetch_agent_monthly_cdr(2026, 3, (56997130343,))
     except Exception as exc:
@@ -588,6 +612,7 @@ def maite5():
 @login_required_modal
 def marilina():
     """Marilina — March 2026, dst 56332541220 / 56990238293 / 56999679182."""
+    logger.debug("legacy: marilina requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56332541220, 56990238293, 56999679182)
@@ -601,6 +626,7 @@ def marilina():
 @login_required_modal
 def paola6():
     """Paola — March 2026, dst 56652893541 / 56994871981 / 56952379063."""
+    logger.debug("legacy: paola6 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56652893541, 56994871981, 56952379063)
@@ -618,6 +644,7 @@ def paulina01():
     Uses ``duration`` column instead of ``billsec``; no min_duration filter.
     Original PHP also used duration, not billsec.
     """
+    logger.debug("legacy: paulina01 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2024, 2, (56976341921, 56232326345),
@@ -633,6 +660,7 @@ def paulina01():
 @login_required_modal
 def paulina1():
     """Paulina — March 2026, dst 56976341921 / 56232326345."""
+    logger.debug("legacy: paulina1 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56976341921, 56232326345)
@@ -651,6 +679,7 @@ def pedro12():
     (which MySQL would evaluate as the integer -2023).  That value is
     omitted here; only the three valid phone numbers are kept.
     """
+    logger.debug("legacy: pedro12 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56233134177, 56959516081, 56999047069)
@@ -664,6 +693,7 @@ def pedro12():
 @login_required_modal
 def violeta15():
     """Violeta — March 2026, dst 56967654876 / 56352410599."""
+    logger.debug("legacy: violeta15 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56967654876, 56352410599)
@@ -677,6 +707,7 @@ def violeta15():
 @login_required_modal
 def altair8():
     """Altair — March 2026, dst 56994662528 / 56227239476."""
+    logger.debug("legacy: altair8 requested")
     try:
         data = _fetch_agent_monthly_cdr(
             2026, 3, (56994662528, 56227239476)
@@ -695,6 +726,7 @@ def altair8():
 @login_required_modal
 def alotarot():
     """Alotarot prepago — October 2025, ddi 56222301555 / 1555."""
+    logger.debug("legacy: alotarot requested")
     try:
         data = _fetch_prepago_ddi(2025, 10, (56222301555, 1555))
     except Exception as exc:
@@ -711,6 +743,7 @@ def alotarot():
 @login_required_modal
 def pedromaritza():
     """Pedro/Maritza prepago — February 2024, ssi 7012 / 6001 / 7013 / 8012."""
+    logger.debug("legacy: pedromaritza requested")
     try:
         data = _fetch_prepago_ssi(2024, 2, (7012, 6001, 7013, 8012))
     except Exception as exc:

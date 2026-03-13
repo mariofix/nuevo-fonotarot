@@ -1,6 +1,5 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
-import logging
 from typing import Any
 
 import requests
@@ -20,6 +19,7 @@ from flask import (
 )
 
 from ..extensions import db, limiter, mail
+from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
 from ..utils import get_agents
@@ -28,16 +28,7 @@ from ..utils import get_agents
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
 _PROMO_INITIAL_STOCK = 36
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)  # match the logger level
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+logger = get_logger(__name__)
 
 
 def _firenze_token() -> str:

@@ -3,6 +3,39 @@
 Usage:
     Copy ``file.env`` to ``.env`` and edit the values, then run the app.
     The ``.env`` file is loaded automatically by the app factory.
+
+Logging
+-------
+Logging is configured Django-style via a ``LOGGING`` dictionary on each
+config class.  The dict is passed verbatim to :func:`logging.config.dictConfig`
+during application startup.
+
+To control verbosity, set the ``LOG_LEVEL`` environment variable
+(e.g. ``LOG_LEVEL=INFO``).  Each config class picks a sensible default:
+``DEBUG`` for development, ``INFO`` for production.
+
+To use a logger in application code::
+
+    from nuevo_fonotarot.log import get_logger
+    logger = get_logger(__name__)          # module-scoped (recommended)
+    logger = get_logger()                  # root 'nuevo_fonotarot' logger
+    logger = get_logger("nuevo_fonotarot.payments")  # any named logger
+
+The ``nuevo_fonotarot`` logger hierarchy is the single entry point
+configured in ``LOGGING["loggers"]``.  All child loggers (``__name__``
+in submodules) inherit its level and handlers automatically.
+
+Note on FLASK_-prefixed environment variables
+---------------------------------------------
+``python-dotenv`` loads *all* keys from ``.env`` into ``os.environ``,
+including ``FLASK_DEBUG`` and ``FLASK_ENV``.  However, only ``FLASK_ENV``
+is explicitly read here (to select the config class).  Other ``FLASK_*``
+variables are **not** automatically applied to ``app.config`` because
+this project uses ``app.config.from_object()`` rather than Flask's
+``app.config.from_prefixed_env("FLASK")``.  This is intentional — the
+Config class pattern gives explicit, type-annotated control over every
+setting.  If you need ``FLASK_DEBUG`` to toggle debug mode, use the
+``DEBUG`` config attribute or set ``LOG_LEVEL`` / ``FLASK_ENV`` instead.
 """
 
 import os
@@ -10,6 +43,51 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def _make_logging_config(log_level: str = "DEBUG") -> dict:
+    """Build a Django-style ``dictConfig`` logging configuration.
+
+    Args:
+        log_level: Level string applied to the ``nuevo_fonotarot`` root
+                   logger.  The stdlib root logger stays at ``WARNING``
+                   to suppress noise from third-party libraries.
+
+    Returns:
+        A dict suitable for :func:`logging.config.dictConfig`.
+    """
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
+            },
+            "simple": {
+                "format": "[%(levelname)s] %(name)s: %(message)s",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
+        },
+        "loggers": {
+            # Root application logger — all nuevo_fonotarot.* loggers inherit
+            # from this unless they are explicitly configured below.
+            "nuevo_fonotarot": {
+                "handlers": ["console"],
+                "level": log_level,
+                "propagate": False,
+            },
+        },
+        # Keep third-party / stdlib root at WARNING to avoid noise.
+        "root": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+    }
 
 
 class Config:
@@ -91,12 +169,28 @@ class Config:
         "flask_debugtoolbar_extrapanels.SignalsPanel",
     )
 
+    # ---------------------------------------------------------------------------
+    # Logging  (Django-style dictConfig)
+    # ---------------------------------------------------------------------------
+    # Override LOG_LEVEL via the LOG_LEVEL environment variable.
+    # The LOGGING dict is passed to logging.config.dictConfig() at startup.
+    # Sub-classes set a different default so dev logs at DEBUG and prod at INFO.
+    LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "DEBUG")
+    LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
+
+
 class DevelopmentConfig(Config):
     DEBUG: bool = True
+    # Development: default to DEBUG; override with LOG_LEVEL env var.
+    LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "DEBUG")
+    LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
 
 
 class ProductionConfig(Config):
     DEBUG: bool = False
+    # Production: default to INFO; override with LOG_LEVEL env var.
+    LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "INFO")
+    LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "INFO"))
 
 
 class TestingConfig(Config):
@@ -104,6 +198,9 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///:memory:"
     WTF_CSRF_ENABLED: bool = False
     SECURITY_WTF_CSRF_ENABLED: bool = False
+    # Testing: suppress output unless explicitly requested.
+    LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "WARNING")
+    LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "WARNING"))
 
 
 config: dict = {
