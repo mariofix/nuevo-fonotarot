@@ -1,11 +1,10 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
-import json
 import logging
-import urllib.error
-import urllib.parse
-import urllib.request
 from typing import Any
+
+import requests
+from requests.exceptions import RequestException
 
 from flask import (
     Blueprint,
@@ -48,66 +47,73 @@ def _firenze_token() -> str:
     password = current_app.config.get("FIRENZE_API_PASSWORD", "")
     scopes = current_app.config.get("FIRENZE_API_SCOPES", "")
 
-    body = urllib.parse.urlencode(
-        {"username": user, "password": password, "grant_type": "password", "scope": scopes}
-    ).encode()
-    req = urllib.request.Request(
-        f"{api_url}/token",
-        data=body,
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        method="POST",
+    url = f"{api_url}/token"
+    logger.debug(
+        "Firenze token → POST %s  data={username=%r, password=***, grant_type='password', scope=%r}",
+        url,
+        user,
+        scopes,
     )
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        return json.loads(resp.read())["access_token"]
+    resp = requests.post(
+        url,
+        data={"username": user, "password": password, "grant_type": "password", "scope": scopes},
+        timeout=10,
+    )
+    logger.debug("Firenze token ← %s", resp.status_code)
+    resp.raise_for_status()
+    return resp.json()["access_token"]
 
 
 def _firenze_get(path: str, token: str) -> tuple[int, Any]:
     """GET request to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    req = urllib.request.Request(
-        f"{api_url}{path}",
-        headers={"Authorization": f"Bearer {token}"},
-        method="GET",
-    )
+    url = f"{api_url}{path}"
+    logger.debug("Firenze GET → %s", url)
+    resp = requests.get(url, headers={"Authorization": f"Bearer {token}"}, timeout=10)
+    logger.debug("Firenze GET ← %s  body=%s", resp.status_code, resp.text[:500])
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return resp.status, json.loads(resp.read())
-    except urllib.error.HTTPError as exc:
-        return exc.code, {}
+        body = resp.json()
+    except ValueError:
+        body = {}
+    return resp.status_code, body
 
 
 def _firenze_post(path: str, token: str, payload: dict) -> tuple[int, Any]:
     """POST JSON to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    body = json.dumps(payload).encode()
-    req = urllib.request.Request(
-        f"{api_url}{path}",
-        data=body,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        method="POST",
+    url = f"{api_url}{path}"
+    logger.debug("Firenze POST → %s  json=%s", url, payload)
+    resp = requests.post(
+        url,
+        json=payload,
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=10,
     )
+    logger.debug("Firenze POST ← %s  body=%s", resp.status_code, resp.text[:500])
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return resp.status, json.loads(resp.read())
-    except urllib.error.HTTPError as exc:
-        return exc.code, {}
+        body = resp.json()
+    except ValueError:
+        body = {}
+    return resp.status_code, body
 
 
 def _firenze_patch(path: str, token: str, payload: dict) -> tuple[int, Any]:
     """PATCH JSON to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    body = json.dumps(payload).encode()
-    req = urllib.request.Request(
-        f"{api_url}{path}",
-        data=body,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-        method="PATCH",
+    url = f"{api_url}{path}"
+    logger.debug("Firenze PATCH → %s  json=%s", url, payload)
+    resp = requests.patch(
+        url,
+        json=payload,
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=10,
     )
+    logger.debug("Firenze PATCH ← %s  body=%s", resp.status_code, resp.text[:500])
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return resp.status, json.loads(resp.read())
-    except urllib.error.HTTPError as exc:
-        return exc.code, {}
+        body = resp.json()
+    except ValueError:
+        body = {}
+    return resp.status_code, body
 
 
 def _promo_claim_remaining() -> tuple[bool, int]:
@@ -330,14 +336,14 @@ def api_promo_cobrar():
 
     try:
         token = _firenze_token()
-    except Exception:
-        logger.exception("Firenze token error")
+    except RequestException as exc:
+        logger.error("Firenze token error: %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error de conexión con el servicio. Inténtalo más tarde."}), 503
 
     try:
         status, _ = _firenze_get(f"/audiotex/fonotarot-cl/phone/{ani}", token)
-    except Exception:
-        logger.exception("Firenze check-phone error")
+    except RequestException as exc:
+        logger.error("Firenze check-phone error: %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error al verificar el número. Inténtalo más tarde."}), 503
 
     if status < 400:
@@ -359,8 +365,8 @@ def api_promo_cobrar():
             token,
             {"ani": ani, "correo": f"{ani}@fonotarot.com", "segundos": 300},
         )
-    except Exception:
-        logger.exception("Firenze create-client error")
+    except RequestException as exc:
+        logger.error("Firenze create-client error: %s", exc, exc_info=True)
         db.session.rollback()
         return jsonify({"error": "api_error", "message": "Error al activar la promoción. Inténtalo más tarde."}), 503
 
@@ -395,14 +401,14 @@ def api_promo_actualizar_email():
 
     try:
         token = _firenze_token()
-    except Exception:
-        logger.exception("Firenze token error (email update)")
+    except RequestException as exc:
+        logger.error("Firenze token error (email update): %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error de conexión. Inténtalo más tarde."}), 503
 
     try:
         status, _ = _firenze_patch(f"/audiotex/fonotarot-cl/client/{ani}", token, {"correo": email})
-    except Exception:
-        logger.exception("Firenze update-email error")
+    except RequestException as exc:
+        logger.error("Firenze update-email error: %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error al actualizar el email."}), 503
 
     if status >= 400:
