@@ -14,12 +14,12 @@ from .extensions import db
 class SecureAdminIndexView(AdminIndexView):
     """Admin index view that requires an authenticated user with the 'admin' role."""
 
-    # @expose("/")
-    # def index(self):
-    #     if not current_user.is_authenticated or not current_user.has_role("admin"):
-    #         return redirect(url_for("security.login"))
-    #     return super().index()
-    pass
+    @expose("/")
+    def index(self):
+        # if not current_user.is_authenticated or not current_user.has_role("admin"):
+        #    return redirect(url_for("security.login"))
+        return super().index()
+    
 
 
 class SecureModelView(ModelView):
@@ -27,6 +27,7 @@ class SecureModelView(ModelView):
 
     column_type_formatters = dict(ModelView.column_type_formatters)
     column_type_formatters[bool] = tabler_bool_formatter
+    can_view_details = True
 
     def is_accessible(self):
         # return current_user.is_authenticated and current_user.has_role("admin")
@@ -167,30 +168,30 @@ def init_admin(app, admin_ext):
         SiteSettings, StaticPage, SubscriptionPlan, User,
     )
 
-    admin_ext.add_view(UserAdminView(User, db.session, name=_l("Users"), category=_l("Auth")))
-    admin_ext.add_view(RoleAdminView(Role, db.session, name=_l("Roles"), category=_l("Auth")))
+    admin_ext.add_view(UserAdminView(User, db.session, name=_l("Users"), category=_l("Auth"), menu_icon_type="tabler", menu_icon_value="users"))
+    admin_ext.add_view(RoleAdminView(Role, db.session, name=_l("Roles"), category=_l("Auth"), menu_icon_type="tabler", menu_icon_value="shield"))
     admin_ext.add_view(
-        StaticPageAdminView(StaticPage, db.session, name=_l("Pages"), category=_l("Content"))
+        StaticPageAdminView(StaticPage, db.session, name=_l("Pages"), category=_l("Content"), menu_icon_type="tabler", menu_icon_value="file-text")
     )
     admin_ext.add_view(
-        BlogPostAdminView(BlogPost, db.session, name=_l("Blog Posts"), category=_l("Content"))
+        BlogPostAdminView(BlogPost, db.session, name=_l("Blog Posts"), category=_l("Content"), menu_icon_type="tabler", menu_icon_value="file-text")
     )
     admin_ext.add_view(
-        MinutePackAdminView(MinutePack, db.session, name=_l("Packs de Minutos"), category=_l("Tienda"))
+        MinutePackAdminView(MinutePack, db.session, name=_l("Packs de Minutos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="clock")
     )
     admin_ext.add_view(
-        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name=_l("Suscripciones"), category=_l("Tienda"))
+        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name=_l("Suscripciones"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="credit-card")
     )
     admin_ext.add_view(
-        ProductAdminView(Product, db.session, name=_l("Productos"), category=_l("Tienda"))
+        ProductAdminView(Product, db.session, name=_l("Productos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="package")
     )
     admin_ext.add_view(
-        OrderAdminView(Order, db.session, name=_l("Órdenes"), category=_l("Tienda"))
+        OrderAdminView(Order, db.session, name=_l("Órdenes"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="shopping-cart")
     )
     admin_ext.add_view(
-        PaymentAdminView(Payment, db.session, name=_l("Pagos"), category=_l("Tienda"))
+        PaymentAdminView(Payment, db.session, name=_l("Pagos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="credit-card")
     )
     admin_ext.add_view(
-        SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"))
+        SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"), menu_icon_type="tabler", menu_icon_value="settings")
     )
-    admin_ext.add_link(MenuLink(name="Home Page", url="/"))
+    admin_ext.add_link(MenuLink(name="Home Page", url="/",  icon_type="tabler", icon_value="home"))
