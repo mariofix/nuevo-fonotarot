@@ -30,6 +30,15 @@ _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
 _PROMO_INITIAL_STOCK = 36
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)  # match the logger level
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
 
 
 def _firenze_token() -> str:
