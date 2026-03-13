@@ -9,24 +9,15 @@ No site template is applied — each view is a standalone page.
 """
 
 import calendar
-import logging
 
 from flask import render_template
 
 from . import legacy_bp
 from .db import audiotex_conn, firenze_conn, portal_conn
 from ..decorators import login_required_modal
+from ..log import get_logger
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+logger = get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------

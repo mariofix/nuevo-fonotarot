@@ -1,22 +1,12 @@
 """Views for the lab blueprint — design experiments and home page prototypes."""
 
-import logging
-
 from flask import render_template
 
 from . import lab_bp
+from ..log import get_logger
 from ..placeholder import PLANS, TESTIMONIALS
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+logger = get_logger(__name__)
 
 
 def _ctx():

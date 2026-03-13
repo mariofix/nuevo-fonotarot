@@ -1,6 +1,7 @@
 """Flask application factory."""
 
 import json
+import logging.config
 import os
 
 from flask import Flask, request, session
@@ -37,6 +38,11 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
+
+    # Apply Django-style logging configuration from the LOGGING config key.
+    # All nuevo_fonotarot.* loggers inherit from the 'nuevo_fonotarot' root
+    # logger defined in the LOGGING dict.  Override verbosity with LOG_LEVEL.
+    logging.config.dictConfig(app.config["LOGGING"])
 
     _init_extensions(app)
     _register_blueprints(app)

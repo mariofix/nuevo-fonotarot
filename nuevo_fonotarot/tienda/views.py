@@ -1,26 +1,17 @@
 """Views for the tienda (store) blueprint."""
 
-import logging
 from decimal import Decimal
 
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_security import current_user
 
 from ..decorators import login_required_modal
+from ..log import get_logger
 from ..models import MinutePack, Order, OrderItem, Product, SubscriptionPlan
 from ..extensions import db, merchants_ext
 from . import tienda_bp
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+logger = get_logger(__name__)
 
 # ---------------------------------------------------------------------------
 # Helpers

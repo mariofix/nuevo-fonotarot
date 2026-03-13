@@ -1,24 +1,15 @@
 """Views for the account settings blueprint."""
 
 import json
-import logging
 
 from flask import redirect, render_template, request, session, url_for
 from flask_security import current_user
 
 from . import account_bp
+from ..log import get_logger
 from ..models import SiteSettings
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+logger = get_logger(__name__)
 
 
 @account_bp.route("/")
