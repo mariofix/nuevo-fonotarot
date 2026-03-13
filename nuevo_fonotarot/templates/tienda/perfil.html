@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Mi Perfil – Fonotarot{% endblock %}
+{% block title %}Mi Perfil - Fonotarot{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -28,12 +28,12 @@
         {% if user.has_physical_profile %}
         <div class="profile-complete mb-4">
           <i class="ti ti-circle-check me-1"></i>
-          <strong>Perfil completo</strong> – puedes comprar productos físicos, paquetes y suscripciones.
+          <strong>Perfil completo</strong> - puedes comprar productos físicos, paquetes y suscripciones.
         </div>
         {% else %}
         <div class="profile-incomplete mb-4">
           <i class="ti ti-alert-circle me-1"></i>
-          <strong>Perfil incompleto</strong> – completa todos los campos para poder comprar productos físicos.
+          <strong>Perfil incompleto</strong> - completa todos los campos para poder comprar productos físicos.
         </div>
         {% endif %}
 

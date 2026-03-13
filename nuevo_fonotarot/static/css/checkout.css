@@ -1,5 +1,5 @@
 /* ==========================================================================
-   checkout.css – Split-screen checkout design for Fonotarot
+   checkout.css - Split-screen checkout design for Fonotarot
    Used by: tienda/comprar_minutos.html
    ========================================================================== */
 
@@ -18,7 +18,7 @@
   }
 }
 
-/* ── Left panel – order summary ──────────────────────────────────────────── */
+/* ── Left panel - order summary ──────────────────────────────────────────── */
 
 .ck-left {
   background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
@@ -147,7 +147,7 @@
   line-height: 1.6;
 }
 
-/* ── Right panel – form ──────────────────────────────────────────────────── */
+/* ── Right panel - form ──────────────────────────────────────────────────── */
 
 .ck-right {
   background: var(--cream);

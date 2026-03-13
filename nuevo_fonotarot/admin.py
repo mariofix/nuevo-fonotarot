@@ -189,12 +189,20 @@ class SubscriptionPlanAdminView(SecureModelView):
     form_excluded_columns = ("created_at",)
 
 
+class ProductCategoryAdminView(SecureModelView):
+    """Admin view for product categories."""
+
+    column_list = ("slug", "name")
+    column_searchable_list = ("slug", "name")
+    form_excluded_columns = ()
+
+
 class ProductAdminView(SecureModelView):
     """Admin view for physical products."""
 
     column_list = ("name", "category", "price", "stock", "is_active", "is_featured")
     column_searchable_list = ("name", "slug")
-    column_filters = ("is_active", "is_featured", "category")
+    column_filters = ("is_active", "is_featured", "category.name")
     form_excluded_columns = ("created_at", "updated_at")
 
     def on_model_change(self, form, model, is_created):
@@ -237,7 +245,7 @@ class PaymentAdminView(SecureModelView):
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
     from .models import (
-        BlogPost, MinutePack, Order, Payment, Product, Role,
+        BlogPost, MinutePack, Order, Payment, Product, ProductCategory, Role,
         SiteSettings, StaticPage, SubscriptionPlan, User,
     )
 
@@ -254,6 +262,9 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         SubscriptionPlanAdminView(SubscriptionPlan, db.session, name=_l("Suscripciones"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="credit-card")
+    )
+    admin_ext.add_view(
+        ProductCategoryAdminView(ProductCategory, db.session, name=_l("Categorías"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="tag")
     )
     admin_ext.add_view(
         ProductAdminView(Product, db.session, name=_l("Productos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="package")

@@ -58,7 +58,7 @@ class FlowProvider(Provider):
         api_secret: str,
         *,
         api_url: str = "https://sandbox.flow.cl/api",
-        subject: str = "Fonotarot – Compra",
+        subject: str = "Fonotarot - Compra",
         confirmation_url: str = "",
     ) -> None:
         self._client = ApiClient(

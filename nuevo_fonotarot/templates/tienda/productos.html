@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Productos Esotéricos – Fonotarot{% endblock %}
+{% block title %}Productos Esotéricos - Fonotarot{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -41,10 +41,10 @@
              class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
             Todos
           </a>
-          {% for slug, label in categories %}
-          <a href="{{ url_for('tienda.productos', categoria=slug) }}"
-             class="btn btn-sm btn-outline-primary cat-btn {% if active_category == slug %}active{% endif %}">
-            {{ label }}
+          {% for cat in categories %}
+          <a href="{{ url_for('tienda.productos', categoria=cat.slug) }}"
+             class="btn btn-sm btn-outline-primary cat-btn {% if active_category == cat.slug %}active{% endif %}">
+            {{ cat.name }}
           </a>
           {% endfor %}
         </div>
@@ -63,7 +63,7 @@
               {% endif %}
               <div class="p-3">
                 <div class="small text-secondary mb-1">
-                  {% for slug, label in categories %}{% if slug == product.category %}{{ label }}{% endif %}{% endfor %}
+                  {% if product.category %}{{ product.category.name }}{% endif %}
                 </div>
                 <h6 class="text-white mb-1">{{ product.name }}</h6>
                 <div class="price">${{ product.price_display }}</div>

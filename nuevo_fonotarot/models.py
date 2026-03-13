@@ -1,5 +1,6 @@
 """SQLAlchemy models for nuevo-fonotarot."""
 
+import enum
 from datetime import datetime, timezone
 
 from flask_security.core import RoleMixin, UserMixin
@@ -51,7 +52,7 @@ class User(db.Model, UserMixin):
     # Minimal profile (Known Customer)
     full_name = db.Column(db.String(255), nullable=True)
     phone = db.Column(db.String(30), nullable=True)
-    # Extended profile (Physical Customer – required for physical goods)
+    # Extended profile (Physical Customer - required for physical goods)
     rut = db.Column(db.String(20), nullable=True)
     address = db.Column(db.String(500), nullable=True)
     commune = db.Column(db.String(100), nullable=True)
@@ -147,6 +148,25 @@ class BlogPost(db.Model):
 # ---------------------------------------------------------------------------
 
 
+class OrderStatus(str, enum.Enum):
+    """Status values for a customer Order."""
+
+    PENDING = "pending"
+    PAID = "paid"
+    FAILED = "failed"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+
+
+class OrderItemType(str, enum.Enum):
+    """Item-type discriminator for an OrderItem line."""
+
+    MINUTE_PACK = "minute_pack"
+    SUBSCRIPTION = "subscription"
+    PRODUCT = "product"
+
+
 class MinutePack(db.Model):
     """Prepaid tarot-minute package.
 
@@ -205,23 +225,32 @@ class SubscriptionPlan(db.Model):
         return [f.strip() for f in self.features.splitlines() if f.strip()]
 
 
+class ProductCategory(db.Model):
+    """Category for physical products.
+
+    Replaces the old hardcoded ``CATEGORY_CHOICES`` list on :class:`Product`.
+    """
+
+    __tablename__ = "product_categories"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<ProductCategory {self.slug}>"
+
+
 class Product(db.Model):
     """Physical esoteric product (mazos, velas, inciensos, etc.)."""
 
     __tablename__ = "products"
 
-    CATEGORY_CHOICES = [
-        ("mazos", "Mazos de Tarot"),
-        ("velas", "Velas"),
-        ("inciensos", "Inciensos"),
-        ("cristales", "Cristales"),
-        ("otros", "Otros"),
-    ]
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    category = db.Column(db.String(50), nullable=False, default="otros")
+    category_id = db.Column(db.Integer, db.ForeignKey("product_categories.id"), nullable=True)
+    category = db.relationship("ProductCategory", backref=db.backref("products", lazy="dynamic"))
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Integer, nullable=False)  # price in CLP
     stock = db.Column(db.Integer, nullable=False, default=0)
@@ -255,19 +284,12 @@ class Order(db.Model):
 
     __tablename__ = "orders"
 
-    STATUS_PENDING = "pending"
-    STATUS_PAID = "paid"
-    STATUS_FAILED = "failed"
-    STATUS_SHIPPED = "shipped"
-    STATUS_DELIVERED = "delivered"
-    STATUS_CANCELLED = "cancelled"
-
     id = db.Column(db.Integer, primary_key=True)
     # Optional link to registered user; guests allowed.
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     user = db.relationship("User", backref=db.backref("orders", lazy="dynamic"))
 
-    status = db.Column(db.String(30), nullable=False, default=STATUS_PENDING)
+    status = db.Column(db.String(30), nullable=False, default=OrderStatus.PENDING)
     total = db.Column(db.Integer, nullable=False, default=0)  # CLP
     payment_method = db.Column(db.String(30), nullable=True)  # 'flow' | 'khipu'
     payment_token = db.Column(db.String(255), nullable=True)  # gateway token/order id
@@ -307,10 +329,6 @@ class OrderItem(db.Model):
     """A single line item within an Order."""
 
     __tablename__ = "order_items"
-
-    ITEM_TYPE_MINUTE_PACK = "minute_pack"
-    ITEM_TYPE_SUBSCRIPTION = "subscription"
-    ITEM_TYPE_PRODUCT = "product"
 
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
@@ -410,11 +428,11 @@ class SiteSettings(db.Model):
         territory code (e.g. ``es_CL`` → ``flag-country-cl``).
 
     ``dark_hours_start``
-        Integer 0–23.  Hour (server local time) at which the dark theme
+        Integer 0-23.  Hour (server local time) at which the dark theme
         becomes the default.  Defaults to ``20`` (8 pm).
 
     ``dark_hours_end``
-        Integer 0–23.  Hour (server local time) at which the light theme
+        Integer 0-23.  Hour (server local time) at which the light theme
         resumes.  Defaults to ``8`` (8 am).
 
         Dark window example: start=20, end=8 → dark from 20:00 to 07:59.

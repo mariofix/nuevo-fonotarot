@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Checkout Opción B – Accordion · Fonotarot Lab{% endblock %}
+{% block title %}Checkout Opción B - Accordion · Fonotarot Lab{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -119,7 +119,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="lab-tag">LAB / Checkout B – Accordion</div>
+<div class="lab-tag">LAB / Checkout B - Accordion</div>
 
 <div class="container py-5">
   <div class="ck-wrap">
@@ -143,7 +143,7 @@
         <div id="acc-anon">
           <div class="ck-note anon">
             <i class="ti ti-ghost me-1"></i>
-            <strong>Compra anónima.</strong> No necesitas cuenta – solo un email para tu comprobante.
+            <strong>Compra anónima.</strong> No necesitas cuenta - solo un email para tu comprobante.
             <a href="#" style="color:var(--plum)">Iniciar sesión</a>
           </div>
           <div class="row g-3">
@@ -204,7 +204,7 @@
         <div class="ck-num">2</div>
         <div>
           <div class="ck-header-title">Envío</div>
-          <div class="ck-header-summary" id="sum2">Digital – Sin envío</div>
+          <div class="ck-header-summary" id="sum2">Digital - Sin envío</div>
         </div>
         <i class="ti ti-chevron-down ck-chevron"></i>
       </div>
@@ -222,7 +222,7 @@
         <div id="ship-acc-physical" style="display:none">
           <div class="anon-ship-note mb-3">
             <i class="ti ti-eye-off me-1"></i>
-            <strong>Envío anónimo</strong> – La caja llega sin marcas que identifiquen el contenido.
+            <strong>Envío anónimo</strong> - La caja llega sin marcas que identifiquen el contenido.
           </div>
           <div class="row g-3">
             <div class="col-12">
@@ -297,7 +297,7 @@
         <span>Total</span><span>$22.980</span>
       </div>
       <button class="ck-continue" id="btnPayFinal" disabled>
-        <i class="ti ti-lock me-1"></i>Pagar ahora – $22.980
+        <i class="ti ti-lock me-1"></i>Pagar ahora - $22.980
       </button>
       <p class="text-secondary small text-center mt-2 mb-0">
         <i class="ti ti-shield-check me-1"></i>Pago seguro via Flow o Khipu
@@ -366,7 +366,7 @@
     ['acc-anon','acc-known','acc-physical'].forEach(function(id){ document.getElementById(id).style.display='none'; });
     document.getElementById('ship-acc-digital').style.display='';
     document.getElementById('ship-acc-physical').style.display='none';
-    document.getElementById('sum2').textContent='Digital – Sin envío';
+    document.getElementById('sum2').textContent='Digital - Sin envío';
     if (type==='anon') {
       document.getElementById('acc-anon').style.display='';
       document.getElementById('sum1').textContent='Anónimo';

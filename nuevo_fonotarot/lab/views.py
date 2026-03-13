@@ -91,20 +91,20 @@ def home8():
 
 @lab_bp.route("/checkout-a")
 def checkout_a():
-    """Checkout A – Stepper (multi-step wizard with progress bar)."""
+    """Checkout A - Stepper (multi-step wizard with progress bar)."""
     logger.debug("lab: rendering checkout-a")
     return render_template("lab/checkout-a.html")
 
 
 @lab_bp.route("/checkout-b")
 def checkout_b():
-    """Checkout B – Accordion (collapsible sections, single page)."""
+    """Checkout B - Accordion (collapsible sections, single page)."""
     logger.debug("lab: rendering checkout-b")
     return render_template("lab/checkout-b.html")
 
 
 @lab_bp.route("/checkout-c")
 def checkout_c():
-    """Checkout C – Split Screen (immersive two-panel layout)."""
+    """Checkout C - Split Screen (immersive two-panel layout)."""
     logger.debug("lab: rendering checkout-c")
     return render_template("lab/checkout-c.html")
