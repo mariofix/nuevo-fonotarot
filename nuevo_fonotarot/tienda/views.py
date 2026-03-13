@@ -1,14 +1,26 @@
 """Views for the tienda (store) blueprint."""
 
+import logging
 from decimal import Decimal
 
-from flask import abort, current_app, flash, redirect, render_template, request, session, url_for
+from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_security import current_user
 
 from ..decorators import login_required_modal
 from ..models import MinutePack, Order, OrderItem, Product, SubscriptionPlan
 from ..extensions import db, merchants_ext
 from . import tienda_bp
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -61,6 +73,13 @@ def _create_payment_and_redirect(order: Order, payment_method: str, email: str) 
 
     # Build provider-specific confirmation URL into the metadata so the
     # FlowProvider confirmation_url can be forwarded through request metadata.
+    logger.debug(
+        "Creating checkout session via %s for order=%s amount=%s email=%r",
+        payment_method,
+        order.id,
+        order.total,
+        email,
+    )
     try:
         client = merchants_ext.get_client(payment_method)
         checkout_session = client.payments.create_checkout(
@@ -75,12 +94,19 @@ def _create_payment_and_redirect(order: Order, payment_method: str, email: str) 
             },
         )
     except Exception as exc:
-        current_app.logger.error("Payment creation error (%s): %s", payment_method, exc)
+        logger.error("Payment creation error (%s): %s", payment_method, exc, exc_info=True)
         flash("Error al conectar con el proveedor de pago. Intenta más tarde.", "danger")
         return redirect(url_for("tienda.checkout"))
 
     order.payment_token = checkout_session.session_id
     db.session.commit()
+
+    logger.info(
+        "Checkout session created: order=%s provider=%s token=%s",
+        order.id,
+        payment_method,
+        checkout_session.session_id,
+    )
 
     merchants_ext.save_session(
         checkout_session,
@@ -187,7 +213,13 @@ def agregar_al_carrito():
     item_id = request.form.get("item_id", type=int)
     quantity = request.form.get("quantity", 1, type=int)
 
+    logger.debug("agregar_al_carrito: item_type=%r item_id=%r quantity=%r", item_type, item_id, quantity)
+
     if item_type == OrderItem.ITEM_TYPE_SUBSCRIPTION:
+        logger.warning(
+            "Subscription item_id=%r cannot be added to cart; redirecting user to subscription flow",
+            item_id,
+        )
         flash(
             "Las suscripciones no se pueden agregar al carrito. "
             "Usa el enlace de pago para suscribirte.",
@@ -226,6 +258,7 @@ def agregar_al_carrito():
             "quantity": quantity,
         })
     _save_cart(cart)
+    logger.debug("Cart updated: item_type=%r item_id=%r qty=%r total_lines=%d", item_type, item_id, quantity, len(cart))
     flash("Producto agregado al carrito.", "success")
     next_url = _safe_next(url_for("tienda.carrito"))
     return redirect(next_url)
@@ -270,7 +303,9 @@ def comprar_minutos(pack_id: int):
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
+        logger.debug("comprar_minutos POST: pack_id=%s payment_method=%r", pack_id, payment_method)
         if payment_method not in ("flow", "khipu"):
+            logger.warning("Invalid payment method %r for pack_id=%s", payment_method, pack_id)
             flash("Método de pago no válido.", "danger")
             return redirect(url_for("tienda.comprar_minutos", pack_id=pack_id))
 
@@ -278,6 +313,7 @@ def comprar_minutos(pack_id: int):
         phone = request.form.get("phone", "").strip()
 
         if not email:
+            logger.debug("comprar_minutos: missing email for pack_id=%s", pack_id)
             flash("El email es obligatorio.", "danger")
             return redirect(url_for("tienda.comprar_minutos", pack_id=pack_id))
 
@@ -303,6 +339,16 @@ def comprar_minutos(pack_id: int):
         )
         db.session.add(item)
         db.session.commit()
+
+        logger.info(
+            "Order created: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
+            order.id,
+            pack.id,
+            pack.minutes,
+            pack.price,
+            order.user_id,
+            email,
+        )
 
         return _create_payment_and_redirect(order, payment_method, email)
 
@@ -345,6 +391,7 @@ def perfil():
         pref = request.form.get("preferred_payment", "").strip()
         current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
         db.session.commit()
+        logger.info("Profile updated for user=%s", current_user.id)
         flash("Perfil actualizado correctamente.", "success")
         return redirect(url_for("tienda.perfil"))
 
@@ -374,7 +421,9 @@ def suscripcion_link_pago(plan_id: int):
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
+        logger.debug("suscripcion_link_pago POST: plan_id=%s user=%s payment_method=%r", plan_id, current_user.id, payment_method)
         if payment_method not in ("flow", "khipu"):
+            logger.warning("Invalid payment method %r for subscription plan_id=%s user=%s", payment_method, plan_id, current_user.id)
             flash("Método de pago no válido.", "danger")
             return redirect(url_for("tienda.suscripcion_link_pago", plan_id=plan_id))
 
@@ -402,6 +451,13 @@ def suscripcion_link_pago(plan_id: int):
         payment_url = url_for(
             "tienda.iniciar_pago_suscripcion", order_id=order.id, _external=True
         )
+        logger.info(
+            "Subscription payment link created: order=%s plan=%s user=%s provider=%s",
+            order.id,
+            plan.id,
+            current_user.id,
+            payment_method,
+        )
         flash(
             f"Enlace de pago generado. Accede directamente: {payment_url}",
             "success",
@@ -419,10 +475,17 @@ def suscripcion_link_pago(plan_id: int):
 def iniciar_pago_suscripcion(order_id: int):
     """Redirect to payment gateway for a subscription payment link."""
     order = Order.query.get_or_404(order_id)
+    logger.debug("iniciar_pago_suscripcion: order=%s status=%r", order_id, order.status)
     if order.status != Order.STATUS_PENDING:
+        logger.warning(
+            "iniciar_pago_suscripcion: order=%s already processed (status=%r), skipping",
+            order_id,
+            order.status,
+        )
         flash("Esta orden ya fue procesada.", "info")
         return redirect(url_for("tienda.orden_estado", order_id=order.id))
     email = order.shipping_email or ""
+    logger.info("Initiating subscription payment: order=%s provider=%r email=%r", order_id, order.payment_method, email)
     return _create_payment_and_redirect(order, order.payment_method, email)
 
 
@@ -445,21 +508,28 @@ def checkout():
     """
     cart = _get_cart()
     if not cart:
+        logger.debug("checkout: empty cart, redirecting to store index")
         flash("Tu carrito está vacío.", "warning")
         return redirect(url_for("tienda.index"))
 
     has_physical = any(i["item_type"] == OrderItem.ITEM_TYPE_PRODUCT for i in cart)
     total = _cart_total(cart)
+    logger.debug("checkout: lines=%d has_physical=%s total=%s", len(cart), has_physical, total)
 
     # Physical goods require a full authenticated profile.
     if has_physical:
         if not current_user.is_authenticated:
+            logger.warning("checkout: unauthenticated user attempted to buy physical goods")
             flash(
                 "Para comprar productos físicos debes iniciar sesión y completar tu perfil.",
                 "warning",
             )
             return redirect(url_for("security.login"))
         if not current_user.has_physical_profile:
+            logger.warning(
+                "checkout: user=%s missing physical profile for physical goods purchase",
+                current_user.id,
+            )
             flash(
                 "Para comprar productos físicos debes completar tu perfil con "
                 "Nombre Completo, RUT, Dirección, Comuna y Código Postal.",
@@ -469,7 +539,9 @@ def checkout():
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
+        logger.debug("checkout POST: payment_method=%r user=%s", payment_method, getattr(current_user, "id", None))
         if payment_method not in ("flow", "khipu"):
+            logger.warning("checkout: invalid payment method %r", payment_method)
             flash("Método de pago no válido.", "danger")
             return redirect(url_for("tienda.checkout"))
 
@@ -478,6 +550,7 @@ def checkout():
             email = email or current_user.email
 
         if not email:
+            logger.debug("checkout: missing contact email")
             flash("El email de contacto es obligatorio.", "danger")
             return redirect(url_for("tienda.checkout"))
 
@@ -517,6 +590,16 @@ def checkout():
         db.session.commit()
         _save_cart([])
 
+        logger.info(
+            "Cart checkout order created: order=%s lines=%d total=%s user=%s has_physical=%s provider=%s",
+            order.id,
+            len(cart),
+            total,
+            order.user_id,
+            has_physical,
+            payment_method,
+        )
+
         return _create_payment_and_redirect(order, payment_method, email)
 
     # Prefill email for authenticated users.
@@ -546,8 +629,10 @@ def pago_confirmacion():
     """
     token = request.form.get("token") or request.form.get("payment_id") or ""
     if not token:
+        logger.warning("pago_confirmacion: webhook received with no token")
         abort(400)
 
+    logger.debug("pago_confirmacion: received webhook token=%r", token)
     try:
         stored = merchants_ext.get_session(token)
         if stored:
@@ -555,13 +640,16 @@ def pago_confirmacion():
             order = Order.query.get(order_id)
             if order and order.status == Order.STATUS_PENDING:
                 state = stored.get("state", "")
+                logger.debug("pago_confirmacion: order=%s state=%r", order_id, state)
                 if state == "succeeded":
                     order.status = Order.STATUS_PAID
+                    logger.info("Payment confirmed (succeeded): order=%s token=%r", order_id, token)
                 elif state in ("failed", "cancelled"):
                     order.status = Order.STATUS_FAILED
+                    logger.warning("Payment failed/cancelled: order=%s state=%r token=%r", order_id, state, token)
                 db.session.commit()
     except Exception as exc:
-        current_app.logger.error("Payment confirmation error: %s", exc)
+        logger.error("Payment confirmation error: %s", exc, exc_info=True)
     return "OK", 200
 
 
@@ -569,6 +657,7 @@ def pago_confirmacion():
 def pago_retorno(order_id: int):
     """User-facing return page after payment (success or cancel)."""
     order = Order.query.get_or_404(order_id)
+    logger.debug("pago_retorno: order=%s status=%r token=%r", order_id, order.status, order.payment_token)
 
     # Try to sync payment state from provider.
     if order.payment_token and order.status == Order.STATUS_PENDING:
@@ -576,14 +665,17 @@ def pago_retorno(order_id: int):
             stored = merchants_ext.get_session(order.payment_token)
             if stored:
                 state = stored.get("state", "")
+                logger.debug("pago_retorno: syncing order=%s state=%r", order_id, state)
                 if state == "succeeded":
                     order.status = Order.STATUS_PAID
+                    logger.info("Payment return: order=%s status updated to PAID", order_id)
                     db.session.commit()
                 elif state in ("failed", "cancelled"):
                     order.status = Order.STATUS_FAILED
+                    logger.warning("Payment return: order=%s status updated to FAILED (state=%r)", order_id, state)
                     db.session.commit()
         except Exception as exc:
-            current_app.logger.error("Payment return sync error: %s", exc)
+            logger.error("Payment return sync error: %s", exc, exc_info=True)
 
     return redirect(url_for("tienda.orden_estado", order_id=order.id))
 
