@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Comprar {{ pack.minutes }} Minutos – Fonotarot{% endblock %}
+{% block title %}Comprar {{ pack.minutes }} Minutos - Fonotarot{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
@@ -125,7 +125,7 @@
 
         <!-- ── Submit ─────────────────────────────── -->
         <button type="submit" class="ck-submit">
-          <i class="ti ti-lock me-2"></i>Pagar ahora – ${{ pack.price_display }}
+          <i class="ti ti-lock me-2"></i>Pagar ahora - ${{ pack.price_display }}
         </button>
         <p class="ck-note">
           <i class="ti ti-shield-check me-1"></i>Transacción encriptada · Acreditación inmediata

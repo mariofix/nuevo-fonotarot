@@ -243,13 +243,13 @@ def seed_pages_cli() -> None:
     pages = [
         {
             "path": "home-v1",
-            "title": "Homepage – Principal (v1)",
+            "title": "Homepage - Principal (v1)",
             "template_name": "index.html",
             "content": "",
         },
         {
             "path": "home8",
-            "title": "Homepage – Índigo Místico v8 (experimento)",
+            "title": "Homepage - Índigo Místico v8 (experimento)",
             "template_name": "old-experiments/home8.html",
             "content": "",
         },

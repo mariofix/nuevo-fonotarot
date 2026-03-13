@@ -7,7 +7,7 @@ from flask_security import current_user
 
 from ..decorators import login_required_modal
 from ..log import get_logger
-from ..models import MinutePack, Order, OrderItem, Product, SubscriptionPlan
+from ..models import MinutePack, Order, OrderItem, OrderItemType, OrderStatus, Product, ProductCategory, SubscriptionPlan
 from ..extensions import db, merchants_ext
 from . import tienda_bp
 
@@ -155,9 +155,9 @@ def productos():
     category = request.args.get("categoria")
     query = Product.query.filter_by(is_active=True)
     if category:
-        query = query.filter_by(category=category)
+        query = query.filter(Product.category.has(slug=category))
     items = query.order_by(Product.name).all()
-    categories = Product.CATEGORY_CHOICES
+    categories = ProductCategory.query.order_by(ProductCategory.name).all()
     cart = _get_cart()
     return render_template(
         "tienda/productos.html",
@@ -206,7 +206,7 @@ def agregar_al_carrito():
 
     logger.debug("agregar_al_carrito: item_type=%r item_id=%r quantity=%r", item_type, item_id, quantity)
 
-    if item_type == OrderItem.ITEM_TYPE_SUBSCRIPTION:
+    if item_type == OrderItemType.SUBSCRIPTION:
         logger.warning(
             "Subscription item_id=%r cannot be added to cart; redirecting user to subscription flow",
             item_id,
@@ -219,13 +219,13 @@ def agregar_al_carrito():
         next_url = _safe_next(url_for("tienda.suscripciones"))
         return redirect(next_url)
 
-    if item_type == OrderItem.ITEM_TYPE_MINUTE_PACK:
+    if item_type == OrderItemType.MINUTE_PACK:
         obj = MinutePack.query.get(item_id)
         if obj is None or not obj.is_active:
             abort(404)
         name = f"{obj.minutes} minutos de tarot"
         unit_price = obj.price
-    elif item_type == OrderItem.ITEM_TYPE_PRODUCT:
+    elif item_type == OrderItemType.PRODUCT:
         obj = Product.query.get(item_id)
         if obj is None or not obj.is_active:
             abort(404)
@@ -274,7 +274,7 @@ def vaciar_carrito():
 
 
 # ---------------------------------------------------------------------------
-# Fast Checkout – "Buy Now" for minute packs
+# Fast Checkout - "Buy Now" for minute packs
 # ---------------------------------------------------------------------------
 
 
@@ -322,7 +322,7 @@ def comprar_minutos(pack_id: int):
 
         item = OrderItem(
             order_id=order.id,
-            item_type=OrderItem.ITEM_TYPE_MINUTE_PACK,
+            item_type=OrderItemType.MINUTE_PACK,
             item_id=pack.id,
             name=f"{pack.minutes} minutos de tarot",
             quantity=1,
@@ -343,7 +343,7 @@ def comprar_minutos(pack_id: int):
 
         return _create_payment_and_redirect(order, payment_method, email)
 
-    # GET – detect preferred payment method for fast redirect
+    # GET - detect preferred payment method for fast redirect
     preferred = None
     prefilled_email = ""
     prefilled_phone = ""
@@ -429,7 +429,7 @@ def suscripcion_link_pago(plan_id: int):
 
         item = OrderItem(
             order_id=order.id,
-            item_type=OrderItem.ITEM_TYPE_SUBSCRIPTION,
+            item_type=OrderItemType.SUBSCRIPTION,
             item_id=plan.id,
             name=f"Suscripción {plan.name}",
             quantity=1,
@@ -467,7 +467,7 @@ def iniciar_pago_suscripcion(order_id: int):
     """Redirect to payment gateway for a subscription payment link."""
     order = Order.query.get_or_404(order_id)
     logger.debug("iniciar_pago_suscripcion: order=%s status=%r", order_id, order.status)
-    if order.status != Order.STATUS_PENDING:
+    if order.status != OrderStatus.PENDING:
         logger.warning(
             "iniciar_pago_suscripcion: order=%s already processed (status=%r), skipping",
             order_id,
@@ -503,7 +503,7 @@ def checkout():
         flash("Tu carrito está vacío.", "warning")
         return redirect(url_for("tienda.index"))
 
-    has_physical = any(i["item_type"] == OrderItem.ITEM_TYPE_PRODUCT for i in cart)
+    has_physical = any(i["item_type"] == OrderItemType.PRODUCT for i in cart)
     total = _cart_total(cart)
     logger.debug("checkout: lines=%d has_physical=%s total=%s", len(cart), has_physical, total)
 
@@ -629,14 +629,14 @@ def pago_confirmacion():
         if stored:
             order_id = int((stored.get("metadata") or {}).get("order_id", 0))
             order = Order.query.get(order_id)
-            if order and order.status == Order.STATUS_PENDING:
+            if order and order.status == OrderStatus.PENDING:
                 state = stored.get("state", "")
                 logger.debug("pago_confirmacion: order=%s state=%r", order_id, state)
                 if state == "succeeded":
-                    order.status = Order.STATUS_PAID
+                    order.status = OrderStatus.PAID
                     logger.info("Payment confirmed (succeeded): order=%s token=%r", order_id, token)
                 elif state in ("failed", "cancelled"):
-                    order.status = Order.STATUS_FAILED
+                    order.status = OrderStatus.FAILED
                     logger.warning("Payment failed/cancelled: order=%s state=%r token=%r", order_id, state, token)
                 db.session.commit()
     except Exception as exc:
@@ -651,18 +651,18 @@ def pago_retorno(order_id: int):
     logger.debug("pago_retorno: order=%s status=%r token=%r", order_id, order.status, order.payment_token)
 
     # Try to sync payment state from provider.
-    if order.payment_token and order.status == Order.STATUS_PENDING:
+    if order.payment_token and order.status == OrderStatus.PENDING:
         try:
             stored = merchants_ext.get_session(order.payment_token)
             if stored:
                 state = stored.get("state", "")
                 logger.debug("pago_retorno: syncing order=%s state=%r", order_id, state)
                 if state == "succeeded":
-                    order.status = Order.STATUS_PAID
+                    order.status = OrderStatus.PAID
                     logger.info("Payment return: order=%s status updated to PAID", order_id)
                     db.session.commit()
                 elif state in ("failed", "cancelled"):
-                    order.status = Order.STATUS_FAILED
+                    order.status = OrderStatus.FAILED
                     logger.warning("Payment return: order=%s status updated to FAILED (state=%r)", order_id, state)
                     db.session.commit()
         except Exception as exc:

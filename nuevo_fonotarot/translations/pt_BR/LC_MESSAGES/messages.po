@@ -259,8 +259,8 @@ msgid "Seleccionar idioma"
 msgstr "Selecionar idioma"
 
 #: nuevo_fonotarot/templates/tienda/index.html:3
-msgid "Tienda Fonotarot – Minutos, Suscripciones y Productos"
-msgstr "Loja Fonotarot – Minutos, Assinaturas e Produtos"
+msgid "Tienda Fonotarot - Minutos, Suscripciones y Productos"
+msgstr "Loja Fonotarot - Minutos, Assinaturas e Produtos"
 
 #: nuevo_fonotarot/templates/tienda/index.html:130
 msgid "Tienda Fonotarot"

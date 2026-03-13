@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }} – Fonotarot{% endblock %}
+{% block title %}{{ product.name }} - Fonotarot{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -30,7 +30,7 @@
             {% endif %}
           </div>
           <div class="col-md-7">
-            <div class="text-secondary small mb-1">{{ product.category|title }}</div>
+            <div class="text-secondary small mb-1">{% if product.category %}{{ product.category.name }}{% endif %}</div>
             <h1 class="fw-bold">{{ product.name }}</h1>
             <div class="price my-3">${{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
             {% if product.description %}
