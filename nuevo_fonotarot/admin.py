@@ -202,7 +202,7 @@ class ProductAdminView(SecureModelView):
 
     column_list = ("name", "category", "price", "stock", "is_active", "is_featured")
     column_searchable_list = ("name", "slug")
-    column_filters = ("is_active", "is_featured")
+    column_filters = ("is_active", "is_featured", "category.name")
     form_excluded_columns = ("created_at", "updated_at")
 
     def on_model_change(self, form, model, is_created):
