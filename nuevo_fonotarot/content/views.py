@@ -143,7 +143,7 @@ def _promo_claim_remaining() -> tuple[bool, int]:
     return True, current - 1
 
 
-def _send_admin_promo_notification(ani: str, remaining: int) -> None:
+def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> None:
     """E-mail every active admin user when a free trial is redeemed."""
     from datetime import datetime, timezone
 
@@ -156,17 +156,16 @@ def _send_admin_promo_notification(ani: str, remaining: int) -> None:
     if not recipients:
         return
 
-    # Mask the phone for the notification: show first 3 and last 3 digits.
-    masked = ani[:3] + ("*" * max(0, len(ani) - 6)) + ani[-3:] if len(ani) > 6 else ani
     redeemed_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     try:
         msg = Message(
-            subject="[Fonotarot] Nueva promoción de 5 minutos canjeada",
+            subject="[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: %s" % client_id,
             recipients=recipients,
             html=render_template(
                 "email/promo_admin.html",
-                masked_ani=masked,
+                masked_ani=ani,
+                client_id=client_id,
                 remaining=remaining,
                 redeemed_at=redeemed_at,
             ),
@@ -371,10 +370,10 @@ def api_promo_cobrar():
 
     # Phone not found and stock available → create client with 5 minutes (300 s).
     try:
-        create_status, _ = _firenze_post(
+        create_status, create_body = _firenze_post(
             "/audiotex/fonotarot-cl/client/",
             token,
-            {"telefonos": [ani], "correo": f"{ani}@fonotarot.com", "segundos": _PROMO_DURATION_SECONDS},
+            {"telefonos": [ani], "correo": f"{ani}@fonotarot.com", "creditos": _PROMO_DURATION_SECONDS},
         )
     except RequestException as exc:
         logger.error("Firenze create-client error: %s", exc, exc_info=True)
@@ -392,7 +391,7 @@ def api_promo_cobrar():
     session["promo_ani"] = ani
     session["promo_remaining"] = remaining
 
-    _send_admin_promo_notification(ani, remaining)
+    _send_admin_promo_notification(ani, remaining, create_body.get("clientid", None))
 
     return jsonify({"success": True, "redirect": url_for("content.promo_exito")})
 
@@ -420,11 +419,11 @@ def api_promo_actualizar_email():
         status, _ = _firenze_patch(f"/audiotex/fonotarot-cl/client/{ani}", token, {"correo": email})
     except RequestException as exc:
         logger.error("Firenze update-email error: %s", exc, exc_info=True)
-        return jsonify({"error": "api_error", "message": "Error al actualizar el email."}), 503
+        # return jsonify({"error": "api_error", "message": "Error al actualizar el email."}), 503
 
     if status >= 400:
         logger.error("Firenze update-email returned %s", status)
-        return jsonify({"error": "api_error", "message": "No se pudo actualizar el email."}), 503
+        # return jsonify({"error": "api_error", "message": "No se pudo actualizar el email."}), 503
 
     remaining = session.get("promo_remaining", 0)
     _send_user_promo_instructions(email, remaining)
