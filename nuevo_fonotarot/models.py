@@ -380,17 +380,37 @@ class Order(db.Model, PaymentMixin):
         confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
 
         client = merchants_ext.get_client(payment_method)
-        checkout_session = client.payments.create_checkout(
-            amount=Decimal(str(self.total)),
-            currency=currency,
-            success_url=success_url,
-            cancel_url=cancel_url,
-            metadata={
-                "order_id": str(self.id),
-                "confirmation_url": confirmation_url,
-                "email": email,
-            },
-        )
+        try:
+            checkout_session = client.payments.create_checkout(
+                amount=int(self.total),
+                currency=currency,
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={
+                    "order_id": str(self.id),
+                    "confirmation_url": confirmation_url,
+                    "email": email,
+                },
+            )
+        except BaseException as exc:
+            # Some providers (e.g. pyflowcl) raise BaseException subclasses,
+            # bypassing `except Exception` guards higher up the stack.
+            # Extract the API response body before re-raising so the real
+            # error is visible in the logs.
+            if exc.args and isinstance(exc.args[0], dict):
+                response_obj = exc.args[0].get("message")
+                body = getattr(response_obj, "text", None)
+                if body:
+                    import logging as _logging
+                    _logging.getLogger(__name__).error(
+                        "Payment API error [provider=%s code=%s]: %s",
+                        payment_method,
+                        exc.args[0].get("code"),
+                        body,
+                    )
+            raise RuntimeError(
+                f"Payment gateway error from {payment_method}"
+            ) from exc
 
         response_raw = (
             checkout_session.raw if isinstance(checkout_session.raw, dict) else {}
