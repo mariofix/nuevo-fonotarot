@@ -25,7 +25,9 @@ logger = get_logger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _fetch_monthly_3carrier(year: int, month: int, entel_field: str = "fonotarot-cl") -> dict:
+def _fetch_monthly_3carrier(
+    year: int, month: int, entel_field: str = "fonotarot-cl"
+) -> dict:
     """Return per-day minute totals for 3 carriers from the CDR table.
 
     Replaces 93 individual daily SELECT queries with 3 GROUP BY queries.
@@ -138,6 +140,157 @@ def _fetch_agent_monthly_cdr(
         total += mins
 
     return {"days": days, "total": total}
+
+
+# ---------------------------------------------------------------------------
+# Agent registry — single source of truth for 7XXX extensions
+# ---------------------------------------------------------------------------
+# Keys are the agent's internal extension number (7XXX).
+# Marilina (7000): her PHP filename had no numeric suffix; 7000 is a placeholder.
+# Paulina's feb-2024 report used duration/min_duration=0 (see paulina01 below);
+# the registry keeps the current billsec/90 convention for forward-looking queries.
+AGENT_REGISTRY: dict[int, dict] = {
+    7000: {
+        "name": "Marilina",
+        "dst": (56332541220, 56990238293, 56999679182),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7001: {
+        "name": "Paulina",
+        "dst": (56976341921, 56232326345),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7005: {
+        "name": "Maite",
+        "dst": (56997130343,),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7006: {
+        "name": "Paola",
+        "dst": (56652893541, 56994871981, 56952379063),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7007: {
+        "name": "Angela",
+        "dst": (56232500587, 56984597737),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7008: {
+        "name": "Altair",
+        "dst": (56994662528, 56227239476),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7009: {
+        "name": "Karla",
+        "dst": (56947739514, 56225064742),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7012: {
+        "name": "Pedro",
+        "dst": (56233134177, 56959516081, 56999047069),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7014: {
+        "name": "Alex",
+        "dst": (56991023392, 56352411071),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+    7015: {
+        "name": "Violeta",
+        "dst": (56967654876, 56352410599),
+        "duration_col": "billsec",
+        "min_duration": 0,
+    },
+}
+
+
+def _fetch_all_agents_monthly_cdr(
+    year: int,
+    month: int,
+    agent_ids: tuple | None = None,
+) -> dict:
+    """Return per-day minute totals for all (or selected) agents from the CDR table.
+
+    Args:
+        year: Report year.
+        month: Report month (1–12).
+        agent_ids: Optional tuple of 7XXX extension numbers to include.
+                   If None, all agents in AGENT_REGISTRY are included.
+
+    Returns:
+        dict with keys:
+          ``agents``  — list of {ext, name} sorted by extension.
+          ``days``    — list of per-day dicts {date, <ext>: mins, …, total: int}.
+          ``totals``  — dict {<ext>: total_mins, …}.
+    """
+    _, days_in_month = calendar.monthrange(year, month)
+    start = f"{year}-{month:02d}-01"
+    next_month = month % 12 + 1
+    next_year = year + (1 if month == 12 else 0)
+    end = f"{next_year}-{next_month:02d}-01"
+
+    selected = {
+        ext: info
+        for ext, info in AGENT_REGISTRY.items()
+        if agent_ids is None or ext in agent_ids
+    }
+
+    by_day: dict[int, dict] = {}
+
+    with portal_conn() as conn:
+        with conn.cursor() as cur:
+            for ext, info in selected.items():
+                dst_numbers = info["dst"]
+                duration_col = info["duration_col"]
+                min_duration = info["min_duration"]
+                placeholders = ", ".join(["%s"] * len(dst_numbers))
+                cur.execute(
+                    f"""
+                    SELECT DAY(calldate) AS dia,
+                           FLOOR(SUM({duration_col}) / 60) AS minutos
+                    FROM cdr
+                    WHERE disposition = 'ANSWERED'
+                      AND zvn_clientid > 1
+                      AND dst IN ({placeholders})
+                      AND {duration_col} > %s
+                      AND calldate >= %s
+                      AND calldate < %s
+                    GROUP BY DAY(calldate)
+                    """,
+                    (*dst_numbers, min_duration, start, end),
+                )
+                for row in cur.fetchall():
+                    d = int(row["dia"])
+                    by_day.setdefault(d, {e: 0 for e in selected})
+                    by_day[d][ext] = int(row["minutos"] or 0)
+
+    agents = [
+        {"ext": ext, "name": info["name"]} for ext, info in sorted(selected.items())
+    ]
+    totals: dict[int, int] = {ext: 0 for ext in selected}
+    days = []
+    for d in range(1, days_in_month + 1):
+        row_base = by_day.get(d, {ext: 0 for ext in selected})
+        row: dict = {"date": f"{d:02d}-{month:02d}-{year}"}
+        row_total = 0
+        for ext in selected:
+            mins = row_base.get(ext, 0)
+            row[ext] = mins
+            totals[ext] += mins
+            row_total += mins
+        row["total"] = row_total
+        days.append(row)
+
+    return {"agents": agents, "days": days, "totals": totals}
 
 
 def _fetch_prepago_ddi(year: int, month: int, ddi_numbers: tuple) -> dict:
@@ -538,6 +691,9 @@ def alotarotoct():
 # ---------------------------------------------------------------------------
 # Individual agent monthly reports  (zvn_asterisk → cdr, filtered by dst)
 # ---------------------------------------------------------------------------
+# DEPRECATED — these hardcoded per-agent, per-month routes are superseded by
+# the consolidated Flask-Admin view (Reportes → Reporte Agentes).
+# Kept for backward compatibility with bookmarked URLs; do not add new ones.
 
 
 @legacy_bp.route("/alex14.php")
@@ -546,9 +702,7 @@ def alex14():
     """Alex — March 2026, dst 56991023392 / 56352411071."""
     logger.debug("legacy: alex14 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56991023392, 56352411071)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56991023392, 56352411071))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Alex", **data)
@@ -560,9 +714,7 @@ def angela7():
     """Angela — March 2026, dst 56232500587 / 56984597737."""
     logger.debug("legacy: angela7 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56232500587, 56984597737)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56232500587, 56984597737))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Angela", **data)
@@ -574,9 +726,7 @@ def karla9():
     """Karla — March 2026, dst 56947739514 / 56225064742."""
     logger.debug("legacy: karla9 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56947739514, 56225064742)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56947739514, 56225064742))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Karla", **data)
@@ -588,9 +738,7 @@ def karla99():
     """Karla — October 2025, dst 56947739514 / 56225064742."""
     logger.debug("legacy: karla99 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2025, 10, (56947739514, 56225064742)
-        )
+        data = _fetch_agent_monthly_cdr(2025, 10, (56947739514, 56225064742))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Karla (oct)", **data)
@@ -647,7 +795,9 @@ def paulina01():
     logger.debug("legacy: paulina01 requested")
     try:
         data = _fetch_agent_monthly_cdr(
-            2024, 2, (56976341921, 56232326345),
+            2024,
+            2,
+            (56976341921, 56232326345),
             duration_col="duration",
             min_duration=0,
         )
@@ -662,9 +812,7 @@ def paulina1():
     """Paulina — March 2026, dst 56976341921 / 56232326345."""
     logger.debug("legacy: paulina1 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56976341921, 56232326345)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56976341921, 56232326345))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Paulina", **data)
@@ -695,9 +843,7 @@ def violeta15():
     """Violeta — March 2026, dst 56967654876 / 56352410599."""
     logger.debug("legacy: violeta15 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56967654876, 56352410599)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56967654876, 56352410599))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Violeta", **data)
@@ -709,9 +855,7 @@ def altair8():
     """Altair — March 2026, dst 56994662528 / 56227239476."""
     logger.debug("legacy: altair8 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56994662528, 56227239476)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56994662528, 56227239476))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Altair", **data)

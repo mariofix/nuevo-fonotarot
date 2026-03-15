@@ -38,12 +38,20 @@ class SecureAdminIndexView(AdminIndexView):
         today = date.today()
         latest_data = None
         latest_error = None
+        agent_data = None
+        agent_error = None
         try:
             from .legacy.views import _fetch_monthly_3carrier
 
             latest_data = _fetch_monthly_3carrier(today.year, today.month)
         except Exception as exc:
             latest_error = str(exc)
+        try:
+            from .legacy.views import _fetch_all_agents_monthly_cdr
+
+            agent_data = _fetch_all_agents_monthly_cdr(today.year, today.month)
+        except Exception as exc:
+            agent_error = str(exc)
 
         return self.render(
             "admin/index.html",
@@ -52,6 +60,8 @@ class SecureAdminIndexView(AdminIndexView):
             months_es=_MONTHS_ES,
             latest_data=latest_data,
             latest_error=latest_error,
+            agent_data=agent_data,
+            agent_error=agent_error,
         )
 
 
@@ -103,6 +113,62 @@ class MonthlyCarrierReportView(BaseView):
             data=data,
             error=error,
             today=today,
+        )
+
+
+class MonthlyAgentReportView(BaseView):
+    """Flask-Admin view for interactive monthly per-agent CDR reports.
+
+    Displays per-day minute totals for all agents (or a filtered subset)
+    for any selected month/year.  Agents are identified by their 7XXX extension.
+    """
+
+    def is_accessible(self):
+        # return current_user.is_authenticated and current_user.has_role("admin")
+        return True
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        from .legacy.views import AGENT_REGISTRY, _fetch_all_agents_monthly_cdr
+
+        today = date.today()
+        try:
+            year = int(request.args.get("year", today.year))
+            month = int(request.args.get("month", today.month))
+        except (ValueError, TypeError):
+            year, month = today.year, today.month
+
+        month = max(1, min(12, month))
+        year = max(_REPORT_MIN_YEAR, min(today.year + 1, year))
+
+        # Agent filter: list of 7XXX extensions from checkboxes; empty = all agents.
+        selected_raw = request.args.getlist("agents")
+        try:
+            agent_ids = tuple(int(x) for x in selected_raw if x) or None
+        except ValueError:
+            agent_ids = None
+
+        data = None
+        error = None
+        try:
+            data = _fetch_all_agents_monthly_cdr(year, month, agent_ids)
+        except Exception as exc:
+            error = str(exc)
+
+        return self.render(
+            "admin/legacy/agent_monthly_report.html",
+            year=year,
+            month=month,
+            months_es=_MONTHS_ES,
+            min_year=_REPORT_MIN_YEAR,
+            data=data,
+            error=error,
+            today=today,
+            all_agents=sorted(AGENT_REGISTRY.items()),
+            selected_agents=set(agent_ids) if agent_ids else set(),
         )
 
 
@@ -372,6 +438,15 @@ def init_admin(app, admin_ext):
             category=_l("Reportes"),
             menu_icon_type="tabler",
             menu_icon_value="chart-bar",
+        )
+    )
+    admin_ext.add_view(
+        MonthlyAgentReportView(
+            name=_l("Reporte Agentes"),
+            endpoint="monthly_agent_report",
+            category=_l("Reportes"),
+            menu_icon_type="tabler",
+            menu_icon_value="users",
         )
     )
     admin_ext.add_link(

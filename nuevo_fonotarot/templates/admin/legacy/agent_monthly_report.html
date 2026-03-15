@@ -1,0 +1,136 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="row row-cards">
+
+  {# Period + agent filter form #}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="ti ti-filter me-2"></i>Filtros
+        </h3>
+      </div>
+      <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+
+          {# Month / year #}
+          <div class="col-auto">
+            <label class="form-label">Mes</label>
+            <select name="month" class="form-select">
+              {% for m_num, m_name in months_es.items() %}
+              <option value="{{ m_num }}"{% if m_num == month %} selected{% endif %}>{{ m_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-auto">
+            <label class="form-label">Año</label>
+            <input type="number" name="year" value="{{ year }}"
+                   min="{{ min_year }}" max="{{ today.year + 1 }}"
+                   class="form-control" style="width:100px">
+          </div>
+
+          {# Agent filter — 7XXX checkboxes; unchecked = all agents shown #}
+          <div class="col-12 col-md">
+            <label class="form-label">Agentes <span class="text-muted small">(vacío = todos)</span></label>
+            <div class="d-flex flex-wrap gap-2">
+              {% for ext, info in all_agents %}
+              <label class="form-check form-check-inline mb-0">
+                <input class="form-check-input" type="checkbox" name="agents"
+                       value="{{ ext }}"
+                       {% if not selected_agents or ext in selected_agents %}checked{% endif %}>
+                <span class="form-check-label">
+                  <strong>{{ ext }}</strong>
+                  <span class="text-muted small ms-1">{{ info.name }}</span>
+                </span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+              <i class="ti ti-search me-1"></i>Ver reporte
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {# Report results #}
+  <div class="col-12">
+    {% if error %}
+    <div class="alert alert-danger">
+      <i class="ti ti-alert-circle me-2"></i>
+      Base de datos legacy no disponible: <code>{{ error }}</code>
+    </div>
+
+    {% elif data and data.agents %}
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h3 class="card-title">
+          <i class="ti ti-users me-2"></i>
+          {{ months_es[month] }} {{ year }} — Minutos por Agente
+        </h3>
+        <span class="text-muted small ms-auto">
+          {{ data.agents | length }} agente{% if data.agents | length != 1 %}s{% endif %}
+        </span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-vcenter card-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              {% for agent in data.agents %}
+              <th class="text-end" title="{{ agent.name }}">{{ agent.ext }}</th>
+              {% endfor %}
+              <th class="text-end fw-bold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data.days %}
+            <tr{% if row.total == 0 %} class="text-muted"{% endif %}>
+              <td class="small">{{ row.date }}</td>
+              {% for agent in data.agents %}
+              <td class="text-end">
+                {% set mins = row[agent.ext] %}
+                {% if mins %}<strong>{{ mins }}</strong>{% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+              {% endfor %}
+              <td class="text-end fw-bold">
+                {% if row.total %}{{ row.total }}{% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="table-active fw-bold">
+              <td>Totales</td>
+              {% for agent in data.agents %}
+              <td class="text-end">{{ data.totals[agent.ext] }}</td>
+              {% endfor %}
+              <td class="text-end">
+                {{ data.totals.values() | sum }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    {% elif data and not data.agents %}
+    <div class="alert alert-warning">
+      <i class="ti ti-alert-triangle me-2"></i>
+      Ningún agente seleccionado. Marque al menos uno en el filtro.
+    </div>
+
+    {% else %}
+    <div class="alert alert-info">
+      <i class="ti ti-info-circle me-2"></i>Sin datos para este período.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
