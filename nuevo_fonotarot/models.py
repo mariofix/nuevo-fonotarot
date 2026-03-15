@@ -379,28 +379,32 @@ class Order(db.Model, PaymentMixin):
         cancel_url = url_for("pagos.index", _external=True)
         confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
 
-        # Generate merchants_id before the API call so it can be used as
-        # the payment transaction_id (more stable than the integer Order PK).
+        # Build extra_args (provider-specific kwargs) mirroring PaymentMixin.create().
+        # Stored in self.extra_args for audit and unpacked into create_checkout(**kwargs).
+        extra_args: dict = {
+            "payer_email": email,
+            "expires_date": (
+                datetime.now(timezone.utc) + timedelta(hours=6)
+            ).isoformat(),
+        }
+
+        # Auto-inject notify_url via the public registry (not client._provider).
+        import merchants as _merchants_registry
+
+        try:
+            provider_obj = _merchants_registry.get_provider(payment_method)
+            if getattr(provider_obj, "accepts_notify_url", False):
+                try:
+                    extra_args.setdefault("notify_url", merchants_ext.get_webhook_url(payment_method))
+                except RuntimeError:
+                    pass
+        except (KeyError, RuntimeError):
+            pass
+
+        # Generate merchants_id before the API call — used as transaction_id
+        # in metadata so the stored value matches what was sent to the provider.
         merchants_id = str(uuid.uuid4())
-
         client = merchants_ext.get_client(payment_method)
-
-        # Mirror the notify_url auto-injection from flask_merchants
-        # PaymentMixin.create_payment() — bypassed because we call
-        # create_checkout() directly.
-        extra: dict = {}
-        provider_obj = client._provider  # type: ignore[attr-defined]
-        if getattr(provider_obj, "accepts_notify_url", False):
-            try:
-                extra["notify_url"] = merchants_ext.get_webhook_url(payment_method)
-            except RuntimeError:
-                pass
-
-        # Fields supported by Khipu (ignored by providers that don't accept them).
-        extra["payer_email"] = email
-        extra["expires_date"] = (
-            datetime.now(timezone.utc) + timedelta(hours=6)
-        ).isoformat()
 
         try:
             checkout_session = client.payments.create_checkout(
@@ -413,7 +417,7 @@ class Order(db.Model, PaymentMixin):
                     "confirmation_url": confirmation_url,
                     "email": email,
                 },
-                **extra,
+                **extra_args,
             )
         except BaseException as exc:
             # Some providers (e.g. pyflowcl) raise BaseException subclasses,
@@ -441,19 +445,21 @@ class Order(db.Model, PaymentMixin):
         if checkout_session.redirect_url:
             response_raw.setdefault("redirect_url", checkout_session.redirect_url)
 
-        self.merchants_id = str(uuid.uuid4())
+        self.merchants_id = merchants_id
         self.transaction_id = checkout_session.session_id
         self.provider = payment_method
         self.amount = Decimal(str(self.total))
         self.currency = currency
         self.state = OrderStatus.PENDING
         self.email = email
+        self.extra_args = extra_args
         self.request_payload = {
             "order_id": self.id,
             "amount": str(self.total),
             "currency": currency,
             "provider": payment_method,
             "confirmation_url": confirmation_url,
+            **extra_args,
         }
         self.response_payload = response_raw
 
