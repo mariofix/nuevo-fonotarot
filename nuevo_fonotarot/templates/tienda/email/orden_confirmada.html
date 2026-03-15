@@ -76,12 +76,12 @@
   </table>
 
   {# ── Payment method info ── #}
-  {% if order.payment_method %}
+  {% if order.provider %}
   <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:14px;
              color:#8a7a8e;">
     Método de pago:
     <strong style="color:#2d2233;">
-      {{ order.payment_method | capitalize }}
+      {{ order.provider | capitalize }}
     </strong>
   </p>
   {% endif %}

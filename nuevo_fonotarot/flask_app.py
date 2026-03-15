@@ -177,10 +177,10 @@ def _init_merchants(app: Flask, admin: Any) -> None:
                 api_secret=app.config.get("FLOW_SECRET_KEY", ""),
             )
         )
-    from .models import Payment
+    from .models import Order
 
     merchants_ext.init_app(
-        app=app, db=db, models=[Payment], providers=providers, admin=admin
+        app=app, db=db, models=[Order], providers=providers, admin=admin
     )
     return None
 

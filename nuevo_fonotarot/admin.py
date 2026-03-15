@@ -8,10 +8,9 @@ from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
-from flask_merchants.contrib.admin import ProvidersView
 
 from flask_admin_tabler import tabler_bool_formatter
-from .extensions import db, merchants_ext
+from .extensions import db
 
 
 # Spanish month names used in legacy CDR report views
@@ -242,11 +241,11 @@ class OrderAdminView(SecureModelView):
         "id",
         "status",
         "total",
-        "payment_method",
+        "provider",
         "anonymous_shipping",
         "created_at",
     )
-    column_filters = ("status", "payment_method", "anonymous_shipping")
+    column_filters = ("status", "provider", "anonymous_shipping")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
 
