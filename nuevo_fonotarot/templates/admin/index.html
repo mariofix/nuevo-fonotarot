@@ -2,7 +2,9 @@
 
 {% block body %}
 <div class="row row-cards">
-  <div class="col-12">
+
+  {# Carrier report widget #}
+  <div class="col-12 col-lg-7">
     <div class="card">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h3 class="card-title">
@@ -64,5 +66,64 @@
       {% endif %}
     </div>
   </div>
+
+  {# Agent totals widget — sorted by minutes desc for quick top-performer scan #}
+  <div class="col-12 col-lg-5">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h3 class="card-title">
+          <i class="ti ti-users me-2"></i>
+          {{ months_es[latest_month] }} {{ latest_year }} — Agentes
+        </h3>
+        <a href="{{ url_for('monthly_agent_report.index') }}" class="btn btn-sm btn-outline-primary ms-auto">
+          <i class="ti ti-external-link me-1"></i>Ver detalle
+        </a>
+      </div>
+
+      {% if agent_error %}
+      <div class="card-body">
+        <div class="alert alert-warning mb-0">
+          <i class="ti ti-alert-circle me-2"></i>
+          Base de datos legacy no disponible: <code>{{ agent_error }}</code>
+        </div>
+      </div>
+
+      {% elif agent_data %}
+      <div class="table-responsive">
+        <table class="table table-sm table-vcenter card-table">
+          <thead>
+            <tr>
+              <th>Ext.</th>
+              <th>Agente</th>
+              <th class="text-end fw-bold">Minutos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agent in agent_data.agents | sort(attribute='ext') %}
+            {% set total_mins = agent_data.totals[agent.ext] %}
+            <tr{% if total_mins == 0 %} class="text-muted"{% endif %}>
+              <td class="small fw-bold">{{ agent.ext }}</td>
+              <td class="small">{{ agent.name }}</td>
+              <td class="text-end">
+                {% if total_mins %}<strong>{{ total_mins }}</strong>{% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="table-active fw-bold">
+              <td colspan="2">Total</td>
+              <td class="text-end">{{ agent_data.totals.values() | sum }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      {% else %}
+      <div class="card-body text-muted">Sin datos para este período.</div>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 {% endblock %}
