@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from flask_security.core import RoleMixin, UserMixin
@@ -379,6 +379,10 @@ class Order(db.Model, PaymentMixin):
         cancel_url = url_for("pagos.index", _external=True)
         confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
 
+        # Generate merchants_id before the API call so it can be used as
+        # the payment transaction_id (more stable than the integer Order PK).
+        merchants_id = str(uuid.uuid4())
+
         client = merchants_ext.get_client(payment_method)
 
         # Mirror the notify_url auto-injection from flask_merchants
@@ -392,6 +396,12 @@ class Order(db.Model, PaymentMixin):
             except RuntimeError:
                 pass
 
+        # Fields supported by Khipu (ignored by providers that don't accept them).
+        extra["payer_email"] = email
+        extra["expires_date"] = (
+            datetime.now(timezone.utc) + timedelta(hours=6)
+        ).isoformat()
+
         try:
             checkout_session = client.payments.create_checkout(
                 amount=int(self.total),
@@ -399,7 +409,7 @@ class Order(db.Model, PaymentMixin):
                 success_url=success_url,
                 cancel_url=cancel_url,
                 metadata={
-                    "order_id": str(self.id),
+                    "order_id": merchants_id,
                     "confirmation_url": confirmation_url,
                     "email": email,
                 },

@@ -124,15 +124,15 @@ class Config:
     # session and Accept-Language negotiation yields no match.
     DEFAULT_LANGUAGE: str = os.environ.get("DEFAULT_LANGUAGE", "es_CL")
 
+    # merchants
+    MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
     # Flow payment gateway
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
     FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
     FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
-    FLOW_CONFIRMATION_URL: str = os.environ.get("FLOW_CONFIRMATION_URL", "")
 
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
-    KHIPU_NOTIFY_URL: str = os.environ.get("KHIPU_NOTIFY_URL", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
 
     # Email (Flask-Mail)
