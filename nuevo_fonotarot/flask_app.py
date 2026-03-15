@@ -170,6 +170,8 @@ def _init_merchants(app: Flask, admin: Any) -> None:
             KhipuProvider(
                 api_key=app.config.get("KHIPU_API_KEY", ""),
                 subject="Compra Fonotarot",
+                notify_url=app.config.get("KHIPU_NOTIFY_URL", ""),
+                webhook_secret=app.config.get("KHIPU_WEBHOOK_SECRET", ""),
             )
         )
     if app.config.get("FLOW_API_KEY", None):

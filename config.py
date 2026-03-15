@@ -132,6 +132,8 @@ class Config:
 
     # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
+    KHIPU_NOTIFY_URL: str = os.environ.get("KHIPU_NOTIFY_URL", "")
+    KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
 
     # Email (Flask-Mail)
     MAIL_SERVER: str = os.environ.get("MAIL_SERVER", "localhost")
