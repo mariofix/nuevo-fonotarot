@@ -184,7 +184,7 @@ class MinutePack(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     minutes: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP
+    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP (no fractional units)
     description: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -315,7 +315,7 @@ class Order(db.Model, PaymentMixin):
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default=OrderStatus.PENDING
     )
-    total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)  # CLP integer
+    total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)  # CLP (no fractional units)
 
     # Shipping details (only required for physical products).
     # Anonymous shipping: unmarked boxes, pickup-point option.
