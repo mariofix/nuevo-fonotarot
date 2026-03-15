@@ -124,8 +124,7 @@ class MonthlyAgentReportView(BaseView):
     """
 
     def is_accessible(self):
-        # return current_user.is_authenticated and current_user.has_role("admin")
-        return True
+        return current_user.is_authenticated and current_user.has_role("admin")
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))

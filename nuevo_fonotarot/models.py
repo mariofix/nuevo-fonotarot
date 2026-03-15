@@ -8,7 +8,17 @@ from decimal import Decimal
 from flask_security.core import RoleMixin, UserMixin
 from flask_merchants.models import PaymentMixin
 from slugify import slugify
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .extensions import db
@@ -89,7 +99,9 @@ class StaticPage(db.Model):
     __tablename__ = "static_pages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    path: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    path: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     template_name: Mapped[str | None] = mapped_column(String(255))
@@ -125,7 +137,9 @@ class BlogPost(db.Model):
     __tablename__ = "blog_posts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    slug: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     excerpt: Mapped[str | None] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
@@ -184,7 +198,9 @@ class MinutePack(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     minutes: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP (no fractional units)
+    price: Mapped[int] = mapped_column(
+        Integer, nullable=False
+    )  # price in CLP (no fractional units)
     description: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -241,7 +257,9 @@ class ProductCategory(db.Model):
     __tablename__ = "product_categories"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    slug: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False, index=True
+    )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
 
     def __repr__(self) -> str:
@@ -255,7 +273,9 @@ class Product(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    slug: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     category_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("product_categories.id")
     )
@@ -315,7 +335,9 @@ class Order(db.Model, PaymentMixin):
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default=OrderStatus.PENDING
     )
-    total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)  # CLP (no fractional units)
+    total: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )  # CLP (no fractional units)
 
     # Shipping details (only required for physical products).
     # Anonymous shipping: unmarked boxes, pickup-point option.
@@ -323,10 +345,14 @@ class Order(db.Model, PaymentMixin):
     shipping_email: Mapped[str | None] = mapped_column(String(255))
     shipping_phone: Mapped[str | None] = mapped_column(String(30))
     shipping_address: Mapped[str | None] = mapped_column(Text)
-    shipping_uses_pickup: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    shipping_uses_pickup: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
     shipping_pickup_point: Mapped[str | None] = mapped_column(String(255))
     # Anonymous packaging: boxes are sent without branding/markings.
-    anonymous_shipping: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    anonymous_shipping: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False
+    )
 
     # Override timestamps from PaymentMixin to use Python-side UTC defaults.
     created_at: Mapped[datetime] = mapped_column(
@@ -340,8 +366,12 @@ class Order(db.Model, PaymentMixin):
     )
 
     # Override PaymentMixin fields that must be nullable before payment is initiated.
-    merchants_id: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
-    transaction_id: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
+    merchants_id: Mapped[str | None] = mapped_column(
+        String(128), unique=True, index=True
+    )
+    transaction_id: Mapped[str | None] = mapped_column(
+        String(128), unique=True, index=True
+    )
     provider: Mapped[str | None] = mapped_column(String(64), index=True)
     amount: Mapped[Decimal | None] = mapped_column(Numeric(19, 4))
     currency: Mapped[str | None] = mapped_column(String(3))
@@ -375,18 +405,29 @@ class Order(db.Model, PaymentMixin):
         from .extensions import merchants_ext
 
         currency = current_app.config["DEFAULT_CURRENCY"]
-        success_url = url_for("pagos.pago_retorno", order_id=self.id, _external=True)
-        cancel_url = url_for("pagos.index", _external=True)
         confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
+        cancel_url = url_for("content.index", _external=True, _anchor="planes")
+
+        # Generate merchants_id before building URLs so it can be used in success_url.
+        merchants_id = str(uuid.uuid4())
+
+        success_url = url_for(
+            "pagos.pago_retorno", order_id=merchants_id, _external=True
+        )
 
         # Build extra_args (provider-specific kwargs) mirroring PaymentMixin.create().
         # Stored in self.extra_args for audit and unpacked into create_checkout(**kwargs).
-        extra_args: dict = {
-            "payer_email": email,
-            "expires_date": (
-                datetime.now(timezone.utc) + timedelta(hours=6)
-            ).isoformat(),
-        }
+        # Each provider only receives the kwargs it understands.
+        extra_args: dict = {}
+        if payment_method == "khipu":
+            # Khipu accepts payer_email to pre-fill the payer's email field.
+            extra_args["payer_email"] = email
+        elif payment_method == "flow":
+            # Flow requires email as a first-class field; payer_email is not valid.
+            # Optionally restrict accepted payment methods (e.g. webpay only).
+            flow_payment_method = current_app.config.get("FLOW_PAYMENT_METHOD")
+            if flow_payment_method:
+                extra_args["paymentMethod"] = flow_payment_method
 
         # Auto-inject notify_url via the public registry (not client._provider).
         import merchants as _merchants_registry
@@ -395,15 +436,13 @@ class Order(db.Model, PaymentMixin):
             provider_obj = _merchants_registry.get_provider(payment_method)
             if getattr(provider_obj, "accepts_notify_url", False):
                 try:
-                    extra_args.setdefault("notify_url", merchants_ext.get_webhook_url(payment_method))
+                    extra_args.setdefault(
+                        "notify_url", merchants_ext.get_webhook_url(payment_method)
+                    )
                 except RuntimeError:
                     pass
         except (KeyError, RuntimeError):
             pass
-
-        # Generate merchants_id before the API call — used as transaction_id
-        # in metadata so the stored value matches what was sent to the provider.
-        merchants_id = str(uuid.uuid4())
         client = merchants_ext.get_client(payment_method)
 
         try:
@@ -429,15 +468,14 @@ class Order(db.Model, PaymentMixin):
                 body = getattr(response_obj, "text", None)
                 if body:
                     import logging as _logging
+
                     _logging.getLogger(__name__).error(
                         "Payment API error [provider=%s code=%s]: %s",
                         payment_method,
                         exc.args[0].get("code"),
                         body,
                     )
-            raise RuntimeError(
-                f"Payment gateway error from {payment_method}"
-            ) from exc
+            raise RuntimeError(f"Payment gateway error from {payment_method}") from exc
 
         response_raw = (
             checkout_session.raw if isinstance(checkout_session.raw, dict) else {}
@@ -478,7 +516,9 @@ class Order(db.Model, PaymentMixin):
             "merchants_id": self.merchants_id,
             "transaction_id": self.transaction_id,
             "provider": self.provider,
-            "amount": f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None,
+            "amount": (
+                f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None
+            ),
             "currency": self.currency,
             "state": self.state,
             "email": self.email,
@@ -498,9 +538,13 @@ class OrderItem(db.Model):
     __tablename__ = "order_items"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False)
+    order_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("orders.id"), nullable=False
+    )
     item_type: Mapped[str] = mapped_column(String(20), nullable=False)
-    item_id: Mapped[int] = mapped_column(Integer, nullable=False)  # FK to the relevant table
+    item_id: Mapped[int] = mapped_column(
+        Integer, nullable=False
+    )  # FK to the relevant table
     name: Mapped[str] = mapped_column(String(255), nullable=False)  # denormalised name
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     unit_price: Mapped[int] = mapped_column(Integer, nullable=False)  # CLP
@@ -557,7 +601,9 @@ class SiteSettings(db.Model):
     __tablename__ = "site_settings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    key: Mapped[str] = mapped_column(String(80), unique=True, nullable=False, index=True)
+    key: Mapped[str] = mapped_column(
+        String(80), unique=True, nullable=False, index=True
+    )
     value: Mapped[str | None] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(String(255))
     module: Mapped[str] = mapped_column(String(50), nullable=False, default="general")

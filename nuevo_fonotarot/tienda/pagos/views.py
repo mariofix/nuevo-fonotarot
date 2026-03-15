@@ -106,12 +106,12 @@ def pago_confirmacion():
     return "OK", 200
 
 
-@pagos_bp.route("/pago/retorno/<int:order_id>")
-def pago_retorno(order_id: int):
+@pagos_bp.route("/pago/retorno/<order_id>")
+def pago_retorno(order_id: str):
     """User-facing return page after payment (success or cancel)."""
-    order = Order.query.get_or_404(order_id)
+    order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     logger.debug(
-        "pago_retorno: order=%s status=%r transaction_id=%r",
+        "pago_retorno: merchants_id=%s status=%r transaction_id=%r",
         order_id,
         order.status,
         order.transaction_id,
