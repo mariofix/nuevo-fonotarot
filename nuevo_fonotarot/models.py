@@ -1,13 +1,15 @@
 """SQLAlchemy models for nuevo-fonotarot."""
 
 import enum
+import uuid
 from datetime import datetime, timezone
+from decimal import Decimal
 
 from flask_security.core import RoleMixin, UserMixin
 from flask_merchants.models import PaymentMixin
 from slugify import slugify
-from sqlalchemy import JSON, DateTime, Numeric, String, func, inspect, text
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .extensions import db
 
@@ -24,9 +26,9 @@ class Role(db.Model, RoleMixin):
 
     __tablename__ = "roles"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    description = db.Column(db.String(255))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    description: Mapped[str | None] = mapped_column(String(255))
 
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
@@ -37,15 +39,15 @@ class User(db.Model, UserMixin):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    username = db.Column(db.String(80), unique=True, nullable=True, index=True)
-    password = db.Column(db.String(256), nullable=False)
-    active = db.Column(db.Boolean, default=True, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    username: Mapped[str | None] = mapped_column(String(80), unique=True, index=True)
+    password: Mapped[str] = mapped_column(String(256), nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     # Required by Flask-Security ≥ 4.0 for token invalidation.
-    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    fs_uniquifier: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
     roles = db.relationship(
         "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
@@ -53,15 +55,15 @@ class User(db.Model, UserMixin):
 
     # Customer profile fields ---------------------------------------------------
     # Minimal profile (Known Customer)
-    full_name = db.Column(db.String(255), nullable=True)
-    phone = db.Column(db.String(30), nullable=True)
+    full_name: Mapped[str | None] = mapped_column(String(255))
+    phone: Mapped[str | None] = mapped_column(String(30))
     # Extended profile (Physical Customer - required for physical goods)
-    rut = db.Column(db.String(20), nullable=True)
-    address = db.Column(db.String(500), nullable=True)
-    commune = db.Column(db.String(100), nullable=True)
-    postal_code = db.Column(db.String(20), nullable=True)
+    rut: Mapped[str | None] = mapped_column(String(20))
+    address: Mapped[str | None] = mapped_column(String(500))
+    commune: Mapped[str | None] = mapped_column(String(100))
+    postal_code: Mapped[str | None] = mapped_column(String(20))
     # Preferred payment provider key ('flow' or 'khipu')
-    preferred_payment = db.Column(db.String(30), nullable=True)
+    preferred_payment: Mapped[str | None] = mapped_column(String(30))
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
@@ -86,17 +88,17 @@ class StaticPage(db.Model):
 
     __tablename__ = "static_pages"
 
-    id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    title = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text, nullable=False, default="")
-    template_name = db.Column(db.String(255), nullable=True)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    path: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    template_name: Mapped[str | None] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
-    updated_at = db.Column(
-        db.DateTime,
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
@@ -122,18 +124,18 @@ class BlogPost(db.Model):
 
     __tablename__ = "blog_posts"
 
-    id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    title = db.Column(db.String(255), nullable=False)
-    excerpt = db.Column(db.Text, nullable=True)
-    content = db.Column(db.Text, nullable=False, default="")
-    published = db.Column(db.Boolean, default=False, nullable=False)
-    published_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    excerpt: Mapped[str | None] = mapped_column(Text)
+    content: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
-    updated_at = db.Column(
-        db.DateTime,
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
@@ -180,14 +182,14 @@ class MinutePack(db.Model):
 
     __tablename__ = "minute_packs"
 
-    id = db.Column(db.Integer, primary_key=True)
-    minutes = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Integer, nullable=False)  # price in CLP cents-free integer
-    description = db.Column(db.String(255), nullable=True)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_featured = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP
+    description: Mapped[str | None] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     def __repr__(self) -> str:
@@ -204,16 +206,16 @@ class SubscriptionPlan(db.Model):
 
     __tablename__ = "subscription_plans"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    minutes_per_month = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Integer, nullable=False)  # monthly price in CLP
-    description = db.Column(db.Text, nullable=True)
-    features = db.Column(db.Text, nullable=True)  # newline-separated feature list
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_featured = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    minutes_per_month: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)  # monthly price in CLP
+    description: Mapped[str | None] = mapped_column(Text)
+    features: Mapped[str | None] = mapped_column(Text)  # newline-separated feature list
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     def __repr__(self) -> str:
@@ -238,9 +240,9 @@ class ProductCategory(db.Model):
 
     __tablename__ = "product_categories"
 
-    id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.String(50), unique=True, nullable=False, index=True)
-    name = db.Column(db.String(100), nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
 
     def __repr__(self) -> str:
         return f"<ProductCategory {self.slug}>"
@@ -251,26 +253,26 @@ class Product(db.Model):
 
     __tablename__ = "products"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    category_id = db.Column(
-        db.Integer, db.ForeignKey("product_categories.id"), nullable=True
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    category_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("product_categories.id")
     )
     category = db.relationship(
         "ProductCategory", backref=db.backref("products", lazy="dynamic")
     )
-    description = db.Column(db.Text, nullable=True)
-    price = db.Column(db.Integer, nullable=False)  # price in CLP
-    stock = db.Column(db.Integer, nullable=False, default=0)
-    image_url = db.Column(db.String(500), nullable=True)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_featured = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    description: Mapped[str | None] = mapped_column(Text)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP
+    stock: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    image_url: Mapped[str | None] = mapped_column(String(500))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
-    updated_at = db.Column(
-        db.DateTime,
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
@@ -288,52 +290,156 @@ class Product(db.Model):
         return slugify(name)
 
 
-class Order(db.Model):
-    """Customer order (minutes pack, subscription, or physical products)."""
+class Order(db.Model, PaymentMixin):
+    """Customer order and payment record.
+
+    Extends :class:`~flask_merchants.models.PaymentMixin` so that every order
+    also acts as a flask-merchants payment session.  Payment fields
+    (``merchants_id``, ``transaction_id``, ``provider``, ``amount``,
+    ``currency``, ``state``, etc.) are populated when the checkout is
+    initiated via the payment provider.
+
+    ``status`` tracks order-fulfillment milestones (PENDING → PAID → SHIPPED
+    → DELIVERED / CANCELLED), while ``state`` (from PaymentMixin) tracks the
+    payment-processing lifecycle (pending → succeeded / failed / cancelled).
+    """
 
     __tablename__ = "orders"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     # Optional link to registered user; guests allowed.
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    user_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"))
     user = db.relationship("User", backref=db.backref("orders", lazy="dynamic"))
 
-    status = db.Column(db.String(30), nullable=False, default=OrderStatus.PENDING)
-    total = db.Column(db.Integer, nullable=False, default=0)  # CLP
-    payment_method = db.Column(db.String(30), nullable=True)  # 'flow' | 'khipu'
-    payment_token = db.Column(db.String(255), nullable=True)  # gateway token/order id
+    # Order fulfillment status (separate from PaymentMixin.state)
+    status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default=OrderStatus.PENDING
+    )
+    total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)  # CLP integer
 
     # Shipping details (only required for physical products).
     # Anonymous shipping: unmarked boxes, pickup-point option.
-    shipping_name = db.Column(db.String(255), nullable=True)
-    shipping_email = db.Column(db.String(255), nullable=True)
-    shipping_phone = db.Column(db.String(30), nullable=True)
-    shipping_address = db.Column(db.Text, nullable=True)
-    shipping_uses_pickup = db.Column(db.Boolean, default=False, nullable=False)
-    shipping_pickup_point = db.Column(db.String(255), nullable=True)
+    shipping_name: Mapped[str | None] = mapped_column(String(255))
+    shipping_email: Mapped[str | None] = mapped_column(String(255))
+    shipping_phone: Mapped[str | None] = mapped_column(String(30))
+    shipping_address: Mapped[str | None] = mapped_column(Text)
+    shipping_uses_pickup: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    shipping_pickup_point: Mapped[str | None] = mapped_column(String(255))
     # Anonymous packaging: boxes are sent without branding/markings.
-    anonymous_shipping = db.Column(db.Boolean, default=True, nullable=False)
+    anonymous_shipping: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    # Override timestamps from PaymentMixin to use Python-side UTC defaults.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
-    updated_at = db.Column(
-        db.DateTime,
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+    # Override PaymentMixin fields that must be nullable before payment is initiated.
+    merchants_id: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
+    transaction_id: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
+    provider: Mapped[str | None] = mapped_column(String(64), index=True)
+    amount: Mapped[Decimal | None] = mapped_column(Numeric(19, 4))
+    currency: Mapped[str | None] = mapped_column(String(3))
 
     items = db.relationship(
         "OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
-        return f"<Order #{self.id} {self.status}>"
+        return f"<Order #{self.id} status={self.status!r} state={self.state!r}>"
 
     @property
     def total_display(self) -> str:
         return f"{self.total:,}".replace(",", ".")
+
+    def initiate_payment(self, payment_method: str, email: str) -> str:
+        """Call the payment provider and populate all payment fields on this order.
+
+        Sets ``merchants_id``, ``transaction_id``, ``provider``, ``amount``,
+        ``currency``, ``state``, ``email``, ``request_payload``, and
+        ``response_payload`` from the provider response, then commits.
+
+        Returns:
+            The provider redirect URL to send the user to.
+
+        Raises:
+            Exception: Any provider error is propagated to the caller.
+        """
+        from flask import url_for
+
+        from .extensions import merchants_ext
+
+        success_url = url_for("tienda.pago_retorno", order_id=self.id, _external=True)
+        cancel_url = url_for("tienda.index", _external=True)
+        confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
+
+        client = merchants_ext.get_client(payment_method)
+        checkout_session = client.payments.create_checkout(
+            amount=Decimal(str(self.total)),
+            currency="CLP",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "order_id": str(self.id),
+                "confirmation_url": confirmation_url,
+                "email": email,
+            },
+        )
+
+        response_raw = (
+            checkout_session.raw if isinstance(checkout_session.raw, dict) else {}
+        )
+        if checkout_session.redirect_url:
+            response_raw.setdefault("redirect_url", checkout_session.redirect_url)
+
+        self.merchants_id = str(uuid.uuid4())
+        self.transaction_id = checkout_session.session_id
+        self.provider = payment_method
+        self.amount = Decimal(str(self.total))
+        self.currency = "CLP"
+        self.state = "pending"
+        self.email = email
+        self.request_payload = {
+            "order_id": self.id,
+            "amount": str(self.total),
+            "currency": "CLP",
+            "provider": payment_method,
+            "confirmation_url": confirmation_url,
+        }
+        self.response_payload = response_raw
+
+        from .extensions import db as _db
+
+        _db.session.commit()
+        return checkout_session.redirect_url
+
+    def to_dict(self) -> dict:
+        """Return a dict representation including payment fields.
+
+        Overrides PaymentMixin.to_dict() to guard against None amount
+        (before payment is initiated) and include order-specific fields.
+        """
+        d = {
+            "merchants_id": self.merchants_id,
+            "transaction_id": self.transaction_id,
+            "provider": self.provider,
+            "amount": f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None,
+            "currency": self.currency,
+            "state": self.state,
+            "email": self.email,
+            "extra_args": self.extra_args or {},
+            "request_payload": self.request_payload or {},
+            "response_payload": self.response_payload or {},
+            "payment_object": self.payment_object or {},
+        }
+        d["order_id"] = self.id
+        d["order_status"] = self.status
+        return d
 
 
 class OrderItem(db.Model):
@@ -341,13 +447,13 @@ class OrderItem(db.Model):
 
     __tablename__ = "order_items"
 
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
-    item_type = db.Column(db.String(20), nullable=False)
-    item_id = db.Column(db.Integer, nullable=False)  # FK to the relevant table
-    name = db.Column(db.String(255), nullable=False)  # denormalised name
-    quantity = db.Column(db.Integer, nullable=False, default=1)
-    unit_price = db.Column(db.Integer, nullable=False)  # CLP
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False)
+    item_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    item_id: Mapped[int] = mapped_column(Integer, nullable=False)  # FK to the relevant table
+    name: Mapped[str] = mapped_column(String(255), nullable=False)  # denormalised name
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    unit_price: Mapped[int] = mapped_column(Integer, nullable=False)  # CLP
 
     def __repr__(self) -> str:
         return f"<OrderItem {self.name} x{self.quantity}>"
@@ -364,21 +470,6 @@ class OrderItem(db.Model):
 # ---------------------------------------------------------------------------
 # Site configuration models
 # ---------------------------------------------------------------------------
-
-
-class Payment(db.Model, PaymentMixin):
-    """Payment session record managed by flask-merchants.
-
-    Tracks every checkout session created via the merchants SDK.
-    Linked to the Order via ``extra_data["order_id"]``.
-    """
-
-    __tablename__ = "fm_payments"
-
-    id = db.Column(db.Integer, primary_key=True)
-    extra_data: Mapped[dict] = mapped_column(
-        JSON, default=dict, server_default=text("'{}'")
-    )
 
 
 class SiteSettings(db.Model):
@@ -415,11 +506,11 @@ class SiteSettings(db.Model):
 
     __tablename__ = "site_settings"
 
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    value = db.Column(db.Text, nullable=True)
-    description = db.Column(db.String(255), nullable=True)
-    module = db.Column(db.String(50), nullable=False, default="general")
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(80), unique=True, nullable=False, index=True)
+    value: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(String(255))
+    module: Mapped[str] = mapped_column(String(50), nullable=False, default="general")
 
     def __repr__(self) -> str:
         return f"<SiteSettings {self.key}={self.value!r}>"

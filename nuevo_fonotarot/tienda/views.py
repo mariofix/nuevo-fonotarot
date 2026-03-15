@@ -1,14 +1,12 @@
 """Views for the tienda (store) blueprint."""
 
-from decimal import Decimal
-
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from flask_security import current_user
 
 from ..decorators import login_required_modal
 from ..log import get_logger
 from ..models import MinutePack, Order, OrderItem, OrderItemType, OrderStatus, Product, ProductCategory, SubscriptionPlan
-from ..extensions import db, merchants_ext
+from ..extensions import db
 from . import tienda_bp
 
 logger = get_logger(__name__)
@@ -55,61 +53,34 @@ def _cart_total(cart: list) -> int:
 
 
 def _create_payment_and_redirect(order: Order, payment_method: str, email: str) -> object:
-    """Create a checkout session via flask-merchants and redirect to the provider.
+    """Initiate a checkout session via flask-merchants and redirect to the provider.
+
+    Delegates to :meth:`~nuevo_fonotarot.models.Order.initiate_payment` which
+    populates all payment fields on the order and commits.
 
     Returns a Flask redirect response.
     """
-    confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
-    success_url = url_for("tienda.pago_retorno", order_id=order.id, _external=True)
-
-    # Build provider-specific confirmation URL into the metadata so the
-    # FlowProvider confirmation_url can be forwarded through request metadata.
     logger.debug(
-        "Creating checkout session via %s for order=%s amount=%s email=%r",
+        "Initiating checkout via %s for order=%s amount=%s email=%r",
         payment_method,
         order.id,
         order.total,
         email,
     )
     try:
-        client = merchants_ext.get_client(payment_method)
-        checkout_session = client.payments.create_checkout(
-            amount=Decimal(str(order.total)),
-            currency="CLP",
-            success_url=success_url,
-            cancel_url=url_for("tienda.index", _external=True),
-            metadata={
-                "order_id": str(order.id),
-                "confirmation_url": confirmation_url,
-                "email": email,
-            },
-        )
+        redirect_url = order.initiate_payment(payment_method, email)
     except Exception as exc:
         logger.error("Payment creation error (%s): %s", payment_method, exc, exc_info=True)
         flash("Error al conectar con el proveedor de pago. Intenta más tarde.", "danger")
         return redirect(url_for("tienda.checkout"))
 
-    order.payment_token = checkout_session.session_id
-    db.session.commit()
-
     logger.info(
-        "Checkout session created: order=%s provider=%s token=%s",
+        "Checkout session created: order=%s provider=%s transaction_id=%s",
         order.id,
         payment_method,
-        checkout_session.session_id,
+        order.transaction_id,
     )
-
-    merchants_ext.save_session(
-        checkout_session,
-        request_payload={
-            "order_id": order.id,
-            "amount": str(order.total),
-            "currency": "CLP",
-            "provider": payment_method,
-        },
-    )
-
-    return redirect(checkout_session.redirect_url)
+    return redirect(redirect_url)
 
 
 # ---------------------------------------------------------------------------
@@ -310,7 +281,7 @@ def comprar_minutos(pack_id: int):
 
         order = Order(
             total=pack.price,
-            payment_method=payment_method,
+            provider=payment_method,
             shipping_email=email,
             shipping_phone=phone,
         )
@@ -421,7 +392,7 @@ def suscripcion_link_pago(plan_id: int):
         order = Order(
             user_id=current_user.id,
             total=plan.price,
-            payment_method=payment_method,
+            provider=payment_method,
             shipping_email=current_user.email,
         )
         db.session.add(order)
@@ -476,8 +447,8 @@ def iniciar_pago_suscripcion(order_id: int):
         flash("Esta orden ya fue procesada.", "info")
         return redirect(url_for("tienda.orden_estado", order_id=order.id))
     email = order.shipping_email or ""
-    logger.info("Initiating subscription payment: order=%s provider=%r email=%r", order_id, order.payment_method, email)
-    return _create_payment_and_redirect(order, order.payment_method, email)
+    logger.info("Initiating subscription payment: order=%s provider=%r email=%r", order_id, order.provider, email)
+    return _create_payment_and_redirect(order, order.provider, email)
 
 
 # ---------------------------------------------------------------------------
@@ -547,7 +518,7 @@ def checkout():
 
         order = Order(
             total=total,
-            payment_method=payment_method,
+            provider=payment_method,
             shipping_email=email,
         )
         if current_user.is_authenticated:
@@ -616,7 +587,8 @@ def pago_confirmacion():
     """Server-to-server payment confirmation webhook (all providers).
 
     The providers call this URL after payment is processed.
-    We update the Order status based on the payment session state.
+    We look up the Order directly by ``transaction_id`` and update its
+    fulfillment ``status`` based on the payment ``state``.
     """
     token = request.form.get("token") or request.form.get("payment_id") or ""
     if not token:
@@ -625,20 +597,23 @@ def pago_confirmacion():
 
     logger.debug("pago_confirmacion: received webhook token=%r", token)
     try:
-        stored = merchants_ext.get_session(token)
-        if stored:
-            order_id = int((stored.get("metadata") or {}).get("order_id", 0))
-            order = Order.query.get(order_id)
-            if order and order.status == OrderStatus.PENDING:
-                state = stored.get("state", "")
-                logger.debug("pago_confirmacion: order=%s state=%r", order_id, state)
-                if state == "succeeded":
-                    order.status = OrderStatus.PAID
-                    logger.info("Payment confirmed (succeeded): order=%s token=%r", order_id, token)
-                elif state in ("failed", "cancelled"):
-                    order.status = OrderStatus.FAILED
-                    logger.warning("Payment failed/cancelled: order=%s state=%r token=%r", order_id, state, token)
-                db.session.commit()
+        order = Order.query.filter_by(transaction_id=token).first()
+        if order and order.status == OrderStatus.PENDING:
+            logger.debug("pago_confirmacion: order=%s state=%r", order.id, order.state)
+            if order.state == "succeeded":
+                order.status = OrderStatus.PAID
+                logger.info(
+                    "Payment confirmed (succeeded): order=%s token=%r", order.id, token
+                )
+            elif order.state in ("failed", "cancelled"):
+                order.status = OrderStatus.FAILED
+                logger.warning(
+                    "Payment failed/cancelled: order=%s state=%r token=%r",
+                    order.id,
+                    order.state,
+                    token,
+                )
+            db.session.commit()
     except Exception as exc:
         logger.error("Payment confirmation error: %s", exc, exc_info=True)
     return "OK", 200
@@ -648,23 +623,34 @@ def pago_confirmacion():
 def pago_retorno(order_id: int):
     """User-facing return page after payment (success or cancel)."""
     order = Order.query.get_or_404(order_id)
-    logger.debug("pago_retorno: order=%s status=%r token=%r", order_id, order.status, order.payment_token)
+    logger.debug(
+        "pago_retorno: order=%s status=%r transaction_id=%r",
+        order_id,
+        order.status,
+        order.transaction_id,
+    )
 
-    # Try to sync payment state from provider.
-    if order.payment_token and order.status == OrderStatus.PENDING:
+    # Sync payment state from provider and update order fulfillment status.
+    if order.transaction_id and order.status == OrderStatus.PENDING:
         try:
-            stored = merchants_ext.get_session(order.payment_token)
-            if stored:
-                state = stored.get("state", "")
-                logger.debug("pago_retorno: syncing order=%s state=%r", order_id, state)
-                if state == "succeeded":
-                    order.status = OrderStatus.PAID
-                    logger.info("Payment return: order=%s status updated to PAID", order_id)
-                    db.session.commit()
-                elif state in ("failed", "cancelled"):
-                    order.status = OrderStatus.FAILED
-                    logger.warning("Payment return: order=%s status updated to FAILED (state=%r)", order_id, state)
-                    db.session.commit()
+            order.sync_from_provider()
+            logger.debug(
+                "pago_retorno: synced order=%s new_state=%r", order_id, order.state
+            )
+            if order.state == "succeeded":
+                order.status = OrderStatus.PAID
+                logger.info(
+                    "Payment return: order=%s status updated to PAID", order_id
+                )
+                db.session.commit()
+            elif order.state in ("failed", "cancelled"):
+                order.status = OrderStatus.FAILED
+                logger.warning(
+                    "Payment return: order=%s status updated to FAILED (state=%r)",
+                    order_id,
+                    order.state,
+                )
+                db.session.commit()
         except Exception as exc:
             logger.error("Payment return sync error: %s", exc, exc_info=True)
 

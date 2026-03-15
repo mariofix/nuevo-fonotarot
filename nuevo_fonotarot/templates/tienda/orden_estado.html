@@ -44,7 +44,7 @@
           </div>
           <div class="d-flex justify-content-between mb-3">
             <span class="text-secondary">Método de pago</span>
-            <span class="text-white">{{ order.payment_method|upper if order.payment_method else '—' }}</span>
+            <span class="text-white">{{ order.provider|upper if order.provider else '—' }}</span>
           </div>
           <hr style="border-color:var(--border)"/>
           {% for item in items %}
