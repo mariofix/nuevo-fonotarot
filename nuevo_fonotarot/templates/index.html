@@ -11,15 +11,15 @@
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     <meta name="distribution" content="Chile" />
-    <link rel="canonical" href="https://www.fonotarot.cl/" />
-    <link rel="alternate" hreflang="es-CL" href="https://www.fonotarot.cl/" />
-    <link rel="alternate" hreflang="x-default" href="https://www.fonotarot.cl/" />
+    <link rel="canonical" href="{{ site_url }}/" />
+    <link rel="alternate" hreflang="es-CL" href="{{ site_url }}/" />
+    <link rel="alternate" hreflang="x-default" href="{{ site_url }}/" />
 
     <!-- ── Open Graph / Facebook ────────────────────────────────── -->
     <meta property="og:locale"      content="es_CL" />
     <meta property="og:title"       content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
     <meta property="og:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-    <meta property="og:image"       content="https://www.fonotarot.cl/static/og-image.png" />
+    <meta property="og:image"       content="{{ site_url }}/static/og-image.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt"    content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
@@ -27,7 +27,7 @@
     <!-- ── Twitter / X Card ─────────────────────────────────────── -->
     <meta name="twitter:title"       content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
     <meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
-    <meta name="twitter:image"       content="https://www.fonotarot.cl/static/og-image.png" />
+    <meta name="twitter:image"       content="{{ site_url }}/static/og-image.png" />
 
     <!-- ── Schema.org JSON-LD ───────────────────────────────────── -->
     <script type="application/ld+json">
@@ -36,12 +36,12 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://www.fonotarot.cl/#organization",
+          "@id": "{{ site_url }}/#organization",
           "name": "Fonotarot",
-          "url": "https://www.fonotarot.cl",
+          "url": "{{ site_url }}",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://www.fonotarot.cl/static/logo.png",
+            "url": "{{ site_url }}/static/logo.png",
             "width": 520,
             "height": 140
           },
@@ -54,10 +54,10 @@
         },
         {
           "@type": "Service",
-          "@id": "https://www.fonotarot.cl/#service",
+          "@id": "{{ site_url }}/#service",
           "name": "Consulta de Tarot por Teléfono",
           "description": "Consulta de tarot holístico y terapéutico por teléfono con tarotistas reales en Chile. Orientación en amor, trabajo, salud y desarrollo personal.",
-          "provider": { "@id": "https://www.fonotarot.cl/#organization" },
+          "provider": { "@id": "{{ site_url }}/#organization" },
           "areaServed": { "@type": "Country", "name": "Chile" },
           "availableChannel": {
             "@type": "ServiceChannel",
@@ -73,14 +73,14 @@
         },
         {
           "@type": "WebSite",
-          "@id": "https://www.fonotarot.cl/#website",
-          "url": "https://www.fonotarot.cl",
+          "@id": "{{ site_url }}/#website",
+          "url": "{{ site_url }}",
           "name": "Fonotarot",
           "description": "Tarot por teléfono con personas reales en Chile",
-          "publisher": { "@id": "https://www.fonotarot.cl/#organization" },
+          "publisher": { "@id": "{{ site_url }}/#organization" },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": { "@type": "EntryPoint", "urlTemplate": "https://www.fonotarot.cl/?q={search_term_string}" },
+            "target": { "@type": "EntryPoint", "urlTemplate": "{{ site_url }}/?q={search_term_string}" },
             "query-input": "required name=search_term_string"
           }
         }

@@ -370,10 +370,11 @@ class Order(db.Model, PaymentMixin):
         Raises:
             Exception: Any provider error is propagated to the caller.
         """
-        from flask import url_for
+        from flask import current_app, url_for
 
         from .extensions import merchants_ext
 
+        currency = current_app.config["DEFAULT_CURRENCY"]
         success_url = url_for("tienda.pago_retorno", order_id=self.id, _external=True)
         cancel_url = url_for("tienda.index", _external=True)
         confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
@@ -381,7 +382,7 @@ class Order(db.Model, PaymentMixin):
         client = merchants_ext.get_client(payment_method)
         checkout_session = client.payments.create_checkout(
             amount=Decimal(str(self.total)),
-            currency="CLP",
+            currency=currency,
             success_url=success_url,
             cancel_url=cancel_url,
             metadata={
@@ -401,13 +402,13 @@ class Order(db.Model, PaymentMixin):
         self.transaction_id = checkout_session.session_id
         self.provider = payment_method
         self.amount = Decimal(str(self.total))
-        self.currency = "CLP"
-        self.state = "pending"
+        self.currency = currency
+        self.state = OrderStatus.PENDING
         self.email = email
         self.request_payload = {
             "order_id": self.id,
             "amount": str(self.total),
-            "currency": "CLP",
+            "currency": currency,
             "provider": payment_method,
             "confirmation_url": confirmation_url,
         }

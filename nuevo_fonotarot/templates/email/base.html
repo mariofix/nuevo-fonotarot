@@ -23,7 +23,7 @@
 
   {# ── Preheader: shown in inbox preview, hidden in email body ── #}
   <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; color:#f5f0fa; line-height:1px;">
-    {% block preview_text %}El universo marca el camino, ¡descúbrelo! — fonotarot.cl{% endblock %}
+    {% block preview_text %}El universo marca el camino, ¡descúbrelo! — {{ site_domain }}{% endblock %}
     &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
   </div>
 
@@ -44,8 +44,8 @@
             <td align="center"
                 style="background-color:#1e1535; border-radius:14px 14px 0 0;
                        padding:28px 40px;">
-              <a href="https://www.fonotarot.cl" style="text-decoration:none;">
-                <img src="https://www.fonotarot.cl/static/logo.png"
+              <a href="{{ site_url }}" style="text-decoration:none;">
+                <img src="{{ site_url }}/static/logo.png"
                      alt="fonotarot" width="220" height="59"
                      style="max-width:220px; height:auto;" />
               </a>
@@ -76,11 +76,11 @@
               <p style="margin:0; font-family:Arial,sans-serif;
                          font-size:11px; color:rgba(255,255,255,.3);">
                 © fonotarot ·
-                <a href="https://www.fonotarot.cl" style="color:#c9a84c; text-decoration:none;">
-                  www.fonotarot.cl
+                <a href="{{ site_url }}" style="color:#c9a84c; text-decoration:none;">
+                  {{ site_domain }}
                 </a>
                 &nbsp;·&nbsp;
-                <a href="https://www.fonotarot.cl/privacidad"
+                <a href="{{ site_url }}/privacidad"
                    style="color:rgba(255,255,255,.3); text-decoration:none;">
                   Privacidad
                 </a>

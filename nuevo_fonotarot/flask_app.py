@@ -51,6 +51,10 @@ def create_flask(config_name: str | None = None) -> Flask:
     _register_blueprints(app)
     _init_merchants(app, admin=admin)
 
+    site_domain = app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
+    app.jinja_env.globals["site_domain"] = site_domain
+    app.jinja_env.globals["site_url"] = f"https://{site_domain}"
+
     return app
 
 

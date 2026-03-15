@@ -94,7 +94,8 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-
+    TRUSTED_HOSTS: list = ["nuevo.fonotarot.com", "tardis.local"]
+    DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get(
         "DATABASE_URL", "sqlite:///fonotarot.db"
@@ -140,7 +141,7 @@ class Config:
     MAIL_USERNAME: str | None = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD: str | None = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER: str = os.environ.get(
-        "MAIL_DEFAULT_SENDER", "hola@fonotarot.cl"
+        "MAIL_DEFAULT_SENDER", f"hola@{TRUSTED_HOSTS[0]}"
     )
 
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
