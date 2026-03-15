@@ -196,11 +196,14 @@ def _register_blueprints(app: Flask) -> None:
     from .content import blog_bp, content_bp
     from .lab import lab_bp
     from .legacy import legacy_bp
-    from .tienda import tienda_bp
+    from .tienda import minutos_bp, pagos_bp, productos_bp, suscripciones_bp
 
     app.register_blueprint(content_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
-    app.register_blueprint(tienda_bp)
+    app.register_blueprint(pagos_bp)
+    app.register_blueprint(minutos_bp)
+    app.register_blueprint(suscripciones_bp)
+    app.register_blueprint(productos_bp)
     app.register_blueprint(account_bp)
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)

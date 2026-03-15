@@ -375,9 +375,9 @@ class Order(db.Model, PaymentMixin):
         from .extensions import merchants_ext
 
         currency = current_app.config["DEFAULT_CURRENCY"]
-        success_url = url_for("tienda.pago_retorno", order_id=self.id, _external=True)
-        cancel_url = url_for("tienda.index", _external=True)
-        confirmation_url = url_for("tienda.pago_confirmacion", _external=True)
+        success_url = url_for("pagos.pago_retorno", order_id=self.id, _external=True)
+        cancel_url = url_for("pagos.index", _external=True)
+        confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
 
         client = merchants_ext.get_client(payment_method)
         try:

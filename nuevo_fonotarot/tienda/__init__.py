@@ -1,5 +1,6 @@
-from flask import Blueprint
+from .minutos import minutos_bp
+from .pagos import pagos_bp
+from .productos import productos_bp
+from .suscripciones import suscripciones_bp
 
-tienda_bp = Blueprint("tienda", __name__, url_prefix="/tienda")
-
-from . import views  # noqa: E402, F401
+__all__ = ["minutos_bp", "pagos_bp", "productos_bp", "suscripciones_bp"]

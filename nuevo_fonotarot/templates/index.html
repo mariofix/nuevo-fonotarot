@@ -562,7 +562,7 @@
           <a href="tel:+56222301515" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
             <i class="ti ti-phone me-2"></i>Llama Ahora - +56 2 2230 1515
           </a>
-          <a href="{{ url_for('tienda.minutos') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
+          <a href="{{ url_for('minutos.index') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
             <i class="ti ti-wallet me-2"></i>Ver Planes
           </a>
         </div>
@@ -811,14 +811,14 @@
                 <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
                 <p class="plan-desc">{{ pack.description or '' }}</p>
                 <div class="mt-auto d-flex flex-column gap-2">
-                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
+                  <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
                     <i class="ti ti-bolt me-1"></i>Compra Ahora
                   </a>
-                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
+                  <form action="{{ url_for('productos.agregar') }}" method="post">
                     <input type="hidden" name="item_type" value="minute_pack"/>
                     <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                     <input type="hidden" name="quantity" value="1"/>
-                    <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                    <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}"/>
                     <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
                   </form>
                 </div>

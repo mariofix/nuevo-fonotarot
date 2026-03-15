@@ -42,7 +42,7 @@
           de pago por email cada período para renovar cuando quieras.
         </div>
 
-        <form method="post" action="{{ url_for('tienda.suscripcion_link_pago', plan_id=plan.id) }}">
+        <form method="post" action="{{ url_for('suscripciones.link_pago', plan_id=plan.id) }}">
 
           <div class="card p-4 mb-4">
             <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago para esta renovación</h5>

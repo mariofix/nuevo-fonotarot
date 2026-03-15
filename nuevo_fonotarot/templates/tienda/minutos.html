@@ -52,12 +52,12 @@
                   <i class="ti ti-check text-success me-1"></i>Sin suscripción
                 </div>
               </div>
-              <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="mt-auto">
+              <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto">
                 <input type="hidden" name="item_type" value="minute_pack"/>
                 <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                 <input type="hidden" name="quantity" value="1"/>
-                <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
-                <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}"
+                <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}"/>
+                <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}"
                    class="btn btn-primary w-100 mb-2">
                   <i class="ti ti-bolt me-1"></i>Comprar ahora
                 </a>

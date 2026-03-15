@@ -413,7 +413,7 @@
           <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
           {% endblock %}
           <div class="d-none d-md-block">
-            {% block nav_cta %}<a href="{{ url_for('tienda.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
+            {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
           </div>
           <div class="d-none d-md-flex">{{ lang_switcher(get_locale(), site_languages) }}</div>
           <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
@@ -445,7 +445,7 @@
           <a href="/#faq"        class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
         </div>
         <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
-          <a href="{{ url_for('tienda.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
+          <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
           <div class="d-flex align-items-center gap-3">
             {{ lang_switcher(get_locale(), site_languages) }}
           </div>
@@ -475,7 +475,7 @@
               <a href="/#planes">{{ _("Planes y Precios") }}</a>
               <a href="/#faq">{{ _("Preguntas Frecuentes") }}</a>
               <a href="/blog/">{{ _("Blog") }}</a>
-              <a href="{{ url_for('tienda.index') }}">{{ _("Tienda") }}</a>
+              <a href="{{ url_for('pagos.index') }}">{{ _("Tienda") }}</a>
             </div>
           </div>
           <div class="col-6 col-md-4">

@@ -38,7 +38,7 @@
             {% endif %}
             {% if product.stock > 0 %}
             <p class="text-success"><i class="ti ti-check me-1"></i>En stock ({{ product.stock }} disponibles)</p>
-            <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="d-flex gap-2 align-items-center mt-4">
+            <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex gap-2 align-items-center mt-4">
               <input type="hidden" name="item_type" value="product"/>
               <input type="hidden" name="item_id" value="{{ product.id }}"/>
               <label class="text-secondary me-2" for="qty">Cantidad:</label>

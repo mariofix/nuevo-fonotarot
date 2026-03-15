@@ -53,7 +53,7 @@
                       <td class="text-end align-middle price">${{ "{:,}".format(item.unit_price).replace(",", ".") }}</td>
                       <td class="text-end align-middle price">${{ "{:,}".format(item.unit_price * item.quantity).replace(",", ".") }}</td>
                       <td class="text-end align-middle">
-                        <form action="{{ url_for('tienda.eliminar_del_carrito') }}" method="post">
+                        <form action="{{ url_for('productos.eliminar') }}" method="post">
                           <input type="hidden" name="index" value="{{ loop.index0 }}"/>
                           <button type="submit" class="btn btn-sm btn-outline-danger"><i class="ti ti-trash"></i></button>
                         </form>
@@ -65,10 +65,10 @@
               </div>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <a href="{{ url_for('tienda.index') }}" class="btn btn-outline-primary btn-sm">
+              <a href="{{ url_for('pagos.index') }}" class="btn btn-outline-primary btn-sm">
                 <i class="ti ti-arrow-left me-1"></i>Seguir comprando
               </a>
-              <form action="{{ url_for('tienda.vaciar_carrito') }}" method="post">
+              <form action="{{ url_for('productos.vaciar') }}" method="post">
                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Vaciar el carrito?')">
                   <i class="ti ti-trash me-1"></i>Vaciar carrito
                 </button>
@@ -88,7 +88,7 @@
                 <span>Total</span>
                 <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
               </div>
-              <a href="{{ url_for('tienda.checkout') }}" class="btn btn-primary w-100">
+              <a href="{{ url_for('productos.checkout') }}" class="btn btn-primary w-100">
                 <i class="ti ti-lock me-1"></i>Proceder al pago
               </a>
               <div class="text-center mt-3">
@@ -107,7 +107,7 @@
           <i class="ti ti-shopping-cart-off" style="font-size:4rem"></i>
           <h4 class="mt-3">Tu carrito está vacío</h4>
           <p>Agrega minutos, suscripciones o productos esotéricos.</p>
-          <a href="{{ url_for('tienda.index') }}" class="btn btn-primary mt-2">Ir a la tienda</a>
+          <a href="{{ url_for('pagos.index') }}" class="btn btn-primary mt-2">Ir a la tienda</a>
         </div>
         {% endif %}
 

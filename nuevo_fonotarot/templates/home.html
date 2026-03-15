@@ -559,15 +559,15 @@
                 <div class="plan-price">${{ pack.price_display }} CLP<span> {{ _("/ sesión") }}</span></div>
                 <p class="plan-desc">{{ pack.description or '' }}</p>
                 <div class="mt-auto d-flex flex-column gap-2">
-                  <a href="{{ url_for('tienda.comprar_minutos', pack_id=pack.id) }}"
+                  <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}"
                      class="btn btn-plan btn-plan-primary">
                     <i class="ti ti-bolt me-1"></i>{{ _("Compra Ahora") }}
                   </a>
-                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post">
+                  <form action="{{ url_for('productos.agregar') }}" method="post">
                     <input type="hidden" name="item_type" value="minute_pack"/>
                     <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                     <input type="hidden" name="quantity" value="1"/>
-                    <input type="hidden" name="next" value="{{ url_for('tienda.carrito') }}"/>
+                    <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}"/>
                     <button type="submit" class="btn btn-cart-sm">
                       <i class="ti ti-shopping-cart me-1"></i>{{ _("Agregar al Carro") }}
                     </button>

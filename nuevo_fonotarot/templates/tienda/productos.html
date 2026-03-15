@@ -37,12 +37,12 @@
 
         <!-- Category filter -->
         <div class="d-flex flex-wrap gap-2 mb-4">
-          <a href="{{ url_for('tienda.productos') }}"
+          <a href="{{ url_for('productos.index') }}"
              class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
             Todos
           </a>
           {% for cat in categories %}
-          <a href="{{ url_for('tienda.productos', categoria=cat.slug) }}"
+          <a href="{{ url_for('productos.index', categoria=cat.slug) }}"
              class="btn btn-sm btn-outline-primary cat-btn {% if active_category == cat.slug %}active{% endif %}">
             {{ cat.name }}
           </a>
@@ -73,9 +73,9 @@
                 <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>Sin stock</div>
                 {% endif %}
                 <div class="d-flex gap-2 mt-3">
-                  <a href="{{ url_for('tienda.producto_detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">Ver</a>
+                  <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">Ver</a>
                   {% if product.stock > 0 %}
-                  <form action="{{ url_for('tienda.agregar_al_carrito') }}" method="post" class="d-flex">
+                  <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex">
                     <input type="hidden" name="item_type" value="product"/>
                     <input type="hidden" name="item_id" value="{{ product.id }}"/>
                     <input type="hidden" name="quantity" value="1"/>
