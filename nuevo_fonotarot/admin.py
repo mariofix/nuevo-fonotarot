@@ -8,16 +8,26 @@ from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
+from flask_merchants.contrib.admin import ProvidersView
 
 from flask_admin_tabler import tabler_bool_formatter
-from .extensions import db
+from .extensions import db, merchants_ext
 
 
 # Spanish month names used in legacy CDR report views
 _MONTHS_ES = {
-    1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
-    5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
-    9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre",
+    1: "Enero",
+    2: "Febrero",
+    3: "Marzo",
+    4: "Abril",
+    5: "Mayo",
+    6: "Junio",
+    7: "Julio",
+    8: "Agosto",
+    9: "Septiembre",
+    10: "Octubre",
+    11: "Noviembre",
+    12: "Diciembre",
 }
 
 
@@ -31,6 +41,7 @@ class SecureAdminIndexView(AdminIndexView):
         latest_error = None
         try:
             from .legacy.views import _fetch_monthly_3carrier
+
             latest_data = _fetch_monthly_3carrier(today.year, today.month)
         except Exception as exc:
             latest_error = str(exc)
@@ -79,6 +90,7 @@ class MonthlyCarrierReportView(BaseView):
         error = None
         try:
             from .legacy.views import _fetch_monthly_3carrier
+
             data = _fetch_monthly_3carrier(year, month)
         except Exception as exc:
             error = str(exc)
@@ -226,57 +238,133 @@ class SiteSettingsAdminView(SecureModelView):
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
-    column_list = ("id", "status", "total", "payment_method", "anonymous_shipping", "created_at")
+    column_list = (
+        "id",
+        "status",
+        "total",
+        "payment_method",
+        "anonymous_shipping",
+        "created_at",
+    )
     column_filters = ("status", "payment_method", "anonymous_shipping")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
 
 
-class PaymentAdminView(SecureModelView):
-    """Admin view for payment sessions (flask-merchants)."""
-
-    column_list = ("session_id", "provider", "amount", "currency", "state", "created_at")
-    column_searchable_list = ("session_id",)
-    column_filters = ("provider", "state")
-    can_create = False
-    form_excluded_columns = ("created_at", "updated_at")
-
-
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
     from .models import (
-        BlogPost, MinutePack, Order, Payment, Product, ProductCategory, Role,
-        SiteSettings, StaticPage, SubscriptionPlan, User,
+        BlogPost,
+        MinutePack,
+        Order,
+        Product,
+        ProductCategory,
+        Role,
+        SiteSettings,
+        StaticPage,
+        SubscriptionPlan,
+        User,
     )
 
-    admin_ext.add_view(UserAdminView(User, db.session, name=_l("Users"), category=_l("Auth"), menu_icon_type="tabler", menu_icon_value="users"))
-    admin_ext.add_view(RoleAdminView(Role, db.session, name=_l("Roles"), category=_l("Auth"), menu_icon_type="tabler", menu_icon_value="shield"))
     admin_ext.add_view(
-        StaticPageAdminView(StaticPage, db.session, name=_l("Pages"), category=_l("Content"), menu_icon_type="tabler", menu_icon_value="file-text")
+        UserAdminView(
+            User,
+            db.session,
+            name=_l("Users"),
+            category=_l("Auth"),
+            menu_icon_type="tabler",
+            menu_icon_value="users",
+        )
     )
     admin_ext.add_view(
-        BlogPostAdminView(BlogPost, db.session, name=_l("Blog Posts"), category=_l("Content"), menu_icon_type="tabler", menu_icon_value="file-text")
+        RoleAdminView(
+            Role,
+            db.session,
+            name=_l("Roles"),
+            category=_l("Auth"),
+            menu_icon_type="tabler",
+            menu_icon_value="shield",
+        )
     )
     admin_ext.add_view(
-        MinutePackAdminView(MinutePack, db.session, name=_l("Packs de Minutos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="clock")
+        StaticPageAdminView(
+            StaticPage,
+            db.session,
+            name=_l("Pages"),
+            category=_l("Content"),
+            menu_icon_type="tabler",
+            menu_icon_value="file-text",
+        )
     )
     admin_ext.add_view(
-        SubscriptionPlanAdminView(SubscriptionPlan, db.session, name=_l("Suscripciones"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="credit-card")
+        BlogPostAdminView(
+            BlogPost,
+            db.session,
+            name=_l("Blog Posts"),
+            category=_l("Content"),
+            menu_icon_type="tabler",
+            menu_icon_value="file-text",
+        )
     )
     admin_ext.add_view(
-        ProductCategoryAdminView(ProductCategory, db.session, name=_l("Categorías"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="tag")
+        MinutePackAdminView(
+            MinutePack,
+            db.session,
+            name=_l("Packs de Minutos"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="clock",
+        )
     )
     admin_ext.add_view(
-        ProductAdminView(Product, db.session, name=_l("Productos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="package")
+        SubscriptionPlanAdminView(
+            SubscriptionPlan,
+            db.session,
+            name=_l("Suscripciones"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="credit-card",
+        )
     )
     admin_ext.add_view(
-        OrderAdminView(Order, db.session, name=_l("Órdenes"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="shopping-cart")
+        ProductCategoryAdminView(
+            ProductCategory,
+            db.session,
+            name=_l("Categorías"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="tag",
+        )
     )
     admin_ext.add_view(
-        PaymentAdminView(Payment, db.session, name=_l("Pagos"), category=_l("Tienda"), menu_icon_type="tabler", menu_icon_value="credit-card")
+        ProductAdminView(
+            Product,
+            db.session,
+            name=_l("Productos"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="package",
+        )
     )
     admin_ext.add_view(
-        SiteSettingsAdminView(SiteSettings, db.session, name=_l("Configuración"), category=_l("Sitio"), menu_icon_type="tabler", menu_icon_value="settings")
+        OrderAdminView(
+            Order,
+            db.session,
+            name=_l("Órdenes"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="shopping-cart",
+        )
+    )
+    admin_ext.add_view(
+        SiteSettingsAdminView(
+            SiteSettings,
+            db.session,
+            name=_l("Configuración"),
+            category=_l("Sitio"),
+            menu_icon_type="tabler",
+            menu_icon_value="settings",
+        )
     )
     admin_ext.add_view(
         MonthlyCarrierReportView(
@@ -287,4 +375,6 @@ def init_admin(app, admin_ext):
             menu_icon_value="chart-bar",
         )
     )
-    admin_ext.add_link(MenuLink(name="Home Page", url="/",  icon_type="tabler", icon_value="home"))
+    admin_ext.add_link(
+        MenuLink(name="Home Page", url="/", icon_type="tabler", icon_value="home")
+    )

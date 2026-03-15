@@ -4,7 +4,10 @@ import enum
 from datetime import datetime, timezone
 
 from flask_security.core import RoleMixin, UserMixin
+from flask_merchants.models import PaymentMixin
 from slugify import slugify
+from sqlalchemy import JSON, DateTime, Numeric, String, func, inspect, text
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from .extensions import db
 
@@ -66,7 +69,9 @@ class User(db.Model, UserMixin):
     @property
     def has_physical_profile(self) -> bool:
         """Return True when the user has all fields required for physical goods."""
-        return all((self.full_name, self.rut, self.address, self.commune, self.postal_code))
+        return all(
+            (self.full_name, self.rut, self.address, self.commune, self.postal_code)
+        )
 
 
 class StaticPage(db.Model):
@@ -249,8 +254,12 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    category_id = db.Column(db.Integer, db.ForeignKey("product_categories.id"), nullable=True)
-    category = db.relationship("ProductCategory", backref=db.backref("products", lazy="dynamic"))
+    category_id = db.Column(
+        db.Integer, db.ForeignKey("product_categories.id"), nullable=True
+    )
+    category = db.relationship(
+        "ProductCategory", backref=db.backref("products", lazy="dynamic")
+    )
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Integer, nullable=False)  # price in CLP
     stock = db.Column(db.Integer, nullable=False, default=0)
@@ -315,7 +324,9 @@ class Order(db.Model):
         nullable=False,
     )
 
-    items = db.relationship("OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan")
+    items = db.relationship(
+        "OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<Order #{self.id} {self.status}>"
@@ -355,55 +366,19 @@ class OrderItem(db.Model):
 # ---------------------------------------------------------------------------
 
 
-class Payment(db.Model):
+class Payment(db.Model, PaymentMixin):
     """Payment session record managed by flask-merchants.
 
     Tracks every checkout session created via the merchants SDK.
-    Linked to the Order via ``metadata_json["order_id"]``.
+    Linked to the Order via ``extra_data["order_id"]``.
     """
 
-    __tablename__ = "payments"
-
-    VALID_STATES = frozenset(
-        ("pending", "processing", "succeeded", "failed", "cancelled", "refunded", "unknown")
-    )
+    __tablename__ = "fm_payments"
 
     id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.String(128), unique=True, index=True, nullable=False)
-    redirect_url = db.Column(db.String(2048), nullable=False)
-    provider = db.Column(db.String(64), nullable=False)
-    amount = db.Column(db.Numeric(19, 4), nullable=False)
-    currency = db.Column(db.String(8), nullable=False)
-    state = db.Column(db.String(32), nullable=False, default="pending")
-    metadata_json = db.Column(db.JSON, nullable=False, default=dict)
-    request_payload = db.Column(db.JSON, nullable=False, default=dict)
-    response_payload = db.Column(db.JSON, nullable=False, default=dict)
-    created_at = db.Column(
-        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    extra_data: Mapped[dict] = mapped_column(
+        JSON, default=dict, server_default=text("'{}'")
     )
-    updated_at = db.Column(
-        db.DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-
-    def __repr__(self) -> str:
-        return f"<Payment {self.session_id} state={self.state!r}>"
-
-    def to_dict(self) -> dict:
-        from decimal import Decimal
-        return {
-            "session_id": self.session_id,
-            "redirect_url": self.redirect_url,
-            "provider": self.provider,
-            "amount": f"{Decimal(self.amount):.2f}",
-            "currency": self.currency,
-            "state": self.state,
-            "metadata": self.metadata_json or {},
-            "request_payload": self.request_payload or {},
-            "response_payload": self.response_payload or {},
-        }
 
 
 class SiteSettings(db.Model):
@@ -456,7 +431,14 @@ class SiteSettings(db.Model):
         return row.value if row else default
 
     @classmethod
-    def set(cls, key: str, value: str, *, module: str = "general", description: str | None = None) -> None:
+    def set(
+        cls,
+        key: str,
+        value: str,
+        *,
+        module: str = "general",
+        description: str | None = None,
+    ) -> None:
         """Set *value* for *key*, creating the row when it does not exist.
 
         Commits the current session.

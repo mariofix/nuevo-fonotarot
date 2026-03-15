@@ -1,0 +1,68 @@
+{% extends 'admin/model/list.html' %}
+
+{% block model_list_table %}
+<div class="table-responsive">
+  <table class="table table-striped table-bordered table-hover model-list">
+    <thead>
+      <tr>
+        {% for c, name in list_columns %}
+        {% set column = loop.index0 %}
+        <th class="column-header col-{{ c }}">
+          {% if admin_view.is_sortable(c) %}
+            {% if sort_column == column %}
+              <a href="{{ sort_url(column, True) }}" title="Sort by {{ name }}">
+                {{ name }}
+                {% if sort_desc %}
+                  <span class="fa fa-chevron-up"></span>
+                {% else %}
+                  <span class="fa fa-chevron-down"></span>
+                {% endif %}
+              </a>
+            {% else %}
+              <a href="{{ sort_url(column) }}" title="Sort by {{ name }}">{{ name }}</a>
+            {% endif %}
+          {% else %}
+            {{ name }}
+          {% endif %}
+        </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        {% for c, name in list_columns %}
+        <td class="col-{{ c }}">
+          {% if c == 'key' %}
+            <code>{{ row.key }}</code>
+          {% elif c == 'base_url' %}
+            <small>{{ row.base_url }}</small>
+          {% elif c == 'auth_type' %}
+            <span class="badge badge-info">{{ row.auth_type }}</span>
+          {% elif c == 'auth_header' %}
+            <code>{{ row.auth_header }}</code>
+          {% elif c == 'auth_masked_value' %}
+            <code>{{ row.auth_masked_value }}</code>
+          {% elif c == 'transport' %}
+            <small>{{ row.transport }}</small>
+          {% elif c == 'payment_count' %}
+            <span class="badge badge-{% if row.payment_count > 0 %}primary{% else %}secondary{% endif %}">
+              {{ row.payment_count }}
+            </span>
+          {% else %}
+            {{ row[c] }}
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="{{ list_columns|length }}">
+          <div class="text-center">{{ admin_view.get_empty_list_message() }}</div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 [project]
 name = "nuevo-fonotarot"
 version = "0.1.0"
-requires-python = ">=3.14,<4.0"
+requires-python = ">=3.13,<4.0"
 dependencies = [
     "flask>=3.0",
     # "flask-admin-tabler (>=2026.2.2,<2027.0.0)",
@@ -11,7 +11,7 @@ dependencies = [
     "python-dotenv (>=1.2.1,<2.0.0)",
     "flask-limiter (>=4.1.1,<5.0.0)",
     "flask-migrate (>=4.1.0,<5.0.0)",
-    "pyflowcl (>=2025.2.0,<2026.0.0)",
+    "pyflowcl (>=2026.3.0,<2027.0.0)",
     "khipu-tools (>=2025.1.0,<2026.0.0)",
     "flask-debugtoolbar (>=0.16.0,<0.17.0)",
     "pymysql (>=1.1.0,<2.0.0)",

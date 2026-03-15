@@ -139,7 +139,9 @@ class Config:
     MAIL_USE_SSL: bool = os.environ.get("MAIL_USE_SSL", "false").lower() == "true"
     MAIL_USERNAME: str | None = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD: str | None = os.environ.get("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", "hola@fonotarot.cl")
+    MAIL_DEFAULT_SENDER: str = os.environ.get(
+        "MAIL_DEFAULT_SENDER", "hola@fonotarot.cl"
+    )
 
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")

@@ -3,10 +3,12 @@
 import json
 import logging.config
 import os
+from typing import Any
 
 from flask import Flask, request, session
 from flask_babel import get_locale
 from flask_security.datastore import SQLAlchemyUserDatastore
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import config
 from .admin import SecureAdminIndexView, init_admin
@@ -38,6 +40,7 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # Apply Django-style logging configuration from the LOGGING config key.
     # All nuevo_fonotarot.* loggers inherit from the 'nuevo_fonotarot' root
@@ -46,6 +49,7 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     _init_extensions(app)
     _register_blueprints(app)
+    _init_merchants(app, admin=admin)
 
     return app
 
@@ -151,6 +155,34 @@ def _init_extensions(app: Flask) -> None:
             is_dark = hour >= start or hour < end
 
         return {"default_theme": "dark" if is_dark else "light"}
+
+
+def _init_merchants(app: Flask, admin: Any) -> None:
+    providers = []
+    if app.config.get("KHIPU_API_KEY", None):
+        from merchants.providers.khipu import KhipuProvider
+
+        providers.append(
+            KhipuProvider(
+                api_key=app.config.get("KHIPU_API_KEY", ""),
+                subject="Compra Fonotarot",
+            )
+        )
+    if app.config.get("FLOW_API_KEY", None):
+        from merchants.providers.flow import FlowProvider
+
+        providers.append(
+            FlowProvider(
+                api_key=app.config.get("FLOW_API_KEY", ""),
+                api_secret=app.config.get("FLOW_SECRET_KEY", ""),
+            )
+        )
+    from .models import Payment
+
+    merchants_ext.init_app(
+        app=app, db=db, models=[Payment], providers=providers, admin=admin
+    )
+    return None
 
 
 def _register_blueprints(app: Flask) -> None:
