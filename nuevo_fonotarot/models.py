@@ -380,6 +380,18 @@ class Order(db.Model, PaymentMixin):
         confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
 
         client = merchants_ext.get_client(payment_method)
+
+        # Mirror the notify_url auto-injection from flask_merchants
+        # PaymentMixin.create_payment() — bypassed because we call
+        # create_checkout() directly.
+        extra: dict = {}
+        provider_obj = client._provider  # type: ignore[attr-defined]
+        if getattr(provider_obj, "accepts_notify_url", False):
+            try:
+                extra["notify_url"] = merchants_ext.get_webhook_url(payment_method)
+            except RuntimeError:
+                pass
+
         try:
             checkout_session = client.payments.create_checkout(
                 amount=int(self.total),
@@ -391,6 +403,7 @@ class Order(db.Model, PaymentMixin):
                     "confirmation_url": confirmation_url,
                     "email": email,
                 },
+                **extra,
             )
         except BaseException as exc:
             # Some providers (e.g. pyflowcl) raise BaseException subclasses,
