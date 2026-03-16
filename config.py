@@ -122,6 +122,10 @@ class Config:
     SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
+    SECURITY_REGISTER_URL: str = "/ft-register"
+    SECURITY_RESET_URL: str = "/ft-reset"
+    SECURITY_VERIFY_URL: str = "/ft-verify"
+    SECURITY_CONFIRM_URL: str = "/ft-confirm"
     SECURITY_POST_LOGIN_VIEW: str = "/admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 
