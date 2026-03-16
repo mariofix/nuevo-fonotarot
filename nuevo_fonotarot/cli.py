@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import sys
@@ -64,41 +63,8 @@ def _compile(locale: str) -> None:
 
 
 def _load_available_langs() -> list[list[str]]:
-    """Return the available_lang list from SiteSettings (or fallback)."""
-    try:
-        from .models import SiteSettings
-        raw = SiteSettings.get("available_lang")
-        if raw:
-            return json.loads(raw)
-    except Exception:
-        pass
-    return [
-        ["es", "es_CL", "Español"],
-        ["en", "en_US", "English"],
-        ["pt", "pt_BR", "Português"],
-    ]
-
-
-def _save_available_langs(langs: list[list[str]]) -> None:
-    """Persist the available_lang list back to SiteSettings."""
-    from .extensions import db
-    from .models import SiteSettings
-
-    row = SiteSettings.query.filter_by(key="available_lang").first()
-    if row:
-        row.value = json.dumps(langs, ensure_ascii=False)
-    else:
-        row = SiteSettings(
-            key="available_lang",
-            value=json.dumps(langs, ensure_ascii=False),
-            description=(
-                "Available languages for the public language switcher. "
-                "JSON array of [short_code, locale, label] entries."
-            ),
-            module="general",
-        )
-        db.session.add(row)
-    db.session.commit()
+    """Return the AVAILABLE_LANGUAGES list from app config."""
+    return current_app.config.get("AVAILABLE_LANGUAGES", [])
 
 
 # ---------------------------------------------------------------------------
@@ -114,15 +80,16 @@ def lang_cli() -> None:
 @click.argument("locale")
 @click.argument("label")
 @click.option("--short", default=None,
-              help="Short code stored in SiteSettings (defaults to the language part of the locale, e.g. 'fr' for 'fr_FR').")
+              help="Short code for the language switcher (defaults to the language part of the locale, e.g. 'fr' for 'fr_FR').")
 @with_appcontext
 def lang_new(locale: str, label: str, short: str | None) -> None:
-    """Create a NEW language catalogue and register it in SiteSettings.
+    """Create a NEW language catalogue.
 
     LOCALE  Babel locale code, e.g. fr_FR\n
     LABEL   Human-readable name shown as tooltip, e.g. Français
 
-    The command refuses to proceed if LOCALE is already registered.
+    The command refuses to proceed if LOCALE is already in AVAILABLE_LANGUAGES.
+    After running, add the new entry to AVAILABLE_LANGUAGES in config.py.
     """
     if short is None:
         short = locale.split("_")[0].lower()
@@ -133,7 +100,7 @@ def lang_new(locale: str, label: str, short: str | None) -> None:
     if locale in existing_locales:
         click.echo(
             click.style(
-                f"✗ Locale '{locale}' is already registered in SiteSettings (available_lang).",
+                f"✗ Locale '{locale}' is already in AVAILABLE_LANGUAGES (config.py).",
                 fg="red",
             )
         )
@@ -159,13 +126,13 @@ def lang_new(locale: str, label: str, short: str | None) -> None:
     click.echo(f"→ Compiling {locale} …")
     _compile(locale)
 
-    langs.append([short, locale, label])
-    _save_available_langs(langs)
-
     click.echo(
         click.style(
-            f"✓ Language '{locale}' ({label}) created and registered.\n"
-            f"  Next: translate {po}, then run 'flask lang update {locale}'.",
+            f"✓ Language '{locale}' ({label}) catalogue created.\n"
+            f"  Next steps:\n"
+            f"    1. Add [\"{short}\", \"{locale}\", \"{label}\"] to AVAILABLE_LANGUAGES in config.py\n"
+            f"    2. Translate {po}\n"
+            f"    3. Run 'flask lang update {locale}'",
             fg="green",
         )
     )
@@ -187,8 +154,8 @@ def lang_update(locale: str | None) -> None:
         if locale not in registered:
             click.echo(
                 click.style(
-                    f"✗ Locale '{locale}' is not registered in SiteSettings. "
-                    "Use 'flask lang new' to add it first.",
+                    f"✗ Locale '{locale}' is not in AVAILABLE_LANGUAGES (config.py). "
+                    "Use 'flask lang new' to create the catalogue, then add it to config.",
                     fg="red",
                 )
             )

@@ -1,6 +1,5 @@
 """Flask application factory."""
 
-import json
 import logging.config
 import os
 from typing import Any
@@ -23,7 +22,7 @@ from .extensions import (
     security,
     toolbar,
 )
-from .utils import _FALLBACK_LANGUAGES, _LangEntry
+from .utils import _LangEntry
 
 
 def create_flask(config_name: str | None = None) -> Flask:
@@ -63,19 +62,11 @@ def _init_extensions(app: Flask) -> None:
     migrate.init_app(app, db)
     limiter.init_app(app)
     toolbar.init_app(app)
-    default_lang: str = app.config.get("DEFAULT_LANGUAGE", "es_CL")
+    available_langs: list = app.config.get("AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]])
 
     def _parse_available_langs() -> list[_LangEntry]:
-        """Return language entries from SiteSettings, falling back to defaults."""
-        try:
-            from .models import SiteSettings
-
-            raw = SiteSettings.get("available_lang")
-            if raw:
-                return [_LangEntry(*item) for item in json.loads(raw)]
-        except Exception:
-            pass
-        return [_LangEntry(*item) for item in _FALLBACK_LANGUAGES]
+        """Return language entries from app config."""
+        return [_LangEntry(*item) for item in available_langs]
 
     def _active_locales() -> list[str]:
         return [lang.locale for lang in _parse_available_langs()]
@@ -83,6 +74,14 @@ def _init_extensions(app: Flask) -> None:
     def _locale_selector() -> str:
         lang = session.get("lang") or request.args.get("lang")
         active = _active_locales()
+        # SiteSettings overrides the deploy-time BABEL_DEFAULT_LOCALE if set.
+        try:
+            from .models import SiteSettings
+            default_lang: str = SiteSettings.get(
+                "default_language", app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
+            )
+        except Exception:
+            default_lang = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
         if lang:
             if lang in active:
                 session["lang"] = lang
