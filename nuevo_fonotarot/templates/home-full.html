@@ -412,14 +412,14 @@
     <section class="moon-strip" aria-hidden="true">
       <h3>Las fases de la luna guían cada lectura</h3>
       <div class="moon-phases">
-        <div class="moon-phase"><span>🌑</span><span>Luna Nueva</span></div>
-        <div class="moon-phase"><span>🌒</span><span>Creciente</span></div>
-        <div class="moon-phase"><span>🌓</span><span>Cuarto Creciente</span></div>
-        <div class="moon-phase"><span>🌔</span><span>Gibosa Creciente</span></div>
-        <div class="moon-phase"><span>🌕</span><span>Luna Llena</span></div>
-        <div class="moon-phase"><span>🌖</span><span>Gibosa Menguante</span></div>
-        <div class="moon-phase"><span>🌗</span><span>Cuarto Menguante</span></div>
-        <div class="moon-phase"><span>🌘</span><span>Menguante</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 0 }}"><span>🌑</span><span>Luna Nueva</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 1 }}"><span>🌒</span><span>Creciente</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 2 }}"><span>🌓</span><span>Cuarto Creciente</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 3 }}"><span>🌔</span><span>Gibosa Creciente</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 4 }}"><span>🌕</span><span>Luna Llena</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 5 }}"><span>🌖</span><span>Gibosa Menguante</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 6 }}"><span>🌗</span><span>Cuarto Menguante</span></div>
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 7 }}"><span>🌘</span><span>Menguante</span></div>
       </div>
     </section>
 
