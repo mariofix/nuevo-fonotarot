@@ -113,6 +113,7 @@ class Config:
 
     # Custom login/logout routing
     SECURITY_REGISTRABLE: bool = True
+    SECURITY_RECOVERABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
     SECURITY_POST_LOGIN_VIEW: str = "/admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
