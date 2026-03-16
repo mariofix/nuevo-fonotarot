@@ -56,7 +56,7 @@ def upgrade():
                 'description': (
                     'Fallback locale used when a visitor has no session '
                     'language and Accept-Language negotiation yields no '
-                    'match.  Overrides the DEFAULT_LANGUAGE environment '
+                    'match.  Overrides the BABEL_DEFAULT_LOCALE environment '
                     'variable at runtime.'
                 ),
                 'module': 'general',

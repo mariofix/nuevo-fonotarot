@@ -121,10 +121,10 @@ class Config:
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "es_CL")
 
-    # Default public-facing locale used when no language is set in the
-    # session and Accept-Language negotiation yields no match.
+    # Flask-Babel: default locale used when the locale selector returns None
+    # and as the deploy-time fallback in _locale_selector().
     # Can be overridden at runtime via SiteSettings key ``default_language``.
-    DEFAULT_LANGUAGE: str = os.environ.get("DEFAULT_LANGUAGE", "es_CL")
+    BABEL_DEFAULT_LOCALE: str = os.environ.get("BABEL_DEFAULT_LOCALE", "es_CL")
 
     # Available languages for the public language switcher.
     # Each entry is a [short_code, locale, label] triple.

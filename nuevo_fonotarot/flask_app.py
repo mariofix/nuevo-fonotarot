@@ -74,14 +74,14 @@ def _init_extensions(app: Flask) -> None:
     def _locale_selector() -> str:
         lang = session.get("lang") or request.args.get("lang")
         active = _active_locales()
-        # SiteSettings overrides the deploy-time DEFAULT_LANGUAGE if set.
+        # SiteSettings overrides the deploy-time BABEL_DEFAULT_LOCALE if set.
         try:
             from .models import SiteSettings
             default_lang: str = SiteSettings.get(
-                "default_language", app.config.get("DEFAULT_LANGUAGE", "es_CL")
+                "default_language", app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
             )
         except Exception:
-            default_lang = app.config.get("DEFAULT_LANGUAGE", "es_CL")
+            default_lang = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
         if lang:
             if lang in active:
                 session["lang"] = lang
