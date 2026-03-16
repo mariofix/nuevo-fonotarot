@@ -11,6 +11,7 @@ from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_wtf.csrf import CSRFProtect
+from daleks.contrib.flask_security_mail import DaleksMailUtil
 
 csrf = CSRFProtect()
 db = SQLAlchemy()
@@ -19,7 +20,7 @@ limiter = Limiter(
     key_func=get_remote_address, default_limits=["200 per day", "50 per hour"]
 )
 babel = Babel()
-security = Security()
+security = Security(mail_util_cls=DaleksMailUtil)
 admin = Admin(name="Fonotarot")
 merchants_ext = FlaskMerchants()
 toolbar = DebugToolbarExtension()

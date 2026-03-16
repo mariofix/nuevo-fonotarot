@@ -94,13 +94,11 @@ def _init_extensions(app: Flask) -> None:
     babel.init_app(app, locale_selector=_locale_selector)
     app.jinja_env.globals["get_locale"] = get_locale
 
-    from daleks.contrib.flask_security_mail import DaleksMailUtil
-
     from .models import Role, User
     import nuevo_fonotarot.extensions as _ext
 
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security.init_app(app, _ext.user_datastore, mail_util_cls=DaleksMailUtil)
+    security.init_app(app, _ext.user_datastore)
 
     # TablerTheme blueprint must be registered before Admin registers its own
     # blueprint — Flask resolves templates in blueprint registration order.
