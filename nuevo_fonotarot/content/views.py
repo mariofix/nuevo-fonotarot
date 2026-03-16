@@ -22,7 +22,7 @@ from ..extensions import db, limiter
 from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
-from ..utils import get_agents  # still used by the /api/agents debug endpoint
+from ..utils import get_agents, get_moon_phase_index  # still used by the /api/agents debug endpoint
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
@@ -235,6 +235,7 @@ def _homepage_ctx() -> dict:
         "testimonials": TESTIMONIALS,
         "minute_packs": minute_packs,
         "plans": minute_packs,  # alias used by older experiment templates
+        "current_moon_phase": get_moon_phase_index(),
     }
 
 blog_bp = Blueprint("blog", __name__)

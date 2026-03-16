@@ -755,35 +755,35 @@
     <section class="moon-section" aria-label="Fases lunares">
       <p class="moon-section-title">Las fases de la luna guían cada lectura</p>
       <div class="moon-phases">
-        <div class="moon-phase" style="--mg-dur:3.5s; --mg-del:0s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 0 }}" style="--mg-dur:3.5s; --mg-del:0s;">
           <span class="moon-emoji">🌑</span>
           <span class="moon-label">Luna Nueva</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:4s; --mg-del:.4s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 1 }}" style="--mg-dur:4s; --mg-del:.4s;">
           <span class="moon-emoji">🌒</span>
           <span class="moon-label">Creciente</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:3.8s; --mg-del:.8s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 2 }}" style="--mg-dur:3.8s; --mg-del:.8s;">
           <span class="moon-emoji">🌓</span>
           <span class="moon-label">Cuarto Creciente</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:4.2s; --mg-del:1.2s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 3 }}" style="--mg-dur:4.2s; --mg-del:1.2s;">
           <span class="moon-emoji">🌔</span>
           <span class="moon-label">Gibosa Creciente</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:3.6s; --mg-del:1.6s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 4 }}" style="--mg-dur:3.6s; --mg-del:1.6s;">
           <span class="moon-emoji">🌕</span>
           <span class="moon-label">Luna Llena</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:4.4s; --mg-del:2s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 5 }}" style="--mg-dur:4.4s; --mg-del:2s;">
           <span class="moon-emoji">🌖</span>
           <span class="moon-label">Gibosa Menguante</span>
         </div>
-        <div class="moon-phase" style="--mg-dur:3.9s; --mg-del:2.4s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 6 }}" style="--mg-dur:3.9s; --mg-del:2.4s;">
           <span class="moon-emoji">🌗</span>
           <span class="moon-label">Cuarto Menguante</span>
         </div>
-        <div class="moon-phase moon-phase--active" style="--mg-dur:4.1s; --mg-del:2.8s;">
+        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 7 }}" style="--mg-dur:4.1s; --mg-del:2.8s;">
           <span class="moon-emoji">🌘</span>
           <span class="moon-label">Menguante</span>
         </div>
