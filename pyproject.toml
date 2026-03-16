@@ -20,6 +20,7 @@ dependencies = [
     "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
     "daleks[contrib] @ git+https://github.com/mariofix/daleks.git",
     "requests (>=2.31.0,<3.0.0)",
+    "gunicorn (>=25.1.0,<26.0.0)",
 ]
 
 [project.scripts]
