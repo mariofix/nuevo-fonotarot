@@ -404,7 +404,9 @@ class Order(db.Model, PaymentMixin):
 
         from .extensions import merchants_ext
 
-        currency = current_app.config["DEFAULT_CURRENCY"]
+        currency = SiteSettings.get(
+            "default_currency", current_app.config.get("DEFAULT_CURRENCY", "CLP")
+        )
         confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
         cancel_url = url_for("content.index", _external=True, _anchor="planes")
 
@@ -574,19 +576,6 @@ class SiteSettings(db.Model):
 
     Notable built-in keys
     ---------------------
-    ``available_lang``
-        JSON array of available public languages used by the language
-        switcher.  Each element is a three-item list::
-
-            [short_code, locale, label]
-
-        Example value::
-
-            [["es","es_CL","Español"],["en","en_US","English"],["pt","pt_BR","Português"]]
-
-        The Tabler flag CSS class is derived automatically from the locale's
-        territory code (e.g. ``es_CL`` → ``flag-country-cl``).
-
     ``dark_hours_start``
         Integer 0-23.  Hour (server local time) at which the dark theme
         becomes the default.  Defaults to ``20`` (8 pm).

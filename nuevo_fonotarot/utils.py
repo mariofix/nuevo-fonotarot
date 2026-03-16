@@ -28,15 +28,6 @@ class _LangEntry:
         return f"<_LangEntry {self.locale}>"
 
 
-# Fallback language list used when the DB is unavailable or the
-# ``available_lang`` setting has not been seeded yet.
-# Format: [short_code, locale, label]
-_FALLBACK_LANGUAGES = [
-    ["es", "es_CL", "Español"],
-    ["en", "en_US", "English"],
-    ["pt", "pt_BR", "Português"],
-]
-
 
 def _normalize_agent(raw: dict) -> dict:
     """Map a firenze API agent record to the dict shape templates expect.
@@ -114,6 +105,6 @@ def get_agent_profiles() -> tuple[list[dict], str | None]:
 
 
 __all__ = [
-    "_flag_class", "_LangEntry", "_FALLBACK_LANGUAGES",
+    "_flag_class", "_LangEntry",
     "get_agents", "get_agent_profiles",
 ]
