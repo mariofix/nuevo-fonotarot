@@ -32,17 +32,3 @@ def set_language(lang: str):
     next_url = request.referrer or url_for("content.index")
     return redirect(next_url)
 
-
-@account_bp.route("/set-region/<code>")
-def set_region(code: str):
-    """Persist the chosen region code in the session and redirect back."""
-    active = [item[0] for item in current_app.config.get("REGIONS", [])]
-
-    if code in active:
-        session["region"] = code
-        logger.debug("Region set to %r for session", code)
-    else:
-        logger.warning("Requested region %r is not in active list %s; ignoring", code, active)
-
-    next_url = request.referrer or url_for("content.index")
-    return redirect(next_url)

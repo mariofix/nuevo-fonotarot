@@ -1,5 +1,4 @@
 {% from "macros/lang_switcher.html" import lang_switcher %}
-{% from "macros/region_switcher.html" import region_switcher %}
 <!doctype html>
 <html lang="{{ get_locale() | replace('_', '-') }}" prefix="og: https://ogp.me/ns#" data-theme="{{ default_theme }}" data-bs-theme="{{ default_theme }}">
   <head>
@@ -416,11 +415,7 @@
           <div class="d-none d-md-block">
             {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
           </div>
-          <div class="d-none d-md-flex align-items-center gap-2">
-            {{ region_switcher(current_region, site_regions) }}
-            <span style="color:var(--border); font-size:.8rem;">|</span>
-            {{ lang_switcher(get_locale(), site_languages) }}
-          </div>
+          <div class="d-none d-md-flex">{{ lang_switcher(get_locale(), site_languages) }}</div>
           <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
             <span class="icon-moon">🌙</span>
             <span class="icon-sun">☀️</span>
@@ -452,8 +447,6 @@
         <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
           <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
           <div class="d-flex align-items-center gap-3">
-            {{ region_switcher(current_region, site_regions) }}
-            <span style="color:var(--border); font-size:.8rem;">|</span>
             {{ lang_switcher(get_locale(), site_languages) }}
           </div>
         </div>
@@ -473,7 +466,7 @@
           <div class="col-md-4">
             <a href="/" class="footer-brand">FonoTarot</a>
             <p class="footer-tagline">{{ _("Servicio de orientación espiritual telefónica · Chile · Desde 2010") }}</p>
-            <a href="{{ current_region.phone_tel }}" class="footer-phone"><i class="ti ti-phone me-1"></i>{{ current_region.phone_display }}</a>
+            <a href="tel:+{{ _('56222301515') }}" class="footer-phone"><i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}</a>
           </div>
           <div class="col-6 col-md-4">
             <p class="footer-col-title">{{ _("Navegación") }}</p>

@@ -423,7 +423,7 @@
           {{ _("Conecta en segundos con nuestras especialistas en tarot. Consulta sobre amor, trabajo, salud y caminos de vida.") }}
         </p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <a href="{{ current_region.phone_tel }}" class="btn btn-lg btn-call px-5">
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5">
             <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }}
           </a>
           <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="border-radius:30px;">
@@ -513,7 +513,7 @@
                 {% endif %}
               </div>
               {% if agent.status == 'online' %}
-              <a href="{{ current_region.phone_tel }}" class="btn btn-call mt-auto">
+              <a href="tel:+{{ _('56222301515') }}" class="btn btn-call mt-auto">
                 <i class="ti ti-phone me-1"></i>{{ _("Llama Ahora") }}
               </a>
               {% elif agent.status == 'busy' %}
@@ -526,8 +526,8 @@
           {% endfor %}
         </div>
         <div class="text-center mt-5">
-          <a href="{{ current_region.phone_tel }}" class="btn btn-lg btn-call px-5">
-            <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }} - {{ current_region.phone_display }}
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5">
+            <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }} - {{ _('+56 2 2230 1515') }}
           </a>
         </div>
       </div>

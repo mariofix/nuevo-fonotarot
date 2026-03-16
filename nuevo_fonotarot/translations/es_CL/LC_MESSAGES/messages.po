@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
+#: nuevo_fonotarot/templates/base.html
+#: nuevo_fonotarot/templates/index.html
+#: nuevo_fonotarot/templates/home.html
+msgid "56222301515"
+msgstr "56222301515"
+
+#: nuevo_fonotarot/templates/base.html
+#: nuevo_fonotarot/templates/index.html
+#: nuevo_fonotarot/templates/home.html
+msgid "+56 2 2230 1515"
+msgstr "+56 2 2230 1515"
+
 #: nuevo_fonotarot/templates/base.html:10
 #: nuevo_fonotarot/templates/base.html:34
 msgid "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"

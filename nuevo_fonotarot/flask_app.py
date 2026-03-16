@@ -22,7 +22,7 @@ from .extensions import (
     security,
     toolbar,
 )
-from .utils import _LangEntry, _RegionEntry
+from .utils import _LangEntry
 
 
 def create_flask(config_name: str | None = None) -> Flask:
@@ -129,22 +129,6 @@ def _init_extensions(app: Flask) -> None:
     @app.context_processor
     def inject_site_languages() -> dict:
         return {"site_languages": _parse_available_langs()}
-
-    regions_config: list = app.config.get("REGIONS", [])
-    default_region_code: str = app.config.get("DEFAULT_REGION", "cl")
-
-    def _parse_regions() -> list[_RegionEntry]:
-        return [_RegionEntry(*item) for item in regions_config]
-
-    @app.context_processor
-    def inject_site_regions() -> dict:
-        regions = _parse_regions()
-        valid_codes = {r.code for r in regions}
-        current_code = session.get("region", default_region_code)
-        if current_code not in valid_codes:
-            current_code = default_region_code
-        current_region = next((r for r in regions if r.code == current_code), regions[0] if regions else None)
-        return {"site_regions": regions, "current_region": current_region}
 
     @app.context_processor
     def inject_current_theme() -> dict:

@@ -471,8 +471,8 @@
 <a href="#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
 <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
 <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
-<a href="{{ current_region.phone_tel }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
-  <i class="ti ti-phone me-1"></i>{{ current_region.phone_display }}
+<a href="tel:+{{ _('56222301515') }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
+  <i class="ti ti-phone me-1"></i>{{ _('{{ _('+56 2 2230 1515') }}') }}
 </a>
 <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
   <span class="oc-dot-online"></span>Especialistas
@@ -515,7 +515,7 @@
                 </div>
               </div>
               <span class="agent-action-wrap">
-              {% if agent.status == 'available' %}<a href="{{ current_region.phone_tel }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% if agent.status == 'available' %}<a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
               </span>
             </div>
@@ -532,7 +532,7 @@
                   <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
                   <div class="mt-1"><span class="s-online">● Disponible</span></div>
                 </div>
-                <a href="{{ current_region.phone_tel }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+                <a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               </div>
               {% endfor %}
             {% else %}
@@ -559,8 +559,8 @@
           </div>
         </div>
         <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
-          <a href="{{ current_region.phone_tel }}" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ current_region.phone_display }}
+          <a href="tel:+{{ _('56222301515') }}" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
+            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
           </a>
           <a href="{{ url_for('minutos.index') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
             <i class="ti ti-wallet me-2"></i>Ver Planes
@@ -585,7 +585,7 @@
               Amor, trabajo, familia — cuando más lo necesitas.
             </p>
             <div class="d-flex gap-3 flex-wrap">
-              <a href="{{ current_region.phone_tel }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+              <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
                 <i class="ti ti-phone me-2"></i>Llama Ahora
               </a>
               <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
@@ -641,8 +641,8 @@
                 {% endfor %}
                 {% endif %}
                 </div><!-- #hero-agent-rows -->
-                <a href="{{ current_region.phone_tel }}" class="aw-cta">
-                  <i class="ti ti-phone me-2"></i>Consultar Ahora - {{ current_region.phone_display }}
+                <a href="tel:+{{ _('56222301515') }}" class="aw-cta">
+                  <i class="ti ti-phone me-2"></i>Consultar Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
                 </a>
               </div>
             </div>
@@ -744,7 +744,7 @@
               <div class="step-num">3</div>
               <span class="step-icon">📞</span>
               <div class="step-title">Consulta con tranquilidad</div>
-              <p class="step-text">Llama al +56 2 2230 1515 y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
+              <p class="step-text">Llama al {{ _('+56 2 2230 1515') }} y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
             </div>
           </div>
         </div>
@@ -847,8 +847,8 @@
         </div>
         <div id="agent-cards-grid" class="row g-4"></div>
         <div class="text-center mt-5">
-          <a href="{{ current_region.phone_tel }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ current_region.phone_display }}
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
           </a>
         </div>
       </div>
@@ -916,7 +916,7 @@
                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
                 </h2>
                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al +56 2 2230 1515 y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
+                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al {{ _('+56 2 2230 1515') }} y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
                 </div>
               </div>
               <div class="accordion-item">
@@ -964,7 +964,7 @@
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">¿Puedo llamar desde el extranjero?</button>
                 </h2>
                 <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Sí, por lo general puedes llamar al {{ current_region.phone_display }} desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
+                  <div class="accordion-body">Sí, por lo general puedes llamar al {{ _('{{ _('+56 2 2230 1515') }}') }} desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
                 </div>
               </div>
               <div class="accordion-item">
@@ -987,7 +987,7 @@
         <h2>Da el primer paso hacia la claridad</h2>
         <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
         <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <a href="{{ current_region.phone_tel }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
           <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
         </div>
       </div>
@@ -1036,7 +1036,7 @@
               <span>
                 <strong>¿Por qué necesitamos tu número?</strong><br>
                 Los 5 minutos se acreditan directamente en tu número en nuestra central telefónica.
-                Solo necesitas tu teléfono para llamar al +56 2 2230 1515 y usarlos de inmediato.
+                Solo necesitas tu teléfono para llamar al {{ _('+56 2 2230 1515') }} y usarlos de inmediato.
                 No compartimos tu número con terceros ni te añadimos a listas de contacto.
               </span>
             </div>
@@ -1123,7 +1123,7 @@
     <script>
     /* ── Agent status poller (every 5 s) ───────────────── */
     (function () {
-      var PHONE = '{{ current_region.phone_tel }}';
+      var PHONE = 'tel:+{{ _("56222301515") }}';
 
       /* Escape user-supplied strings before inserting into the DOM */
       function esc(s) {

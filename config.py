@@ -132,22 +132,10 @@ class Config:
     # locale negotiation know the list before any DB request is made.
     AVAILABLE_LANGUAGES: list = [
         ["es", "es_CL", "Español"],
+        ["es", "es_MX", "Español (México)"],
         ["en", "en_US", "English"],
         ["pt", "pt_BR", "Português"],
     ]
-
-    # Available regions for the public region/country switcher.
-    # Each entry is a [code, name, phone_display, phone_e164] tuple where:
-    #   code          — ISO 3166-1 alpha-2 country code (lowercase)
-    #   name          — Human-readable country name
-    #   phone_display — Formatted phone number shown to the user
-    #   phone_e164    — E.164 number (digits only, no +) used in tel: links
-    # Override phone numbers via REGION_CL_PHONE / REGION_MX_PHONE env vars.
-    REGIONS: list = [
-        ["cl", "Chile", os.environ.get("REGION_CL_PHONE_DISPLAY", "+56 2 2230 1515"), os.environ.get("REGION_CL_PHONE", "56222301515")],
-        ["mx", "México", os.environ.get("REGION_MX_PHONE_DISPLAY", "+52 55 XXXX XXXX"), os.environ.get("REGION_MX_PHONE", "525500000000")],
-    ]
-    DEFAULT_REGION: str = os.environ.get("DEFAULT_REGION", "cl")
 
     # merchants
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
