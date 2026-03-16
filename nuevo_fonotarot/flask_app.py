@@ -62,7 +62,9 @@ def _init_extensions(app: Flask) -> None:
     migrate.init_app(app, db)
     limiter.init_app(app)
     toolbar.init_app(app)
-    available_langs: list = app.config.get("AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]])
+    available_langs: list = app.config.get(
+        "AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]]
+    )
 
     def _parse_available_langs() -> list[_LangEntry]:
         """Return language entries from app config."""
@@ -75,13 +77,8 @@ def _init_extensions(app: Flask) -> None:
         lang = session.get("lang") or request.args.get("lang")
         active = _active_locales()
         # SiteSettings overrides the deploy-time BABEL_DEFAULT_LOCALE if set.
-        try:
-            from .models import SiteSettings
-            default_lang: str = SiteSettings.get(
-                "default_language", app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
-            )
-        except Exception:
-            default_lang = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
+        default_lang: str = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
+
         if lang:
             if lang in active:
                 session["lang"] = lang
@@ -95,6 +92,11 @@ def _init_extensions(app: Flask) -> None:
 
     from .models import Role, User
     import nuevo_fonotarot.extensions as _ext
+
+    # Rename the "username" field label to "Teléfono" across all
+    # Flask-Security forms before init_app builds the field.
+    import flask_security.forms as _fs_forms
+    _fs_forms._default_field_labels["username"] = "Teléfono"
 
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, _ext.user_datastore)

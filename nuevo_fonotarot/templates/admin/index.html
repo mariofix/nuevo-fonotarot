@@ -1,5 +1,91 @@
 {% extends 'admin/master.html' %}
 
+{% block head_css %}
+{{ super() }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ── Fonotarot Admin Brand Overrides ────────────────────────────────── */
+  :root {
+    --ft-plum: #6b3fa0;
+    --ft-plum-dk: #4a2872;
+    --ft-plum-light: rgba(107,63,160,.12);
+    --ft-gold: #c9a84c;
+    --ft-gold-light: rgba(201,168,76,.18);
+    --ft-rose: #c06080;
+  }
+
+  /* Sidebar accent — active nav items */
+  .navbar-vertical .nav-link.active,
+  .navbar-vertical .nav-link:focus,
+  .navbar-vertical .nav-item.active > .nav-link {
+    color: var(--ft-gold) !important;
+    background: rgba(201,168,76,.1) !important;
+    border-radius: 6px;
+  }
+  .navbar-vertical .nav-link.active .nav-link-icon,
+  .navbar-vertical .nav-item.active > .nav-link .nav-link-icon {
+    color: var(--ft-gold) !important;
+  }
+
+  /* Primary buttons → plum */
+  .btn-primary,
+  .btn-outline-primary:hover {
+    background-color: var(--ft-plum) !important;
+    border-color: var(--ft-plum) !important;
+    color: #fff !important;
+  }
+  .btn-outline-primary {
+    border-color: var(--ft-plum) !important;
+    color: var(--ft-plum) !important;
+  }
+
+  /* Table hover → plum tint */
+  .table-hover > tbody > tr:hover > * {
+    background-color: var(--ft-plum-light);
+  }
+
+  /* Card headers — subtle left-border accent */
+  .card-header {
+    border-left: 3px solid var(--ft-plum);
+  }
+  [data-bs-theme="dark"] .card-header {
+    border-left-color: var(--ft-gold);
+  }
+
+  /* Page title */
+  .page-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+
+  /* Selected rows and active table rows */
+  .table-active td, .table-active th {
+    background-color: var(--ft-plum-light) !important;
+  }
+
+  /* Badges */
+  .badge.bg-primary { background-color: var(--ft-plum) !important; }
+  .badge.bg-success { background-color: #2a8c55 !important; }
+  .badge.bg-warning { background-color: var(--ft-gold) !important; color: #1a1a1a !important; }
+
+  /* Footer tfoot totals */
+  tfoot .table-active {
+    background: var(--ft-plum-light) !important;
+    color: var(--ft-gold);
+    font-weight: 700;
+  }
+
+  /* "Ver todos" / outline-primary links in card headers */
+  .card-header .btn-outline-primary {
+    font-size: .78rem;
+    padding: .25rem .75rem;
+  }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="row row-cards">
 

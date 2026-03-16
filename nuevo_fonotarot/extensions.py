@@ -13,6 +13,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_wtf.csrf import CSRFProtect
 from daleks.contrib.flask_security_mail import DaleksMailUtil
 
+from .phone_util import PhoneUsernameUtil
+
 csrf = CSRFProtect()
 db = SQLAlchemy()
 migrate = Migrate()
@@ -20,7 +22,7 @@ limiter = Limiter(
     key_func=get_remote_address, default_limits=["200 per day", "50 per hour"]
 )
 babel = Babel()
-security = Security(mail_util_cls=DaleksMailUtil)
+security = Security(mail_util_cls=DaleksMailUtil, username_util_cls=PhoneUsernameUtil)
 admin = Admin(name="Fonotarot")
 merchants_ext = FlaskMerchants()
 toolbar = DebugToolbarExtension()
