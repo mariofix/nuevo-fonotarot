@@ -67,6 +67,30 @@ class _LangEntry:
         return f"<_LangEntry {self.locale}>"
 
 
+class _RegionEntry:
+    """Value object for a geographic region (country) with its contact phone.
+
+    Attributes:
+        code          — ISO 3166-1 alpha-2 country code, e.g. ``"cl"``
+        name          — Human-readable country name, e.g. ``"Chile"``
+        phone_display — Formatted number shown to the user, e.g. ``"+56 2 2230 1515"``
+        phone_e164    — Raw E.164 digits (no ``+``), e.g. ``"56222301515"``
+        phone_tel     — Ready-to-use ``tel:`` URI, e.g. ``"tel:+56222301515"``
+        flag_class    — Tabler flag CSS class, e.g. ``"flag-country-cl"``
+    """
+
+    def __init__(self, code: str, name: str, phone_display: str, phone_e164: str) -> None:
+        self.code = code
+        self.name = name
+        self.phone_display = phone_display
+        self.phone_e164 = phone_e164.lstrip("+")
+        self.phone_tel = f"tel:+{self.phone_e164}"
+        self.flag_class = f"flag-country-{code}"
+
+    def __repr__(self) -> str:
+        return f"<_RegionEntry {self.code}>"
+
+
 
 def _normalize_agent(raw: dict) -> dict:
     """Map a firenze API agent record to the dict shape templates expect.
@@ -144,7 +168,7 @@ def get_agent_profiles() -> tuple[list[dict], str | None]:
 
 
 __all__ = [
-    "_flag_class", "_LangEntry",
+    "_flag_class", "_LangEntry", "_RegionEntry",
     "get_agents", "get_agent_profiles",
     "get_moon_phase_index", "MOON_PHASE_NAMES",
 ]

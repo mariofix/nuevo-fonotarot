@@ -1,0 +1,36 @@
+{#
+  region_switcher macro
+  ---------------------
+  Renders a compact row of clickable country flags for region selection.
+  Selecting a region persists it in the session and updates the phone
+  number shown across the site.
+
+  Parameters
+  ----------
+  current_region : _RegionEntry | None
+      The active region object. Injected automatically into every template
+      by the ``inject_site_regions`` context processor — pass
+      ``current_region`` from the calling template.
+  regions : list
+      Ordered list of _RegionEntry instances: code, name, flag_class,
+      phone_display, phone_tel. Injected automatically as ``site_regions``.
+
+  Requires tabler-flags.css (already included in base.html).
+
+  Usage in base.html:
+      {% from "macros/region_switcher.html" import region_switcher %}
+      {{ region_switcher(current_region, site_regions) }}
+#}
+
+{%- macro region_switcher(current_region, regions) -%}
+<div class="region-switcher" aria-label="Seleccionar región">
+  {%- for region in regions %}
+  <a href="{{ url_for('account.set_region', code=region.code) }}"
+     title="{{ region.name }} · {{ region.phone_display }}"
+     aria-label="{{ region.name }}"
+     class="lang-flag{% if current_region and current_region.code == region.code %} active{% endif %}">
+    <span class="flag flag-xs {{ region.flag_class }}" aria-hidden="true"></span>
+  </a>
+  {%- endfor %}
+</div>
+{%- endmacro -%}
