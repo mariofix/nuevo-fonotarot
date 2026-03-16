@@ -135,14 +135,11 @@ class Config:
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
 
-    # Email (Flask-Mail)
-    MAIL_SERVER: str = os.environ.get("MAIL_SERVER", "localhost")
-    MAIL_PORT: int = int(os.environ.get("MAIL_PORT", "25"))
-    MAIL_USE_TLS: bool = os.environ.get("MAIL_USE_TLS", "false").lower() == "true"
-    MAIL_USE_SSL: bool = os.environ.get("MAIL_USE_SSL", "false").lower() == "true"
-    MAIL_USERNAME: str | None = os.environ.get("MAIL_USERNAME")
-    MAIL_PASSWORD: str | None = os.environ.get("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER: str = os.environ.get(
+    # Email (Daleks)
+    DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
+    DALEKS_TIMEOUT: int = int(os.environ.get("DALEKS_TIMEOUT", "10"))
+    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT")
+    SECURITY_EMAIL_SENDER: str = os.environ.get(
         "MAIL_DEFAULT_SENDER", f"hola@{TRUSTED_HOSTS[0]}"
     )
 

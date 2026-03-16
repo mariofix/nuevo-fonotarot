@@ -18,7 +18,7 @@ from flask import (
     url_for,
 )
 
-from ..extensions import db, limiter, mail
+from ..extensions import db, limiter
 from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
@@ -147,7 +147,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
     """E-mail every active admin user when a free trial is redeemed."""
     from datetime import datetime, timezone
 
-    from flask_mail import Message
+    from daleks.contrib.client import DaleksClient
 
     admin_role = Role.query.filter_by(name="admin").first()
     if not admin_role:
@@ -157,38 +157,50 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
         return
 
     redeemed_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    daleks_url = current_app.config["DALEKS_URL"]
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
 
     try:
-        msg = Message(
-            subject="[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: %s" % client_id,
-            recipients=recipients,
-            html=render_template(
-                "email/promo_admin.html",
-                masked_ani=ani,
-                client_id=client_id,
-                remaining=remaining,
-                redeemed_at=redeemed_at,
-            ),
+        html_body = render_template(
+            "email/promo_admin.html",
+            masked_ani=ani,
+            client_id=client_id,
+            remaining=remaining,
+            redeemed_at=redeemed_at,
         )
-        mail.send(msg)
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+            for recipient in recipients:
+                client.send_email(
+                    from_address=from_address,
+                    to=[recipient],
+                    subject="[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: %s" % client_id,
+                    html_body=html_body,
+                )
     except Exception:
         logger.exception("Failed to send admin promo notification email")
 
 
 def _send_user_promo_instructions(email: str, remaining: int) -> None:
     """E-mail usage instructions to the user who just redeemed a free trial."""
-    from flask_mail import Message
+    from daleks.contrib.client import DaleksClient
+
+    daleks_url = current_app.config["DALEKS_URL"]
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
 
     try:
-        msg = Message(
-            subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
-            recipients=[email],
-            html=render_template(
-                "email/promo_user.html",
-                remaining=remaining,
-            ),
+        html_body = render_template(
+            "email/promo_user.html",
+            remaining=remaining,
         )
-        mail.send(msg)
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+            client.send_email(
+                from_address=from_address,
+                to=[email],
+                subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
+                html_body=html_body,
+            )
     except Exception:
         logger.exception("Failed to send user promo instructions email")
 
