@@ -22,7 +22,9 @@ from ..extensions import db, limiter
 from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
 from ..placeholder import TESTIMONIALS
-from ..utils import get_agents, get_moon_phase_index  # still used by the /api/agents debug endpoint
+from ..utils import get_agents, get_moon_phase_index  # get_agents used by /api/agents endpoint
+
+import json as _json
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
@@ -224,14 +226,16 @@ def _homepage_ctx() -> dict:
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     firenze_ejecutivos_url = f"{api_url}/audiotex/ejecutivos" if api_url else ""
 
+    try:
+        ejecutivos = _json.loads(SiteSettings.get("ejecutivos") or "[]")
+    except (ValueError, TypeError):
+        logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
+        ejecutivos = []
+
     return {
         "firenze_token": firenze_token,
         "firenze_ejecutivos_url": firenze_ejecutivos_url,
-        # agents/agent_profiles are no longer pre-fetched server-side; JS
-        # populates them on the first poll immediately after page load.
-        "agents": [],
-        "agent_profiles": [],
-        "agents_error": None,
+        "ejecutivos": ejecutivos,
         "testimonials": TESTIMONIALS,
         "minute_packs": minute_packs,
         "plans": minute_packs,  # alias used by older experiment templates

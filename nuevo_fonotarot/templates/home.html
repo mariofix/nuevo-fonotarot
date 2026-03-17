@@ -497,30 +497,12 @@
           <p class="section-subtitle">{{ _("Especialistas con años de experiencia preparadas para orientarte") }}</p>
         </div>
         <div class="row g-4">
-          {% for agent in agents %}
+          {% for agent in ejecutivos %}
           <div class="col-sm-6 col-lg-4">
             <div class="agent-card h-100 d-flex flex-column">
               <div class="agent-avatar">{{ agent.name[0] }}</div>
               <div class="agent-name">{{ agent.name }}</div>
-              <div class="agent-spec">{{ agent.specialty }}</div>
-              <div class="mb-2">
-                {% if agent.status == 'online' %}
-                <span class="badge-online">● {{ _("Disponible") }}</span>
-                {% elif agent.status == 'busy' %}
-                <span class="badge-busy">● {{ _("En consulta") }}</span>
-                {% else %}
-                <span class="badge-offline">● {{ _("No disponible") }}</span>
-                {% endif %}
-              </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:+{{ _('56222301515') }}" class="btn btn-call mt-auto">
-                <i class="ti ti-phone me-1"></i>{{ _("Llama Ahora") }}
-              </a>
-              {% elif agent.status == 'busy' %}
-              <button class="btn btn-busy mt-auto" disabled>
-                <i class="ti ti-clock me-1"></i>{{ _("En consulta") }}
-              </button>
-              {% endif %}
+              <div class="agent-spec">{{ agent.specialty or agent.description or '' }}</div>
             </div>
           </div>
           {% endfor %}

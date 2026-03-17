@@ -5,32 +5,32 @@
 
 {# ── Homepage-specific SEO / head additions ────────────────────────────── #}
 {% block extra_head %}
-    <!-- ── Primary SEO ─────────────────────────────────────────── -->
-    <meta name="description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Orientación en amor, trabajo, salud y vida personal. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-    <meta name="keywords" content="tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot, tarot telefónico, orientación espiritual, tarot amor, tarot trabajo" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="distribution" content="Chile" />
-    <link rel="canonical" href="{{ site_url }}/" />
-    <link rel="alternate" hreflang="es-CL" href="{{ site_url }}/" />
-    <link rel="alternate" hreflang="x-default" href="{{ site_url }}/" />
+<!-- ── Primary SEO ─────────────────────────────────────────── -->
+<meta name="description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Orientación en amor, trabajo, salud y vida personal. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
+<meta name="keywords" content="tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot, tarot telefónico, orientación espiritual, tarot amor, tarot trabajo" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow" />
+<meta name="distribution" content="Chile" />
+<link rel="canonical" href="{{ site_url }}/" />
+<link rel="alternate" hreflang="es-CL" href="{{ site_url }}/" />
+<link rel="alternate" hreflang="x-default" href="{{ site_url }}/" />
 
-    <!-- ── Open Graph / Facebook ────────────────────────────────── -->
-    <meta property="og:locale"      content="es_CL" />
-    <meta property="og:title"       content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
-    <meta property="og:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-    <meta property="og:image"       content="{{ site_url }}/static/og-image.png" />
-    <meta property="og:image:width"  content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt"    content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
+<!-- ── Open Graph / Facebook ────────────────────────────────── -->
+<meta property="og:locale" content="es_CL" />
+<meta property="og:title" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
+<meta property="og:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
+<meta property="og:image" content="{{ site_url }}/static/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
 
-    <!-- ── Twitter / X Card ─────────────────────────────────────── -->
-    <meta name="twitter:title"       content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
-    <meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
-    <meta name="twitter:image"       content="{{ site_url }}/static/og-image.png" />
+<!-- ── Twitter / X Card ─────────────────────────────────────── -->
+<meta name="twitter:title" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
+<meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
+<meta name="twitter:image" content="{{ site_url }}/static/og-image.png" />
 
-    <!-- ── Schema.org JSON-LD ───────────────────────────────────── -->
-    <script type="application/ld+json">
+<!-- ── Schema.org JSON-LD ───────────────────────────────────── -->
+<script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
@@ -92,377 +92,1647 @@
 {# ── Homepage-specific styles ──────────────────────────────────────────── #}
 {% block extra_css %}
 <style>
+  /* ─── Nav extras ───────────────────────────────── */
+  .btn-oc-trigger {
+    background: rgba(107, 63, 160, .1);
+    color: var(--plum) !important;
+    border: 1px solid rgba(107, 63, 160, .28);
+    border-radius: 20px;
+    padding: .38rem 1rem;
+    font-size: .85rem;
+    font-weight: 700;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
 
-      /* ─── Nav extras ───────────────────────────────── */
-      .btn-oc-trigger { background: rgba(107,63,160,.1); color: var(--plum) !important; border: 1px solid rgba(107,63,160,.28); border-radius: 20px; padding: .38rem 1rem; font-size: .85rem; font-weight: 700; transition: all .2s; display: flex; align-items: center; gap: .4rem; }
-      .btn-oc-trigger:hover { background: rgba(107,63,160,.18); }
-      .oc-dot-online { width: 8px; height: 8px; border-radius: 50%; background: #059669; display: inline-block; margin-right: 3px; }
-      .oc-dot-busy   { width: 8px; height: 8px; border-radius: 50%; background: #b45309; display: inline-block; margin-right: 3px; }
+  .btn-oc-trigger:hover {
+    background: rgba(107, 63, 160, .18);
+  }
 
-      /* ─── Hero ─────────────────────────────────────── */
-      .hero {
-        background: linear-gradient(155deg, #fdf8ff 0%, #f2eaff 35%, #e8e0f8 65%, #dce8f5 100%);
-        padding: 90px 0 80px;
-        position: relative; overflow: hidden;
-      }
-      .hero::before, .hero::after {
-        content: '';
-        position: absolute; border-radius: 50%; pointer-events: none;
-      }
-      .hero::before {
-        width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(107,63,160,.09) 0%, transparent 70%);
-        right: -100px; top: -100px;
-        animation: orb-drift 12s ease-in-out infinite alternate;
-      }
-      .hero::after {
-        width: 400px; height: 400px;
-        background: radial-gradient(circle, rgba(192,96,128,.07) 0%, transparent 70%);
-        left: -80px; bottom: -80px;
-        animation: orb-drift 16s ease-in-out infinite alternate-reverse;
-      }
-      @keyframes orb-drift {
-        from { transform: translate(0, 0) scale(1); }
-        to   { transform: translate(40px, 30px) scale(1.08); }
-      }
-      .hero-particle {
-        position: absolute; pointer-events: none; border-radius: 50%;
-        background: var(--plum); opacity: 0;
-        animation: particle-float var(--dur, 8s) var(--del, 0s) ease-in-out infinite;
-      }
-      @keyframes particle-float {
-        0%   { opacity: 0;    transform: translateY(0) scale(.6); }
-        20%  { opacity: .35; }
-        80%  { opacity: .2; }
-        100% { opacity: 0;    transform: translateY(-120px) scale(1); }
-      }
-      .hero-eyebrow {
-        font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
-        color: var(--rose); font-weight: 600; margin-bottom: 1rem;
-      }
-      .hero h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(2.4rem, 5.5vw, 4rem);
-        font-weight: 700; line-height: 1.15; color: var(--plum-dk);
-        margin-bottom: 1.2rem;
-      }
-      .hero h1 em { font-style: italic; color: var(--rose); }
-      .hero-lead {
-        font-size: 1.05rem; color: var(--warm); max-width: 500px; line-height: 1.8;
-        margin-bottom: 2rem;
-      }
-      .hero-badge-strip { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: 1.25rem; }
-      .hero-badge {
-        background: rgba(107,63,160,.1); color: var(--plum);
-        border-radius: 20px; padding: 4px 13px; font-size: .78rem; font-weight: 600;
-        border: 1px solid rgba(107,63,160,.2);
-      }
+  .oc-dot-online {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #059669;
+    display: inline-block;
+    margin-right: 3px;
+  }
 
-      /* ── Agent widget ────────────────────────────────── */
-      .agent-widget {
-        background: rgba(255,255,255,.92);
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        box-shadow: 0 30px 80px rgba(107,63,160,.16), 0 0 0 1px rgba(107,63,160,.04);
-        overflow: hidden;
-        max-width: 360px;
-        margin: 0 auto;
-        animation: widget-float 6s ease-in-out infinite;
-      }
-      @keyframes widget-float {
-        0%, 100% { transform: translateY(0); }
-        50%       { transform: translateY(-8px); }
-      }
-      .agent-widget-header {
-        background: linear-gradient(135deg, var(--plum) 0%, #8a50cc 100%);
-        padding: 1.25rem 1.5rem;
-        display: flex; align-items: center; justify-content: space-between;
-      }
-      .agent-widget-header span { color: #fff; font-size: 1rem; font-weight: 700; }
-      .live-badge {
-        display: flex; align-items: center; gap: .45rem;
-        font-size: .75rem; color: rgba(255,255,255,.9);
-        background: rgba(255,255,255,.15); border-radius: 20px; padding: 3px 10px;
-      }
-      .live-dot {
-        width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
-        box-shadow: 0 0 0 3px rgba(74,222,128,.3);
-        animation: pulse-green 2s ease-in-out infinite;
-      }
-      @keyframes pulse-green {
-        0%, 100% { box-shadow: 0 0 0 3px rgba(74,222,128,.3); }
-        50%       { box-shadow: 0 0 0 6px rgba(74,222,128,.12); }
-      }
-      .agent-widget-body { padding: .75rem 1.5rem 1.5rem; }
-      .aw-row {
-        display: flex; align-items: center; gap: .75rem;
-        padding: .6rem 0; border-bottom: 1px solid var(--border);
-      }
-      .aw-row:last-of-type { border-bottom: none; }
-      .aw-avatar {
-        width: 38px; height: 38px; border-radius: 50%;
-        background: linear-gradient(135deg, var(--lavender), var(--blush));
-        display: flex; align-items: center; justify-content: center;
-        font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 700;
-        color: var(--plum); flex-shrink: 0; border: 2px solid var(--border);
-      }
-      .aw-name { font-family: 'Playfair Display', serif; font-size: .85rem; color: var(--plum-dk); }
-      .aw-spec { font-size: .72rem; color: var(--muted); }
-      .aw-cta {
-        background: var(--plum); color: #fff !important; border: none; border-radius: 12px;
-        padding: .7rem 0; font-size: .9rem; font-weight: 700; width: 100%;
-        margin-top: 1rem; display: block; text-align: center; text-decoration: none;
-        transition: background .2s, box-shadow .2s;
-      }
-      .aw-cta:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.35); }
+  .oc-dot-busy {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #b45309;
+    display: inline-block;
+    margin-right: 3px;
+  }
 
-      /* Status badges */
-      .s-online  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
-      .s-busy    { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
-      .s-offline { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2px 9px; font-size: .68rem; font-weight: 700; white-space: nowrap; }
+  /* ─── Hero ─────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(155deg, #fdf8ff 0%, #f2eaff 35%, #e8e0f8 65%, #dce8f5 100%);
+    padding: 90px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
 
-      /* ─── Stats ────────────────────────────────────── */
-      .stats-section {
-        background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
-        padding: 2.5rem 0; color: #fff; position: relative; overflow: hidden;
-      }
-      .stats-section::before {
-        content: '';
-        position: absolute; inset: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        pointer-events: none;
-      }
-      .stat-big { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
-      .stat-label { font-size: .78rem; opacity: .75; text-transform: uppercase; letter-spacing: .1em; margin-top: .3rem; }
+  .hero::before,
+  .hero::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
 
-      /* ─── Section helpers ──────────────────────────── */
-      .eyebrow { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--rose); font-weight: 700; margin-bottom: .5rem; }
-      .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 4vw, 2.5rem); color: var(--plum-dk); margin-bottom: .5rem; line-height: 1.2; }
-      .sec-sub { color: var(--muted); font-size: 1rem; }
-      .divider-rose { width: 48px; height: 3px; background: linear-gradient(90deg, var(--rose), transparent); margin: .75rem 0 1.5rem; border-radius: 2px; }
+  .hero::before {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(107, 63, 160, .09) 0%, transparent 70%);
+    right: -100px;
+    top: -100px;
+    animation: orb-drift 12s ease-in-out infinite alternate;
+  }
 
-      /* ─── Free Trial Banner ─────────────────────────── */
-      .trial-section {
-        background: linear-gradient(135deg, #1e0a35 0%, #2d1155 50%, #1a0a2e 100%);
-        padding: 70px 0; position: relative; overflow: hidden;
-        border-top: 1px solid rgba(168,125,212,.2);
-        border-bottom: 1px solid rgba(168,125,212,.2);
-      }
-      .trial-section::before { content: '✦'; position: absolute; font-size: 28rem; opacity: .03; right: -2rem; top: 50%; transform: translateY(-50%); color: #fff; pointer-events: none; line-height: 1; }
-      .trial-badge { display: inline-flex; align-items: center; gap: .5rem; background: rgba(201,168,76,.15); color: var(--gold); border: 1px solid rgba(201,168,76,.3); border-radius: 30px; padding: .35rem 1rem; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.5rem; }
-      .trial-badge::before { content: '★'; }
-      .trial-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.6rem); color: #fff; line-height: 1.15; margin-bottom: 1rem; }
-      .trial-title em { font-style: italic; color: var(--gold); }
-      .trial-desc { color: rgba(255,255,255,.7); font-size: 1.05rem; line-height: 1.75; max-width: 460px; margin-bottom: 2rem; }
-      .btn-trial { background: var(--gold); color: #1e0a35 !important; border: none; border-radius: 30px; padding: .75rem 2.25rem; font-size: 1rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; transition: box-shadow .2s, transform .2s; box-shadow: 0 4px 24px rgba(201,168,76,.35); }
-      .btn-trial:hover { box-shadow: 0 8px 32px rgba(201,168,76,.5); transform: translateY(-2px); }
-      .trial-terms { color: rgba(255,255,255,.4); font-size: .78rem; margin-top: 1rem; }
-      .trial-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 24px; padding: 2.5rem 2rem; text-align: center; backdrop-filter: blur(10px); }
-      .trial-num { font-family: 'Playfair Display', serif; font-size: 5rem; font-weight: 700; color: var(--gold); line-height: 1; text-shadow: 0 0 40px rgba(201,168,76,.4); }
-      .trial-num-label { color: rgba(255,255,255,.8); font-size: 1.3rem; font-weight: 300; letter-spacing: .15em; text-transform: uppercase; margin-top: .25rem; }
-      .trial-features { list-style: none; padding: 0; margin: 1.5rem 0 0; text-align: left; }
-      .trial-features li { color: rgba(255,255,255,.75); font-size: .9rem; padding: .4rem 0; border-bottom: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: .6rem; }
-      .trial-features li:last-child { border-bottom: none; }
-      .trial-features li::before { content: '✦'; color: var(--gold); font-size: .65rem; flex-shrink: 0; }
+  .hero::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(192, 96, 128, .07) 0%, transparent 70%);
+    left: -80px;
+    bottom: -80px;
+    animation: orb-drift 16s ease-in-out infinite alternate-reverse;
+  }
 
-      /* ─── Moon phases ──────────────────────────────── */
-      .moon-section { background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 60%, var(--cream) 100%); padding: 60px 0; overflow: hidden; text-align: center; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-      .moon-section-title { font-family: 'Playfair Display', serif; font-style: italic; color: var(--plum); font-size: 1.15rem; margin-bottom: 2.5rem; opacity: .85; }
-      .moon-phases { display: flex; justify-content: center; align-items: center; gap: 0; flex-wrap: wrap; }
-      .moon-phase { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .75rem 1.25rem; transition: transform .25s; position: relative; }
-      .moon-phase:hover { transform: scale(1.12); }
-      .moon-emoji { font-size: 2.8rem; line-height: 1; filter: drop-shadow(0 0 0px rgba(168,125,212,0)); transition: filter .3s; animation: moon-glow var(--mg-dur, 4s) var(--mg-del, 0s) ease-in-out infinite alternate; }
-      .moon-phase:hover .moon-emoji { filter: drop-shadow(0 0 14px rgba(168,125,212,.6)); }
-      @keyframes moon-glow {
-        from { filter: drop-shadow(0 0 2px rgba(168,125,212,.1)); }
-        to   { filter: drop-shadow(0 0 10px rgba(168,125,212,.35)); }
-      }
-      .moon-label { font-size: .68rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
-      .moon-phase--active .moon-emoji { filter: drop-shadow(0 0 14px rgba(168,125,212,.75)) !important; animation: none; }
-      .moon-phase--active .moon-label { color: var(--plum); font-weight: 700; }
-      .moon-phase + .moon-phase::before { content: '·'; position: absolute; left: -.1rem; color: var(--border); font-size: 1.5rem; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  @keyframes orb-drift {
+    from {
+      transform: translate(0, 0) scale(1);
+    }
 
-      /* ─── How it works ─────────────────────────────── */
-      .how-section { padding: 90px 0; background: var(--sand); }
-      .step-card { background: #fff; border-radius: 22px; padding: 2.5rem 1.75rem; text-align: center; border: 1px solid var(--border); height: 100%; transition: box-shadow .3s, transform .3s; position: relative; }
-      .step-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(107,63,160,.13); }
-      .step-num { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--plum), var(--rose)); color: #fff; font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 6px 20px rgba(107,63,160,.3); }
-      .step-icon { font-size: 2rem; margin-bottom: .6rem; display: block; }
-      .step-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--plum-dk); margin-bottom: .5rem; }
-      .step-text { color: var(--muted); font-size: .88rem; line-height: 1.75; }
+    to {
+      transform: translate(40px, 30px) scale(1.08);
+    }
+  }
 
-      /* ─── Agents ───────────────────────────────────── */
-      .agents-section { padding: 90px 0; background: var(--cream); }
-      .agent-card { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 2rem 1.5rem; text-align: center; transition: box-shadow .3s, transform .3s; height: 100%; display: flex; flex-direction: column; }
-      .agent-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(107,63,160,.12); }
-      .agent-avatar { width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(135deg, var(--lavender), var(--blush)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--plum); margin: 0 auto 1rem; border: 3px solid var(--border); box-shadow: 0 4px 16px rgba(107,63,160,.1); }
-      .agent-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--plum-dk); margin-bottom: .2rem; }
-      .agent-spec { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
-      .btn-call { background: var(--plum); color: #fff !important; border: none; border-radius: 30px; padding: .55rem 1rem; font-size: .9rem; font-weight: 600; width: 100%; margin-top: auto; display: block; text-align: center; text-decoration: none; transition: background .2s, box-shadow .2s; }
-      .btn-call:hover { background: var(--plum-dk); box-shadow: 0 6px 20px rgba(107,63,160,.3); }
-      .btn-busy-soft { background: var(--sand); color: var(--muted) !important; border: none; border-radius: 30px; padding: .55rem 1rem; font-size: .9rem; width: 100%; margin-top: auto; display: block; cursor: default; text-align: center; }
+  .hero-particle {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    background: var(--plum);
+    opacity: 0;
+    animation: particle-float var(--dur, 8s) var(--del, 0s) ease-in-out infinite;
+  }
 
-      /* ─── Plans ─────────────────────────────────────── */
-      .plans-section { padding: 90px 0; background: #fff; }
-      .plan-card { border: 2px solid var(--border); border-radius: 22px; padding: 2rem 1.5rem; text-align: center; background: var(--cream); transition: transform .3s, box-shadow .3s; height: 100%; display: flex; flex-direction: column; }
-      .plan-card.featured { border-color: var(--plum); background: linear-gradient(160deg, #f0e8ff 0%, #fff5f8 100%); box-shadow: 0 12px 40px rgba(107,63,160,.18); }
-      .plan-card:hover { transform: translateY(-5px); }
-      .plan-popular { background: var(--rose); color: #fff; border-radius: 20px; font-size: .68rem; font-weight: 700; padding: 3px 12px; display: inline-block; margin-bottom: 1rem; letter-spacing: .1em; text-transform: uppercase; }
-      .plan-min-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; color: var(--plum-dk); line-height: 1; }
-      .plan-min-num small { font-size: 1.1rem; color: var(--muted); font-weight: 400; }
-      .plan-clp { font-size: 1.4rem; font-weight: 700; color: var(--rose); margin: .5rem 0; }
-      .plan-clp span { font-size: .85rem; color: var(--muted); font-weight: 400; }
-      .plan-desc { font-size: .88rem; color: var(--muted); flex-grow: 1; margin: .75rem 0 1.5rem; line-height: 1.65; }
-      .btn-plan { background: var(--plum); color: #fff !important; border: none; border-radius: 30px; padding: .55rem 0; font-size: .9rem; font-weight: 600; width: 100%; transition: background .2s; text-decoration: none; display: block; }
-      .btn-plan:hover { background: var(--plum-dk); }
-      .btn-plan-outline { background: transparent; color: var(--plum) !important; border: 2px solid var(--plum); border-radius: 30px; padding: .55rem 0; font-size: .9rem; font-weight: 600; width: 100%; transition: background .2s; text-decoration: none; display: block; }
-      .btn-plan-outline:hover { background: rgba(107,63,160,.07); }
-      .packs-wrap { position: relative; padding: 0 2.5rem; }
-      .packs-track { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: .75rem; scrollbar-width: thin; scrollbar-color: rgba(107,63,160,.3) transparent; }
-      .packs-track::-webkit-scrollbar { height: 4px; }
-      .packs-track::-webkit-scrollbar-thumb { background: rgba(107,63,160,.35); border-radius: 2px; }
-      .pack-item { flex: 0 0 270px; scroll-snap-align: start; }
-      @media (min-width: 576px)  { .pack-item { flex: 0 0 calc(50% - .625rem); } }
-      @media (min-width: 992px)  { .pack-item { flex: 0 0 calc(25% - .94rem); } }
-      .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(107,63,160,.12); border: 1px solid rgba(107,63,160,.25); color: var(--plum); width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; z-index: 2; }
-      .slider-btn:hover { background: rgba(107,63,160,.25); }
-      .slider-prev { left: 0; }
-      .slider-next { right: 0; }
-      @media (min-width: 992px) { .slider-btn { display: none; } }
-      .btn-cart-sm { border-radius: 30px; padding: .35rem 0; font-weight: 600; font-size: .78rem; width: 100%; background: transparent; border: 2px solid var(--plum); color: var(--plum) !important; transition: background .2s; }
-      .btn-cart-sm:hover { background: rgba(107,63,160,.08); }
+  @keyframes particle-float {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(.6);
+    }
 
-      /* ─── Testimonials ─────────────────────────────── */
-      .testimonials-section { padding: 90px 0; background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%); }
-      .testi-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-      @media (min-width: 768px) { .testi-grid { grid-template-columns: repeat(2, 1fr); } }
-      @media (min-width: 992px) { .testi-grid { grid-template-columns: repeat(3, 1fr); } }
-      .testi-card { background: #fff; border-radius: 20px; padding: 2rem 1.75rem; box-shadow: 0 10px 30px rgba(107,63,160,.08); display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; }
-      .testi-card:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(107,63,160,.14); }
-      .stars-row { color: #f59e0b; font-size: .95rem; letter-spacing: .1em; margin-bottom: 1rem; }
-      .t-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: .97rem; color: var(--text); line-height: 1.75; flex: 1; margin-bottom: 1.25rem; }
-      .t-who { font-weight: 700; color: var(--plum-dk); font-size: .88rem; }
-      .t-city { color: var(--muted); font-size: .78rem; }
+    20% {
+      opacity: .35;
+    }
 
-      /* ─── FAQ ──────────────────────────────────────── */
-      .faq-section { padding: 90px 0; background: var(--cream); }
-      .faq-accordion .accordion-button { font-weight: 600; font-size: .98rem; color: var(--text); background: #fff; }
-      .faq-accordion .accordion-button:not(.collapsed) { color: var(--plum); background: var(--lavender); box-shadow: none; }
-      .faq-accordion .accordion-button::after { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
-      .faq-accordion .accordion-item { border: 1px solid var(--border); border-radius: 14px !important; margin-bottom: .75rem; overflow: hidden; }
-      .faq-accordion .accordion-body { color: var(--muted); font-size: .92rem; line-height: 1.75; }
+    80% {
+      opacity: .2;
+    }
 
-      /* ─── CTA ──────────────────────────────────────── */
-      .cta-section { padding: 90px 0; background: var(--plum); text-align: center; color: #fff; position: relative; overflow: hidden; }
-      .cta-section::before { content: '🌙'; position: absolute; font-size: 24rem; opacity: .05; right: 2%; top: 50%; transform: translateY(-50%); pointer-events: none; line-height: 1; }
-      .cta-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: .75rem; }
-      .cta-section p { opacity: .82; font-size: 1.05rem; margin-bottom: 2rem; }
-      .btn-white { background: #fff; color: var(--plum) !important; border: none; border-radius: 30px; padding: .75rem 2.25rem; font-size: 1rem; font-weight: 700; transition: box-shadow .2s; text-decoration: none; }
-      .btn-white:hover { box-shadow: 0 8px 28px rgba(0,0,0,.22); }
-      .btn-white-outline { background: transparent; color: #fff !important; border: 2px solid rgba(255,255,255,.55); border-radius: 30px; padding: .7rem 2.25rem; font-size: 1rem; font-weight: 600; transition: border-color .2s; text-decoration: none; }
-      .btn-white-outline:hover { border-color: #fff; }
+    100% {
+      opacity: 0;
+      transform: translateY(-120px) scale(1);
+    }
+  }
 
-      /* ─── Off-canvas ────────────────────────────────── */
-      .offcanvas-agents { background: #fff; border-left: 1px solid var(--border); color: var(--text); }
-      .offcanvas-agents .offcanvas-header { background: var(--lavender); border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; }
-      .offcanvas-agents .offcanvas-title { font-family: 'Playfair Display', serif; color: var(--plum-dk); font-size: 1.1rem; }
-      .offcanvas-agents .btn-close { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
-      .offcanvas-agents .offcanvas-body { padding: 1.25rem 1.5rem; }
-      .oc-row { display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-      .oc-row:last-child { border-bottom: none; }
-      .oc-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--lavender), var(--blush)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--plum); flex-shrink: 0; border: 2px solid var(--border); }
-      .oc-info { flex: 1; min-width: 0; }
-      .oc-name { font-family: 'Playfair Display', serif; font-size: .9rem; color: var(--plum-dk); margin-bottom: 2px; }
-      .oc-spec { font-size: .78rem; color: var(--muted); }
-      .oc-tabs .nav-link { font-size: .82rem; color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: .3rem .9rem; margin-right: .4rem; transition: all .2s; }
-      .oc-tabs .nav-link.active { background: var(--plum); color: #fff; border-color: transparent; font-weight: 600; }
-      .oc-tabs .nav-link:hover:not(.active) { color: var(--plum); border-color: var(--plum); }
-      .btn-oc-call { background: var(--plum); color: #fff !important; border: none; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; font-weight: 700; transition: background .2s; white-space: nowrap; text-decoration: none; }
-      .btn-oc-call:hover { background: var(--plum-dk); }
-      .btn-oc-busy { background: transparent; border: 1px solid var(--border); color: var(--muted) !important; border-radius: 20px; padding: .3rem .9rem; font-size: .78rem; white-space: nowrap; cursor: default; }
+  .hero-eyebrow {
+    font-size: .78rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
 
-      /* ─── Back to top ───────────────────────────────── */
-      .btn-back-top { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1020; width: 46px; height: 46px; border-radius: 50%; background: var(--plum); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 20px rgba(107,63,160,.4); opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity .3s, visibility .3s, transform .3s, background .2s; }
-      .btn-back-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-      .btn-back-top:hover { background: var(--plum-dk); }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--plum-dk);
+    margin-bottom: 1.2rem;
+  }
 
-      /* ─── Dark mode ──────────────────────────────────── */
-      [data-theme="dark"] .agent-widget { background: rgba(26,21,53,.92); }
-      [data-theme="dark"] .step-card,
-      [data-theme="dark"] .agent-card,
-      [data-theme="dark"] .testi-card { background: #141428; }
-      [data-theme="dark"] .plan-card { background: #141428; }
-      [data-theme="dark"] .plan-card.featured { background: linear-gradient(160deg, #2a1a48 0%, #1a1535 100%); }
-      [data-theme="dark"] .faq-accordion .accordion-button { background: #141428; color: var(--text); }
-      [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) { background: var(--lavender); }
-      [data-theme="dark"] .faq-accordion .accordion-body { background: #141428; }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
 
-      /* ─── Promo Modal ────────────────────────────────── */
-      #promoModal .modal-content {
-        border: none; border-radius: 24px;
-        box-shadow: 0 32px 80px rgba(107,63,160,.22);
-        overflow: hidden;
-      }
-      #promoModal .modal-header {
-        background: linear-gradient(135deg, #1e0a35 0%, #2d1155 100%);
-        border-bottom: none; padding: 1.75rem 2rem 1.5rem;
-      }
-      #promoModal .modal-title {
-        font-family: 'Playfair Display', serif; color: #fff;
-        font-size: 1.35rem; display: flex; align-items: center; gap: .6rem;
-      }
-      #promoModal .modal-title .gold-star { color: var(--gold); font-size: 1.4rem; }
-      #promoModal .btn-close { filter: invert(1) brightness(2); opacity: .75; }
-      #promoModal .modal-body { padding: 2rem; background: var(--cream); }
-      #promoModal .modal-footer { background: var(--cream); border-top: 1px solid var(--border); padding: 1.25rem 2rem; }
-      .promo-offer-badge {
-        display: inline-flex; align-items: center; gap: .45rem;
-        background: rgba(201,168,76,.12); color: #9a7010;
-        border: 1px solid rgba(201,168,76,.35); border-radius: 20px;
-        padding: .3rem .9rem; font-size: .78rem; font-weight: 700;
-        letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1.1rem;
-      }
-      .promo-why-box {
-        background: rgba(107,63,160,.07); border: 1px solid rgba(107,63,160,.18);
-        border-radius: 14px; padding: .9rem 1.1rem; margin-top: 1.25rem;
-        font-size: .84rem; color: var(--muted); display: flex; gap: .65rem; align-items: flex-start;
-      }
-      .promo-why-box i { color: var(--plum); margin-top: 2px; flex-shrink: 0; }
-      #promoPhoneInput {
-        border-radius: 12px; border: 2px solid var(--border); padding: .7rem 1rem;
-        font-size: 1rem; width: 100%; transition: border-color .2s;
-        background: #fff; color: var(--text);
-        font-family: 'Montserrat', sans-serif; letter-spacing: .05em;
-      }
-      #promoPhoneInput:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 3px rgba(107,63,160,.12); }
-      #promoPhoneInput.is-invalid { border-color: #dc3545; box-shadow: 0 0 0 3px rgba(220,53,69,.1); }
-      #promoPhoneInput.is-valid { border-color: #059669; }
-      .promo-input-label {
-        font-size: .83rem; font-weight: 600; color: var(--plum-dk);
-        margin-bottom: .4rem; display: block;
-      }
-      .promo-error-msg {
-        font-size: .82rem; color: #dc3545; margin-top: .4rem;
-        display: none; align-items: center; gap: .35rem;
-      }
-      .promo-error-msg.visible { display: flex; }
-      .btn-cobrar {
-        background: var(--gold); color: #1e0a35 !important; border: none;
-        border-radius: 30px; padding: .65rem 2rem; font-size: .95rem;
-        font-weight: 700; transition: box-shadow .2s, transform .2s;
-        box-shadow: 0 4px 20px rgba(201,168,76,.3); cursor: pointer;
-        display: inline-flex; align-items: center; gap: .5rem;
-      }
-      .btn-cobrar:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(201,168,76,.45); transform: translateY(-1px); }
-      .btn-cobrar:disabled { opacity: .65; cursor: not-allowed; transform: none; }
-      .promo-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(30,10,53,.25); border-top-color: #1e0a35; border-radius: 50%; animation: spin .6s linear infinite; }
-      .btn-cobrar.loading .promo-spinner { display: inline-block; }
-      .btn-cobrar.loading .btn-cobrar-icon { display: none; }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      [data-theme="dark"] #promoModal .modal-body,
-      [data-theme="dark"] #promoModal .modal-footer { background: #141428; }
-      [data-theme="dark"] #promoPhoneInput { background: #1e1a38; border-color: rgba(107,63,160,.35); color: var(--text); }
-      [data-theme="dark"] .promo-offer-badge { color: var(--gold); }
+  .hero-lead {
+    font-size: 1.05rem;
+    color: var(--warm);
+    max-width: 500px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .hero-badge-strip {
+    display: flex;
+    gap: .55rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+  }
+
+  .hero-badge {
+    background: rgba(107, 63, 160, .1);
+    color: var(--plum);
+    border-radius: 20px;
+    padding: 4px 13px;
+    font-size: .78rem;
+    font-weight: 600;
+    border: 1px solid rgba(107, 63, 160, .2);
+  }
+
+  /* ── Agent widget ────────────────────────────────── */
+  .agent-widget {
+    background: rgba(255, 255, 255, .92);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(107, 63, 160, .16), 0 0 0 1px rgba(107, 63, 160, .04);
+    overflow: hidden;
+    max-width: 360px;
+    margin: 0 auto;
+    animation: widget-float 6s ease-in-out infinite;
+  }
+
+  @keyframes widget-float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .agent-widget-header {
+    background: linear-gradient(135deg, var(--plum) 0%, #8a50cc 100%);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .agent-widget-header span {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: .75rem;
+    color: rgba(255, 255, 255, .9);
+    background: rgba(255, 255, 255, .15);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, .3);
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-green {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, .3);
+    }
+
+    50% {
+      box-shadow: 0 0 0 6px rgba(74, 222, 128, .12);
+    }
+  }
+
+  .agent-widget-body {
+    padding: .75rem 1.5rem 1.5rem;
+  }
+
+  .aw-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .aw-row:last-of-type {
+    border-bottom: none;
+  }
+
+  .aw-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--lavender), var(--blush));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--plum);
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+  }
+
+  .aw-name {
+    font-family: 'Playfair Display', serif;
+    font-size: .85rem;
+    color: var(--plum-dk);
+  }
+
+  .aw-spec {
+    font-size: .72rem;
+    color: var(--muted);
+  }
+
+  .aw-cta {
+    background: var(--plum);
+    color: #fff !important;
+    border: none;
+    border-radius: 12px;
+    padding: .7rem 0;
+    font-size: .9rem;
+    font-weight: 700;
+    width: 100%;
+    margin-top: 1rem;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    transition: background .2s, box-shadow .2s;
+  }
+
+  .aw-cta:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107, 63, 160, .35);
+  }
+
+  /* Status badges */
+  .s-online {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: .68rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .s-busy {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: .68rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .s-offline {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: .68rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ─── Stats ────────────────────────────────────── */
+  .stats-section {
+    background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
+    padding: 2.5rem 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .stat-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: .78rem;
+    opacity: .75;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-top: .3rem;
+  }
+
+  /* ─── Section helpers ──────────────────────────── */
+  .eyebrow {
+    font-size: .75rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    color: var(--plum-dk);
+    margin-bottom: .5rem;
+    line-height: 1.2;
+  }
+
+  .sec-sub {
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .divider-rose {
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--rose), transparent);
+    margin: .75rem 0 1.5rem;
+    border-radius: 2px;
+  }
+
+  /* ─── Free Trial Banner ─────────────────────────── */
+  .trial-section {
+    background: linear-gradient(135deg, #1e0a35 0%, #2d1155 50%, #1a0a2e 100%);
+    padding: 70px 0;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(168, 125, 212, .2);
+    border-bottom: 1px solid rgba(168, 125, 212, .2);
+  }
+
+  .trial-section::before {
+    content: '✦';
+    position: absolute;
+    font-size: 28rem;
+    opacity: .03;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .trial-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(201, 168, 76, .15);
+    color: var(--gold);
+    border: 1px solid rgba(201, 168, 76, .3);
+    border-radius: 30px;
+    padding: .35rem 1rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .trial-badge::before {
+    content: '★';
+  }
+
+  .trial-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .trial-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .trial-desc {
+    color: rgba(255, 255, 255, .7);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 460px;
+    margin-bottom: 2rem;
+  }
+
+  .btn-trial {
+    background: var(--gold);
+    color: #1e0a35 !important;
+    border: none;
+    border-radius: 30px;
+    padding: .75rem 2.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 4px 24px rgba(201, 168, 76, .35);
+  }
+
+  .btn-trial:hover {
+    box-shadow: 0 8px 32px rgba(201, 168, 76, .5);
+    transform: translateY(-2px);
+  }
+
+  .trial-terms {
+    color: rgba(255, 255, 255, .4);
+    font-size: .78rem;
+    margin-top: 1rem;
+  }
+
+  .trial-card {
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .trial-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(201, 168, 76, .4);
+  }
+
+  .trial-num-label {
+    color: rgba(255, 255, 255, .8);
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    margin-top: .25rem;
+  }
+
+  .trial-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    text-align: left;
+  }
+
+  .trial-features li {
+    color: rgba(255, 255, 255, .75);
+    font-size: .9rem;
+    padding: .4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+  }
+
+  .trial-features li:last-child {
+    border-bottom: none;
+  }
+
+  .trial-features li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: .65rem;
+    flex-shrink: 0;
+  }
+
+  /* ─── Moon phases ──────────────────────────────── */
+  .moon-section {
+    background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 60%, var(--cream) 100%);
+    padding: 60px 0;
+    overflow: hidden;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .moon-section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--plum);
+    font-size: 1.15rem;
+    margin-bottom: 2.5rem;
+    opacity: .85;
+  }
+
+  .moon-phases {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .moon-phase {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    padding: .75rem 1.25rem;
+    transition: transform .25s;
+    position: relative;
+  }
+
+  .moon-phase:hover {
+    transform: scale(1.12);
+  }
+
+  .moon-emoji {
+    font-size: 2.8rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 0px rgba(168, 125, 212, 0));
+    transition: filter .3s;
+    animation: moon-glow var(--mg-dur, 4s) var(--mg-del, 0s) ease-in-out infinite alternate;
+  }
+
+  .moon-phase:hover .moon-emoji {
+    filter: drop-shadow(0 0 14px rgba(168, 125, 212, .6));
+  }
+
+  @keyframes moon-glow {
+    from {
+      filter: drop-shadow(0 0 2px rgba(168, 125, 212, .1));
+    }
+
+    to {
+      filter: drop-shadow(0 0 10px rgba(168, 125, 212, .35));
+    }
+  }
+
+  .moon-label {
+    font-size: .68rem;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .moon-phase--active .moon-emoji {
+    filter: drop-shadow(0 0 14px rgba(168, 125, 212, .75)) !important;
+    animation: none;
+  }
+
+  .moon-phase--active .moon-label {
+    color: var(--plum);
+    font-weight: 700;
+  }
+
+  .moon-phase+.moon-phase::before {
+    content: '·';
+    position: absolute;
+    left: -.1rem;
+    color: var(--border);
+    font-size: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  /* ─── How it works ─────────────────────────────── */
+  .how-section {
+    padding: 90px 0;
+    background: var(--sand);
+  }
+
+  .step-card {
+    background: #fff;
+    border-radius: 22px;
+    padding: 2.5rem 1.75rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    height: 100%;
+    transition: box-shadow .3s, transform .3s;
+    position: relative;
+  }
+
+  .step-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(107, 63, 160, .13);
+  }
+
+  .step-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--plum), var(--rose));
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 6px 20px rgba(107, 63, 160, .3);
+  }
+
+  .step-icon {
+    font-size: 2rem;
+    margin-bottom: .6rem;
+    display: block;
+  }
+
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--plum-dk);
+    margin-bottom: .5rem;
+  }
+
+  .step-text {
+    color: var(--muted);
+    font-size: .88rem;
+    line-height: 1.75;
+  }
+
+  /* ─── Agents ───────────────────────────────────── */
+  .agents-section {
+    padding: 100px 0 120px;
+    background: #0f0520;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .agents-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle 1px at 8% 18%, rgba(201,168,76,.7) 0%, transparent 100%),
+      radial-gradient(circle 1px at 22% 72%, rgba(255,255,255,.4) 0%, transparent 100%),
+      radial-gradient(circle 1.5px at 38% 28%, rgba(201,168,76,.5) 0%, transparent 100%),
+      radial-gradient(circle 1px at 55% 85%, rgba(255,255,255,.35) 0%, transparent 100%),
+      radial-gradient(circle 2px at 70% 12%, rgba(201,168,76,.45) 0%, transparent 100%),
+      radial-gradient(circle 1px at 83% 55%, rgba(255,255,255,.5) 0%, transparent 100%),
+      radial-gradient(circle 1px at 91% 78%, rgba(201,168,76,.35) 0%, transparent 100%),
+      radial-gradient(circle 1.5px at 46% 93%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(circle 1px at 14% 45%, rgba(201,168,76,.4) 0%, transparent 100%),
+      radial-gradient(circle 1px at 63% 60%, rgba(255,255,255,.28) 0%, transparent 100%),
+      radial-gradient(circle 1px at 29% 37%, rgba(201,168,76,.3) 0%, transparent 100%),
+      radial-gradient(circle 1.5px at 77% 33%, rgba(255,255,255,.35) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .agents-section .sec-title {
+    color: #f0e8ff;
+    text-shadow: 0 0 40px rgba(168,125,212,.3);
+  }
+
+  .agents-section .divider-rose {
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border: none;
+    height: 1px;
+    width: 120px;
+  }
+
+  .agents-section .sec-sub {
+    color: rgba(201,168,76,.75);
+    letter-spacing: .08em;
+    font-size: .88rem;
+    text-transform: uppercase;
+  }
+
+  .agent-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    cursor: pointer;
+    transition: transform .45s cubic-bezier(.25,.46,.45,.94), box-shadow .45s;
+    background-color: #2d1155;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    border: none;
+    padding: 0;
+  }
+
+  .agent-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 40px 80px rgba(107,63,160,.7), 0 0 0 1.5px var(--gold);
+    z-index: 2;
+  }
+
+  .agent-no-photo-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #2d1155 0%, #6b3fa0 50%, #c06080 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: rgba(201,168,76,.4);
+  }
+
+  .agent-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,3,22,.98) 0%,
+      rgba(10,3,22,.65) 38%,
+      rgba(10,3,22,.08) 65%,
+      transparent 100%
+    );
+    z-index: 1;
+  }
+
+  /* IVR option badge — top left */
+  .agent-ivr {
+    position: absolute;
+    top: .65rem;
+    left: .65rem;
+    z-index: 3;
+    background: rgba(201,168,76,.92);
+    color: #1a0a2e;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .75rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    border: 1.5px solid rgba(255,255,255,.3);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  }
+
+  /* Live status dot — top right */
+  .agent-status {
+    position: absolute;
+    top: .75rem;
+    right: .75rem;
+    z-index: 3;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    border: 1.5px solid rgba(255,255,255,.2);
+    transition: background .4s, box-shadow .4s;
+  }
+  .agent-status.is-available {
+    background: #2fb344;
+    border-color: rgba(47,179,68,.5);
+    animation: ft-pulse-green 1.6s ease infinite;
+  }
+  .agent-status.is-busy {
+    background: #f76707;
+    border-color: rgba(247,103,7,.5);
+  }
+  @keyframes ft-pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(47,179,68,.5); }
+    50%       { box-shadow: 0 0 0 5px transparent; }
+  }
+
+  .agent-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.1rem .9rem .9rem;
+    z-index: 2;
+  }
+
+  .agent-name {
+    font-family: 'Playfair Display', serif;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: .2rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,.9);
+    text-transform: capitalize;
+  }
+
+  .agent-spec {
+    font-size: .7rem;
+    color: rgba(201,168,76,.85);
+    letter-spacing: .04em;
+    line-height: 1.4;
+  }
+
+  .btn-call {
+    background: var(--plum);
+    color: #fff !important;
+    border: none;
+    border-radius: 30px;
+    padding: .55rem 1rem;
+    font-size: .9rem;
+    font-weight: 600;
+    width: 100%;
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    transition: background .2s, box-shadow .2s;
+  }
+
+  .btn-call:hover {
+    background: var(--plum-dk);
+    box-shadow: 0 6px 20px rgba(107, 63, 160, .3);
+  }
+
+  .btn-busy-soft {
+    background: var(--sand);
+    color: var(--muted) !important;
+    border: none;
+    border-radius: 30px;
+    padding: .55rem 1rem;
+    font-size: .9rem;
+    width: 100%;
+    margin-top: auto;
+    display: block;
+    cursor: default;
+    text-align: center;
+  }
+
+  /* ─── Plans ─────────────────────────────────────── */
+  .plans-section {
+    padding: 90px 0;
+    background: #fff;
+  }
+
+  .plan-card {
+    border: 2px solid var(--border);
+    border-radius: 22px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: var(--cream);
+    transition: transform .3s, box-shadow .3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .plan-card.featured {
+    border-color: var(--plum);
+    background: linear-gradient(160deg, #f0e8ff 0%, #fff5f8 100%);
+    box-shadow: 0 12px 40px rgba(107, 63, 160, .18);
+  }
+
+  .plan-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .plan-popular {
+    background: var(--rose);
+    color: #fff;
+    border-radius: 20px;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 3px 12px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .plan-min-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--plum-dk);
+    line-height: 1;
+  }
+
+  .plan-min-num small {
+    font-size: 1.1rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .plan-clp {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--rose);
+    margin: .5rem 0;
+  }
+
+  .plan-clp span {
+    font-size: .85rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .plan-desc {
+    font-size: .88rem;
+    color: var(--muted);
+    flex-grow: 1;
+    margin: .75rem 0 1.5rem;
+    line-height: 1.65;
+  }
+
+  .btn-plan {
+    background: var(--plum);
+    color: #fff !important;
+    border: none;
+    border-radius: 30px;
+    padding: .55rem 0;
+    font-size: .9rem;
+    font-weight: 600;
+    width: 100%;
+    transition: background .2s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .btn-plan:hover {
+    background: var(--plum-dk);
+  }
+
+  .btn-plan-outline {
+    background: transparent;
+    color: var(--plum) !important;
+    border: 2px solid var(--plum);
+    border-radius: 30px;
+    padding: .55rem 0;
+    font-size: .9rem;
+    font-weight: 600;
+    width: 100%;
+    transition: background .2s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .btn-plan-outline:hover {
+    background: rgba(107, 63, 160, .07);
+  }
+
+  .packs-wrap {
+    position: relative;
+    padding: 0 2.5rem;
+  }
+
+  .packs-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: .75rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(107, 63, 160, .3) transparent;
+  }
+
+  .packs-track::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .packs-track::-webkit-scrollbar-thumb {
+    background: rgba(107, 63, 160, .35);
+    border-radius: 2px;
+  }
+
+  .pack-item {
+    flex: 0 0 270px;
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 576px) {
+    .pack-item {
+      flex: 0 0 calc(50% - .625rem);
+    }
+  }
+
+  @media (min-width: 992px) {
+    .pack-item {
+      flex: 0 0 calc(25% - .94rem);
+    }
+  }
+
+  .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(107, 63, 160, .12);
+    border: 1px solid rgba(107, 63, 160, .25);
+    color: var(--plum);
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .2s;
+    z-index: 2;
+  }
+
+  .slider-btn:hover {
+    background: rgba(107, 63, 160, .25);
+  }
+
+  .slider-prev {
+    left: 0;
+  }
+
+  .slider-next {
+    right: 0;
+  }
+
+  @media (min-width: 992px) {
+    .slider-btn {
+      display: none;
+    }
+  }
+
+  .btn-cart-sm {
+    border-radius: 30px;
+    padding: .35rem 0;
+    font-weight: 600;
+    font-size: .78rem;
+    width: 100%;
+    background: transparent;
+    border: 2px solid var(--plum);
+    color: var(--plum) !important;
+    transition: background .2s;
+  }
+
+  .btn-cart-sm:hover {
+    background: rgba(107, 63, 160, .08);
+  }
+
+  /* ─── Testimonials ─────────────────────────────── */
+  .testimonials-section {
+    padding: 90px 0;
+    background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%);
+  }
+
+  .testi-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .testi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 992px) {
+    .testi-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .testi-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    box-shadow: 0 10px 30px rgba(107, 63, 160, .08);
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s, box-shadow .25s;
+  }
+
+  .testi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 50px rgba(107, 63, 160, .14);
+  }
+
+  .stars-row {
+    color: #f59e0b;
+    font-size: .95rem;
+    letter-spacing: .1em;
+    margin-bottom: 1rem;
+  }
+
+  .t-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: .97rem;
+    color: var(--text);
+    line-height: 1.75;
+    flex: 1;
+    margin-bottom: 1.25rem;
+  }
+
+  .t-who {
+    font-weight: 700;
+    color: var(--plum-dk);
+    font-size: .88rem;
+  }
+
+  .t-city {
+    color: var(--muted);
+    font-size: .78rem;
+  }
+
+  /* ─── FAQ ──────────────────────────────────────── */
+  .faq-section {
+    padding: 90px 0;
+    background: var(--cream);
+  }
+
+  .faq-accordion .accordion-button {
+    font-weight: 600;
+    font-size: .98rem;
+    color: var(--text);
+    background: #fff;
+  }
+
+  .faq-accordion .accordion-button:not(.collapsed) {
+    color: var(--plum);
+    background: var(--lavender);
+    box-shadow: none;
+  }
+
+  .faq-accordion .accordion-button::after {
+    filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg);
+  }
+
+  .faq-accordion .accordion-item {
+    border: 1px solid var(--border);
+    border-radius: 14px !important;
+    margin-bottom: .75rem;
+    overflow: hidden;
+  }
+
+  .faq-accordion .accordion-body {
+    color: var(--muted);
+    font-size: .92rem;
+    line-height: 1.75;
+  }
+
+  /* ─── CTA ──────────────────────────────────────── */
+  .cta-section {
+    padding: 90px 0;
+    background: var(--plum);
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '🌙';
+    position: absolute;
+    font-size: 24rem;
+    opacity: .05;
+    right: 2%;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: .75rem;
+  }
+
+  .cta-section p {
+    opacity: .82;
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-white {
+    background: #fff;
+    color: var(--plum) !important;
+    border: none;
+    border-radius: 30px;
+    padding: .75rem 2.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: box-shadow .2s;
+    text-decoration: none;
+  }
+
+  .btn-white:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+  }
+
+  .btn-white-outline {
+    background: transparent;
+    color: #fff !important;
+    border: 2px solid rgba(255, 255, 255, .55);
+    border-radius: 30px;
+    padding: .7rem 2.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: border-color .2s;
+    text-decoration: none;
+  }
+
+  .btn-white-outline:hover {
+    border-color: #fff;
+  }
+
+  /* ─── Off-canvas ────────────────────────────────── */
+  .offcanvas-agents {
+    background: #fff;
+    border-left: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .offcanvas-agents .offcanvas-header {
+    background: var(--lavender);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .offcanvas-agents .offcanvas-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--plum-dk);
+    font-size: 1.1rem;
+  }
+
+  .offcanvas-agents .btn-close {
+    filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg);
+  }
+
+  .offcanvas-agents .offcanvas-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .oc-row {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .oc-row:last-child {
+    border-bottom: none;
+  }
+
+  .oc-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--lavender), var(--blush));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--plum);
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+  }
+
+  .oc-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .oc-name {
+    font-family: 'Playfair Display', serif;
+    font-size: .9rem;
+    color: var(--plum-dk);
+    margin-bottom: 2px;
+  }
+
+  .oc-spec {
+    font-size: .78rem;
+    color: var(--muted);
+  }
+
+  .oc-tabs .nav-link {
+    font-size: .82rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: .3rem .9rem;
+    margin-right: .4rem;
+    transition: all .2s;
+  }
+
+  .oc-tabs .nav-link.active {
+    background: var(--plum);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .oc-tabs .nav-link:hover:not(.active) {
+    color: var(--plum);
+    border-color: var(--plum);
+  }
+
+  .btn-oc-call {
+    background: var(--plum);
+    color: #fff !important;
+    border: none;
+    border-radius: 20px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    font-weight: 700;
+    transition: background .2s;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .btn-oc-call:hover {
+    background: var(--plum-dk);
+  }
+
+  .btn-oc-busy {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted) !important;
+    border-radius: 20px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  /* ─── Back to top ───────────────────────────────── */
+  .btn-back-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1020;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--plum);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 20px rgba(107, 63, 160, .4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity .3s, visibility .3s, transform .3s, background .2s;
+  }
+
+  .btn-back-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .btn-back-top:hover {
+    background: var(--plum-dk);
+  }
+
+  /* ─── Dark mode ──────────────────────────────────── */
+  [data-theme="dark"] .agent-widget {
+    background: rgba(26, 21, 53, .92);
+  }
+
+  [data-theme="dark"] .step-card,
+  [data-theme="dark"] .testi-card {
+    background: #141428;
+  }
+
+  [data-theme="dark"] .plan-card {
+    background: #141428;
+  }
+
+  [data-theme="dark"] .plan-card.featured {
+    background: linear-gradient(160deg, #2a1a48 0%, #1a1535 100%);
+  }
+
+  [data-theme="dark"] .faq-accordion .accordion-button {
+    background: #141428;
+    color: var(--text);
+  }
+
+  [data-theme="dark"] .faq-accordion .accordion-button:not(.collapsed) {
+    background: var(--lavender);
+  }
+
+  [data-theme="dark"] .faq-accordion .accordion-body {
+    background: #141428;
+  }
+
+  /* ─── Promo Modal ────────────────────────────────── */
+  #promoModal .modal-content {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 32px 80px rgba(107, 63, 160, .22);
+    overflow: hidden;
+  }
+
+  #promoModal .modal-header {
+    background: linear-gradient(135deg, #1e0a35 0%, #2d1155 100%);
+    border-bottom: none;
+    padding: 1.75rem 2rem 1.5rem;
+  }
+
+  #promoModal .modal-title {
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+  }
+
+  #promoModal .modal-title .gold-star {
+    color: var(--gold);
+    font-size: 1.4rem;
+  }
+
+  #promoModal .btn-close {
+    filter: invert(1) brightness(2);
+    opacity: .75;
+  }
+
+  #promoModal .modal-body {
+    padding: 2rem;
+    background: var(--cream);
+  }
+
+  #promoModal .modal-footer {
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+  }
+
+  .promo-offer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: rgba(201, 168, 76, .12);
+    color: #9a7010;
+    border: 1px solid rgba(201, 168, 76, .35);
+    border-radius: 20px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 1.1rem;
+  }
+
+  .promo-why-box {
+    background: rgba(107, 63, 160, .07);
+    border: 1px solid rgba(107, 63, 160, .18);
+    border-radius: 14px;
+    padding: .9rem 1.1rem;
+    margin-top: 1.25rem;
+    font-size: .84rem;
+    color: var(--muted);
+    display: flex;
+    gap: .65rem;
+    align-items: flex-start;
+  }
+
+  .promo-why-box i {
+    color: var(--plum);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  #promoPhoneInput {
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    padding: .7rem 1rem;
+    font-size: 1rem;
+    width: 100%;
+    transition: border-color .2s;
+    background: #fff;
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: .05em;
+  }
+
+  #promoPhoneInput:focus {
+    outline: none;
+    border-color: var(--plum);
+    box-shadow: 0 0 0 3px rgba(107, 63, 160, .12);
+  }
+
+  #promoPhoneInput.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, .1);
+  }
+
+  #promoPhoneInput.is-valid {
+    border-color: #059669;
+  }
+
+  .promo-input-label {
+    font-size: .83rem;
+    font-weight: 600;
+    color: var(--plum-dk);
+    margin-bottom: .4rem;
+    display: block;
+  }
+
+  .promo-error-msg {
+    font-size: .82rem;
+    color: #dc3545;
+    margin-top: .4rem;
+    display: none;
+    align-items: center;
+    gap: .35rem;
+  }
+
+  .promo-error-msg.visible {
+    display: flex;
+  }
+
+  .btn-cobrar {
+    background: var(--gold);
+    color: #1e0a35 !important;
+    border: none;
+    border-radius: 30px;
+    padding: .65rem 2rem;
+    font-size: .95rem;
+    font-weight: 700;
+    transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 4px 20px rgba(201, 168, 76, .3);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .btn-cobrar:hover:not(:disabled) {
+    box-shadow: 0 8px 28px rgba(201, 168, 76, .45);
+    transform: translateY(-1px);
+  }
+
+  .btn-cobrar:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .promo-spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(30, 10, 53, .25);
+    border-top-color: #1e0a35;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+  }
+
+  .btn-cobrar.loading .promo-spinner {
+    display: inline-block;
+  }
+
+  .btn-cobrar.loading .btn-cobrar-icon {
+    display: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  [data-theme="dark"] #promoModal .modal-body,
+  [data-theme="dark"] #promoModal .modal-footer {
+    background: #141428;
+  }
+
+  [data-theme="dark"] #promoPhoneInput {
+    background: #1e1a38;
+    border-color: rgba(107, 63, 160, .35);
+    color: var(--text);
+  }
+
+  [data-theme="dark"] .promo-offer-badge {
+    color: var(--gold);
+  }
 </style>
 {% endblock %}
 
@@ -472,7 +1742,7 @@
 <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
 <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
 <a href="tel:+{{ _('56222301515') }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
-  <i class="ti ti-phone me-1"></i>{{ _('{{ _('+56 2 2230 1515') }}') }}
+  <i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}
 </a>
 <button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
   <span class="oc-dot-online"></span>Especialistas
@@ -485,386 +1755,422 @@
 {# ── Page content ─────────────────────────────────────────────────────── #}
 {% block content %}
 
-    <!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
-    <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas"
-         aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
-          <i class="ti ti-stars me-2"></i>Especialistas
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+<!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
+<div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
+      <i class="ti ti-stars me-2"></i>Especialistas
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="nav oc-tabs mb-4" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab"><span class="oc-dot-online"></span>Disponibles</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab"><span class="oc-dot-busy"></span>En consulta</button></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
+        {% for agent in agents %}
+        <div class="oc-row" data-agent-option="{{ agent.option }}">
+          <div class="oc-avatar">{{ agent.name[0] }}</div>
+          <div class="oc-info">
+            <div class="oc-name">{{ agent.name }}</div>
+            <div class="oc-spec">Opción {{ agent.option }}</div>
+            <div class="mt-1 agent-status-wrap">
+              {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
+              {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
+              {% else %}<span class="s-offline">● No disponible</span>{% endif %}
+            </div>
+          </div>
+          <span class="agent-action-wrap">
+            {% if agent.status == 'available' %}<a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
+          </span>
+        </div>
+        {% endfor %}
       </div>
-      <div class="offcanvas-body">
-        <ul class="nav oc-tabs mb-4" role="tablist">
-          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab"><span class="oc-dot-online"></span>Disponibles</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab"><span class="oc-dot-busy"></span>En consulta</button></li>
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
-            {% for agent in agents %}
-            <div class="oc-row" data-agent-option="{{ agent.option }}">
-              <div class="oc-avatar">{{ agent.name[0] }}</div>
-              <div class="oc-info">
-                <div class="oc-name">{{ agent.name }}</div>
-                <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-                <div class="mt-1 agent-status-wrap">
+      <div class="tab-pane fade" id="oc-online" role="tabpanel">
+        {% set online = agents | selectattr('status', 'eq', 'available') | list %}
+        {% if online %}
+        {% for agent in online %}
+        <div class="oc-row">
+          <div class="oc-avatar">{{ agent.name[0] }}</div>
+          <div class="oc-info">
+            <div class="oc-name">{{ agent.name }}</div>
+            <div class="oc-spec">Opción {{ agent.option }}</div>
+            <div class="mt-1"><span class="s-online">● Disponible</span></div>
+          </div>
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade" id="oc-busy" role="tabpanel">
+        {% set busy = agents | selectattr('status', 'eq', 'busy') | list %}
+        {% if busy %}
+        {% for agent in busy %}
+        <div class="oc-row">
+          <div class="oc-avatar">{{ agent.name[0] }}</div>
+          <div class="oc-info">
+            <div class="oc-name">{{ agent.name }}</div>
+            <div class="oc-spec">Opción {{ agent.option }}</div>
+            <div class="mt-1"><span class="s-busy">● En consulta</span></div>
+          </div>
+          <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta ahora.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
+      <a href="tel:+{{ _('56222301515') }}" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
+        <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('+56 2 2230 1515') }}
+      </a>
+      <a href="{{ url_for('minutos.index') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
+        <i class="ti ti-wallet me-2"></i>Ver Planes
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── HERO ────────────────────────────────────── -->
+<section class="hero" id="hero-section">
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-eyebrow">✦ El universo marca el camino, ¡descubrelo!</div>
+        <h1>
+          Encuentra claridad<br>
+          en los momentos<br>
+          <em>que más importan</em>
+        </h1>
+        <p class="hero-lead">
+          Nuestras especialistas en tarot te acompañan sin esperas, sin citas.
+          Amor, trabajo, familia — cuando más lo necesitas.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+            <i class="ti ti-phone me-2"></i>Llama Ahora
+          </a>
+          <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
+            <i class="ti ti-wallet me-2"></i>Carga Minutos
+          </a>
+        </div>
+        <div class="hero-badge-strip">
+          <span class="hero-badge">✔ Disponible 24/7</span>
+          <span class="hero-badge">✔ 100% Confidencial</span>
+          <span class="hero-badge">✔ Sin contratos</span>
+          <span class="hero-badge">✔ Minutos sin vencimiento</span>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <!-- Live agent status widget -->
+        <div class="agent-widget">
+          <div class="agent-widget-header">
+            <span>Especialistas disponibles ahora</span>
+            <span class="live-badge"><span class="live-dot"></span>En vivo</span>
+          </div>
+          <div class="agent-widget-body">
+            <div id="hero-agent-rows">
+              {% if agents_error == 'timeout' %}
+              <div class="alert alert-warning mb-0 py-2" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ti ti-clock-exclamation"></i>
+                  <span>Listado de agentes no disponible. Cod. Timeout</span>
+                </div>
+              </div>
+              {% elif agents_error %}
+              <div class="alert alert-danger mb-0 py-2" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ti ti-alert-triangle"></i>
+                  <span>Listado de agentes no disponible. Cod. 503</span>
+                </div>
+              </div>
+              {% elif not agents %}
+              <p class="text-center py-3 mb-0" style="color:var(--muted); font-size:.9rem;">Sin tarotistas disponibles</p>
+              {% else %}
+              {% for agent in agents[:4] %}
+              <div class="aw-row" data-agent-option="{{ agent.option }}">
+                <div class="aw-avatar">{{ agent.name[0] }}</div>
+                <div style="flex:1; min-width:0;">
+                  <div class="aw-name">{{ agent.name }}</div>
+                  <div class="aw-spec">Opción {{ agent.option }}</div>
+                </div>
+                <span class="agent-status-wrap">
                   {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
                   {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
                   {% else %}<span class="s-offline">● No disponible</span>{% endif %}
-                </div>
-              </div>
-              <span class="agent-action-wrap">
-              {% if agent.status == 'available' %}<a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-              {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
-              </span>
-            </div>
-            {% endfor %}
-          </div>
-          <div class="tab-pane fade" id="oc-online" role="tabpanel">
-            {% set online = agents | selectattr('status', 'eq', 'available') | list %}
-            {% if online %}
-              {% for agent in online %}
-              <div class="oc-row">
-                <div class="oc-avatar">{{ agent.name[0] }}</div>
-                <div class="oc-info">
-                  <div class="oc-name">{{ agent.name }}</div>
-                  <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-                  <div class="mt-1"><span class="s-online">● Disponible</span></div>
-                </div>
-                <a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+                </span>
               </div>
               {% endfor %}
-            {% else %}
-              <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
-            {% endif %}
+              {% endif %}
+            </div><!-- #hero-agent-rows -->
+            <a href="tel:+{{ _('56222301515') }}" class="aw-cta">
+              <i class="ti ti-phone me-2"></i>Consultar Ahora - {{ _('+56 2 2230 1515') }}
+            </a>
           </div>
-          <div class="tab-pane fade" id="oc-busy" role="tabpanel">
-            {% set busy = agents | selectattr('status', 'eq', 'busy') | list %}
-            {% if busy %}
-              {% for agent in busy %}
-              <div class="oc-row">
-                <div class="oc-avatar">{{ agent.name[0] }}</div>
-                <div class="oc-info">
-                  <div class="oc-name">{{ agent.name }}</div>
-                  <div class="oc-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-                  <div class="mt-1"><span class="s-busy">● En consulta</span></div>
-                </div>
-                <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
-              </div>
-              {% endfor %}
-            {% else %}
-              <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta ahora.</p>
-            {% endif %}
-          </div>
-        </div>
-        <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
-          <a href="tel:+{{ _('56222301515') }}" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
-          </a>
-          <a href="{{ url_for('minutos.index') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
-            <i class="ti ti-wallet me-2"></i>Ver Planes
-          </a>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- ── HERO ────────────────────────────────────── -->
-    <section class="hero" id="hero-section">
-      <div class="container" style="position:relative; z-index:1;">
-        <div class="row g-5 align-items-center">
-          <div class="col-lg-6">
-            <div class="hero-eyebrow">✦ Orientación Espiritual · Chile</div>
-            <h1>
-              Encuentra claridad<br>
-              en los momentos<br>
-              <em>que más importan</em>
-            </h1>
-            <p class="hero-lead">
-              Nuestras especialistas en tarot te acompañan sin esperas, sin citas.
-              Amor, trabajo, familia — cuando más lo necesitas.
-            </p>
-            <div class="d-flex gap-3 flex-wrap">
-              <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-                <i class="ti ti-phone me-2"></i>Llama Ahora
+<!-- ── STATS ─────────────────────────────────────── -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-big" data-count="50000" data-prefix="+" data-suffix=".000">+50.000</div>
+        <div class="stat-label">Consultas realizadas</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-big" data-count="98" data-suffix="%">98%</div>
+        <div class="stat-label">Satisfacción</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-big" data-count="20" data-prefix="+">+20</div>
+        <div class="stat-label">Especialistas</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-big">24/7</div>
+        <div class="stat-label">Disponibilidad</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FREE TRIAL ─────────────────────────────────── -->
+<section class="trial-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-7 reveal">
+        <div class="trial-badge">Oferta de bienvenida</div>
+        <h2 class="trial-title">
+          Tu primera consulta:<br>
+          <em>5 minutos gratis</em>
+        </h2>
+        <p class="trial-desc">
+          Sabemos que dar el primer paso puede generar dudas. Por eso te ofrecemos
+          5 minutos completamente gratuitos para que conozcas a nuestras especialistas
+          y compruebes por ti mismo/a la calidad de cada lectura.
+        </p>
+        <button type="button" class="btn-trial" data-bs-toggle="modal" data-bs-target="#promoModal">
+          <i class="ti ti-sparkles"></i>
+          Obtener mis 5 minutos gratis
+        </button>
+        <p class="trial-terms">Sin compromisos · Sin tarjeta de crédito requerida · Solo para nuevos usuarios</p>
+      </div>
+      <div class="col-lg-5 reveal reveal-d2">
+        <div class="trial-card">
+          <div class="trial-num">5</div>
+          <div class="trial-num-label">Minutos Gratis</div>
+          <ul class="trial-features">
+            <li>Lectura con especialista real</li>
+            <li>Sin cargos ocultos</li>
+            <li>Elige la tarotista que prefieras</li>
+            <li>100% privado y confidencial</li>
+            <li>Disponible las 24 horas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────────── -->
+<section id="ayuda" class="how-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="eyebrow">¿Cómo funciona?</div>
+      <h2 class="sec-title">En tres pasos simples</h2>
+      <div class="divider-rose mx-auto"></div>
+      <p class="sec-sub">Rápido, seguro y sin complicaciones desde cualquier teléfono</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4 reveal reveal-d1">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <span class="step-icon">💳</span>
+          <div class="step-title">Carga tu saldo</div>
+          <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago en línea de forma rápida y segura con cualquier medio de pago chileno.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-d2">
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <span class="step-icon">🔮</span>
+          <div class="step-title">Elige tu especialista</div>
+          <p class="step-text">Revisa quién está disponible ahora mismo. Elige a quien más resuene contigo — si está ocupada, inténtalo unos minutos después.</p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal reveal-d3">
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <span class="step-icon">📞</span>
+          <div class="step-title">Consulta con tranquilidad</div>
+          <p class="step-text">Llama al {{ _('+56 2 2230 1515') }} y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MOON PHASES ────────────────────────────────── -->
+<section class="moon-section" aria-label="Fases lunares">
+  <p class="moon-section-title">Las fases de la luna guían cada lectura</p>
+  <div class="moon-phases">
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 0 }}" style="--mg-dur:3.5s; --mg-del:0s;">
+      <span class="moon-emoji">🌑</span>
+      <span class="moon-label">Luna Nueva</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 1 }}" style="--mg-dur:4s; --mg-del:.4s;">
+      <span class="moon-emoji">🌒</span>
+      <span class="moon-label">Creciente</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 2 }}" style="--mg-dur:3.8s; --mg-del:.8s;">
+      <span class="moon-emoji">🌓</span>
+      <span class="moon-label">Cuarto Creciente</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 3 }}" style="--mg-dur:4.2s; --mg-del:1.2s;">
+      <span class="moon-emoji">🌔</span>
+      <span class="moon-label">Gibosa Creciente</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 4 }}" style="--mg-dur:3.6s; --mg-del:1.6s;">
+      <span class="moon-emoji">🌕</span>
+      <span class="moon-label">Luna Llena</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 5 }}" style="--mg-dur:4.4s; --mg-del:2s;">
+      <span class="moon-emoji">🌖</span>
+      <span class="moon-label">Gibosa Menguante</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 6 }}" style="--mg-dur:3.9s; --mg-del:2.4s;">
+      <span class="moon-emoji">🌗</span>
+      <span class="moon-label">Cuarto Menguante</span>
+    </div>
+    <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 7 }}" style="--mg-dur:4.1s; --mg-del:2.8s;">
+      <span class="moon-emoji">🌘</span>
+      <span class="moon-label">Menguante</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLANS ─────────────────────────────────────── -->
+<section id="planes" class="plans-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="eyebrow">Tarifas</div>
+      <h2 class="sec-title">Planes a tu medida</h2>
+      <div class="divider-rose mx-auto"></div>
+      <p class="sec-sub">Tus minutos son tuyos — sin fecha de vencimiento, sin letra chica</p>
+    </div>
+    {% if minute_packs %}
+    <div class="packs-wrap">
+      <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+      <div class="packs-track" id="packsSlider">
+        {% for pack in minute_packs %}
+        <div class="pack-item">
+          <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
+            {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+            <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
+            <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
+            <p class="plan-desc">{{ pack.description or '' }}</p>
+            <div class="mt-auto d-flex flex-column gap-2">
+              <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
+                <i class="ti ti-bolt me-1"></i>Compra Ahora
               </a>
-              <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
-                <i class="ti ti-wallet me-2"></i>Carga Minutos
-              </a>
-            </div>
-            <div class="hero-badge-strip">
-              <span class="hero-badge">✔ Disponible 24/7</span>
-              <span class="hero-badge">✔ 100% Confidencial</span>
-              <span class="hero-badge">✔ Sin contratos</span>
-              <span class="hero-badge">✔ Minutos sin vencimiento</span>
+              {# <form action="{{ url_for('productos.agregar') }}" method="post">
+                <input type="hidden" name="item_type" value="minute_pack" />
+                <input type="hidden" name="item_id" value="{{ pack.id }}" />
+                <input type="hidden" name="quantity" value="1" />
+                <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
+                <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+              </form> #}
             </div>
           </div>
-          <div class="col-lg-6">
-            <!-- Live agent status widget -->
-            <div class="agent-widget">
-              <div class="agent-widget-header">
-                <span>Especialistas disponibles ahora</span>
-                <span class="live-badge"><span class="live-dot"></span>En vivo</span>
-              </div>
-              <div class="agent-widget-body">
-                <div id="hero-agent-rows">
-                {% if agents_error == 'timeout' %}
-                <div class="alert alert-warning mb-0 py-2" role="alert">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-clock-exclamation"></i>
-                    <span>Listado de agentes no disponible. Cod. Timeout</span>
-                  </div>
-                </div>
-                {% elif agents_error %}
-                <div class="alert alert-danger mb-0 py-2" role="alert">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-alert-triangle"></i>
-                    <span>Listado de agentes no disponible. Cod. 503</span>
-                  </div>
-                </div>
-                {% elif not agents %}
-                <p class="text-center py-3 mb-0" style="color:var(--muted); font-size:.9rem;">Sin tarotistas disponibles</p>
-                {% else %}
-                {% for agent in agents[:4] %}
-                <div class="aw-row" data-agent-option="{{ agent.option }}">
-                  <div class="aw-avatar">{{ agent.name[0] }}</div>
-                  <div style="flex:1; min-width:0;">
-                    <div class="aw-name">{{ agent.name }}</div>
-                    <div class="aw-spec">Opción {{ agent.option }} · Ext. {{ agent.number }}</div>
-                  </div>
-                  <span class="agent-status-wrap">
-                  {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
-                  {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
-                  {% else %}<span class="s-offline">● No disponible</span>{% endif %}
-                  </span>
-                </div>
-                {% endfor %}
-                {% endif %}
-                </div><!-- #hero-agent-rows -->
-                <a href="tel:+{{ _('56222301515') }}" class="aw-cta">
-                  <i class="ti ti-phone me-2"></i>Consultar Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
-                </a>
-              </div>
-            </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── TAROTISTAS ────────────────────────────────── -->
+<section id="tarotistas" class="agents-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="eyebrow"></div>
+      <h2 class="sec-title">Nuestro equipo de Tarotistas</h2>
+      <div class="divider-rose mx-auto"></div>
+      <p class="sec-sub">Elige a quien más resuene contigo</p>
+    </div>
+    <div class="row g-4">
+      {% for agent in ejecutivos %}
+      <div class="col-6 col-md-4 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
+        <div class="agent-card" data-option="{{ agent.option }}" {% if agent.avatar %}style="background-image: url(https://www.fonotarot.com/ejecutivos/{{ agent.avatar }}.png)"{% endif %}>
+          {% if not agent.avatar %}
+          <div class="agent-no-photo-bg">{{ agent.name[0] }}</div>
+          {% endif %}
+          <div class="agent-overlay"></div>
+          <span class="agent-ivr">Opción {{ agent.option }}</span>
+          <span class="agent-status"></span>
+          <div class="agent-info">
+            <div class="agent-name">{{ agent.name }}</div>
+            {% if agent.specialty %}
+            <div class="agent-spec">{{ agent.specialty }}</div>
+            {% endif %}
           </div>
         </div>
       </div>
-    </section>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5">
+      <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+        <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('+56 2 2230 1515') }}
+      </a>
+    </div>
+  </div>
+</section>
 
-    <!-- ── STATS ─────────────────────────────────────── -->
-    <section class="stats-section">
-      <div class="container">
-        <div class="row text-center g-4">
-          <div class="col-6 col-md-3">
-            <div class="stat-big" data-count="50000" data-prefix="+" data-suffix=".000">+50.000</div>
-            <div class="stat-label">Consultas realizadas</div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-big" data-count="98" data-suffix="%">98%</div>
-            <div class="stat-label">Satisfacción</div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-big" data-count="20" data-prefix="+">+20</div>
-            <div class="stat-label">Especialistas</div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-big">24/7</div>
-            <div class="stat-label">Disponibilidad</div>
-          </div>
+<!-- ── TESTIMONIALS ──────────────────────────────── -->
+<section id="testimonios" class="testimonials-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="eyebrow">Testimonios</div>
+      <h2 class="sec-title">Palabras de quienes ya consultaron</h2>
+      <div class="divider-rose mx-auto"></div>
+    </div>
+    <div class="testi-grid">
+      {% for t in testimonials[:3] %}
+      <div class="testi-card reveal" style="transition-delay:{{ loop.index0 * 0.12 }}s">
+        <div class="stars-row">★★★★★</div>
+        <p class="t-quote">"{{ t.text }}"</p>
+        <div>
+          <div class="t-who">{{ t.author }}</div>
+          <div class="t-city">{{ t.city }}</div>
         </div>
       </div>
-    </section>
-
-    <!-- ── FREE TRIAL ─────────────────────────────────── -->
-    <section class="trial-section">
-      <div class="container">
-        <div class="row g-5 align-items-center">
-          <div class="col-lg-7 reveal">
-            <div class="trial-badge">Oferta de bienvenida</div>
-            <h2 class="trial-title">
-              Tu primera consulta:<br>
-              <em>5 minutos gratis</em>
-            </h2>
-            <p class="trial-desc">
-              Sabemos que dar el primer paso puede generar dudas. Por eso te ofrecemos
-              5 minutos completamente gratuitos para que conozcas a nuestras especialistas
-              y compruebes por ti mismo/a la calidad de cada lectura.
-            </p>
-            <button type="button" class="btn-trial" data-bs-toggle="modal" data-bs-target="#promoModal">
-              <i class="ti ti-sparkles"></i>
-              Obtener mis 5 minutos gratis
-            </button>
-            <p class="trial-terms">Sin compromisos · Sin tarjeta de crédito requerida · Solo para nuevos usuarios</p>
-          </div>
-          <div class="col-lg-5 reveal reveal-d2">
-            <div class="trial-card">
-              <div class="trial-num">5</div>
-              <div class="trial-num-label">Minutos Gratis</div>
-              <ul class="trial-features">
-                <li>Lectura con especialista real</li>
-                <li>Sin cargos ocultos</li>
-                <li>Elige la tarotista que prefieras</li>
-                <li>100% privado y confidencial</li>
-                <li>Disponible las 24 horas</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── HOW IT WORKS ──────────────────────────────── -->
-    <section id="ayuda" class="how-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">¿Cómo funciona?</div>
-          <h2 class="sec-title">En tres pasos simples</h2>
-          <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Rápido, seguro y sin complicaciones desde cualquier teléfono</p>
-        </div>
-        <div class="row g-4">
-          <div class="col-md-4 reveal reveal-d1">
-            <div class="step-card">
-              <div class="step-num">1</div>
-              <span class="step-icon">💳</span>
-              <div class="step-title">Carga tu saldo</div>
-              <p class="step-text">Selecciona el plan de minutos que necesitas y realiza el pago en línea de forma rápida y segura con cualquier medio de pago chileno.</p>
-            </div>
-          </div>
-          <div class="col-md-4 reveal reveal-d2">
-            <div class="step-card">
-              <div class="step-num">2</div>
-              <span class="step-icon">🔮</span>
-              <div class="step-title">Elige tu especialista</div>
-              <p class="step-text">Revisa quién está disponible ahora mismo. Elige a quien más resuene contigo — si está ocupada, inténtalo unos minutos después.</p>
-            </div>
-          </div>
-          <div class="col-md-4 reveal reveal-d3">
-            <div class="step-card">
-              <div class="step-num">3</div>
-              <span class="step-icon">📞</span>
-              <div class="step-title">Consulta con tranquilidad</div>
-              <p class="step-text">Llama al {{ _('+56 2 2230 1515') }} y vive tu consulta en total privacidad. Tus minutos se descuentan solo mientras hablas — el saldo restante no expira.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── MOON PHASES ────────────────────────────────── -->
-    <section class="moon-section" aria-label="Fases lunares">
-      <p class="moon-section-title">Las fases de la luna guían cada lectura</p>
-      <div class="moon-phases">
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 0 }}" style="--mg-dur:3.5s; --mg-del:0s;">
-          <span class="moon-emoji">🌑</span>
-          <span class="moon-label">Luna Nueva</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 1 }}" style="--mg-dur:4s; --mg-del:.4s;">
-          <span class="moon-emoji">🌒</span>
-          <span class="moon-label">Creciente</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 2 }}" style="--mg-dur:3.8s; --mg-del:.8s;">
-          <span class="moon-emoji">🌓</span>
-          <span class="moon-label">Cuarto Creciente</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 3 }}" style="--mg-dur:4.2s; --mg-del:1.2s;">
-          <span class="moon-emoji">🌔</span>
-          <span class="moon-label">Gibosa Creciente</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 4 }}" style="--mg-dur:3.6s; --mg-del:1.6s;">
-          <span class="moon-emoji">🌕</span>
-          <span class="moon-label">Luna Llena</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 5 }}" style="--mg-dur:4.4s; --mg-del:2s;">
-          <span class="moon-emoji">🌖</span>
-          <span class="moon-label">Gibosa Menguante</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 6 }}" style="--mg-dur:3.9s; --mg-del:2.4s;">
-          <span class="moon-emoji">🌗</span>
-          <span class="moon-label">Cuarto Menguante</span>
-        </div>
-        <div class="moon-phase{{ ' moon-phase--active' if current_moon_phase == 7 }}" style="--mg-dur:4.1s; --mg-del:2.8s;">
-          <span class="moon-emoji">🌘</span>
-          <span class="moon-label">Menguante</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── PLANS ─────────────────────────────────────── -->
-    <section id="planes" class="plans-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">Tarifas</div>
-          <h2 class="sec-title">Planes a tu medida</h2>
-          <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Tus minutos son tuyos — sin fecha de vencimiento, sin letra chica</p>
-        </div>
-        {% if minute_packs %}
-        <div class="packs-wrap">
-          <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-          <div class="packs-track" id="packsSlider">
-            {% for pack in minute_packs %}
-            <div class="pack-item">
-              <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
-                {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
-                <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-                <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
-                <p class="plan-desc">{{ pack.description or '' }}</p>
-                <div class="mt-auto d-flex flex-column gap-2">
-                  <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
-                    <i class="ti ti-bolt me-1"></i>Compra Ahora
-                  </a>
-                  <form action="{{ url_for('productos.agregar') }}" method="post">
-                    <input type="hidden" name="item_type" value="minute_pack"/>
-                    <input type="hidden" name="item_id" value="{{ pack.id }}"/>
-                    <input type="hidden" name="quantity" value="1"/>
-                    <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}"/>
-                    <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
-        </div>
-        {% else %}
-        <div class="text-center py-5">
-          <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
-        </div>
-        {% endif %}
-      </div>
-    </section>
-
-    <!-- ── TAROTISTAS ────────────────────────────────── -->
-    <section id="tarotistas" class="agents-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">Nuestro Equipo</div>
-          <h2 class="sec-title">Especialistas disponibles hoy</h2>
-          <div class="divider-rose mx-auto"></div>
-          <p class="sec-sub">Elige a quien más resuene contigo</p>
-        </div>
-        <div id="agent-cards-grid" class="row g-4"></div>
-        <div class="text-center mt-5">
-          <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-            <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('{{ _('+56 2 2230 1515') }}') }}
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── TESTIMONIALS ──────────────────────────────── -->
-    <section id="testimonios" class="testimonials-section">
-      <div class="container">
-        <div class="text-center mb-5">
-          <div class="eyebrow">Testimonios</div>
-          <h2 class="sec-title">Palabras de quienes ya consultaron</h2>
-          <div class="divider-rose mx-auto"></div>
-        </div>
+      {% endfor %}
+    </div>
+    {% if testimonials|length > 3 %}
+    <div class="text-center mt-4">
+      <button class="btn btn-plan-outline px-4" type="button" data-bs-toggle="collapse" data-bs-target="#moreTestis" aria-expanded="false" style="width:auto; border-radius:30px;">
+        Ver más opiniones
+      </button>
+      <div class="collapse mt-4" id="moreTestis">
         <div class="testi-grid">
-          {% for t in testimonials[:3] %}
-          <div class="testi-card reveal" style="transition-delay:{{ loop.index0 * 0.12 }}s">
+          {% for t in testimonials[3:] %}
+          <div class="testi-card">
             <div class="stars-row">★★★★★</div>
             <p class="t-quote">"{{ t.text }}"</p>
             <div>
@@ -874,560 +2180,556 @@
           </div>
           {% endfor %}
         </div>
-        {% if testimonials|length > 3 %}
-        <div class="text-center mt-4">
-          <button class="btn btn-plan-outline px-4" type="button"
-                  data-bs-toggle="collapse" data-bs-target="#moreTestis"
-                  aria-expanded="false" style="width:auto; border-radius:30px;">
-            Ver más opiniones
-          </button>
-          <div class="collapse mt-4" id="moreTestis">
-            <div class="testi-grid">
-              {% for t in testimonials[3:] %}
-              <div class="testi-card">
-                <div class="stars-row">★★★★★</div>
-                <p class="t-quote">"{{ t.text }}"</p>
-                <div>
-                  <div class="t-who">{{ t.author }}</div>
-                  <div class="t-city">{{ t.city }}</div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        {% endif %}
       </div>
-    </section>
+    </div>
+    {% endif %}
+  </div>
+</section>
 
-    <!-- ── FAQ ──────────────────────────────────────── -->
-    <section id="faq" class="faq-section">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <div class="text-center mb-5">
-              <div class="eyebrow">Preguntas frecuentes</div>
-              <h2 class="sec-title">¿Tienes dudas?</h2>
-              <div class="divider-rose mx-auto"></div>
-            </div>
-            <div class="accordion faq-accordion" id="faqAccordion">
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
-                </h2>
-                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al {{ _('+56 2 2230 1515') }} y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Puedo elegir con qué especialista hablar?</button>
-                </h2>
-                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Sí. En nuestra página puedes ver en tiempo real quién está disponible, en consulta o desconectada. Al llamar, el sistema te pedirá el número de conexión de la especialista que prefieras. También puedes pedir que te asignen una al azar.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Los minutos tienen fecha de vencimiento?</button>
-                </h2>
-                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">No. Los minutos que compres quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más los necesites, sin apuros. Si compras más minutos, se suman a tu saldo existente.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es completamente confidencial?</button>
-                </h2>
-                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Sí, totalmente. Al llamar, la tarotista no tiene acceso a tu número ni a ningún dato personal. Puedes usar un seudónimo si lo prefieres. Está estrictamente prohibido compartir información de contacto entre clientes y especialistas, y toda la información de la consulta es confidencial.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Realizan rituales, amarras u otros trabajos espirituales?</button>
-                </h2>
-                <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">No, absolutamente no. Nuestro servicio es exclusivamente de consulta de tarot por teléfono. Ninguna de nuestras especialistas está autorizada para ofrecer ni realizar trabajos adicionales. Si alguna lo hiciera, te pedimos nos lo comuniques.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Qué hago si la llamada se corta inesperadamente?</button>
-                </h2>
-                <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Si tus minutos se agotaron o hubo un problema de red, comunícate con nuestro supervisor por WhatsApp al +56963349072. Si fue un fallo técnico, te repondrán los minutos sin problema.</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">¿Puedo llamar desde el extranjero?</button>
-                </h2>
-                <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Sí, por lo general puedes llamar al {{ _('{{ _('+56 2 2230 1515') }}') }} desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">¿Cuál es el horario de atención?</button>
-                </h2>
-                <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div class="accordion-body">Atendemos los 365 días del año. El horario general es de 9:00 a 23:00 horas, aunque con frecuencia es posible encontrar especialistas disponibles fuera de ese horario. El estado en tiempo real siempre está visible en nuestra página web.</div>
-                </div>
-              </div>
-            </div>
-          </div>
+<!-- ── FAQ ──────────────────────────────────────── -->
+<section id="faq" class="faq-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="text-center mb-5">
+          <div class="eyebrow">Preguntas frecuentes</div>
+          <h2 class="sec-title">¿Tienes dudas?</h2>
+          <div class="divider-rose mx-auto"></div>
         </div>
-      </div>
-    </section>
-
-    <!-- ── CTA ──────────────────────────────────────── -->
-    <section class="cta-section">
-      <div class="container" style="position:relative; z-index:1;">
-        <h2>Da el primer paso hacia la claridad</h2>
-        <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <a href="tel:+{{ _('56222301515') }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
-          <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── BACK TO TOP ──────────────────────────────── -->
-    <button class="btn-back-top" id="back-top" aria-label="Volver arriba">
-      <i class="ti ti-arrow-up"></i>
-    </button>
-
-    <!-- ── PROMO MODAL ──────────────────────────────── -->
-    <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-modal="true" role="dialog">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="promoModalLabel">
-              <span class="gold-star">★</span> 5 Minutos Gratis de Bienvenida
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body">
-            <span class="promo-offer-badge">✦ Oferta exclusiva · Solo nuevos usuarios</span>
-            <p style="font-size:.95rem; line-height:1.75; color:var(--warm); margin-bottom:1.25rem;">
-              Sabemos que dar el primer paso puede generar dudas. Por eso te regalamos
-              <strong>5 minutos completamente gratuitos</strong> para que conozcas a nuestras
-              especialistas y compruebes por ti mismo/a la calidad de cada lectura.
-            </p>
-            <label class="promo-input-label" for="promoPhoneInput">
-              <i class="ti ti-phone me-1"></i>Tu número de teléfono
-            </label>
-            <input
-              type="tel"
-              id="promoPhoneInput"
-              placeholder="56912345678"
-              maxlength="13"
-              autocomplete="tel"
-              inputmode="numeric"
-              pattern="\d{10,13}"
-            >
-            <div class="promo-error-msg" id="promoErrorMsg">
-              <i class="ti ti-alert-circle"></i>
-              <span id="promoErrorText">Número inválido.</span>
-            </div>
-            <div class="promo-why-box">
-              <i class="ti ti-lock"></i>
-              <span>
-                <strong>¿Por qué necesitamos tu número?</strong><br>
-                Los 5 minutos se acreditan directamente en tu número en nuestra central telefónica.
-                Solo necesitas tu teléfono para llamar al {{ _('+56 2 2230 1515') }} y usarlos de inmediato.
-                No compartimos tu número con terceros ni te añadimos a listas de contacto.
-              </span>
+        <div class="accordion faq-accordion" id="faqAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al {{ _('+56 2 2230 1515') }} y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas.</div>
             </div>
           </div>
-          <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal" style="text-decoration:none; font-size:.88rem;">Cancelar</button>
-            <button type="button" class="btn-cobrar" id="promoSubmitBtn" disabled>
-              <span class="promo-spinner"></span>
-              <i class="ti ti-sparkles btn-cobrar-icon"></i>
-              Cobrar Promoción
-            </button>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Puedo elegir con qué especialista hablar?</button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">Sí. En nuestra página puedes ver en tiempo real quién está disponible, en consulta o desconectada. Al llamar, el sistema te pedirá el número de conexión de la especialista que prefieras. También puedes pedir que te asignen una al azar.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Los minutos tienen fecha de vencimiento?</button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">No. Los minutos que compres quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más los necesites, sin apuros. Si compras más minutos, se suman a tu saldo existente.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es completamente confidencial?</button>
+            </h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">Sí, totalmente. Al llamar, la tarotista no tiene acceso a tu número ni a ningún dato personal. Puedes usar un seudónimo si lo prefieres. Está estrictamente prohibido compartir información de contacto entre clientes y especialistas, y toda la información de la consulta es confidencial.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Realizan rituales, amarras u otros trabajos espirituales?</button>
+            </h2>
+            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">No, absolutamente no. Nuestro servicio es exclusivamente de consulta de tarot por teléfono. Ninguna de nuestras especialistas está autorizada para ofrecer ni realizar trabajos adicionales. Si alguna lo hiciera, te pedimos nos lo comuniques.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Qué hago si la llamada se corta inesperadamente?</button>
+            </h2>
+            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">Si tus minutos se agotaron o hubo un problema de red, comunícate con nuestro supervisor por WhatsApp al +56963349072. Si fue un fallo técnico, te repondrán los minutos sin problema.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">¿Puedo llamar desde el extranjero?</button>
+            </h2>
+            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">Sí, por lo general puedes llamar al {{ _('+56 2 2230 1515') }} desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">¿Cuál es el horario de atención?</button>
+            </h2>
+            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">Atendemos los 365 días del año. El horario general es de 9:00 a 23:00 horas, aunque con frecuencia es posible encontrar especialistas disponibles fuera de ese horario. El estado en tiempo real siempre está visible en nuestra página web.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container" style="position:relative; z-index:1;">
+    <h2>Da el primer paso hacia la claridad</h2>
+    <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="tel:+{{ _('56222301515') }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
+      <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── BACK TO TOP ──────────────────────────────── -->
+<button class="btn-back-top" id="back-top" aria-label="Volver arriba">
+  <i class="ti ti-arrow-up"></i>
+</button>
+
+<!-- ── PROMO MODAL ──────────────────────────────── -->
+<div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="promoModalLabel">
+          <span class="gold-star">★</span> 5 Minutos Gratis de Bienvenida
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <span class="promo-offer-badge">✦ Oferta exclusiva · Solo nuevos usuarios</span>
+        <p style="font-size:.95rem; line-height:1.75; color:var(--warm); margin-bottom:1.25rem;">
+          Sabemos que dar el primer paso puede generar dudas. Por eso te regalamos
+          <strong>5 minutos completamente gratuitos</strong> para que conozcas a nuestras
+          especialistas y compruebes por ti mismo/a la calidad de cada lectura.
+        </p>
+        <label class="promo-input-label" for="promoPhoneInput">
+          <i class="ti ti-phone me-1"></i>Tu número de teléfono
+        </label>
+        <input type="tel" id="promoPhoneInput" placeholder="56912345678" maxlength="13" autocomplete="tel" inputmode="numeric" pattern="\d{10,13}">
+        <div class="promo-error-msg" id="promoErrorMsg">
+          <i class="ti ti-alert-circle"></i>
+          <span id="promoErrorText">Número inválido.</span>
+        </div>
+        <div class="promo-why-box">
+          <i class="ti ti-lock"></i>
+          <span>
+            <strong>¿Por qué necesitamos tu número?</strong><br>
+            Los 5 minutos se acreditan directamente en tu número en nuestra central telefónica.
+            Solo necesitas tu teléfono para llamar al {{ _('+56 2 2230 1515') }} y usarlos de inmediato.
+            No compartimos tu número con terceros ni te añadimos a listas de contacto.
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal" style="text-decoration:none; font-size:.88rem;">Cancelar</button>
+        <button type="button" class="btn-cobrar" id="promoSubmitBtn" disabled>
+          <span class="promo-spinner"></span>
+          <i class="ti ti-sparkles btn-cobrar-icon"></i>
+          Cobrar Promoción
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
 
 {# ── Homepage JavaScript ───────────────────────────────────────────────── #}
 {% block extra_js %}
-    <script>
-    (function () {
-      /* ── Back to top ────────────────────────────────── */
-      var backTop = document.getElementById('back-top');
-      if (backTop) {
-        window.addEventListener('scroll', function () {
-          backTop.classList.toggle('visible', window.scrollY > 400);
-        }, { passive: true });
-        backTop.addEventListener('click', function () {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+<script>
+  (function () {
+    /* ── Back to top ────────────────────────────────── */
+    var backTop = document.getElementById('back-top');
+    if (backTop) {
+      window.addEventListener('scroll', function () {
+        backTop.classList.toggle('visible', window.scrollY > 400);
+      }, { passive: true });
+      backTop.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    /* ── Hero particles ─────────────────────────────── */
+    var hero = document.getElementById('hero-section');
+    if (hero) {
+      for (var i = 0; i < 22; i++) {
+        var p = document.createElement('span');
+        p.className = 'hero-particle';
+        var size = (Math.random() * 4 + 2) + 'px';
+        p.style.cssText = [
+          'width:' + size, 'height:' + size,
+          'left:' + (Math.random() * 100) + '%',
+          'top:' + (Math.random() * 100) + '%',
+          '--dur:' + (Math.random() * 8 + 6) + 's',
+          '--del:' + (Math.random() * 6) + 's'
+        ].join(';');
+        hero.appendChild(p);
+      }
+    }
+
+    /* ── Scroll reveal ──────────────────────────────── */
+    var reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var revealObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            revealObs.unobserve(e.target);
+          }
         });
-      }
+      }, { threshold: 0.12 });
+      reveals.forEach(function (el) { revealObs.observe(el); });
+    } else {
+      reveals.forEach(function (el) { el.classList.add('visible'); });
+    }
 
-      /* ── Hero particles ─────────────────────────────── */
-      var hero = document.getElementById('hero-section');
-      if (hero) {
-        for (var i = 0; i < 22; i++) {
-          var p = document.createElement('span');
-          p.className = 'hero-particle';
-          var size = (Math.random() * 4 + 2) + 'px';
-          p.style.cssText = [
-            'width:' + size, 'height:' + size,
-            'left:' + (Math.random() * 100) + '%',
-            'top:' + (Math.random() * 100) + '%',
-            '--dur:' + (Math.random() * 8 + 6) + 's',
-            '--del:' + (Math.random() * 6) + 's'
-          ].join(';');
-          hero.appendChild(p);
+    /* ── Minute packs slider ────────────────────────── */
+    var slider = document.getElementById('packsSlider');
+    if (slider) {
+      var gap = 20;
+      function slideW() {
+        var slide = slider.querySelector('.pack-item');
+        return slide ? slide.offsetWidth + gap : 290;
+      }
+      var prev = document.getElementById('packsPrev');
+      var next = document.getElementById('packsNext');
+      if (prev) prev.addEventListener('click', function () { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
+      if (next) next.addEventListener('click', function () { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
+    }
+  })();
+</script>
+
+<script>
+  /* ── Agent status poller (every 5 s) ───────────────── */
+  (function () {
+    var PHONE = 'tel:+{{ _("56222301515") }}';
+
+    /* Escape user-supplied strings before inserting into the DOM */
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* These return only hardcoded markup — no user data, XSS-safe */
+    function statusBadge(status) {
+      if (status === 'available') return '<span class="s-online">\u25cf Disponible</span>';
+      if (status === 'busy') return '<span class="s-busy">\u25cf En consulta</span>';
+      return '<span class="s-offline">\u25cf No disponible</span>';
+    }
+    function cardAction(status) {
+      if (status === 'available')
+        return '<a href="' + PHONE + '" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>';
+      if (status === 'busy')
+        return '<button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>';
+      return '';
+    }
+    function ocAction(status) {
+      if (status === 'available')
+        return '<a href="' + PHONE + '" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>';
+      return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>';
+    }
+
+    /* Build an offcanvas row using escaped data + hardcoded markup */
+    function ocRowHTML(a) {
+      var avatar = document.createElement('div');
+      avatar.className = 'oc-avatar';
+      avatar.textContent = a.name[0];
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'oc-name';
+      nameEl.textContent = a.name;
+
+      var spec = document.createElement('div');
+      spec.className = 'oc-spec';
+      spec.textContent = 'Opci\u00f3n ' + a.option;
+
+      var statusWrap = document.createElement('div');
+      statusWrap.className = 'mt-1 agent-status-wrap';
+      statusWrap.innerHTML = statusBadge(a.status);
+
+      var info = document.createElement('div');
+      info.className = 'oc-info';
+      info.appendChild(nameEl);
+      info.appendChild(spec);
+      info.appendChild(statusWrap);
+
+      var actionWrap = document.createElement('span');
+      actionWrap.className = 'agent-action-wrap';
+      actionWrap.innerHTML = ocAction(a.status);
+
+      var row = document.createElement('div');
+      row.className = 'oc-row';
+      row.dataset.agentOption = a.option;
+      row.appendChild(avatar);
+      row.appendChild(info);
+      row.appendChild(actionWrap);
+      return row;
+    }
+
+    /* Build a hero widget row from agent data */
+    function awRowHTML(a) {
+      var avatar = document.createElement('div');
+      avatar.className = 'aw-avatar';
+      avatar.textContent = a.name[0];
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'aw-name';
+      nameEl.textContent = a.name;
+
+      var spec = document.createElement('div');
+      spec.className = 'aw-spec';
+      spec.textContent = 'Opci\u00f3n ' + a.option;
+
+      var info = document.createElement('div');
+      info.style.cssText = 'flex:1; min-width:0;';
+      info.appendChild(nameEl);
+      info.appendChild(spec);
+
+      var statusWrap = document.createElement('span');
+      statusWrap.className = 'agent-status-wrap';
+      statusWrap.innerHTML = statusBadge(a.status);
+
+      var row = document.createElement('div');
+      row.className = 'aw-row';
+      row.dataset.agentOption = a.option;
+      row.appendChild(avatar);
+      row.appendChild(info);
+      row.appendChild(statusWrap);
+      return row;
+    }
+
+    /* Rebuild any list container from a data array using a row builder fn */
+    function rebuildList(id, list, rowFn, emptyMsg) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      while (el.firstChild) el.removeChild(el.firstChild);
+      if (list.length) {
+        list.forEach(function (a) { el.appendChild(rowFn(a)); });
+      } else if (emptyMsg) {
+        var p = document.createElement('p');
+        p.className = 'text-center py-4';
+        p.style.color = 'var(--muted)';
+        p.textContent = emptyMsg;
+        el.appendChild(p);
+      }
+    }
+
+    /* Build an agent card for the #tarotistas section */
+    function agentCardHTML(a) {
+      var col = document.createElement('div');
+      col.className = 'col-sm-6 col-lg-4 reveal';
+
+      var card = document.createElement('div');
+      card.className = 'agent-card';
+      card.dataset.agentOption = a.option;
+
+      var avatar = document.createElement('div');
+      avatar.className = 'agent-avatar';
+      avatar.textContent = a.name[0];
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'agent-name';
+      nameEl.textContent = a.name;
+
+      var spec = document.createElement('div');
+      spec.className = 'agent-spec';
+      spec.textContent = 'Opci\u00f3n ' + a.option;
+
+      var statusWrap = document.createElement('div');
+      statusWrap.className = 'mb-3 agent-status-wrap';
+      statusWrap.innerHTML = statusBadge(a.status);
+
+      var actionWrap = document.createElement('span');
+      actionWrap.className = 'agent-action-wrap';
+      actionWrap.innerHTML = cardAction(a.status);
+
+      card.appendChild(avatar);
+      card.appendChild(nameEl);
+      card.appendChild(spec);
+      card.appendChild(statusWrap);
+      card.appendChild(actionWrap);
+      col.appendChild(card);
+      return col;
+    }
+
+    /* Normalise raw Firenze ejecutivos records to the shape templates expect */
+    function normalizeAgents(data) {
+      var statusOrder = { 'available': 0, 'busy': 1, 'offline': 2 };
+      var agents = (data || []).map(function (raw) {
+        var opcion = parseInt(raw.opcion || 0, 10);
+        var ingreso = !!raw.ingreso;
+        var disponible = !!raw.disponible;
+        var status = !ingreso ? 'offline' : disponible ? 'available' : 'busy';
+        return {
+          name: raw.nombre || '\u2605',
+          option: ('0' + opcion).slice(-2),
+          number: '7' + ('00' + opcion).slice(-3),
+          status: status,
+          description: raw.descripcion || ''
+        };
+      });
+      return agents.sort(function (a, b) {
+        return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+      });
+    }
+
+    function applyAgents(agents) {
+      var available = agents.filter(function (a) { return a.status === 'available'; });
+      var busy = agents.filter(function (a) { return a.status === 'busy'; });
+
+      /* Full rebuild of all agent lists */
+      rebuildList('hero-agent-rows', agents.slice(0, 4), awRowHTML, null);
+      rebuildList('oc-all', agents, ocRowHTML, null);
+      rebuildList('oc-online', available, ocRowHTML, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
+      rebuildList('oc-busy', busy, ocRowHTML, 'No hay especialistas en consulta ahora.');
+
+      /* Update portrait cards (#tarotistas) and roster (#tarotistas-live) by option code */
+      agents.forEach(function (a) {
+        var opt = a.option;
+        var statusCls = a.status === 'available' ? 'is-available' : a.status === 'busy' ? 'is-busy' : '';
+        var rosterCls = a.status === 'available' ? 'available' : a.status === 'busy' ? 'busy' : '';
+        var label = a.status === 'available' ? 'Disponible' : a.status === 'busy' ? 'En consulta' : 'Desconectada';
+
+        /* Portrait card dot */
+        var card = document.querySelector('.agent-card[data-option="' + opt + '"]');
+        if (card) {
+          var dot = card.querySelector('.agent-status');
+          if (dot) dot.className = 'agent-status' + (statusCls ? ' ' + statusCls : '');
         }
-      }
 
-      /* ── Scroll reveal ──────────────────────────────── */
-      var reveals = document.querySelectorAll('.reveal');
-      if ('IntersectionObserver' in window) {
-        var revealObs = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) {
-              e.target.classList.add('visible');
-              revealObs.unobserve(e.target);
-            }
-          });
-        }, { threshold: 0.12 });
-        reveals.forEach(function (el) { revealObs.observe(el); });
-      } else {
-        reveals.forEach(function (el) { el.classList.add('visible'); });
-      }
-
-      /* ── Minute packs slider ────────────────────────── */
-      var slider = document.getElementById('packsSlider');
-      if (slider) {
-        var gap = 20;
-        function slideW() {
-          var slide = slider.querySelector('.pack-item');
-          return slide ? slide.offsetWidth + gap : 290;
+        /* Roster row dot + status chip */
+        var row = document.querySelector('.agent-roster-item[data-option="' + opt + '"]');
+        if (row) {
+          var rdot = row.querySelector('.agent-roster-dot');
+          var chip = row.querySelector('.agent-roster-status');
+          if (rdot) rdot.className = 'agent-roster-dot' + (rosterCls ? ' ' + rosterCls : '');
+          if (chip) { chip.className = 'agent-roster-status' + (rosterCls ? ' ' + rosterCls : ''); chip.textContent = label; }
         }
-        var prev = document.getElementById('packsPrev');
-        var next = document.getElementById('packsNext');
-        if (prev) prev.addEventListener('click', function () { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
-        if (next) next.addEventListener('click', function () { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
-      }
-    })();
-    </script>
+      });
+    }
 
-    <script>
-    /* ── Agent status poller (every 5 s) ───────────────── */
-    (function () {
-      var PHONE = 'tel:+{{ _("56222301515") }}';
+    function agentErrorHTML(code) {
+      var icon = code === 'timeout' ? 'ti-clock-exclamation' : 'ti-alert-triangle';
+      var cls = code === 'timeout' ? 'alert-warning' : 'alert-danger';
+      var msg = 'Listado de agentes no disponible. Cod. ' + (code === 'timeout' ? 'Timeout' : '503');
+      var el = document.createElement('div');
+      el.className = 'alert ' + cls + ' mb-0 py-2';
+      el.setAttribute('role', 'alert');
+      el.innerHTML = '<div class="d-flex align-items-center gap-2"><i class="ti ' + icon + '"></i><span>' + msg + '</span></div>';
+      return el;
+    }
 
-      /* Escape user-supplied strings before inserting into the DOM */
-      function esc(s) {
-        return String(s)
-          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      }
-
-      /* These return only hardcoded markup — no user data, XSS-safe */
-      function statusBadge(status) {
-        if (status === 'available') return '<span class="s-online">\u25cf Disponible</span>';
-        if (status === 'busy')      return '<span class="s-busy">\u25cf En consulta</span>';
-        return '<span class="s-offline">\u25cf No disponible</span>';
-      }
-      function cardAction(status) {
-        if (status === 'available')
-          return '<a href="' + PHONE + '" class="btn-call"><i class="ti ti-phone me-1"></i>Llama Ahora</a>';
-        if (status === 'busy')
-          return '<button class="btn-busy-soft" disabled><i class="ti ti-clock me-1"></i>En consulta ahora</button>';
-        return '';
-      }
-      function ocAction(status) {
-        if (status === 'available')
-          return '<a href="' + PHONE + '" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>';
-        return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>';
-      }
-
-      /* Build an offcanvas row using escaped data + hardcoded markup */
-      function ocRowHTML(a) {
-        var avatar = document.createElement('div');
-        avatar.className = 'oc-avatar';
-        avatar.textContent = a.name[0];
-
-        var nameEl = document.createElement('div');
-        nameEl.className = 'oc-name';
-        nameEl.textContent = a.name;
-
-        var spec = document.createElement('div');
-        spec.className = 'oc-spec';
-        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
-
-        var statusWrap = document.createElement('div');
-        statusWrap.className = 'mt-1 agent-status-wrap';
-        statusWrap.innerHTML = statusBadge(a.status);
-
-        var info = document.createElement('div');
-        info.className = 'oc-info';
-        info.appendChild(nameEl);
-        info.appendChild(spec);
-        info.appendChild(statusWrap);
-
-        var actionWrap = document.createElement('span');
-        actionWrap.className = 'agent-action-wrap';
-        actionWrap.innerHTML = ocAction(a.status);
-
-        var row = document.createElement('div');
-        row.className = 'oc-row';
-        row.dataset.agentOption = a.option;
-        row.appendChild(avatar);
-        row.appendChild(info);
-        row.appendChild(actionWrap);
-        return row;
-      }
-
-      /* Build a hero widget row from agent data */
-      function awRowHTML(a) {
-        var avatar = document.createElement('div');
-        avatar.className = 'aw-avatar';
-        avatar.textContent = a.name[0];
-
-        var nameEl = document.createElement('div');
-        nameEl.className = 'aw-name';
-        nameEl.textContent = a.name;
-
-        var spec = document.createElement('div');
-        spec.className = 'aw-spec';
-        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
-
-        var info = document.createElement('div');
-        info.style.cssText = 'flex:1; min-width:0;';
-        info.appendChild(nameEl);
-        info.appendChild(spec);
-
-        var statusWrap = document.createElement('span');
-        statusWrap.className = 'agent-status-wrap';
-        statusWrap.innerHTML = statusBadge(a.status);
-
-        var row = document.createElement('div');
-        row.className = 'aw-row';
-        row.dataset.agentOption = a.option;
-        row.appendChild(avatar);
-        row.appendChild(info);
-        row.appendChild(statusWrap);
-        return row;
-      }
-
-      /* Rebuild any list container from a data array using a row builder fn */
-      function rebuildList(id, list, rowFn, emptyMsg) {
+    function showAgentError(code) {
+      ['hero-agent-rows'].forEach(function (id) {
         var el = document.getElementById(id);
         if (!el) return;
         while (el.firstChild) el.removeChild(el.firstChild);
-        if (list.length) {
-          list.forEach(function (a) { el.appendChild(rowFn(a)); });
-        } else if (emptyMsg) {
-          var p = document.createElement('p');
-          p.className = 'text-center py-4';
-          p.style.color = 'var(--muted)';
-          p.textContent = emptyMsg;
-          el.appendChild(p);
-        }
-      }
+        el.appendChild(agentErrorHTML(code));
+      });
+    }
 
-      /* Build an agent card for the #tarotistas section */
-      function agentCardHTML(a) {
-        var col = document.createElement('div');
-        col.className = 'col-sm-6 col-lg-4 reveal';
+    /* Fetch ejecutivos directly from Firenze using the token injected at page load */
+    var FIRENZE_AGENTS_URL = {{ firenze_ejecutivos_url | tojson
+  }};
+  var FIRENZE_AGENTS_TOKEN = {{ firenze_token | tojson }};
 
-        var card = document.createElement('div');
-        card.className = 'agent-card';
-        card.dataset.agentOption = a.option;
+  function poll() {
+    var headers = { 'Accept': 'application/json' };
+    if (FIRENZE_AGENTS_TOKEN) {
+      headers['Authorization'] = 'Bearer ' + FIRENZE_AGENTS_TOKEN;
+    }
+    fetch(FIRENZE_AGENTS_URL, { headers: headers })
+      .then(function (r) {
+        if (r.ok) return r.json().then(function (data) { applyAgents(normalizeAgents(data)); });
+        showAgentError('503');
+      })
+      .catch(function () { showAgentError('timeout'); });
+  }
 
-        var avatar = document.createElement('div');
-        avatar.className = 'agent-avatar';
-        avatar.textContent = a.name[0];
+  poll();                      /* immediate first fetch */
+  setInterval(poll, 5000);
+    }) ();
+</script>
 
-        var nameEl = document.createElement('div');
-        nameEl.className = 'agent-name';
-        nameEl.textContent = a.name;
+<script>
+  /* ── Promo modal: phone validation + API call ───────── */
+  (function () {
+    var input = document.getElementById('promoPhoneInput');
+    var btn = document.getElementById('promoSubmitBtn');
+    var errBox = document.getElementById('promoErrorMsg');
+    var errText = document.getElementById('promoErrorText');
+    if (!input || !btn) return;
 
-        var spec = document.createElement('div');
-        spec.className = 'agent-spec';
-        spec.textContent = 'Opci\u00f3n ' + a.option + ' \u00b7 Ext. ' + a.number;
+    function csrfToken() {
+      var m = document.querySelector('meta[name="csrf-token"]');
+      return m ? m.getAttribute('content') : '';
+    }
 
-        var statusWrap = document.createElement('div');
-        statusWrap.className = 'mb-3 agent-status-wrap';
-        statusWrap.innerHTML = statusBadge(a.status);
+    function isValidPhone(v) { return /^\d{10,13}$/.test(v.trim()); }
 
-        var actionWrap = document.createElement('span');
-        actionWrap.className = 'agent-action-wrap';
-        actionWrap.innerHTML = cardAction(a.status);
+    function showError(msg) {
+      errText.textContent = msg;
+      errBox.classList.add('visible');
+      input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
+    }
+    function clearError() {
+      errBox.classList.remove('visible');
+      input.classList.remove('is-invalid');
+    }
 
-        card.appendChild(avatar);
-        card.appendChild(nameEl);
-        card.appendChild(spec);
-        card.appendChild(statusWrap);
-        card.appendChild(actionWrap);
-        col.appendChild(card);
-        return col;
-      }
-
-      /* Normalise raw Firenze ejecutivos records to the shape templates expect */
-      function normalizeAgents(data) {
-        var statusOrder = { 'available': 0, 'busy': 1, 'offline': 2 };
-        var agents = (data || []).map(function (raw) {
-          var opcion = parseInt(raw.opcion || 0, 10);
-          var ingreso = !!raw.ingreso;
-          var disponible = !!raw.disponible;
-          var status = !ingreso ? 'offline' : disponible ? 'available' : 'busy';
-          return {
-            name: raw.nombre || '\u2605',
-            option: ('0' + opcion).slice(-2),
-            number: '7' + ('00' + opcion).slice(-3),
-            status: status,
-            description: raw.descripcion || ''
-          };
-        });
-        return agents.sort(function (a, b) {
-          return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
-        });
-      }
-
-      function applyAgents(agents) {
-        var available = agents.filter(function (a) { return a.status === 'available'; });
-        var busy      = agents.filter(function (a) { return a.status === 'busy'; });
-
-        /* Full rebuild of all agent lists */
-        rebuildList('hero-agent-rows',  agents.slice(0, 4), awRowHTML,      null);
-        rebuildList('oc-all',           agents,             ocRowHTML,      null);
-        rebuildList('oc-online',        available,          ocRowHTML,      'Todas las especialistas están ocupadas. Inténtalo pronto.');
-        rebuildList('oc-busy',          busy,               ocRowHTML,      'No hay especialistas en consulta ahora.');
-        rebuildList('agent-cards-grid', agents,             agentCardHTML,  'Sin tarotistas disponibles en este momento.');
-      }
-
-      function agentErrorHTML(code) {
-        var icon = code === 'timeout' ? 'ti-clock-exclamation' : 'ti-alert-triangle';
-        var cls  = code === 'timeout' ? 'alert-warning' : 'alert-danger';
-        var msg  = 'Listado de agentes no disponible. Cod. ' + (code === 'timeout' ? 'Timeout' : '503');
-        var el = document.createElement('div');
-        el.className = 'alert ' + cls + ' mb-0 py-2';
-        el.setAttribute('role', 'alert');
-        el.innerHTML = '<div class="d-flex align-items-center gap-2"><i class="ti ' + icon + '"></i><span>' + msg + '</span></div>';
-        return el;
-      }
-
-      function showAgentError(code) {
-        ['hero-agent-rows', 'agent-cards-grid'].forEach(function (id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          while (el.firstChild) el.removeChild(el.firstChild);
-          el.appendChild(agentErrorHTML(code));
-        });
-      }
-
-      /* Fetch ejecutivos directly from Firenze using the token injected at page load */
-      var FIRENZE_AGENTS_URL   = {{ firenze_ejecutivos_url | tojson }};
-      var FIRENZE_AGENTS_TOKEN = {{ firenze_token | tojson }};
-
-      function poll() {
-        var headers = { 'Accept': 'application/json' };
-        if (FIRENZE_AGENTS_TOKEN) {
-          headers['Authorization'] = 'Bearer ' + FIRENZE_AGENTS_TOKEN;
-        }
-        fetch(FIRENZE_AGENTS_URL, { headers: headers })
-          .then(function (r) {
-            if (r.ok) return r.json().then(function (data) { applyAgents(normalizeAgents(data)); });
-            showAgentError('503');
-          })
-          .catch(function () { showAgentError('timeout'); });
-      }
-
-      poll();                      /* immediate first fetch */
-      setInterval(poll, 5000);
-    })();
-    </script>
-
-    <script>
-    /* ── Promo modal: phone validation + API call ───────── */
-    (function () {
-      var input   = document.getElementById('promoPhoneInput');
-      var btn     = document.getElementById('promoSubmitBtn');
-      var errBox  = document.getElementById('promoErrorMsg');
-      var errText = document.getElementById('promoErrorText');
-      if (!input || !btn) return;
-
-      function csrfToken() {
-        var m = document.querySelector('meta[name="csrf-token"]');
-        return m ? m.getAttribute('content') : '';
-      }
-
-      function isValidPhone(v) { return /^\d{10,13}$/.test(v.trim()); }
-
-      function showError(msg) {
-        errText.textContent = msg;
-        errBox.classList.add('visible');
-        input.classList.add('is-invalid');
+    input.addEventListener('input', function () {
+      var val = input.value.replace(/\D/g, '');
+      input.value = val;
+      clearError();
+      if (isValidPhone(val)) {
+        btn.disabled = false;
+        input.classList.add('is-valid');
+      } else {
+        btn.disabled = true;
         input.classList.remove('is-valid');
       }
-      function clearError() {
-        errBox.classList.remove('visible');
-        input.classList.remove('is-invalid');
-      }
+    });
 
-      input.addEventListener('input', function () {
-        var val = input.value.replace(/\D/g, '');
-        input.value = val;
-        clearError();
-        if (isValidPhone(val)) {
-          btn.disabled = false;
-          input.classList.add('is-valid');
-        } else {
-          btn.disabled = true;
-          input.classList.remove('is-valid');
-        }
-      });
+    /* Reset modal state when it opens */
+    document.getElementById('promoModal').addEventListener('show.bs.modal', function () {
+      input.value = '';
+      clearError();
+      input.classList.remove('is-valid');
+      btn.disabled = true;
+      btn.classList.remove('loading');
+      btn.disabled = true;
+    });
 
-      /* Reset modal state when it opens */
-      document.getElementById('promoModal').addEventListener('show.bs.modal', function () {
-        input.value = '';
-        clearError();
-        input.classList.remove('is-valid');
-        btn.disabled = true;
-        btn.classList.remove('loading');
-        btn.disabled = true;
-      });
+    btn.addEventListener('click', function () {
+      var ani = input.value.trim();
+      if (!isValidPhone(ani)) { showError('Ingresa un número válido (10-13 dígitos, sin +).'); return; }
 
-      btn.addEventListener('click', function () {
-        var ani = input.value.trim();
-        if (!isValidPhone(ani)) { showError('Ingresa un número válido (10-13 dígitos, sin +).'); return; }
+      btn.classList.add('loading');
+      btn.disabled = true;
+      clearError();
 
-        btn.classList.add('loading');
-        btn.disabled = true;
-        clearError();
-
-        fetch('/api/promo/cobrar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
-          body: JSON.stringify({ ani: ani }),
-        })
-          .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
-          .then(function (res) {
-            if (res.ok && res.body.success) {
-              window.location.href = res.body.redirect;
-            } else {
-              showError(res.body.message || 'Error inesperado. Inténtalo más tarde.');
-              btn.classList.remove('loading');
-              btn.disabled = false;
-            }
-          })
-          .catch(function () {
-            showError('Error de conexión. Verifica tu internet e inténtalo de nuevo.');
+      fetch('/api/promo/cobrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
+        body: JSON.stringify({ ani: ani }),
+      })
+        .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
+        .then(function (res) {
+          if (res.ok && res.body.success) {
+            window.location.href = res.body.redirect;
+          } else {
+            showError(res.body.message || 'Error inesperado. Inténtalo más tarde.');
             btn.classList.remove('loading');
             btn.disabled = false;
-          });
-      });
-    })();
-    </script>
+          }
+        })
+        .catch(function () {
+          showError('Error de conexión. Verifica tu internet e inténtalo de nuevo.');
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        });
+    });
+  })();
+</script>
 {% endblock %}

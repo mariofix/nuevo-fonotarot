@@ -111,10 +111,21 @@ class Config:
     )
     SECURITY_PASSWORD_HASH: str = "bcrypt"
 
+    # Username support: the username field stores an E.164 phone number
+    # (digits only, no leading +).  Users can register/login with phone OR
+    # email.  PhoneUsernameUtil enforces the format at validation time.
+    SECURITY_USERNAME_ENABLE: bool = True
+    SECURITY_USERNAME_MIN_LENGTH: int = 10
+    SECURITY_USERNAME_MAX_LENGTH: int = 13
+
     # Custom login/logout routing
-    SECURITY_REGISTRABLE: bool = True
+    SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
+    SECURITY_REGISTER_URL: str = "/ft-register"
+    SECURITY_RESET_URL: str = "/ft-reset"
+    SECURITY_VERIFY_URL: str = "/ft-verify"
+    SECURITY_CONFIRM_URL: str = "/ft-confirm"
     SECURITY_POST_LOGIN_VIEW: str = "/admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 
@@ -133,8 +144,8 @@ class Config:
     AVAILABLE_LANGUAGES: list = [
         ["es", "es_CL", "Español"],
         ["es", "es_MX", "Español (México)"],
-        ["en", "en_US", "English"],
-        ["pt", "pt_BR", "Português"],
+        # ["en", "en_US", "English"],
+        # ["pt", "pt_BR", "Português"],
     ]
 
     # merchants
@@ -151,7 +162,9 @@ class Config:
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
     DALEKS_TIMEOUT: int = int(os.environ.get("DALEKS_TIMEOUT", "10"))
-    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT")
+    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get(
+        "DALEKS_SMTP_ACCOUNT", "fonotarot-cl"
+    )
     SECURITY_EMAIL_SENDER: str = os.environ.get(
         "MAIL_DEFAULT_SENDER", f"hola@{TRUSTED_HOSTS[0]}"
     )
@@ -169,7 +182,7 @@ class Config:
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "audiotex")
 
-    DEBUG_TB_ENABLED: bool = False
+    DEBUG_TB_ENABLED: bool = True
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",
