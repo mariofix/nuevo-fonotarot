@@ -68,6 +68,7 @@ class _LangEntry:
 
 
 
+
 def _normalize_agent(raw: dict) -> dict:
     """Map a firenze API agent record to the dict shape templates expect.
 

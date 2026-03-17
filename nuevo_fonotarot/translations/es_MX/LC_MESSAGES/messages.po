@@ -1,0 +1,31 @@
+# Spanish (Mexico) translations for Fonotarot.
+# Copyright (C) 2026 Fonotarot
+# This file is distributed under the same license as the Fonotarot project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-03-16 00:00+0000\n"
+"PO-Revision-Date: 2026-03-16 00:00+0000\n"
+"Last-Translator: Mario Fix <admin@fonotarot.cl>\n"
+"Language: es_MX\n"
+"Language-Team: es_MX <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: nuevo_fonotarot/templates/base.html
+#: nuevo_fonotarot/templates/index.html
+#: nuevo_fonotarot/templates/home.html
+msgid "56222301515"
+msgstr "5200000000"
+
+#: nuevo_fonotarot/templates/base.html
+#: nuevo_fonotarot/templates/index.html
+#: nuevo_fonotarot/templates/home.html
+msgid "+56 2 2230 1515"
+msgstr "+52 XX XXXX XXXX"
+

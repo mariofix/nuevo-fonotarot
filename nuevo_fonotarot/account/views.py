@@ -31,3 +31,4 @@ def set_language(lang: str):
 
     next_url = request.referrer or url_for("content.index")
     return redirect(next_url)
+
