@@ -328,7 +328,8 @@
                 </tr>
             </table>
         </center>
-        <img src="https://cloud.umami.is/p/bpkTwVsEw" width="1" height="1" id="umami-pixel" role="img">
+        {% from "macros/analytics.html" import umami_email_pixel %}
+        {{ umami_email_pixel() }}
     </body>
 
 </html>

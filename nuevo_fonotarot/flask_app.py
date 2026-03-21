@@ -133,6 +133,16 @@ def _init_extensions(app: Flask) -> None:
         return {"site_languages": _parse_available_langs()}
 
     @app.context_processor
+    def inject_analytics_config() -> dict:
+        """Expose analytics keys to all templates as lowercase Jinja globals."""
+        return {
+            "umami_website_id": app.config.get("UMAMI_WEBSITE_ID", ""),
+            "umami_email_pixel_id": app.config.get("UMAMI_EMAIL_PIXEL_ID", ""),
+            "gtm_container_id": app.config.get("GTM_CONTAINER_ID", ""),
+            "ga_measurement_id": app.config.get("GA_MEASUREMENT_ID", ""),
+        }
+
+    @app.context_processor
     def inject_current_theme() -> dict:
         """Compute the default theme based on current server time and SiteSettings.
 

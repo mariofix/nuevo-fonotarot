@@ -1,0 +1,69 @@
+{# ── Analytics macros ─────────────────────────────────────────────────────
+   All macros are no-ops when the corresponding config key is absent or empty.
+   Import this file and call the relevant macro in your base template:
+
+     {% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script, umami_email_pixel %}
+
+   Web trackers
+   ─────────────
+   umami_script()       — Umami script loader (place in <head> or before </body>)
+   gtm_head()           — GTM <script> snippet (place as early as possible in <head>)
+   gtm_body()           — GTM <noscript> iframe (place immediately after <body>)
+   ga_script()          — Google Analytics gtag.js (place in <head>)
+
+   Email trackers
+   ──────────────
+   umami_email_pixel()  — 1×1 tracking pixel for email open tracking
+#}
+
+{# ── Umami web tracker ──────────────────────────────────────────────────── #}
+{% macro umami_script() %}
+{% if umami_website_id %}
+<script defer src="https://cloud.umami.is/script.js" data-website-id="{{ umami_website_id }}"></script>
+{% endif %}
+{% endmacro %}
+
+{# ── Google Tag Manager — <head> snippet ────────────────────────────────── #}
+{% macro gtm_head() %}
+{% if gtm_container_id %}
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','{{ gtm_container_id }}');</script>
+<!-- End Google Tag Manager -->
+{% endif %}
+{% endmacro %}
+
+{# ── Google Tag Manager — <body> noscript fallback ──────────────────────── #}
+{% macro gtm_body() %}
+{% if gtm_container_id %}
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_container_id }}"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+{% endif %}
+{% endmacro %}
+
+{# ── Google Analytics 4 ─────────────────────────────────────────────────── #}
+{% macro ga_script() %}
+{% if ga_measurement_id %}
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_measurement_id }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ ga_measurement_id }}');
+</script>
+<!-- End Google Analytics -->
+{% endif %}
+{% endmacro %}
+
+{# ── Umami email open-tracking pixel ────────────────────────────────────── #}
+{% macro umami_email_pixel() %}
+{% if umami_email_pixel_id %}
+<img src="https://cloud.umami.is/p/{{ umami_email_pixel_id }}" width="1" height="1" id="umami-pixel" role="img">
+{% endif %}
+{% endmacro %}
