@@ -9,7 +9,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
-from flask_admin_tabler import tabler_bool_formatter
+from flask_admin_tabler import tabler_bool_formatter, JsonColumnsMixin
 from .extensions import db
 
 
@@ -290,9 +290,10 @@ class ProductAdminView(SecureModelView):
             model.slug = Product.make_slug(model.slug)
 
 
-class SiteSettingsAdminView(SecureModelView):
+class SiteSettingsAdminView(JsonColumnsMixin, SecureModelView):
     """Admin view for generic site settings."""
 
+    json_columns = ["value"]
     column_list = ("key", "value", "module", "description")
     column_searchable_list = ("key", "module")
     column_filters = ("module",)
@@ -417,9 +418,10 @@ class SeoSettingsAdminView(BaseView):
         )
 
 
-class OrderAdminView(SecureModelView):
+class OrderAdminView(JsonColumnsMixin, SecureModelView):
     """Admin view for customer orders."""
 
+    json_columns = ["extra_args", "request_payload", "response_payload", "payment_object"]
     column_list = (
         "id",
         "status",
