@@ -1,111 +1,545 @@
 {% extends 'admin/master.html' %}
 
+{% block head_css %}
+{{ super() }}
+<style>
+  /* ── Section tab nav ─────────────────────────────────────────────── */
+  .seo-tabs {
+    gap: .3rem;
+    border-bottom: none;
+  }
+  .seo-tabs .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem .85rem;
+    border-radius: 6px;
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--tblr-muted);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .seo-tabs .nav-link.active {
+    background: var(--ft-plum-light);
+    color: var(--ft-plum);
+    border-color: rgba(107,63,160,.2);
+  }
+  [data-bs-theme="dark"] .seo-tabs .nav-link.active {
+    background: var(--ft-gold-light);
+    color: var(--ft-gold);
+    border-color: rgba(201,168,76,.3);
+  }
+  .seo-tabs .nav-link:hover:not(.active) {
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-body-color);
+  }
+
+  /* ── Character counter ───────────────────────────────────────────── */
+  .char-counter {
+    font-size: .72rem;
+    font-variant-numeric: tabular-nums;
+    transition: color .2s;
+    letter-spacing: .01em;
+  }
+  .char-counter.ok   { color: var(--tblr-success); }
+  .char-counter.warn { color: var(--tblr-warning); }
+  .char-counter.over { color: var(--tblr-danger);  }
+
+  /* ── Google SERP preview ─────────────────────────────────────────── */
+  .serp-preview {
+    font-family: arial, sans-serif;
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--tblr-border-color);
+    background: var(--tblr-bg-surface);
+  }
+  .serp-url {
+    font-size: .75rem;
+    color: #1e8e3e;
+    line-height: 1.4;
+  }
+  [data-bs-theme="dark"] .serp-url { color: #81c995; }
+  .serp-title {
+    font-size: 1.05rem;
+    color: #1a0dab;
+    line-height: 1.3;
+    margin: .15rem 0 .25rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+  [data-bs-theme="dark"] .serp-title { color: #8ab4f8; }
+  .serp-description {
+    font-size: .8125rem;
+    color: #4d5156;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  [data-bs-theme="dark"] .serp-description { color: #bdc1c6; }
+
+  /* ── OG / social card preview ────────────────────────────────────── */
+  .og-card {
+    border: 1px solid var(--tblr-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .og-image-placeholder {
+    height: 110px;
+    background: linear-gradient(135deg, var(--ft-plum) 0%, var(--ft-rose) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,.35);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .og-body {
+    padding: .75rem;
+    background: var(--tblr-bg-surface);
+    border-top: 1px solid var(--tblr-border-color);
+  }
+  .og-domain {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--tblr-muted);
+    margin-bottom: .2rem;
+  }
+  .og-title {
+    font-size: .85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .og-desc {
+    font-size: .75rem;
+    color: var(--tblr-muted);
+    margin-top: .15rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Status list ─────────────────────────────────────────────────── */
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background .3s;
+  }
+  .status-dot.is-set   { background: var(--tblr-success); }
+  .status-dot.is-empty { background: var(--tblr-border-color-dark); }
+
+  /* ── Sticky right panel ──────────────────────────────────────────── */
+  @media (min-width: 992px) {
+    .preview-sticky { position: sticky; top: 1.5rem; }
+  }
+
+  /* ── Color picker combo ──────────────────────────────────────────── */
+  input[type="color"].form-control-color {
+    max-width: 3.5rem;
+    padding: .2rem .3rem;
+    cursor: pointer;
+  }
+
+  /* ── Focus ring → plum ───────────────────────────────────────────── */
+  .form-control:focus,
+  .form-select:focus,
+  .form-check-input:focus {
+    border-color: var(--ft-plum);
+    box-shadow: 0 0 0 .2rem var(--ft-plum-light);
+  }
+  [data-bs-theme="dark"] .form-control:focus,
+  [data-bs-theme="dark"] .form-select:focus {
+    border-color: var(--ft-gold);
+    box-shadow: 0 0 0 .2rem var(--ft-gold-light);
+  }
+
+  /* ── Selectgroup for twitter card ────────────────────────────────── */
+  .form-selectgroup-label {
+    cursor: pointer;
+    border-radius: 6px;
+    transition: border-color .15s, background .15s;
+  }
+  .form-selectgroup-input:checked + .form-selectgroup-label {
+    border-color: var(--ft-plum);
+    background: var(--ft-plum-light);
+  }
+  [data-bs-theme="dark"] .form-selectgroup-input:checked + .form-selectgroup-label {
+    border-color: var(--ft-gold);
+    background: var(--ft-gold-light);
+  }
+
+  /* ── Field separator ─────────────────────────────────────────────── */
+  .field-row + .field-row {
+    border-top: 1px solid var(--tblr-border-color);
+    padding-top: 1rem;
+    margin-top: 0;
+  }
+
+  /* ── Input prefix icon color ─────────────────────────────────────── */
+  .input-group-text {
+    color: var(--ft-plum);
+  }
+  [data-bs-theme="dark"] .input-group-text {
+    color: var(--ft-gold);
+  }
+</style>
+{% endblock %}
+
+
 {% block body %}
+
+{# ── Section metadata: icon + Tabler color class ───────────────────────── #}
+{% set section_meta = {
+  "Sitio":        ("ti-world",           "purple"),
+  "Geo":          ("ti-map-pin",         "red"),
+  "Open Graph":   ("ti-share",           "azure"),
+  "Twitter / X":  ("ti-brand-x",         "dark"),
+  "Mobile / PWA": ("ti-device-mobile",   "teal"),
+  "Webmaster":    ("ti-shield-check",    "orange"),
+} %}
+
+{# ── Collect unique sections in declaration order ──────────────────────── #}
+{% set ns = namespace(sections=[]) %}
+{% for key, section, label, hint in keys %}
+  {% if section not in ns.sections %}
+    {% set ns.sections = ns.sections + [section] %}
+  {% endif %}
+{% endfor %}
+
 <div class="container-xl">
-  <div class="page-header">
+
+  <!-- Page header -->
+  <div class="page-header mb-4">
     <div class="row align-items-center">
+      <div class="col-auto">
+        <span class="avatar avatar-md rounded bg-purple-lt text-purple">
+          <i class="ti ti-search fs-3"></i>
+        </span>
+      </div>
       <div class="col">
-        <h2 class="page-title">
-          <i class="ti ti-search me-2"></i>SEO &amp; Meta Tags
-        </h2>
-        <div class="text-muted mt-1">
-          Valores por defecto para todas las páginas. Las páginas individuales pueden sobreescribir estos valores.
-        </div>
+        <h2 class="page-title mb-0">SEO &amp; Meta Tags</h2>
+        <p class="text-muted mb-0 mt-1 small">
+          Valores por defecto para todas las páginas.
+          Las páginas individuales pueden sobreescribir estos valores.
+        </p>
       </div>
     </div>
   </div>
 
-  <div class="row row-cards">
-    <div class="col-12 col-lg-8">
-      <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        {% set ns = namespace(current_section=None) %}
-        {% for key, section, label, hint in keys %}
+    <div class="row g-4">
 
-          {% if section != ns.current_section %}
-            {% if ns.current_section is not none %}
-              </div>{# card-body #}
+      <!-- ── Left: tabbed settings ──────────────────────────────────── -->
+      <div class="col-12 col-lg-7">
+
+        <!-- Tab nav -->
+        <ul class="nav seo-tabs flex-wrap mb-3" role="tablist">
+          {% for section in ns.sections %}
+          {% set icon  = section_meta.get(section, ("ti-settings", "secondary"))[0] %}
+          {% set color = section_meta.get(section, ("ti-settings", "secondary"))[1] %}
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link {% if loop.first %}active{% endif %}"
+              type="button"
+              data-bs-toggle="tab"
+              data-bs-target="#tab-{{ section | replace(' ', '-') | replace('/', '') | lower }}"
+              role="tab"
+            >
+              <i class="ti {{ icon }} text-{{ color }}"></i>
+              {{ section }}
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          {% for section in ns.sections %}
+          {% set sid = section | replace(' ', '-') | replace('/', '') | lower %}
+          <div
+            class="tab-pane fade {% if loop.first %}show active{% endif %}"
+            id="tab-{{ sid }}"
+            role="tabpanel"
+          >
+            <div class="card">
+              <div class="card-body pb-2">
+                {% for key, s, label, hint in keys if s == section %}
+                <div class="mb-3 field-row">
+                  <!-- Label row -->
+                  <div class="d-flex justify-content-between align-items-baseline mb-1">
+                    <label class="form-label fw-semibold mb-0" for="{{ key }}">{{ label }}</label>
+                    {% if key == "seo_site_title" %}
+                      <span class="char-counter" id="cc_{{ key }}"></span>
+                    {% elif key == "seo_site_description" %}
+                      <span class="char-counter" id="cc_{{ key }}"></span>
+                    {% endif %}
+                  </div>
+
+                  {# ── Field rendering ──────────────────────────────── #}
+
+                  {% if key == "seo_site_title" %}
+                  <input
+                    type="text"
+                    id="{{ key }}" name="{{ key }}"
+                    value="{{ values[key] }}"
+                    placeholder="(vacío — usa el valor por defecto del template)"
+                    class="form-control"
+                    autocomplete="off"
+                    oninput="updateCounter('seo_site_title', this.value, 50, 60); updatePreviews()"
+                  >
+
+                  {% elif key == "seo_site_description" %}
+                  <textarea
+                    id="{{ key }}" name="{{ key }}"
+                    rows="3"
+                    placeholder="(vacío — usa el valor por defecto del template)"
+                    class="form-control"
+                    oninput="updateCounter('seo_site_description', this.value, 120, 155); updatePreviews()"
+                  >{{ values[key] }}</textarea>
+
+                  {% elif key in ("seo_theme_color_light", "seo_theme_color_dark", "seo_tile_color") %}
+                  <div class="input-group">
+                    <input
+                      type="color"
+                      id="{{ key }}" name="{{ key }}"
+                      value="{{ values[key] or '#000000' }}"
+                      class="form-control form-control-color"
+                      oninput="document.getElementById('{{ key }}_text').value = this.value"
+                    >
+                    <input
+                      type="text"
+                      id="{{ key }}_text" name="{{ key }}_text"
+                      value="{{ values[key] }}"
+                      placeholder="(vacío — usa el valor por defecto)"
+                      class="form-control font-monospace"
+                      autocomplete="off"
+                      oninput="document.getElementById('{{ key }}').value = this.value || '#000000'"
+                    >
+                  </div>
+
+                  {% elif key == "seo_twitter_card" %}
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <label class="form-selectgroup-item w-100 m-0">
+                        <input
+                          type="radio" name="{{ key }}" value="summary_large_image"
+                          class="form-selectgroup-input"
+                          {% if not values[key] or values[key] == "summary_large_image" %}checked{% endif %}
+                        >
+                        <span class="form-selectgroup-label d-flex flex-column align-items-center gap-1 py-3">
+                          <i class="ti ti-photo fs-2 text-azure"></i>
+                          <span class="fw-semibold" style="font-size:.75rem;">summary_large_image</span>
+                          <span class="text-muted" style="font-size:.68rem;">Imagen grande</span>
+                        </span>
+                      </label>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-selectgroup-item w-100 m-0">
+                        <input
+                          type="radio" name="{{ key }}" value="summary"
+                          class="form-selectgroup-input"
+                          {% if values[key] == "summary" %}checked{% endif %}
+                        >
+                        <span class="form-selectgroup-label d-flex flex-column align-items-center gap-1 py-3">
+                          <i class="ti ti-photo-x fs-2 text-muted"></i>
+                          <span class="fw-semibold" style="font-size:.75rem;">summary</span>
+                          <span class="text-muted" style="font-size:.68rem;">Miniatura</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {% elif key == "seo_robots" %}
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="ti ti-robot"></i></span>
+                    <input
+                      type="text"
+                      id="{{ key }}" name="{{ key }}"
+                      value="{{ values[key] }}"
+                      placeholder="index, follow, max-snippet:-1, max-image-preview:large, ..."
+                      class="form-control"
+                      autocomplete="off"
+                    >
+                  </div>
+
+                  {% elif key in ("seo_google_verification", "seo_bing_verification") %}
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="ti ti-key"></i></span>
+                    <input
+                      type="text"
+                      id="{{ key }}" name="{{ key }}"
+                      value="{{ values[key] }}"
+                      placeholder="(vacío — tag omitido)"
+                      class="form-control font-monospace"
+                      autocomplete="off"
+                    >
+                  </div>
+
+                  {% else %}
+                  <input
+                    type="text"
+                    id="{{ key }}" name="{{ key }}"
+                    value="{{ values[key] }}"
+                    placeholder="(vacío — usa el valor por defecto del template)"
+                    class="form-control"
+                    autocomplete="off"
+                  >
+                  {% endif %}
+
+                  {% if hint %}
+                  <small class="form-hint mt-1 d-block">{{ hint }}</small>
+                  {% endif %}
+                </div>
+                {% endfor %}
+              </div>
               <div class="card-footer text-end">
                 <button type="submit" class="btn btn-primary">
                   <i class="ti ti-device-floppy me-1"></i>Guardar cambios
                 </button>
               </div>
-            </div>{# card #}
-            {% endif %}
-            {% set ns.current_section = section %}
-            <div class="card mb-3">
-              <div class="card-header">
-                <h3 class="card-title">{{ section }}</h3>
-              </div>
-              <div class="card-body">
-          {% endif %}
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold" for="{{ key }}">{{ label }}</label>
-            {% if key == "seo_site_description" %}
-            <textarea
-              id="{{ key }}"
-              name="{{ key }}"
-              rows="3"
-              placeholder="(vacío — usa el valor por defecto del template)"
-              class="form-control"
-            >{{ values[key] }}</textarea>
-            {% elif key in ("seo_theme_color_light", "seo_theme_color_dark", "seo_tile_color") %}
-            <div class="input-group">
-              <input
-                type="color"
-                id="{{ key }}"
-                name="{{ key }}"
-                value="{{ values[key] or "#000000" }}"
-                class="form-control form-control-color"
-                oninput="document.getElementById('{{ key }}_text').value = this.value"
-              >
-              <input
-                type="text"
-                id="{{ key }}_text"
-                name="{{ key }}_text"
-                value="{{ values[key] }}"
-                placeholder="(vacío — usa el valor por defecto del template)"
-                class="form-control font-monospace"
-                autocomplete="off"
-                oninput="document.getElementById('{{ key }}').value = this.value || '#000000'"
-              >
             </div>
-            {% elif key == "seo_twitter_card" %}
-            <select id="{{ key }}" name="{{ key }}" class="form-select">
-              <option value="" {% if not values[key] %}selected{% endif %}>(defecto: summary_large_image)</option>
-              <option value="summary_large_image" {% if values[key] == "summary_large_image" %}selected{% endif %}>summary_large_image — imagen grande</option>
-              <option value="summary"             {% if values[key] == "summary" %}selected{% endif %}>summary — miniatura</option>
-            </select>
-            {% else %}
-            <input
-              type="text"
-              id="{{ key }}"
-              name="{{ key }}"
-              value="{{ values[key] }}"
-              placeholder="(vacío — usa el valor por defecto del template)"
-              class="form-control"
-              autocomplete="off"
-            >
-            {% endif %}
-            <small class="form-hint">{{ hint }}</small>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div><!-- /left col -->
+
+
+      <!-- ── Right: sticky preview ───────────────────────────────────── -->
+      <div class="col-12 col-lg-5">
+        <div class="preview-sticky d-flex flex-column gap-3">
+
+          <!-- Google SERP preview -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="ti ti-brand-google me-2" style="color:#ea4335;"></i>
+                Vista previa en Google
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="serp-preview">
+                <div class="serp-url">fonotarot.com &rsaquo; ...</div>
+                <div class="serp-title" id="serp-title">
+                  {{- values['seo_site_title'] or 'Fonotarot - Tarot por Teléfono con Personas Reales | Chile' -}}
+                </div>
+                <div class="serp-description" id="serp-desc">
+                  {{- values['seo_site_description'] or 'Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.' -}}
+                </div>
+              </div>
+            </div>
           </div>
 
-        {% endfor %}
-
-        {% if keys %}
-          </div>{# card-body #}
-          <div class="card-footer text-end">
-            <button type="submit" class="btn btn-primary">
-              <i class="ti ti-device-floppy me-1"></i>Guardar cambios
-            </button>
+          <!-- Social / OG card preview -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="ti ti-share me-2 text-azure"></i>
+                Vista previa social
+              </h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="og-card">
+                <div class="og-image-placeholder">og:image</div>
+                <div class="og-body">
+                  <div class="og-domain">fonotarot.com</div>
+                  <div class="og-title" id="og-title">
+                    {{- values['seo_site_title'] or 'Fonotarot - Tarot por Teléfono' -}}
+                  </div>
+                  <div class="og-desc" id="og-desc">
+                    {{- values['seo_site_description'] or 'Consulta con tarotistas reales por teléfono en Chile.' -}}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>{# card #}
-        {% endif %}
 
-      </form>
-    </div>
-  </div>
+          <!-- Key status summary -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="ti ti-list-check me-2"></i>Estado
+              </h3>
+            </div>
+            <div class="list-group list-group-flush rounded-bottom">
+              {% for key, section, label, hint in keys %}
+              {% if key != "seo_twitter_card" %}
+              <div class="list-group-item d-flex align-items-center gap-2 py-2 px-3">
+                <div class="status-dot {% if values[key] %}is-set{% else %}is-empty{% endif %}" id="dot-{{ key }}"></div>
+                <span class="text-muted" style="font-size:.75rem; flex:1;">{{ label }}</span>
+                {% if values[key] %}
+                <span class="badge bg-success-lt text-success" style="font-size:.62rem;">listo</span>
+                {% else %}
+                <span class="badge bg-secondary-lt text-secondary" style="font-size:.62rem;">defecto</span>
+                {% endif %}
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+        </div><!-- /preview-sticky -->
+      </div><!-- /right col -->
+
+    </div><!-- /row -->
+  </form>
 </div>
+
+
+<script>
+(function () {
+  /* ── Character counters ──────────────────────────────────────────────── */
+  function updateCounter(id, value, soft, hard) {
+    var el = document.getElementById('cc_' + id);
+    if (!el) return;
+    var len = value.length;
+    el.textContent = len + '\u202f/\u202f' + hard;
+    el.className = 'char-counter ' +
+      (len === 0 ? '' : len <= soft ? 'ok' : len <= hard ? 'warn' : 'over');
+  }
+  window.updateCounter = updateCounter;
+
+  /* ── Live SERP + OG preview ──────────────────────────────────────────── */
+  var DEFAULT_TITLE = 'Fonotarot - Tarot por Teléfono con Personas Reales | Chile';
+  var DEFAULT_DESC  = 'Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.';
+
+  function updatePreviews() {
+    var titleEl = document.getElementById('seo_site_title');
+    var descEl  = document.getElementById('seo_site_description');
+    var title   = titleEl && titleEl.value.trim() ? titleEl.value.trim() : DEFAULT_TITLE;
+    var desc    = descEl  && descEl.value.trim()  ? descEl.value.trim()  : DEFAULT_DESC;
+    document.getElementById('serp-title').textContent = title;
+    document.getElementById('serp-desc').textContent  = desc;
+    document.getElementById('og-title').textContent   = title;
+    document.getElementById('og-desc').textContent    = desc;
+  }
+  window.updatePreviews = updatePreviews;
+
+  /* ── Init on load ────────────────────────────────────────────────────── */
+  var titleEl = document.getElementById('seo_site_title');
+  var descEl  = document.getElementById('seo_site_description');
+  if (titleEl) updateCounter('seo_site_title',       titleEl.value, 50,  60);
+  if (descEl)  updateCounter('seo_site_description', descEl.value,  120, 155);
+  if (descEl) descEl.addEventListener('input', function () {
+    updateCounter('seo_site_description', this.value, 120, 155);
+    updatePreviews();
+  });
+})();
+</script>
+
 {% endblock %}
