@@ -213,7 +213,7 @@
 
 {# ── Collect unique sections in declaration order ──────────────────────── #}
 {% set ns = namespace(sections=[]) %}
-{% for key, section, label, hint in keys %}
+{% for key, section, label, hint, default in keys %}
   {% if section not in ns.sections %}
     {% set ns.sections = ns.sections + [section] %}
   {% endif %}
@@ -278,7 +278,7 @@
           >
             <div class="card">
               <div class="card-body pb-2">
-                {% for key, s, label, hint in keys if s == section %}
+                {% for key, s, label, hint, default in keys if s == section %}
                 <div class="mb-3 field-row">
                   <!-- Label row -->
                   <div class="d-flex justify-content-between align-items-baseline mb-1">
@@ -297,7 +297,7 @@
                     type="text"
                     id="{{ key }}" name="{{ key }}"
                     value="{{ values[key] }}"
-                    placeholder="(vacío — usa el valor por defecto del template)"
+                    placeholder="{{ default }} — valor por defecto del template"
                     class="form-control"
                     autocomplete="off"
                     oninput="updateCounter('seo_site_title', this.value, 50, 60); updatePreviews()"
@@ -307,7 +307,7 @@
                   <textarea
                     id="{{ key }}" name="{{ key }}"
                     rows="3"
-                    placeholder="(vacío — usa el valor por defecto del template)"
+                    placeholder="{{ default }} — valor por defecto del template"
                     class="form-control"
                     oninput="updateCounter('seo_site_description', this.value, 120, 155); updatePreviews()"
                   >{{ values[key] }}</textarea>
@@ -325,7 +325,7 @@
                       type="text"
                       id="{{ key }}_text" name="{{ key }}_text"
                       value="{{ values[key] }}"
-                      placeholder="(vacío — usa el valor por defecto)"
+                      placeholder="{{ default }} — valor por defecto"
                       class="form-control font-monospace"
                       autocomplete="off"
                       oninput="document.getElementById('{{ key }}').value = this.value || '#000000'"
@@ -371,7 +371,7 @@
                       type="text"
                       id="{{ key }}" name="{{ key }}"
                       value="{{ values[key] }}"
-                      placeholder="index, follow, max-snippet:-1, max-image-preview:large, ..."
+                      placeholder="{{ default }} — valor por defecto"
                       class="form-control"
                       autocomplete="off"
                     >
@@ -395,7 +395,7 @@
                     type="text"
                     id="{{ key }}" name="{{ key }}"
                     value="{{ values[key] }}"
-                    placeholder="(vacío — usa el valor por defecto del template)"
+                    placeholder="{{ default }} — valor por defecto del template"
                     class="form-control"
                     autocomplete="off"
                   >
@@ -477,7 +477,7 @@
               </h3>
             </div>
             <div class="list-group list-group-flush rounded-bottom">
-              {% for key, section, label, hint in keys %}
+              {% for key, section, label, hint, default in keys %}
               {% if key != "seo_twitter_card" %}
               <div class="list-group-item d-flex align-items-center gap-2 py-2 px-3">
                 <div class="status-dot {% if values[key] %}is-set{% else %}is-empty{% endif %}" id="dot-{{ key }}"></div>
