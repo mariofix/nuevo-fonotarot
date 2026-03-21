@@ -339,6 +339,51 @@ class AnalyticsSettingsAdminView(BaseView):
         )
 
 
+_SEO_KEYS = [
+    ("seo_site_title",          "Sitio",      "Título del sitio",      "Título por defecto en la pestaña del navegador y resultados de búsqueda."),
+    ("seo_site_description",    "Sitio",      "Descripción",           "Meta descripción por defecto (aprox. 155 caracteres)."),
+    ("seo_site_keywords",       "Sitio",      "Keywords",              "Palabras clave separadas por coma (uso moderno limitado)."),
+    ("seo_site_author",         "Sitio",      "Autor",                 "Valor del meta tag author."),
+    ("seo_copyright",           "Sitio",      "Copyright",             "Texto de copyright para el meta tag."),
+    ("seo_og_site_name",        "Open Graph", "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales."),
+    ("seo_og_image_url",        "Open Graph", "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image."),
+    ("seo_twitter_handle",      "Twitter / X","Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator."),
+    ("seo_google_verification", "Webmaster",  "Google Verification",   "Contenido del meta tag google-site-verification (Google Search Console)."),
+    ("seo_bing_verification",   "Webmaster",  "Bing Verification",     "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools)."),
+]
+
+
+class SeoSettingsAdminView(BaseView):
+    """Settings page for site-wide SEO meta tags (module='seo').
+
+    Always renders all keys, pre-filled from SiteSettings.
+    base.html reads these values and falls back to its hardcoded defaults
+    when a key is absent or empty.
+    """
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.has_role("admin")
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        from .models import SiteSettings
+
+        if request.method == "POST":
+            for key, *_ in _SEO_KEYS:
+                value = request.form.get(key, "").strip()
+                SiteSettings.set(key, value, module="seo")
+
+        values = {key: (SiteSettings.get(key) or "") for key, *_ in _SEO_KEYS}
+        return self.render(
+            "admin/seo_settings.html",
+            keys=_SEO_KEYS,
+            values=values,
+        )
+
+
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -468,6 +513,15 @@ def init_admin(app, admin_ext):
             category=_l("Sitio"),
             menu_icon_type="tabler",
             menu_icon_value="settings",
+        )
+    )
+    admin_ext.add_view(
+        SeoSettingsAdminView(
+            name=_l("SEO"),
+            endpoint="seo_settings",
+            category=_l("Sitio"),
+            menu_icon_type="tabler",
+            menu_icon_value="search",
         )
     )
     admin_ext.add_view(

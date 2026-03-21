@@ -133,6 +133,18 @@ def _init_extensions(app: Flask) -> None:
         return {"site_languages": _parse_available_langs()}
 
     @app.context_processor
+    def inject_seo_config() -> dict:
+        """Expose SEO keys to all templates as lowercase Jinja globals."""
+        from .admin import _SEO_KEYS
+        from .models import SiteSettings
+
+        keys = [key for key, *_ in _SEO_KEYS]
+        try:
+            return {key: SiteSettings.get(key) or "" for key in keys}
+        except Exception:
+            return {key: "" for key in keys}
+
+    @app.context_processor
     def inject_analytics_config() -> dict:
         """Expose analytics keys to all templates as lowercase Jinja globals.
 

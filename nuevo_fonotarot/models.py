@@ -613,6 +613,42 @@ class SiteSettings(db.Model):
         Twilio Segment source write key.  Segment acts as a tag manager and
         can forward events to many downstream destinations.
         Leave empty or absent to disable Segment.
+
+    SEO keys  (module ``"seo"``)
+    ----------------------------
+    ``seo_site_title``
+        Default ``<title>`` and og:title / twitter:title fallback.
+
+    ``seo_site_description``
+        Default meta description, og:description, and twitter:description fallback.
+
+    ``seo_site_keywords``
+        Default meta keywords (comma-separated).
+
+    ``seo_site_author``
+        Value for the ``author`` meta tag.
+
+    ``seo_copyright``
+        Value for the ``copyright`` meta tag.
+
+    ``seo_og_site_name``
+        ``og:site_name`` value shown when pages are shared on social networks.
+
+    ``seo_og_image_url``
+        Absolute URL for the default ``og:image`` and ``twitter:image``.
+        Falls back to ``/static/og-image.jpg`` when absent.
+
+    ``seo_twitter_handle``
+        Twitter/X account handle without ``@``.  Used for both ``twitter:site``
+        and ``twitter:creator``.
+
+    ``seo_google_verification``
+        Content value for the ``google-site-verification`` meta tag
+        (Google Search Console).  Tag is omitted when empty.
+
+    ``seo_bing_verification``
+        Content value for the ``msvalidate.01`` meta tag
+        (Bing Webmaster Tools).  Tag is omitted when empty.
     """
 
     __tablename__ = "site_settings"

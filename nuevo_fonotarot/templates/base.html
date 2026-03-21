@@ -9,10 +9,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     <!-- ── Primary meta ──────────────────────────────────────────── -->
-    <title>{% block title %}{{ _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}</title>
-    <meta name="description" content="{% block description %}{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
-    <meta name="keywords" content="{% block keywords %}{{ _("tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
-    <meta name="author" content="Fonotarot" />
+    <title>{% block title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+    <meta name="keywords" content="{% block keywords %}{{ seo_site_keywords or _("tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
+    <meta name="author" content="{{ seo_site_author or "Fonotarot" }}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     <meta name="bingbot" content="index, follow" />
@@ -23,7 +23,9 @@
     <meta name="geo.placename" content="Chile" />
     <meta name="distribution" content="global" />
     <meta name="rating" content="general" />
-    <meta name="copyright" content="Fonotarot" />
+    <meta name="copyright" content="{{ seo_copyright or "Fonotarot" }}" />
+    {% if seo_google_verification %}<meta name="google-site-verification" content="{{ seo_google_verification }}" />{% endif %}
+    {% if seo_bing_verification %}<meta name="msvalidate.01" content="{{ seo_bing_verification }}" />{% endif %}
     <link rel="canonical" href="https://{{ site_domain }}{{ request.path }}" />
     <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.path }}" />
     <link rel="alternate" hreflang="x-default" href="https://{{ site_domain }}{{ request.path }}" />
@@ -31,21 +33,21 @@
     <!-- ── Open Graph / Facebook ──────────────────────────────────── -->
     <meta property="og:type"        content="website" />
     <meta property="og:url"         content="https://{{ site_domain }}{{ request.path }}" />
-    <meta property="og:site_name"   content="Fonotarot" />
+    <meta property="og:site_name"   content="{{ seo_og_site_name or "Fonotarot" }}" />
     <meta property="og:locale"      content="{{ get_locale() }}" />
-    <meta property="og:title"       content="{% block og_title %}{{ _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
-    <meta property="og:description" content="{% block og_description %}{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
-    <meta property="og:image"       content="https://{{ site_domain }}/static/og-image.jpg" />
+    <meta property="og:title"       content="{% block og_title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+    <meta property="og:image"       content="{{ seo_og_image_url or "https://" ~ site_domain ~ "/static/og-image.jpg" }}" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
 
     <!-- ── Twitter / X Card ──────────────────────────────────────── -->
     <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:site"        content="@fonotarot" />
-    <meta name="twitter:creator"     content="@fonotarot" />
-    <meta name="twitter:title"       content="{{ _("Fonotarot - Tarot por Teléfono con Personas Reales") }}" />
-    <meta name="twitter:description" content="{{ _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
-    <meta name="twitter:image"       content="https://{{ site_domain }}/static/og-image.jpg" />
+    <meta name="twitter:site"        content="@{{ seo_twitter_handle or "fonotarot" }}" />
+    <meta name="twitter:creator"     content="@{{ seo_twitter_handle or "fonotarot" }}" />
+    <meta name="twitter:title"       content="{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales") }}" />
+    <meta name="twitter:description" content="{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
+    <meta name="twitter:image"       content="{{ seo_og_image_url or "https://" ~ site_domain ~ "/static/og-image.jpg" }}" />
 
     <!-- ── Apple / Mobile ────────────────────────────────────────── -->
     <meta name="apple-mobile-web-app-capable"          content="yes" />
