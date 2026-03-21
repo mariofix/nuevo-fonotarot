@@ -299,34 +299,44 @@ class SiteSettingsAdminView(SecureModelView):
     column_editable_list = ("value",)
 
 
-class AnalyticsSettingsAdminView(SecureModelView):
-    """Admin view for analytics/tracking SiteSettings (module='analytics').
+_ANALYTICS_KEYS = [
+    ("umami_website_id",     "Umami",        "Website ID",    "El ID del sitio en el dashboard de Umami."),
+    ("umami_email_pixel_id", "Umami",        "Email Pixel ID","Token que aparece después de /p/ en la URL del pixel."),
+    ("gtm_container_id",     "Google",       "GTM Container", "ID del contenedor GTM, ej. GTM-XXXXXXX."),
+    ("ga_measurement_id",    "Google",       "GA4 Measurement ID", "ID de medición GA4, ej. G-XXXXXXXXXX."),
+    ("meta_pixel_id",        "Meta",         "Pixel ID",      "ID del Meta (Facebook) Pixel."),
+    ("segment_write_key",    "Segment",      "Write Key",     "Clave de escritura de la fuente en Twilio Segment."),
+]
 
-    Recognised keys
-    ---------------
-    umami_website_id      — Umami web tracker website ID
-    umami_email_pixel_id  — Umami email open-tracking pixel token
-    gtm_container_id      — Google Tag Manager container ID (e.g. GTM-XXXXXXX)
-    ga_measurement_id     — Google Analytics 4 measurement ID (e.g. G-XXXXXXXXXX)
-    meta_pixel_id         — Meta (Facebook) Pixel ID
-    segment_write_key     — Twilio Segment source write key
+
+class AnalyticsSettingsAdminView(BaseView):
+    """Settings page that always shows all analytics tracker keys.
+
+    Reads current values from SiteSettings and saves changes via
+    SiteSettings.set(), creating rows that do not yet exist.
     """
 
-    # Only show analytics rows
-    def get_query(self):
-        return super().get_query().filter(self.model.module == "analytics")
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.has_role("admin")
 
-    def get_count_query(self):
-        return super().get_count_query().filter(self.model.module == "analytics")
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
 
-    column_list = ("key", "value", "description")
-    column_searchable_list = ("key",)
-    column_editable_list = ("value",)
-    # Hide module — always set to "analytics"
-    form_excluded_columns = ("module",)
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        from .models import SiteSettings
 
-    def on_model_change(self, form, model, is_created):
-        model.module = "analytics"
+        if request.method == "POST":
+            for key, *_ in _ANALYTICS_KEYS:
+                value = request.form.get(key, "").strip()
+                SiteSettings.set(key, value, module="analytics")
+
+        values = {key: (SiteSettings.get(key) or "") for key, *_ in _ANALYTICS_KEYS}
+        return self.render(
+            "admin/analytics_settings.html",
+            keys=_ANALYTICS_KEYS,
+            values=values,
+        )
 
 
 class OrderAdminView(SecureModelView):
@@ -462,8 +472,6 @@ def init_admin(app, admin_ext):
     )
     admin_ext.add_view(
         AnalyticsSettingsAdminView(
-            SiteSettings,
-            db.session,
             name=_l("Analytics"),
             endpoint="analytics_settings",
             category=_l("Sitio"),

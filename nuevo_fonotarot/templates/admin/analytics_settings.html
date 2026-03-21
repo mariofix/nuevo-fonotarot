@@ -1,0 +1,76 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="container-xl">
+  <div class="page-header">
+    <div class="row align-items-center">
+      <div class="col">
+        <h2 class="page-title">
+          <i class="ti ti-chart-dots me-2"></i>Analytics &amp; Tracking
+        </h2>
+        <div class="text-muted mt-1">
+          Deja el campo vacío para deshabilitar ese tracker.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row row-cards">
+    <div class="col-12 col-lg-8">
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% set ns = namespace(current_provider=None) %}
+        {% for key, provider, label, hint in keys %}
+
+          {# Provider heading whenever the provider changes #}
+          {% if provider != ns.current_provider %}
+            {% if ns.current_provider is not none %}
+              </div>{# close previous card-body #}
+              <div class="card-footer text-end">
+                <button type="submit" class="btn btn-primary">
+                  <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+                </button>
+              </div>
+            </div>{# close previous card #}
+            {% endif %}
+            {% set ns.current_provider = provider %}
+            <div class="card mb-3">
+              <div class="card-header">
+                <h3 class="card-title">{{ provider }}</h3>
+              </div>
+              <div class="card-body">
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="{{ key }}">{{ label }}</label>
+            <input
+              type="text"
+              id="{{ key }}"
+              name="{{ key }}"
+              value="{{ values[key] }}"
+              placeholder="(vacío — deshabilitado)"
+              class="form-control font-monospace"
+              autocomplete="off"
+            >
+            <small class="form-hint">{{ hint }}</small>
+          </div>
+
+        {% endfor %}
+
+        {# Close the last card #}
+        {% if keys %}
+          </div>{# card-body #}
+          <div class="card-footer text-end">
+            <button type="submit" class="btn btn-primary">
+              <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+            </button>
+          </div>
+        </div>{# card #}
+        {% endif %}
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
