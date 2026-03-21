@@ -480,14 +480,12 @@
               {% for key, section, label, hint, default in keys %}
               {% if key != "seo_twitter_card" %}
               <div class="list-group-item d-flex align-items-center gap-2 py-2 px-3">
-                {% if values[key] %}
-                <i class="ti ti-check text-success flex-shrink-0" style="font-size:.85rem;"></i>
-                {% else %}
-                <div class="status-dot is-empty flex-shrink-0"></div>
-                {% endif %}
+                <div class="status-dot {% if values[key] %}is-set{% else %}is-empty{% endif %} flex-shrink-0"></div>
                 <span class="text-muted" style="font-size:.75rem; flex:1; min-width:0;">{{ label }}</span>
                 {% if values[key] %}
                 <span class="text-primary text-truncate" style="font-size:.72rem; max-width:9rem;" title="{{ values[key] }}">{{ values[key] }}</span>
+                {% elif default %}
+                <span class="text-muted text-truncate" style="font-size:.72rem; max-width:9rem;" title="{{ default }}">{{ default }}</span>
                 {% else %}
                 <span class="text-muted" style="font-size:.72rem;">—</span>
                 {% endif %}
