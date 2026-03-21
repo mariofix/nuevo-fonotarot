@@ -604,6 +604,15 @@ class SiteSettings(db.Model):
         Google Analytics 4 measurement ID (e.g. ``"G-XXXXXXXXXX"``).
         Not required when GTM already injects GA4.
         Leave empty or absent to disable direct GA4 loading.
+
+    ``meta_pixel_id``
+        Meta (Facebook) Pixel ID (e.g. ``"1234567890"``).
+        Leave empty or absent to disable the Meta Pixel.
+
+    ``segment_write_key``
+        Twilio Segment source write key.  Segment acts as a tag manager and
+        can forward events to many downstream destinations.
+        Leave empty or absent to disable Segment.
     """
 
     __tablename__ = "site_settings"

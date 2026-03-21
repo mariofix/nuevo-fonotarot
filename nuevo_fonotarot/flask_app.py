@@ -147,6 +147,8 @@ def _init_extensions(app: Flask) -> None:
                 "umami_email_pixel_id": SiteSettings.get("umami_email_pixel_id", "") or "",
                 "gtm_container_id": SiteSettings.get("gtm_container_id", "") or "",
                 "ga_measurement_id": SiteSettings.get("ga_measurement_id", "") or "",
+                "meta_pixel_id": SiteSettings.get("meta_pixel_id", "") or "",
+                "segment_write_key": SiteSettings.get("segment_write_key", "") or "",
             }
         except Exception:
             return {
@@ -154,6 +156,8 @@ def _init_extensions(app: Flask) -> None:
                 "umami_email_pixel_id": "",
                 "gtm_container_id": "",
                 "ga_measurement_id": "",
+                "meta_pixel_id": "",
+                "segment_write_key": "",
             }
 
     @app.context_processor

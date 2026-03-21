@@ -1,5 +1,5 @@
 {% from "macros/lang_switcher.html" import lang_switcher %}
-{% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script %}
+{% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script, meta_pixel, segment_head %}
 <!doctype html>
 <html lang="{{ get_locale() | replace('_', '-') }}" prefix="og: https://ogp.me/ns#" data-theme="{{ default_theme }}" data-bs-theme="{{ default_theme }}">
   <head>
@@ -65,6 +65,8 @@
     <!-- ── Analytics (head) ──────────────────────────────────────── -->
     {{ gtm_head() }}
     {{ ga_script() }}
+    {{ meta_pixel() }}
+    {{ segment_head() }}
     {{ umami_script() }}
 
     <!-- ── Per-page extra head elements ──────────────────────────── -->

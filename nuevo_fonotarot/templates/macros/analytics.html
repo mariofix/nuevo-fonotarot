@@ -2,7 +2,9 @@
    All macros are no-ops when the corresponding config key is absent or empty.
    Import this file and call the relevant macro in your base template:
 
-     {% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script, umami_email_pixel %}
+     {% from "macros/analytics.html" import umami_script, gtm_head, gtm_body,
+                                            ga_script, meta_pixel, segment_head,
+                                            umami_email_pixel %}
 
    Web trackers
    ─────────────
@@ -10,6 +12,8 @@
    gtm_head()           — GTM <script> snippet (place as early as possible in <head>)
    gtm_body()           — GTM <noscript> iframe (place immediately after <body>)
    ga_script()          — Google Analytics gtag.js (place in <head>)
+   meta_pixel()         — Meta (Facebook) Pixel (place in <head>)
+   segment_head()       — Twilio Segment Analytics.js (place in <head>; no noscript fallback)
 
    Email trackers
    ──────────────
@@ -58,6 +62,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   gtag('config', '{{ ga_measurement_id }}');
 </script>
 <!-- End Google Analytics -->
+{% endif %}
+{% endmacro %}
+
+{# ── Meta (Facebook) Pixel ──────────────────────────────────────────────── #}
+{% macro meta_pixel() %}
+{% if meta_pixel_id %}
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','{{ meta_pixel_id }}');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id={{ meta_pixel_id }}&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel -->
+{% endif %}
+{% endmacro %}
+
+{# ── Twilio Segment — <head> snippet ────────────────────────────────────── #}
+{% macro segment_head() %}
+{% if segment_write_key %}
+<!-- Twilio Segment -->
+<script>
+!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)
+if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");
+else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink",
+"trackForm","pageview","identify","reset","group","track","ready","alias","debug",
+"page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware",
+"setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){
+return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);
+var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group",
+"page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");
+n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,
+u:location.href,s:location.search,t:document.title,r:document.referrer})}
+n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){
+var key=analytics.methods[n];analytics[key]=analytics.factory(key)}
+analytics.load=function(key,n){var t=document.createElement("script");
+t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);
+t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";
+var r=document.head;r.insertBefore(t,r.firstChild);analytics._loadOptions=n};
+analytics._writeKey="{{ segment_write_key }}";analytics.SNIPPET_VERSION="5.2.1";
+analytics.load("{{ segment_write_key }}");
+analytics.page();}}();
+</script>
+<!-- End Twilio Segment -->
 {% endif %}
 {% endmacro %}
 
