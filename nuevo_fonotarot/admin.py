@@ -309,6 +309,20 @@ _ANALYTICS_KEYS = [
 ]
 
 
+def _save_setting(key: str, value: str, module: str) -> None:
+    """Save *value* for *key*, or delete the row when *value* is empty."""
+    from .extensions import db
+    from .models import SiteSettings
+
+    if value:
+        SiteSettings.set(key, value, module=module)
+    else:
+        row = SiteSettings.query.filter_by(key=key).first()
+        if row is not None:
+            db.session.delete(row)
+            db.session.commit()
+
+
 class AnalyticsSettingsAdminView(BaseView):
     """Settings page that always shows all analytics tracker keys.
 
@@ -330,7 +344,7 @@ class AnalyticsSettingsAdminView(BaseView):
         if request.method == "POST":
             for key, *_ in _ANALYTICS_KEYS:
                 value = request.form.get(key, "").strip()
-                SiteSettings.set(key, value, module="analytics")
+                _save_setting(key, value, module="analytics")
 
         values = {key: (SiteSettings.get(key) or "") for key, *_ in _ANALYTICS_KEYS}
         return self.render(
@@ -393,7 +407,7 @@ class SeoSettingsAdminView(BaseView):
                     value = request.form.get(f"{key}_text", "").strip()
                 else:
                     value = request.form.get(key, "").strip()
-                SiteSettings.set(key, value, module="seo")
+                _save_setting(key, value, module="seo")
 
         values = {key: (SiteSettings.get(key) or "") for key, *_ in _SEO_KEYS}
         return self.render(
