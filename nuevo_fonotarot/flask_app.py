@@ -139,26 +139,14 @@ def _init_extensions(app: Flask) -> None:
         Values are read from SiteSettings at request time so they can be
         changed in the admin panel without restarting the server.
         """
-        try:
-            from .models import SiteSettings
+        from .admin import _ANALYTICS_KEYS
+        from .models import SiteSettings
 
-            return {
-                "umami_website_id": SiteSettings.get("umami_website_id", "") or "",
-                "umami_email_pixel_id": SiteSettings.get("umami_email_pixel_id", "") or "",
-                "gtm_container_id": SiteSettings.get("gtm_container_id", "") or "",
-                "ga_measurement_id": SiteSettings.get("ga_measurement_id", "") or "",
-                "meta_pixel_id": SiteSettings.get("meta_pixel_id", "") or "",
-                "segment_write_key": SiteSettings.get("segment_write_key", "") or "",
-            }
+        keys = [key for key, *_ in _ANALYTICS_KEYS]
+        try:
+            return {key: SiteSettings.get(key) or "" for key in keys}
         except Exception:
-            return {
-                "umami_website_id": "",
-                "umami_email_pixel_id": "",
-                "gtm_container_id": "",
-                "ga_measurement_id": "",
-                "meta_pixel_id": "",
-                "segment_write_key": "",
-            }
+            return {key: "" for key in keys}
 
     @app.context_processor
     def inject_current_theme() -> dict:
