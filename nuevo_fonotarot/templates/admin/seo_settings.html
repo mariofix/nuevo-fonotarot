@@ -51,7 +51,7 @@
               placeholder="(vacío — usa el valor por defecto del template)"
               class="form-control"
             >{{ values[key] }}</textarea>
-            {% elif key in ("seo_theme_color", "seo_tile_color") %}
+            {% elif key in ("seo_theme_color_light", "seo_theme_color_dark", "seo_tile_color") %}
             <div class="input-group">
               <input
                 type="color"
@@ -59,17 +59,25 @@
                 name="{{ key }}"
                 value="{{ values[key] or "#000000" }}"
                 class="form-control form-control-color"
+                oninput="document.getElementById('{{ key }}_text').value = this.value"
               >
               <input
                 type="text"
+                id="{{ key }}_text"
                 name="{{ key }}_text"
                 value="{{ values[key] }}"
                 placeholder="(vacío — usa el valor por defecto del template)"
                 class="form-control font-monospace"
                 autocomplete="off"
-                oninput="document.getElementById('{{ key }}').value = this.value"
+                oninput="document.getElementById('{{ key }}').value = this.value || '#000000'"
               >
             </div>
+            {% elif key == "seo_twitter_card" %}
+            <select id="{{ key }}" name="{{ key }}" class="form-select">
+              <option value="" {% if not values[key] %}selected{% endif %}>(defecto: summary_large_image)</option>
+              <option value="summary_large_image" {% if values[key] == "summary_large_image" %}selected{% endif %}>summary_large_image — imagen grande</option>
+              <option value="summary"             {% if values[key] == "summary" %}selected{% endif %}>summary — miniatura</option>
+            </select>
             {% else %}
             <input
               type="text"

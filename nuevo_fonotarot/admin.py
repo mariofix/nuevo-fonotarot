@@ -352,9 +352,11 @@ _SEO_KEYS = [
     ("seo_geo_placename",       "Geo",         "Lugar",                 "Ciudad o lugar principal, ej. 'Santiago'."),
     ("seo_og_site_name",        "Open Graph",  "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales."),
     ("seo_og_image_url",        "Open Graph",  "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image."),
+    ("seo_twitter_card",        "Twitter / X", "Card type",             "Tipo de card: 'summary_large_image' (imagen grande) o 'summary' (miniatura)."),
     ("seo_twitter_handle",      "Twitter / X", "Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator."),
     ("seo_app_title",           "Mobile / PWA","Nombre de la app",      "apple-mobile-web-app-title — nombre corto que aparece bajo el ícono en iOS."),
-    ("seo_theme_color",         "Mobile / PWA","Theme color",           "Color de la barra del navegador en móvil, ej. '#faf7f3'."),
+    ("seo_theme_color_light",   "Mobile / PWA","Theme color (claro)",   "Color de la barra del navegador en modo claro, ej. '#faf7f3'."),
+    ("seo_theme_color_dark",    "Mobile / PWA","Theme color (oscuro)",  "Color de la barra del navegador en modo oscuro, ej. '#1a1a2e'."),
     ("seo_tile_color",          "Mobile / PWA","Tile color",            "Color del tile de Windows (msapplication-TileColor y navbutton-color), ej. '#6b3fa0'."),
     ("seo_google_verification", "Webmaster",   "Google Verification",   "Contenido del meta tag google-site-verification (Google Search Console)."),
     ("seo_bing_verification",   "Webmaster",   "Bing Verification",     "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools)."),
@@ -379,7 +381,7 @@ class SeoSettingsAdminView(BaseView):
     def index(self):
         from .models import SiteSettings
 
-        _COLOR_KEYS = ("seo_theme_color", "seo_tile_color")
+        _COLOR_KEYS = ("seo_theme_color_light", "seo_theme_color_dark", "seo_tile_color")
         if request.method == "POST":
             for key, *_ in _SEO_KEYS:
                 # Color fields post a paired _text input; prefer it so the

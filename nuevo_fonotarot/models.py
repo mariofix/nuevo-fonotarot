@@ -666,11 +666,19 @@ class SiteSettings(db.Model):
         Content value for the ``msvalidate.01`` meta tag
         (Bing Webmaster Tools).  Tag is omitted when empty.
 
+    ``seo_twitter_card``
+        Twitter card type: ``"summary_large_image"`` (default) or ``"summary"``.
+
     ``seo_app_title``
         Short name for ``apple-mobile-web-app-title`` (shown under the icon on iOS).
+        ``apple-mobile-web-app-status-bar-style`` is derived automatically from
+        the active theme (``dark`` → ``black-translucent``, ``light`` → ``default``).
 
-    ``seo_theme_color``
-        Hex colour for the ``theme-color`` meta tag (mobile browser chrome).
+    ``seo_theme_color_light``
+        Hex colour for ``theme-color`` in light mode (``prefers-color-scheme: light``).
+
+    ``seo_theme_color_dark``
+        Hex colour for ``theme-color`` in dark mode (``prefers-color-scheme: dark``).
 
     ``seo_tile_color``
         Hex colour for ``msapplication-TileColor`` and ``msapplication-navbutton-color``.
