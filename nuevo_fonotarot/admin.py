@@ -340,16 +340,24 @@ class AnalyticsSettingsAdminView(BaseView):
 
 
 _SEO_KEYS = [
-    ("seo_site_title",          "Sitio",      "Título del sitio",      "Título por defecto en la pestaña del navegador y resultados de búsqueda."),
-    ("seo_site_description",    "Sitio",      "Descripción",           "Meta descripción por defecto (aprox. 155 caracteres)."),
-    ("seo_site_keywords",       "Sitio",      "Keywords",              "Palabras clave separadas por coma (uso moderno limitado)."),
-    ("seo_site_author",         "Sitio",      "Autor",                 "Valor del meta tag author."),
-    ("seo_copyright",           "Sitio",      "Copyright",             "Texto de copyright para el meta tag."),
-    ("seo_og_site_name",        "Open Graph", "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales."),
-    ("seo_og_image_url",        "Open Graph", "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image."),
-    ("seo_twitter_handle",      "Twitter / X","Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator."),
-    ("seo_google_verification", "Webmaster",  "Google Verification",   "Contenido del meta tag google-site-verification (Google Search Console)."),
-    ("seo_bing_verification",   "Webmaster",  "Bing Verification",     "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools)."),
+    ("seo_site_title",          "Sitio",       "Título del sitio",      "Título por defecto en la pestaña del navegador y resultados de búsqueda."),
+    ("seo_site_description",    "Sitio",       "Descripción",           "Meta descripción por defecto (aprox. 155 caracteres)."),
+    ("seo_site_keywords",       "Sitio",       "Keywords",              "Palabras clave separadas por coma (uso moderno limitado)."),
+    ("seo_site_author",         "Sitio",       "Autor",                 "Valor del meta tag author."),
+    ("seo_copyright",           "Sitio",       "Copyright",             "Texto de copyright para el meta tag."),
+    ("seo_robots",              "Sitio",       "Robots",                "Directiva para todos los bots, ej. 'index, follow' o 'noindex, nofollow'."),
+    ("seo_language",            "Sitio",       "Idioma",                "Valor del meta tag language, ej. 'Spanish'."),
+    ("seo_geo_region",          "Geo",         "Región",                "Código ISO de región, ej. 'CL', 'MX-CMX'."),
+    ("seo_geo_country",         "Geo",         "País",                  "Nombre del país, ej. 'Chile'."),
+    ("seo_geo_placename",       "Geo",         "Lugar",                 "Ciudad o lugar principal, ej. 'Santiago'."),
+    ("seo_og_site_name",        "Open Graph",  "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales."),
+    ("seo_og_image_url",        "Open Graph",  "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image."),
+    ("seo_twitter_handle",      "Twitter / X", "Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator."),
+    ("seo_app_title",           "Mobile / PWA","Nombre de la app",      "apple-mobile-web-app-title — nombre corto que aparece bajo el ícono en iOS."),
+    ("seo_theme_color",         "Mobile / PWA","Theme color",           "Color de la barra del navegador en móvil, ej. '#faf7f3'."),
+    ("seo_tile_color",          "Mobile / PWA","Tile color",            "Color del tile de Windows (msapplication-TileColor y navbutton-color), ej. '#6b3fa0'."),
+    ("seo_google_verification", "Webmaster",   "Google Verification",   "Contenido del meta tag google-site-verification (Google Search Console)."),
+    ("seo_bing_verification",   "Webmaster",   "Bing Verification",     "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools)."),
 ]
 
 
@@ -371,9 +379,15 @@ class SeoSettingsAdminView(BaseView):
     def index(self):
         from .models import SiteSettings
 
+        _COLOR_KEYS = ("seo_theme_color", "seo_tile_color")
         if request.method == "POST":
             for key, *_ in _SEO_KEYS:
-                value = request.form.get(key, "").strip()
+                # Color fields post a paired _text input; prefer it so the
+                # user can clear the value by emptying the text box.
+                if key in _COLOR_KEYS:
+                    value = request.form.get(f"{key}_text", "").strip()
+                else:
+                    value = request.form.get(key, "").strip()
                 SiteSettings.set(key, value, module="seo")
 
         values = {key: (SiteSettings.get(key) or "") for key, *_ in _SEO_KEYS}

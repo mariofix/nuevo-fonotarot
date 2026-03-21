@@ -631,6 +631,22 @@ class SiteSettings(db.Model):
     ``seo_copyright``
         Value for the ``copyright`` meta tag.
 
+    ``seo_robots``
+        Content for ``robots``, ``googlebot``, and ``bingbot`` meta tags.
+        Defaults to ``"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"``.
+
+    ``seo_language``
+        Value for the ``language`` meta tag, e.g. ``"Spanish"``.
+
+    ``seo_geo_region``
+        ISO region code for the ``geo.region`` meta tag, e.g. ``"CL"``.
+
+    ``seo_geo_country``
+        Country name for the ``geo.country`` meta tag, e.g. ``"Chile"``.
+
+    ``seo_geo_placename``
+        City or place name for the ``geo.placename`` meta tag.
+
     ``seo_og_site_name``
         ``og:site_name`` value shown when pages are shared on social networks.
 
@@ -649,6 +665,15 @@ class SiteSettings(db.Model):
     ``seo_bing_verification``
         Content value for the ``msvalidate.01`` meta tag
         (Bing Webmaster Tools).  Tag is omitted when empty.
+
+    ``seo_app_title``
+        Short name for ``apple-mobile-web-app-title`` (shown under the icon on iOS).
+
+    ``seo_theme_color``
+        Hex colour for the ``theme-color`` meta tag (mobile browser chrome).
+
+    ``seo_tile_color``
+        Hex colour for ``msapplication-TileColor`` and ``msapplication-navbutton-color``.
     """
 
     __tablename__ = "site_settings"
