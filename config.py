@@ -172,25 +172,6 @@ class Config:
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 
-    # ---------------------------------------------------------------------------
-    # Analytics / tracking
-    # ---------------------------------------------------------------------------
-    # Umami: website ID shown in the Umami dashboard (e.g. "abc123-...").
-    # Leave empty to disable the web tracker entirely.
-    UMAMI_WEBSITE_ID: str = os.environ.get("UMAMI_WEBSITE_ID", "")
-
-    # Umami email pixel ID — the token that appears after /p/ in the pixel URL.
-    # Leave empty to omit the 1×1 tracking pixel from outgoing emails.
-    UMAMI_EMAIL_PIXEL_ID: str = os.environ.get("UMAMI_EMAIL_PIXEL_ID", "")
-
-    # Google Tag Manager container ID (e.g. "GTM-XXXXXXX").
-    # Leave empty to disable GTM.
-    GTM_CONTAINER_ID: str = os.environ.get("GTM_CONTAINER_ID", "")
-
-    # Google Analytics 4 measurement ID (e.g. "G-XXXXXXXXXX").
-    # Leave empty to disable GA4.  Not needed when GTM handles GA.
-    GA_MEASUREMENT_ID: str = os.environ.get("GA_MEASUREMENT_ID", "")
-
     LEGACY_PORTAL_DB_URL: str = ""
     LEGACY_AUDIOTEX_DB_URL: str = ""
     LEGACY_FIRENZE_DB_URL: str = ""

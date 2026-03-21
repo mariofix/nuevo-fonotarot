@@ -585,6 +585,25 @@ class SiteSettings(db.Model):
         resumes.  Defaults to ``8`` (8 am).
 
         Dark window example: start=20, end=8 → dark from 20:00 to 07:59.
+
+    Analytics keys  (module ``"analytics"``)
+    -----------------------------------------
+    ``umami_website_id``
+        Umami website ID shown in the Umami dashboard (e.g. ``"abc123-..."``).
+        Leave empty or absent to disable the Umami web tracker.
+
+    ``umami_email_pixel_id``
+        Token that appears after ``/p/`` in the Umami email pixel URL.
+        Leave empty or absent to omit the 1×1 tracking pixel from emails.
+
+    ``gtm_container_id``
+        Google Tag Manager container ID (e.g. ``"GTM-XXXXXXX"``).
+        Leave empty or absent to disable GTM.
+
+    ``ga_measurement_id``
+        Google Analytics 4 measurement ID (e.g. ``"G-XXXXXXXXXX"``).
+        Not required when GTM already injects GA4.
+        Leave empty or absent to disable direct GA4 loading.
     """
 
     __tablename__ = "site_settings"

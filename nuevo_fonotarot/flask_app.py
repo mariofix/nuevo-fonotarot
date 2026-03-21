@@ -134,13 +134,27 @@ def _init_extensions(app: Flask) -> None:
 
     @app.context_processor
     def inject_analytics_config() -> dict:
-        """Expose analytics keys to all templates as lowercase Jinja globals."""
-        return {
-            "umami_website_id": app.config.get("UMAMI_WEBSITE_ID", ""),
-            "umami_email_pixel_id": app.config.get("UMAMI_EMAIL_PIXEL_ID", ""),
-            "gtm_container_id": app.config.get("GTM_CONTAINER_ID", ""),
-            "ga_measurement_id": app.config.get("GA_MEASUREMENT_ID", ""),
-        }
+        """Expose analytics keys to all templates as lowercase Jinja globals.
+
+        Values are read from SiteSettings at request time so they can be
+        changed in the admin panel without restarting the server.
+        """
+        try:
+            from .models import SiteSettings
+
+            return {
+                "umami_website_id": SiteSettings.get("umami_website_id", "") or "",
+                "umami_email_pixel_id": SiteSettings.get("umami_email_pixel_id", "") or "",
+                "gtm_container_id": SiteSettings.get("gtm_container_id", "") or "",
+                "ga_measurement_id": SiteSettings.get("ga_measurement_id", "") or "",
+            }
+        except Exception:
+            return {
+                "umami_website_id": "",
+                "umami_email_pixel_id": "",
+                "gtm_container_id": "",
+                "ga_measurement_id": "",
+            }
 
     @app.context_processor
     def inject_current_theme() -> dict:
