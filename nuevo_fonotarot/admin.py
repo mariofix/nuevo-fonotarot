@@ -299,6 +299,36 @@ class SiteSettingsAdminView(SecureModelView):
     column_editable_list = ("value",)
 
 
+class AnalyticsSettingsAdminView(SecureModelView):
+    """Admin view for analytics/tracking SiteSettings (module='analytics').
+
+    Recognised keys
+    ---------------
+    umami_website_id      — Umami web tracker website ID
+    umami_email_pixel_id  — Umami email open-tracking pixel token
+    gtm_container_id      — Google Tag Manager container ID (e.g. GTM-XXXXXXX)
+    ga_measurement_id     — Google Analytics 4 measurement ID (e.g. G-XXXXXXXXXX)
+    meta_pixel_id         — Meta (Facebook) Pixel ID
+    segment_write_key     — Twilio Segment source write key
+    """
+
+    # Only show analytics rows
+    def get_query(self):
+        return super().get_query().filter(self.model.module == "analytics")
+
+    def get_count_query(self):
+        return super().get_count_query().filter(self.model.module == "analytics")
+
+    column_list = ("key", "value", "description")
+    column_searchable_list = ("key",)
+    column_editable_list = ("value",)
+    # Hide module — always set to "analytics"
+    form_excluded_columns = ("module",)
+
+    def on_model_change(self, form, model, is_created):
+        model.module = "analytics"
+
+
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -428,6 +458,17 @@ def init_admin(app, admin_ext):
             category=_l("Sitio"),
             menu_icon_type="tabler",
             menu_icon_value="settings",
+        )
+    )
+    admin_ext.add_view(
+        AnalyticsSettingsAdminView(
+            SiteSettings,
+            db.session,
+            name=_l("Analytics"),
+            endpoint="analytics_settings",
+            category=_l("Sitio"),
+            menu_icon_type="tabler",
+            menu_icon_value="chart-dots",
         )
     )
     admin_ext.add_view(
