@@ -1,0 +1,195 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+  {# ── Top nav ─────────────────────────────────────────────────────────── #}
+  <div class="d-flex align-items-center mb-4 gap-2 flex-wrap">
+    <a href="{{ return_url }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Posts') }}
+    </a>
+    {% if admin_view.can_edit %}
+    <a href="{{ get_url('.edit_view', id=model.id, url=return_url) }}"
+       class="btn btn-sm btn-primary ms-auto">
+      <i class="ti ti-pencil me-1"></i>{{ _gettext('Edit') }}
+    </a>
+    {% endif %}
+    {% if admin_view.can_delete %}
+    <form method="POST" action="{{ get_url('.delete_view') }}" style="display:inline;" id="delete-form">
+      <input type="hidden" name="id" value="{{ model.id }}" />
+      <input type="hidden" name="url" value="{{ return_url }}" />
+      {% if csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {% endif %}
+      <button type="submit" class="btn btn-sm btn-ghost-danger"
+              onclick="return confirm('{{ _gettext('Delete this post?') }}')">
+        <i class="ti ti-trash me-1"></i>{{ _gettext('Delete') }}
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    {# ── Left: post preview ───────────────────────────────────────────── #}
+    <div class="col-xl-8 col-12">
+
+      {# Title + status #}
+      <div class="mb-1 d-flex align-items-center gap-2">
+        {% if model.published %}
+        <span class="badge bg-success-lt">
+          <i class="ti ti-circle-check me-1"></i>{{ _gettext('Published') }}
+        </span>
+        {% else %}
+        <span class="badge bg-secondary-lt">
+          <i class="ti ti-pencil me-1"></i>{{ _gettext('Draft') }}
+        </span>
+        {% endif %}
+      </div>
+
+      <h1 class="mb-2" style="font-size:2rem; font-weight:700; line-height:1.25;">
+        {{ model.title }}
+      </h1>
+
+      <div class="text-muted small mb-4" style="font-family:monospace;">
+        /blog/<strong>{{ model.slug }}</strong>
+      </div>
+
+      {% if model.excerpt %}
+      <blockquote class="blockquote mb-4"
+                  style="border-left: 3px solid var(--tblr-primary); padding: 0.75rem 1.25rem;
+                         background: var(--tblr-bg-surface-secondary); border-radius: 0 var(--tblr-border-radius) var(--tblr-border-radius) 0;">
+        <p class="mb-0 fst-italic text-muted">{{ model.excerpt }}</p>
+      </blockquote>
+      {% endif %}
+
+      {# Content preview inside a card #}
+      <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <span class="card-title mb-0">{{ _gettext('Content') }}</span>
+          <span class="text-muted small" id="word-count-label"></span>
+        </div>
+        <div class="card-body" id="content-preview"
+             style="max-height: 540px; overflow-y: auto; font-size: 0.9375rem; line-height: 1.7;">
+          {% if model.content %}
+            {{ model.content | safe }}
+          {% else %}
+            <p class="text-muted fst-italic">{{ _gettext('No content yet.') }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    {# ── Right: metadata ──────────────────────────────────────────────── #}
+    <div class="col-xl-4 col-12">
+      <div style="position: sticky; top: 1.5rem;">
+
+        {# Dates card #}
+        <div class="card mb-3">
+          <div class="card-header">
+            <span class="card-title mb-0">{{ _gettext('Timeline') }}</span>
+          </div>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <span class="avatar avatar-sm bg-blue-lt rounded">
+                    <i class="ti ti-calendar-plus"></i>
+                  </span>
+                </div>
+                <div class="col">
+                  <div class="text-truncate small text-muted">{{ _gettext('Created') }}</div>
+                  <div class="small fw-medium">{{ model.created_at.strftime('%d %b %Y, %H:%M') }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="list-group-item">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <span class="avatar avatar-sm bg-azure-lt rounded">
+                    <i class="ti ti-edit"></i>
+                  </span>
+                </div>
+                <div class="col">
+                  <div class="text-truncate small text-muted">{{ _gettext('Last modified') }}</div>
+                  <div class="small fw-medium">{{ model.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+                </div>
+              </div>
+            </div>
+            {% if model.published_at %}
+            <div class="list-group-item">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <span class="avatar avatar-sm bg-green-lt rounded">
+                    <i class="ti ti-send"></i>
+                  </span>
+                </div>
+                <div class="col">
+                  <div class="text-truncate small text-muted">{{ _gettext('Published') }}</div>
+                  <div class="small fw-medium">{{ model.published_at.strftime('%d %b %Y, %H:%M') }}</div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {# Stats card #}
+        <div class="card mb-3">
+          <div class="card-header">
+            <span class="card-title mb-0">{{ _gettext('Stats') }}</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="row g-0 text-center">
+              <div class="col border-end py-3">
+                <div class="h3 mb-0" id="stat-words">—</div>
+                <div class="text-muted small">{{ _gettext('words') }}</div>
+              </div>
+              <div class="col py-3">
+                <div class="h3 mb-0" id="stat-read">—</div>
+                <div class="text-muted small">{{ _gettext('min read') }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# Post ID + slug card #}
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title mb-0">{{ _gettext('Identifiers') }}</span>
+          </div>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <div class="small text-muted mb-1">ID</div>
+              <code class="small">{{ model.id }}</code>
+            </div>
+            <div class="list-group-item">
+              <div class="small text-muted mb-1">{{ _gettext('Slug') }}</div>
+              <code class="small">{{ model.slug }}</code>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  {# Store content for word count JS #}
+  <div id="content-raw" style="display:none;">{{ model.content | striptags }}</div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script>
+    (function () {
+      var raw = (document.getElementById('content-raw').textContent || '').trim();
+      var words = raw ? raw.split(/\s+/).filter(Boolean).length : 0;
+      var readMin = Math.max(1, Math.round(words / 200));
+
+      document.getElementById('stat-words').textContent = words.toLocaleString();
+      document.getElementById('stat-read').textContent = readMin;
+      document.getElementById('word-count-label').textContent =
+        words.toLocaleString() + ' {{ _gettext("words") }}';
+    })();
+  </script>
+{% endblock %}

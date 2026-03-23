@@ -248,6 +248,7 @@ class BlogPostAdminView(SecureModelView):
     form_excluded_columns = ("created_at", "updated_at")
     create_template = "admin/blog/create.html"
     edit_template = "admin/blog/edit.html"
+    details_template = "admin/blog/details.html"
 
     def on_model_change(self, form, model, is_created):
         from .models import BlogPost
