@@ -4,7 +4,7 @@
 {% block head %}
   {{ super() }}
   {{ lib.form_css() }}
-  <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/grapesjs/css/grapes.min.css') }}">
   <style>
     #gjs-editor-wrapper { height: 550px; border: 1px solid #dee2e6; border-radius: 4px; }
     #gjs { height: 100%; }
@@ -69,9 +69,9 @@
 {% block tail %}
   {{ super() }}
   {{ lib.form_js() }}
-  <script src="https://unpkg.com/grapesjs"></script>
-  <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
-  <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-preset-webpage.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-basic.min.js') }}"></script>
   <script>
     const contentField = document.getElementById('content-field');
     const editor = grapesjs.init({
@@ -80,8 +80,8 @@
       width: 'auto',
       storageManager: false,
       canvas: {
-        styles: ['https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css'],
-        scripts: ['https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js'],
+        styles: ['{{ url_for("static", filename="vendor/tabler/css/tabler.min.css") }}'],
+        scripts: ['{{ url_for("static", filename="vendor/tabler/js/tabler.min.js") }}'],
       },
       plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
     });

@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # ── Python dependencies (pyproject.toml) ──────────────────────────────────
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+
+  # ── Frontend vendor libraries (package.json) ──────────────────────────────
+  # After merging a Dependabot PR for npm deps, run `npm install` then
+  # `npm run copy-vendor` to refresh the vendor files in static/.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - frontend
+    groups:
+      tabler:
+        patterns:
+          - "@tabler/*"
+      fontsource:
+        patterns:
+          - "@fontsource/*"
+      grapesjs:
+        patterns:
+          - "grapesjs*"
+      highlightjs:
+        patterns:
+          - "@highlightjs/*"

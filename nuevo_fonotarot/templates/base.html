@@ -73,12 +73,12 @@
     {% block extra_head %}{% endblock %}
 
     <!-- ── Base styles ───────────────────────────────────────────── -->
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-flags.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/tabler/css/tabler-flags.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/source-sans-3.css') }}" rel="stylesheet" />
     <style>
 
       /* ─── Light theme (default) ────────────────────── */
@@ -504,7 +504,7 @@
     </footer>
     {% endblock %}
 
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
     <script>
       // ── Theme toggle ──────────────────────────────────────────────
       (function () {
