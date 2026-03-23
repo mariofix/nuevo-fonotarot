@@ -225,7 +225,7 @@ class StaticPageAdminView(SecureModelView):
 class BlogPostAdminView(SecureModelView):
     """Admin view for the BlogPost model.
 
-    Uses a standard textarea for HTML content (no visual editor).
+    Uses HugeRTE for visual HTML editing.
     The slug is automatically generated from the title when not provided.
     """
 
@@ -233,6 +233,8 @@ class BlogPostAdminView(SecureModelView):
     column_searchable_list = ("slug", "title")
     column_filters = ("published",)
     form_excluded_columns = ("created_at", "updated_at")
+    create_template = "admin/blog/create.html"
+    edit_template = "admin/blog/edit.html"
 
     def on_model_change(self, form, model, is_created):
         from .models import BlogPost

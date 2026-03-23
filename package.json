@@ -13,6 +13,7 @@
     "@tabler/core": "^1.4.0",
     "@tabler/icons-webfont": "^3.31.0",
     "grapesjs": "^0.22.14",
+    "hugerte": "^1.0.10",
     "grapesjs-blocks-basic": "^1.0.2",
     "grapesjs-preset-webpage": "^1.0.3",
     "@highlightjs/cdn-assets": "^11.9.0"

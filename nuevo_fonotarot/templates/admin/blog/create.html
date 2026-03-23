@@ -1,0 +1,108 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <style>
+    .hugerte-wrapper { border: 1px solid #dee2e6; border-radius: 4px; }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a href="{{ return_url }}" class="nav-link">{{ _gettext('List') }}</a>
+    </li>
+    <li class="nav-item">
+      <a href="javascript:void(0)" class="nav-link active">{{ _gettext('Create') }}</a>
+    </li>
+  </ul>
+
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data">
+    <fieldset>
+      {% if form.hidden_tag is defined %}{{ form.hidden_tag() }}{% endif %}
+
+      <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+        {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.slug.label(class="form-label") }}
+        {{ form.slug(class="form-control") }}
+        <div class="form-text">{{ _gettext('Leave blank to auto-generate from title.') }}</div>
+        {% for error in form.slug.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.excerpt.label(class="form-label") }}
+        {{ form.excerpt(class="form-control", rows=2) }}
+        {% for error in form.excerpt.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">{{ form.content.label.text }}</label>
+        {# Hidden textarea — HugeRTE syncs its HTML here before submit #}
+        {{ form.content(id="content-field", style="display:none;") }}
+        <div class="hugerte-wrapper">
+          <textarea id="hugerte-editor"></textarea>
+        </div>
+        {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3 form-check">
+        {{ form.published(class="form-check-input") }}
+        {{ form.published.label(class="form-check-label") }}
+      </div>
+
+      <hr>
+      <div class="mb-3 submit-row">
+        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}">
+        <a href="{{ return_url }}" class="btn btn-danger">{{ _gettext('Cancel') }}</a>
+      </div>
+    </fieldset>
+  </form>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+  <script src="{{ url_for('static', filename='vendor/hugerte/hugerte.min.js') }}"></script>
+  <script>
+    (function () {
+      const contentField = document.getElementById('content-field');
+      const theme = document.documentElement.getAttribute('data-bs-theme');
+      const opts = {
+        selector: '#hugerte-editor',
+        height: 450,
+        menubar: false,
+        statusbar: false,
+        base_url: '{{ url_for("static", filename="vendor/hugerte") }}',
+        plugins: [
+          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+          'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',
+          'fullscreen', 'insertdatetime', 'media', 'table', 'wordcount',
+        ],
+        toolbar:
+          'undo redo | formatselect | bold italic backcolor | ' +
+          'alignleft aligncenter alignright alignjustify | ' +
+          'bullist numlist outdent indent | removeformat | code fullscreen',
+        content_style:
+          'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }',
+      };
+      if (theme === 'dark') {
+        opts.skin = 'oxide-dark';
+        opts.content_css = 'dark';
+      }
+      hugeRTE.init(opts).then(function (editors) {
+        /* sync editor content into the hidden field on submit */
+        document.querySelector('.admin-form').addEventListener('submit', function () {
+          const ed = editors[0];
+          if (ed) contentField.value = ed.getContent();
+        });
+      });
+    })();
+  </script>
+{% endblock %}
