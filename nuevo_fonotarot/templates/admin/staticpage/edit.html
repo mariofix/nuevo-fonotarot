@@ -442,6 +442,18 @@
         },
       });
 
+      /* ── Route GrapesJS image picker through our media browser ───────── */
+      editor.Commands.add('open-assets', {
+        run: function (ed, sender, opts) {
+          var target = opts && opts.target;
+          openMediaBrowser(function (url) {
+            if (target && typeof target.set === 'function') {
+              target.set('src', url);
+            }
+          });
+        },
+      });
+
       var existingHtml = contentField.value.trim();
       if (existingHtml) {
         editor.setComponents(existingHtml);
@@ -453,8 +465,9 @@
     })();
   </script>
   <script>
-    /* ── Featured Image Picker ──────────────────────────────────────────── */
+    /* ── Media Browser (shared by featured image picker + GrapesJS) ────── */
     var _selectedImageUrl = null;
+    var _mediaBrowserCallback = null;
 
     function _buildMediaGrid(files, grid, loading, confirmBtn, selName) {
       loading.style.display = 'none';
@@ -490,7 +503,8 @@
       grid.style.display = '';
     }
 
-    function openMediaBrowser() {
+    function openMediaBrowser(onConfirm) {
+      _mediaBrowserCallback = onConfirm || null;
       var grid       = document.getElementById('media-browser-grid');
       var loading    = document.getElementById('media-browser-loading');
       var confirmBtn = document.getElementById('media-browser-confirm');
@@ -511,7 +525,14 @@
     }
 
     function confirmFeaturedImage() {
-      if (_selectedImageUrl) selectFeaturedImage(_selectedImageUrl);
+      if (_selectedImageUrl) {
+        if (_mediaBrowserCallback) {
+          _mediaBrowserCallback(_selectedImageUrl);
+        } else {
+          selectFeaturedImage(_selectedImageUrl);
+        }
+      }
+      _mediaBrowserCallback = null;
       document.querySelector('#mediaBrowserModal [data-bs-dismiss="modal"]').click();
     }
 
