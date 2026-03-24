@@ -141,6 +141,7 @@ class BlogPost(db.Model):
         String(255), unique=True, nullable=False, index=True
     )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
+    featured_image_url: Mapped[str | None] = mapped_column(String(500))
     excerpt: Mapped[str | None] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -157,6 +158,13 @@ class BlogPost(db.Model):
 
     def __repr__(self) -> str:
         return f"<BlogPost {self.slug}>"
+
+    @property
+    def reading_time(self) -> int:
+        """Estimated reading time in minutes (200 wpm)."""
+        import re
+        words = len(re.findall(r"\w+", self.content or ""))
+        return max(1, round(words / 200))
 
     @staticmethod
     def make_slug(title: str) -> str:
