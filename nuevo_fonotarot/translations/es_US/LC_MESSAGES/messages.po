@@ -1,0 +1,594 @@
+# Spanish (United States) translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-03-24 20:28-0300\n"
+"PO-Revision-Date: 2026-03-24 20:27-0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es_US\n"
+"Language-Team: es_US <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: nuevo_fonotarot/admin.py:735
+msgid "Users"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:736 nuevo_fonotarot/admin.py:746
+msgid "Auth"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:745
+msgid "Roles"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:755
+msgid "Pages"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:756 nuevo_fonotarot/admin.py:766
+#: nuevo_fonotarot/admin.py:874 nuevo_fonotarot/admin.py:885
+msgid "Content"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:765
+msgid "Blog Posts"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:775
+msgid "Packs de Minutos"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:776 nuevo_fonotarot/admin.py:786
+#: nuevo_fonotarot/admin.py:796 nuevo_fonotarot/admin.py:806
+#: nuevo_fonotarot/admin.py:816 nuevo_fonotarot/templates/base.html:487
+#: nuevo_fonotarot/templates/tienda/index.html:127
+msgid "Tienda"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:785
+msgid "Suscripciones"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:795
+msgid "Categorías"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:805
+msgid "Productos"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:815
+msgid "Órdenes"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:825
+msgid "Configuración"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:826 nuevo_fonotarot/admin.py:835
+#: nuevo_fonotarot/admin.py:844
+msgid "Sitio"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:833
+msgid "SEO"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:842
+msgid "Analytics"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:851
+msgid "Reporte Mensual"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:853 nuevo_fonotarot/admin.py:862
+msgid "Reportes"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:860
+msgid "Reporte Agentes"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:873
+msgid "Media Library"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:884
+msgid "Static Files"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:12
+#: nuevo_fonotarot/templates/base.html:35
+msgid "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:13
+#: nuevo_fonotarot/templates/base.html:36
+msgid ""
+"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7. Amor, trabajo, salud y más."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:14
+msgid ""
+"tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, "
+"consulta tarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:45
+msgid "Fonotarot - Tarot por Teléfono con Personas Reales"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:46
+msgid ""
+"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:419
+#: nuevo_fonotarot/templates/base.html:451
+#: nuevo_fonotarot/templates/base.html:483
+msgid "Tarotistas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:420
+#: nuevo_fonotarot/templates/base.html:452
+msgid "Planes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:421
+#: nuevo_fonotarot/templates/base.html:453
+#: nuevo_fonotarot/templates/base.html:486
+msgid "Blog"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:422
+#: nuevo_fonotarot/templates/base.html:454
+msgid "Ayuda"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:425
+#: nuevo_fonotarot/templates/base.html:457
+#: nuevo_fonotarot/templates/home.html:430
+#: nuevo_fonotarot/templates/home.html:692
+msgid "Carga Minutos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:428
+msgid "Cambiar tema"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:435
+msgid "Abrir menú"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:447
+msgid "Cerrar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:477
+msgid "Servicio de orientación espiritual telefónica · Chile · Desde 2010"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:478
+#: nuevo_fonotarot/templates/home.html:426
+#: nuevo_fonotarot/templates/home.html:511
+#: nuevo_fonotarot/templates/index.html:1744
+#: nuevo_fonotarot/templates/index.html:1787
+#: nuevo_fonotarot/templates/index.html:1804
+#: nuevo_fonotarot/templates/index.html:1831
+#: nuevo_fonotarot/templates/index.html:1857
+#: nuevo_fonotarot/templates/index.html:1913
+#: nuevo_fonotarot/templates/index.html:2138
+#: nuevo_fonotarot/templates/index.html:2276
+#: nuevo_fonotarot/templates/index.html:2404
+msgid "56222301515"
+msgstr "17862091999"
+
+#: nuevo_fonotarot/templates/base.html:478
+#: nuevo_fonotarot/templates/home.html:512
+#: nuevo_fonotarot/templates/index.html:1745
+#: nuevo_fonotarot/templates/index.html:1832
+#: nuevo_fonotarot/templates/index.html:1914
+#: nuevo_fonotarot/templates/index.html:2016
+#: nuevo_fonotarot/templates/index.html:2139
+#: nuevo_fonotarot/templates/index.html:2205
+#: nuevo_fonotarot/templates/index.html:2253
+#: nuevo_fonotarot/templates/index.html:2317
+msgid "+56 2 2230 1515"
+msgstr "+1 786 2091999"
+
+#: nuevo_fonotarot/templates/base.html:481
+msgid "Navegación"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:484
+msgid "Planes y Precios"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:485
+msgid "Preguntas Frecuentes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:491
+msgid "Áreas de consulta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:493
+msgid "Amor y Relaciones"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:494
+msgid "Trabajo y Finanzas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:495
+msgid "Salud y Bienestar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:496
+msgid "Familia"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:497
+msgid "Crecimiento Personal"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:502
+msgid "Todos los derechos reservados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:417
+msgid "El universo marca un camino, ¡descúbrelo!"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:419
+msgid "Las respuestas que buscas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:420
+msgid "a una llamada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:423
+msgid ""
+"Conecta en segundos con nuestras especialistas en tarot. Consulta sobre "
+"amor, trabajo, salud y caminos de vida."
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:427
+#: nuevo_fonotarot/templates/home.html:512
+#: nuevo_fonotarot/templates/home.html:689
+msgid "Llama Ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:452
+msgid "Consultas realizadas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:456
+msgid "Clientes satisfechos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:460
+msgid "Especialistas activas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:464
+msgid "Siempre disponible"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:494
+msgid "Nuestro Equipo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:495
+msgid "Nuestras Tarotistas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:497
+msgid "Especialistas con años de experiencia preparadas para orientarte"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:523
+msgid "Tarifas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:524
+msgid "Elige tu Plan"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:526
+msgid "Carga los minutos que necesitas y consulta cuando quieras"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:530
+#: nuevo_fonotarot/templates/home.html:593
+msgid "Anterior"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:538
+msgid "Más Popular"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:541
+msgid "/ sesión"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:546
+msgid "Compra Ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:554
+msgid "Agregar al Carro"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:562
+#: nuevo_fonotarot/templates/home.html:597
+msgid "Siguiente"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:574
+msgid "Testimonios"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:575
+msgid "Lo que dicen nuestras consultantes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:615
+msgid "Preguntas frecuentes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:616
+msgid "¿Tienes dudas?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:652
+msgid "Cómo Funciona"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:653
+msgid "Comenzar es muy fácil"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:660
+msgid "Elige tu plan"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:661
+msgid ""
+"Selecciona la cantidad de minutos que mejor se adapte a tu consulta y "
+"carga tu saldo de forma rápida y segura."
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:667
+msgid "Elige tu especialista"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:668
+msgid ""
+"Revisa quiénes están disponibles en este momento y elige la especialista "
+"con quien sientas más afinidad."
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:674
+msgid "Llama y consulta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:675
+msgid ""
+"Marca el número y conéctate. Tu consulta es privada, personalizada y sin "
+"compromisos adicionales."
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:685
+msgid "¿Lista/o para dar el primer paso?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/home.html:686
+msgid "Nuestras especialistas están esperando tu llamada ahora mismo."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:3
+#: nuevo_fonotarot/templates/account/settings.html:8
+msgid "Mi cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:12
+msgid "Debes iniciar sesión para ver la configuración de tu cuenta."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:13
+msgid "Iniciar sesión"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:17
+msgid "Información de la cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:19
+msgid "Email"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:21
+msgid "Usuario"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:27
+msgid "Seguridad"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:30
+msgid "Cambiar contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:36
+msgid "Perfil de envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:39
+msgid "Dirección, RUT y datos de contacto para pedidos físicos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:42
+msgid "Editar perfil de envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/blog/index.html:230
+#: nuevo_fonotarot/templates/old-experiments/blog-a.html:222
+#: nuevo_fonotarot/templates/old-experiments/blog-b.html:167
+msgid "Artículo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/blog/index.html:254
+#: nuevo_fonotarot/templates/old-experiments/blog-a.html:246
+#: nuevo_fonotarot/templates/old-experiments/blog-b.html:186
+#: nuevo_fonotarot/templates/old-experiments/blog-c.html:244
+msgid "Aún no hay publicaciones"
+msgstr ""
+
+#: nuevo_fonotarot/templates/blog/index.html:255
+msgid "¡Vuelve pronto!"
+msgstr ""
+
+#: nuevo_fonotarot/templates/macros/lang_switcher.html:24
+msgid "Seleccionar idioma"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:3
+msgid "Tienda Fonotarot - Minutos, Suscripciones y Productos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:128
+msgid "Tienda Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:129
+msgid "Minutos prepagados, suscripciones y productos esotéricos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:131
+msgid "Envíos 100% anónimos — cajas sin marcas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:154
+msgid "Minutos de Tarot Prepagados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:155
+msgid "Elige tu Pack"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:157
+msgid "Los minutos nunca vencen. Úsalos cuando quieras."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:163
+msgid "Más popular"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:174
+msgid "Comprar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:182
+msgid "No hay packs disponibles por el momento."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:188
+msgid "Ver todos los packs"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:198
+msgid "Planes de Suscripción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:199
+msgid "Ahorra cada mes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:201
+msgid "Minutos renovados cada mes — ahorra y prioriza tu bienestar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:207
+msgid "Recomendado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:209
+msgid "mes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:212
+msgid "minutos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:212
+msgid "por mes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:228
+msgid "Suscribirme"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:236
+msgid "No hay planes disponibles por el momento."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:242
+msgid "Ver todos los planes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:253
+msgid "Productos Destacados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:254
+msgid "Nuestra Tienda Esotérica"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:256
+msgid "Mazos, velas, inciensos y más. Envíos anónimos a todo Chile."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:274
+msgid "Ver"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:283
+msgid "Ver todos los productos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:299
+msgid "Privacidad garantizada en cada envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:301
+msgid ""
+"Todos los productos físicos se envían en cajas sin marcas ni etiquetas "
+"que identifiquen el contenido. Puedes elegir entrega en un"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:302
+msgid "punto de retiro"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:303
+msgid "en vez de tu domicilio para mayor discreción."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/index.html:312
+msgid "Métodos de pago aceptados"
+msgstr ""
+
