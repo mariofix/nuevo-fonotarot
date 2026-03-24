@@ -36,3 +36,6 @@ updates:
       highlightjs:
         patterns:
           - "@highlightjs/*"
+      hugerte:
+        patterns:
+          - "hugerte"

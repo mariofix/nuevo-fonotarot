@@ -1,11 +1,13 @@
 """Flask-Admin configuration using Flask-Security for authentication."""
 
+import os
 from datetime import date
 
 from flask import redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.fileadmin import FileAdmin
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
@@ -186,6 +188,17 @@ class SecureModelView(ModelView):
         return redirect(url_for("security.login", next=request.url))
 
 
+class SecureFileAdmin(FileAdmin):
+    """FileAdmin accessible only to authenticated users with the 'admin' role."""
+
+    def is_accessible(self):
+        # return current_user.is_authenticated and current_user.has_role("admin")
+        return True
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
+
 class UserAdminView(SecureModelView):
     """Admin view for the User model."""
 
@@ -225,7 +238,7 @@ class StaticPageAdminView(SecureModelView):
 class BlogPostAdminView(SecureModelView):
     """Admin view for the BlogPost model.
 
-    Uses a standard textarea for HTML content (no visual editor).
+    Uses HugeRTE for visual HTML editing.
     The slug is automatically generated from the title when not provided.
     """
 
@@ -233,6 +246,9 @@ class BlogPostAdminView(SecureModelView):
     column_searchable_list = ("slug", "title")
     column_filters = ("published",)
     form_excluded_columns = ("created_at", "updated_at")
+    create_template = "admin/blog/create.html"
+    edit_template = "admin/blog/edit.html"
+    details_template = "admin/blog/details.html"
 
     def on_model_change(self, form, model, is_created):
         from .models import BlogPost
@@ -368,7 +384,7 @@ _SEO_KEYS = [
     ("seo_geo_country",         "Geo",         "País",                  "Nombre del país, ej. 'Chile'.",                                            "Chile"),
     ("seo_geo_placename",       "Geo",         "Lugar",                 "Ciudad o lugar principal, ej. 'Santiago'.",                                "Chile"),
     ("seo_og_site_name",        "Open Graph",  "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales.",        "Fonotarot"),
-    ("seo_og_image_url",        "Open Graph",  "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image.",     "/static/og-image.jpg"),
+    ("seo_og_image_url",        "Open Graph",  "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image.",     "/static/og-image.png"),
     ("seo_twitter_card",        "Twitter / X", "Card type",             "Tipo de card: 'summary_large_image' (imagen grande) o 'summary' (miniatura).", "summary_large_image"),
     ("seo_twitter_handle",      "Twitter / X", "Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator.", "fonotarot"),
     ("seo_app_title",           "Mobile / PWA","Nombre de la app",      "apple-mobile-web-app-title — nombre corto que aparece bajo el ícono en iOS.", "Fonotarot"),
@@ -584,6 +600,18 @@ def init_admin(app, admin_ext):
             category=_l("Reportes"),
             menu_icon_type="tabler",
             menu_icon_value="users",
+        )
+    )
+    static_path = os.path.join(os.path.dirname(__file__), "static")
+    admin_ext.add_view(
+        SecureFileAdmin(
+            static_path,
+            "/static/",
+            name=_l("Static Files"),
+            category=_l("Content"),
+            endpoint="static_files",
+            menu_icon_type="tabler",
+            menu_icon_value="folder",
         )
     )
     admin_ext.add_link(

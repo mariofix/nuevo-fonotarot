@@ -23,7 +23,11 @@
 
   <form method="POST" role="form" class="admin-form" enctype="multipart/form-data">
     <fieldset>
-      {% if form.hidden_tag is defined %}{{ form.hidden_tag() }}{% endif %}
+      {% if form.hidden_tag is defined %}
+        {{ form.hidden_tag() }}
+      {% elif csrf_token is defined and csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {% endif %}
 
       <div class="mb-3">
         {{ form.path.label(class="form-label") }}

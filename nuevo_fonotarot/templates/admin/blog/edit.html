@@ -1,0 +1,452 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <style>
+    /* ── Editorial layout ──────────────────────────────────────────────── */
+    .blog-editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      grid-template-rows: auto 1fr;
+      gap: 0 1.5rem;
+      min-height: calc(100vh - 180px);
+    }
+    .blog-editor-main  { grid-column: 1; grid-row: 1 / 3; min-width: 0; }
+    .blog-editor-aside { grid-column: 2; grid-row: 1 / 3; }
+
+    /* ── Title input ───────────────────────────────────────────────────── */
+    .post-title-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--tblr-body-color);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .post-title-input::placeholder { color: var(--tblr-muted); opacity: 0.5; }
+    .post-title-input:focus { border-bottom-color: var(--tblr-primary); }
+
+    /* ── Slug display ──────────────────────────────────────────────────── */
+    .post-slug-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+    }
+    .post-slug-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.125rem 0;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .post-slug-input:focus {
+      border-bottom-color: var(--tblr-primary);
+      color: var(--tblr-body-color);
+    }
+
+    /* ── HugeRTE wrapper ───────────────────────────────────────────────── */
+    .hugerte-wrapper { border: 1px solid var(--tblr-border-color); border-radius: var(--tblr-border-radius); }
+
+    /* ── Sticky sidebar ────────────────────────────────────────────────── */
+    .blog-sidebar-sticky { position: sticky; top: 1.5rem; }
+
+    /* ── Status toggle card ────────────────────────────────────────────── */
+    .status-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .status-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .status-card-body { padding: 1rem; }
+
+    /* ── Metadata card ─────────────────────────────────────────────────── */
+    .meta-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .meta-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .meta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      font-size: 0.8125rem;
+      border-bottom: 1px solid var(--tblr-border-color-light, var(--tblr-border-color));
+    }
+    .meta-item:last-child { border-bottom: none; }
+    .meta-item-icon { color: var(--tblr-muted); margin-top: 0.1rem; flex-shrink: 0; }
+    .meta-item-label { font-size: 0.6875rem; color: var(--tblr-muted); }
+    .meta-item-value { color: var(--tblr-body-color); }
+
+    /* ── Excerpt card ──────────────────────────────────────────────────── */
+    .excerpt-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .excerpt-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .excerpt-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      resize: vertical;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: var(--tblr-body-color);
+      outline: none;
+      min-height: 4rem;
+      padding: 0.875rem 1rem;
+    }
+    .excerpt-textarea::placeholder { color: var(--tblr-muted); opacity: 0.6; font-style: italic; }
+    .excerpt-counter {
+      padding: 0.375rem 1rem 0.5rem;
+      font-size: 0.6875rem;
+      color: var(--tblr-muted);
+      text-align: right;
+      border-top: 1px solid var(--tblr-border-color);
+    }
+
+    /* ── Save actions ──────────────────────────────────────────────────── */
+    .save-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+    }
+    .save-card-body { padding: 1rem; }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .blog-editor-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .blog-editor-main  { grid-column: 1; grid-row: 1; }
+      .blog-editor-aside { grid-column: 1; grid-row: 2; }
+      .blog-sidebar-sticky { position: static; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  {# ── Top nav ─────────────────────────────────────────────────────────── #}
+  <div class="d-flex align-items-center mb-3 gap-3">
+    <a href="{{ return_url }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Posts') }}
+    </a>
+    {%- if admin_view.can_create -%}
+    <a href="{{ get_url('.create_view', url=return_url) }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-plus me-1"></i>{{ _gettext('New Post') }}
+    </a>
+    {%- endif -%}
+    <span class="text-muted small ms-auto">
+      {{ _gettext('Editing') }}
+    </span>
+    {%- if admin_view.can_view_details and model -%}
+    <a href="{{ get_url('.details_view', id=model.id, url=return_url) }}"
+       class="btn btn-sm btn-ghost-secondary" title="{{ _gettext('View details') }}">
+      <i class="ti ti-info-circle"></i>
+    </a>
+    {%- endif -%}
+  </div>
+
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data" id="blog-form">
+    {% if form.hidden_tag is defined %}
+      {{ form.hidden_tag() }}
+    {% elif csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% endif %}
+
+    <div class="blog-editor-layout">
+
+      {# ── Main writing area ──────────────────────────────────────────── #}
+      <div class="blog-editor-main">
+
+        {# Title #}
+        {{ form.title(class="post-title-input", id="title-field",
+                      placeholder=_gettext('Post title…'),
+                      autocomplete="off") }}
+
+        {# Slug row #}
+        <div class="post-slug-row">
+          <span>/blog/</span>
+          {{ form.slug(class="post-slug-input", id="slug-field") }}
+        </div>
+        {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        {% for error in form.slug.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        {# Editor #}
+        <div class="mb-3">
+          {{ form.content(id="content-field", style="display:none;") }}
+          <div class="hugerte-wrapper">
+            <textarea id="hugerte-editor"></textarea>
+          </div>
+          {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      {# ── Sidebar ────────────────────────────────────────────────────── #}
+      <div class="blog-editor-aside">
+        <div class="blog-sidebar-sticky">
+
+          {# Status #}
+          <div class="status-card">
+            <div class="status-card-header">{{ _gettext('Status') }}</div>
+            <div class="status-card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge d-none" id="published-badge">
+                    <i class="ti ti-circle-check me-1"></i>{{ _gettext('Published') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="draft-badge">
+                    <i class="ti ti-pencil me-1"></i>{{ _gettext('Draft') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.published(class="form-check-input", role="switch", id="published-field") }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {# Timestamps #}
+          {% if model %}
+          <div class="meta-card">
+            <div class="meta-card-header">{{ _gettext('Info') }}</div>
+            {% if model.published_at %}
+            <div class="meta-item">
+              <i class="ti ti-calendar meta-item-icon"></i>
+              <div>
+                <div class="meta-item-label">{{ _gettext('Published') }}</div>
+                <div class="meta-item-value">{{ model.published_at.strftime('%d %b %Y') }}</div>
+              </div>
+            </div>
+            {% endif %}
+            <div class="meta-item">
+              <i class="ti ti-clock meta-item-icon"></i>
+              <div>
+                <div class="meta-item-label">{{ _gettext('Created') }}</div>
+                <div class="meta-item-value">{{ model.created_at.strftime('%d %b %Y') }}</div>
+              </div>
+            </div>
+            <div class="meta-item">
+              <i class="ti ti-edit meta-item-icon"></i>
+              <div>
+                <div class="meta-item-label">{{ _gettext('Last modified') }}</div>
+                <div class="meta-item-value">{{ model.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {# Excerpt #}
+          <div class="excerpt-card">
+            <div class="excerpt-card-header d-flex justify-content-between align-items-center">
+              <span>{{ _gettext('Excerpt') }}</span>
+            </div>
+            {{ form.excerpt(class="excerpt-textarea", id="excerpt-field",
+                            placeholder=_gettext('Brief description of the post…')) }}
+            <div class="excerpt-counter">
+              <span id="excerpt-count">0</span> / 160
+            </div>
+          </div>
+
+          {# Save actions #}
+          <div class="save-card">
+            <div class="save-card-body d-flex flex-column gap-2">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="ti ti-device-floppy me-1"></i>
+                <span id="save-btn-label">{{ _gettext('Save Draft') }}</span>
+              </button>
+              <a href="{{ return_url }}" class="btn btn-ghost-secondary w-100">
+                <i class="ti ti-x me-1"></i>{{ _gettext('Discard') }}
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </form>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+  <script src="{{ url_for('static', filename='vendor/hugerte/hugerte.min.js') }}"></script>
+  <script>
+    (function () {
+      var titleField     = document.getElementById('title-field');
+      var slugField      = document.getElementById('slug-field');
+      var contentField   = document.getElementById('content-field');
+      var excerptField   = document.getElementById('excerpt-field');
+      var excerptCount   = document.getElementById('excerpt-count');
+      var publishedField = document.getElementById('published-field');
+      var publishedBadge = document.getElementById('published-badge');
+      var draftBadge     = document.getElementById('draft-badge');
+      var saveBtnLabel   = document.getElementById('save-btn-label');
+      var initialContent = contentField.value || '';
+
+      /* ── Debounce helper ────────────────────────────────────────────── */
+      function debounce(fn, ms) {
+        var t; return function() { clearTimeout(t); t = setTimeout(fn.bind(this, arguments[0]), ms); };
+      }
+
+      /* ── Slug generation (only if slug hasn't been manually edited) ── */
+      var slugUserEdited = true; // editing: don't overwrite existing slug by default
+      function makeSlug(text) {
+        return text.toLowerCase()
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .substring(0, 200);
+      }
+      slugField.addEventListener('input', function () { slugUserEdited = true; });
+      titleField.addEventListener('input', function () {
+        if (!slugUserEdited) slugField.value = makeSlug(this.value);
+      });
+
+      /* ── Published badge + save label ──────────────────────────────── */
+      function syncPublished() {
+        if (publishedField.checked) {
+          publishedBadge.className = 'badge bg-success-lt';
+          publishedBadge.classList.remove('d-none');
+          draftBadge.classList.add('d-none');
+          saveBtnLabel.textContent = '{{ _gettext("Save Published") }}';
+        } else {
+          publishedBadge.classList.add('d-none');
+          draftBadge.classList.remove('d-none');
+          saveBtnLabel.textContent = '{{ _gettext("Save Draft") }}';
+        }
+      }
+      syncPublished();
+      publishedField.addEventListener('change', syncPublished);
+
+      /* ── Excerpt counter ────────────────────────────────────────────── */
+      function updateExcerptCount() {
+        excerptCount.textContent = excerptField.value.length;
+        excerptCount.style.color = excerptField.value.length > 160
+          ? 'var(--tblr-danger)' : '';
+      }
+      var excerptUserEdited = excerptField.value.trim() !== '';
+      excerptField.addEventListener('input', function () {
+        excerptUserEdited = true;
+        updateExcerptCount();
+      });
+      updateExcerptCount();
+
+      /* ── Auto-excerpt ───────────────────────────────────────────────── */
+      function updateExcerpt(ed) {
+        if (excerptUserEdited) return;
+        var text = ed.getContent({ format: 'text' }).replace(/\s+/g, ' ').trim();
+        if (text.length > 160) text = text.slice(0, 157) + '\u2026';
+        excerptField.value = text;
+        updateExcerptCount();
+      }
+
+      /* ── HugeRTE: build options for current theme ───────────────────── */
+      function contentStyle(isDark) {
+        return isDark
+          ? 'body{background:#182230;color:#c8d3e0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.6;padding:1rem}a{color:#4da6ff}'
+          : 'body{background:#fff;color:#1a2332;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.6;padding:1rem}a{color:#066fd1}';
+      }
+      function buildOpts(isDark) {
+        var o = {
+          selector: '#hugerte-editor',
+          height: 520,
+          menubar: false,
+          statusbar: false,
+          base_url: '{{ url_for("static", filename="vendor/hugerte") }}',
+          plugins: ['advlist','autolink','lists','link','image','charmap',
+            'preview','anchor','searchreplace','visualblocks','code',
+            'fullscreen','insertdatetime','media','table','wordcount'],
+          toolbar:
+            'undo redo | formatselect | bold italic backcolor | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | removeformat | ' +
+            'preview code fullscreen',
+          content_style: contentStyle(isDark),
+        };
+        if (isDark) { o.skin = 'oxide-dark'; o.content_css = 'dark'; }
+        return o;
+      }
+
+      /* ── HugeRTE: init / reinit ─────────────────────────────────────── */
+      var _ed = null;
+      function initEditor(savedContent) {
+        var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        hugeRTE.init(buildOpts(isDark)).then(function (editors) {
+          _ed = editors[0];
+          if (_ed && savedContent) _ed.setContent(savedContent);
+          _ed.on('keyup change', debounce(function () { updateExcerpt(_ed); }, 600));
+        });
+      }
+
+      /* ── Submit: flush editor to hidden field ───────────────────────── */
+      document.getElementById('blog-form').addEventListener('submit', function () {
+        if (_ed) { contentField.value = _ed.getContent(); updateExcerpt(_ed); }
+      });
+
+      /* ── Theme observer: reinit editor on dark/light toggle ─────────── */
+      new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          if (m.attributeName === 'data-bs-theme') {
+            var saved = _ed ? _ed.getContent() : contentField.value;
+            if (_ed) { hugeRTE.remove(_ed); _ed = null; }
+            setTimeout(function () { initEditor(saved); }, 50);
+          }
+        });
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
+      initEditor(initialContent);
+    })();
+  </script>
+{% endblock %}

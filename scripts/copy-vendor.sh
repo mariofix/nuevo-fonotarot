@@ -58,7 +58,18 @@ copy_font_files "$FONTS/montserrat.css"      "montserrat"
 copy_font_files "$FONTS/playfair-display.css" "playfair-display"
 copy_font_files "$FONTS/source-sans-3.css"   "source-sans-3"
 
-# ── 4. GrapeJS  →  nuevo_fonotarot/static/vendor/grapesjs/ ───────────────
+# ── 4. HugeRTE  →  nuevo_fonotarot/static/vendor/hugerte/ ────────────────
+HUGERTE="$ROOT/nuevo_fonotarot/static/vendor/hugerte"
+mkdir -p "$HUGERTE"
+cp_v "$NM/hugerte/hugerte.min.js" "$HUGERTE/hugerte.min.js"
+cp -r "$NM/hugerte/icons"   "$HUGERTE/icons"
+cp -r "$NM/hugerte/models"  "$HUGERTE/models"
+cp -r "$NM/hugerte/plugins" "$HUGERTE/plugins"
+cp -r "$NM/hugerte/skins"   "$HUGERTE/skins"
+cp -r "$NM/hugerte/themes"  "$HUGERTE/themes"
+echo "  hugerte → $HUGERTE (+ icons/ models/ plugins/ skins/ themes/)"
+
+# ── 5. GrapeJS  →  nuevo_fonotarot/static/vendor/grapesjs/ ───────────────
 GJS="$ROOT/nuevo_fonotarot/static/vendor/grapesjs"
 mkdir -p "$GJS/css" "$GJS/js"
 cp_v "$NM/grapesjs/dist/css/grapes.min.css"               "$GJS/css/grapes.min.css"
