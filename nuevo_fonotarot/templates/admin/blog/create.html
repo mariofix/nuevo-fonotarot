@@ -125,6 +125,80 @@
     }
     .excerpt-textarea::placeholder { color: var(--tblr-muted); opacity: 0.6; font-style: italic; }
 
+    /* ── Featured image card ───────────────────────────────────────────── */
+    .featured-image-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .featured-image-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .featured-image-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .featured-image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .featured-image-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      gap: 0.5rem;
+      color: var(--tblr-muted);
+      font-size: 0.8125rem;
+    }
+    .featured-image-empty i { font-size: 1.75rem; opacity: .4; }
+
+    /* ── Media browser modal ───────────────────────────────────────────── */
+    .media-browser-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: .75rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: .25rem;
+    }
+    .media-browser-item {
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      aspect-ratio: 1 / 1;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .media-browser-item:hover { border-color: var(--tblr-primary); transform: scale(1.02); }
+    .media-browser-item.selected { border-color: var(--tblr-primary); box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb),.2); }
+    .media-browser-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-browser-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--tblr-muted);
+      font-size: .875rem;
+    }
+
     /* ── Save actions ──────────────────────────────────────────────────── */
     .save-card {
       border: 1px solid var(--tblr-border-color);
@@ -225,6 +299,27 @@
             </div>
           </div>
 
+          {# Featured Image #}
+          <div class="featured-image-card" id="featured-image-card">
+            <div class="featured-image-card-header d-flex justify-content-between align-items-center">
+              <span>{{ _gettext('Featured Image') }}</span>
+              <button type="button" class="btn btn-sm btn-ghost-secondary" id="clear-image-btn" style="display:none!important;" onclick="clearFeaturedImage()">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+            {{ form.featured_image_url(id="featured-image-url", type="hidden") }}
+            <div id="featured-image-preview" class="featured-image-preview" style="display:none;">
+              <img id="featured-image-thumb" src="" alt="Featured image" />
+            </div>
+            <div id="featured-image-empty" class="featured-image-empty">
+              <i class="ti ti-photo"></i>
+              <span>{{ _gettext('No image selected') }}</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="openMediaBrowser()">
+              <i class="ti ti-photo-search me-1"></i>{{ _gettext('Browse Media') }}
+            </button>
+          </div>
+
           {# Excerpt #}
           <div class="excerpt-card">
             <div class="excerpt-card-header d-flex justify-content-between align-items-center">
@@ -258,6 +353,36 @@
 
     </div>
   </form>
+
+  {# ── Media Browser Modal ───────────────────────────────────────────────── #}
+  <div class="modal modal-blur fade" id="mediaBrowserModal" tabindex="-1" role="dialog" aria-labelledby="mediaBrowserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mediaBrowserLabel">
+            <i class="ti ti-photo me-2"></i>{{ _gettext('Media Library') }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _gettext('Close') }}"></button>
+        </div>
+        <div class="modal-body">
+          <div id="media-browser-loading" class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            {{ _gettext('Loading…') }}
+          </div>
+          <div class="media-browser-grid" id="media-browser-grid" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <span class="text-muted me-auto" id="media-browser-selected-name" style="font-size:.8125rem;"></span>
+          <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">
+            {{ _gettext('Cancel') }}
+          </button>
+          <button type="button" class="btn btn-primary" id="media-browser-confirm" disabled onclick="confirmFeaturedImage()">
+            <i class="ti ti-check me-1"></i>{{ _gettext('Select') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block tail %}
@@ -389,6 +514,95 @@
       }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
 
       initEditor('');
+    })();
+  </script>
+  <script>
+    /* ── Featured Image Picker ──────────────────────────────────────────── */
+    var _selectedImageUrl = null;
+    var _mediaBrowserModal = null;
+
+    function _buildMediaGrid(files, grid, loading, confirmBtn, selName) {
+      loading.style.display = 'none';
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      if (!files.length) {
+        var emptyDiv = document.createElement('div');
+        emptyDiv.className = 'media-browser-empty';
+        emptyDiv.textContent = '{{ _gettext("No images found. Upload images to the Media Library first.") }}';
+        grid.appendChild(emptyDiv);
+      } else {
+        files.forEach(function(f) {
+          var item = document.createElement('div');
+          item.className = 'media-browser-item';
+          item.dataset.url = f.url;
+          item.dataset.name = f.name;
+          var img = document.createElement('img');
+          img.src = f.url;
+          img.alt = f.name;
+          img.loading = 'lazy';
+          item.appendChild(img);
+          item.addEventListener('click', function() {
+            grid.querySelectorAll('.media-browser-item').forEach(function(el) {
+              el.classList.remove('selected');
+            });
+            item.classList.add('selected');
+            _selectedImageUrl = f.url;
+            selName.textContent = f.name;
+            confirmBtn.disabled = false;
+          });
+          grid.appendChild(item);
+        });
+      }
+      grid.style.display = '';
+    }
+
+    function openMediaBrowser() {
+      if (!_mediaBrowserModal) {
+        _mediaBrowserModal = new bootstrap.Modal(document.getElementById('mediaBrowserModal'));
+      }
+      var grid      = document.getElementById('media-browser-grid');
+      var loading   = document.getElementById('media-browser-loading');
+      var confirmBtn = document.getElementById('media-browser-confirm');
+      var selName   = document.getElementById('media-browser-selected-name');
+
+      grid.style.display   = 'none';
+      loading.style.display = '';
+      confirmBtn.disabled  = true;
+      selName.textContent  = '';
+      _selectedImageUrl    = null;
+
+      fetch('{{ url_for("media_browser.images") }}')
+        .then(function(r) { return r.json(); })
+        .then(function(files) { _buildMediaGrid(files, grid, loading, confirmBtn, selName); })
+        .catch(function() { loading.textContent = '{{ _gettext("Failed to load images.") }}'; });
+
+      _mediaBrowserModal.show();
+    }
+
+    function confirmFeaturedImage() {
+      if (_selectedImageUrl) selectFeaturedImage(_selectedImageUrl);
+      if (_mediaBrowserModal) _mediaBrowserModal.hide();
+    }
+
+    function selectFeaturedImage(url) {
+      document.getElementById('featured-image-url').value = url;
+      document.getElementById('featured-image-thumb').src = url;
+      document.getElementById('featured-image-preview').style.display = '';
+      document.getElementById('featured-image-empty').style.display   = 'none';
+      document.getElementById('clear-image-btn').style.removeProperty('display');
+    }
+
+    function clearFeaturedImage() {
+      document.getElementById('featured-image-url').value = '';
+      document.getElementById('featured-image-thumb').src = '';
+      document.getElementById('featured-image-preview').style.display = 'none';
+      document.getElementById('featured-image-empty').style.display   = '';
+      document.getElementById('clear-image-btn').style.setProperty('display', 'none', 'important');
+    }
+
+    /* init from existing value */
+    (function() {
+      var existing = document.getElementById('featured-image-url').value;
+      if (existing) selectFeaturedImage(existing);
     })();
   </script>
 {% endblock %}

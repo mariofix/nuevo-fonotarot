@@ -3,7 +3,7 @@
 import os
 from datetime import date
 
-from flask import redirect, request, url_for
+from flask import jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
@@ -199,6 +199,46 @@ class SecureFileAdmin(FileAdmin):
         return redirect(url_for("security.login", next=request.url))
 
 
+_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "svg", "avif"}
+
+
+class MediaLibraryAdmin(SecureFileAdmin):
+    """FileAdmin for the media-library folder — images only."""
+
+    allowed_extensions = _IMAGE_EXTENSIONS
+    list_template = "admin/media/list.html"
+
+    def is_file_allowed(self, filename):
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        return ext in _IMAGE_EXTENSIONS
+
+
+class MediaBrowserView(BaseView):
+    """Hidden JSON API that returns images from the media-library folder."""
+
+    def is_accessible(self):
+        return True
+
+    def is_visible(self):
+        return False
+
+    @expose("/images/")
+    def images(self):
+        media_path = os.path.join(os.path.dirname(__file__), "static", "media-library")
+        files = []
+        if os.path.isdir(media_path):
+            for name in sorted(os.listdir(media_path)):
+                if name.startswith("."):
+                    continue
+                ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+                if ext in _IMAGE_EXTENSIONS:
+                    files.append({
+                        "name": name,
+                        "url": url_for("static", filename=f"media-library/{name}"),
+                    })
+        return jsonify(files)
+
+
 class UserAdminView(SecureModelView):
     """Admin view for the User model."""
 
@@ -325,12 +365,37 @@ class SiteSettingsAdminView(JsonColumnsMixin, SecureModelView):
 
 
 _ANALYTICS_KEYS = [
-    ("umami_website_id",     "Umami",        "Website ID",    "El ID del sitio en el dashboard de Umami."),
-    ("umami_email_pixel_id", "Umami",        "Email Pixel ID","Token que aparece después de /p/ en la URL del pixel."),
-    ("gtm_container_id",     "Google",       "GTM Container", "ID del contenedor GTM, ej. GTM-XXXXXXX."),
-    ("ga_measurement_id",    "Google",       "GA4 Measurement ID", "ID de medición GA4, ej. G-XXXXXXXXXX."),
-    ("meta_pixel_id",        "Meta",         "Pixel ID",      "ID del Meta (Facebook) Pixel."),
-    ("segment_write_key",    "Segment",      "Write Key",     "Clave de escritura de la fuente en Twilio Segment."),
+    (
+        "umami_website_id",
+        "Umami",
+        "Website ID",
+        "El ID del sitio en el dashboard de Umami.",
+    ),
+    (
+        "umami_email_pixel_id",
+        "Umami",
+        "Email Pixel ID",
+        "Token que aparece después de /p/ en la URL del pixel.",
+    ),
+    (
+        "gtm_container_id",
+        "Google",
+        "GTM Container",
+        "ID del contenedor GTM, ej. GTM-XXXXXXX.",
+    ),
+    (
+        "ga_measurement_id",
+        "Google",
+        "GA4 Measurement ID",
+        "ID de medición GA4, ej. G-XXXXXXXXXX.",
+    ),
+    ("meta_pixel_id", "Meta", "Pixel ID", "ID del Meta (Facebook) Pixel."),
+    (
+        "segment_write_key",
+        "Segment",
+        "Write Key",
+        "Clave de escritura de la fuente en Twilio Segment.",
+    ),
 ]
 
 
@@ -381,26 +446,134 @@ class AnalyticsSettingsAdminView(BaseView):
 
 _SEO_KEYS = [
     # (key, section, label, hint, template_default)
-    ("seo_site_title",          "Sitio",       "Título del sitio",      "Título por defecto en la pestaña del navegador y resultados de búsqueda.",  "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"),
-    ("seo_site_description",    "Sitio",       "Descripción",           "Meta descripción por defecto (aprox. 155 caracteres).",                    "Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más."),
-    ("seo_site_keywords",       "Sitio",       "Keywords",              "Palabras clave separadas por coma (uso moderno limitado).",                 "tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot"),
-    ("seo_site_author",         "Sitio",       "Autor",                 "Valor del meta tag author.",                                               "Fonotarot"),
-    ("seo_copyright",           "Sitio",       "Copyright",             "Texto de copyright para el meta tag.",                                     "Fonotarot"),
-    ("seo_robots",              "Sitio",       "Robots",                "Directiva para todos los bots, ej. 'index, follow' o 'noindex, nofollow'.", "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"),
-    ("seo_language",            "Sitio",       "Idioma",                "Valor del meta tag language, ej. 'Spanish'.",                              "Spanish"),
-    ("seo_geo_region",          "Geo",         "Región",                "Código ISO de región, ej. 'CL', 'MX-CMX'.",                               "CL"),
-    ("seo_geo_country",         "Geo",         "País",                  "Nombre del país, ej. 'Chile'.",                                            "Chile"),
-    ("seo_geo_placename",       "Geo",         "Lugar",                 "Ciudad o lugar principal, ej. 'Santiago'.",                                "Chile"),
-    ("seo_og_site_name",        "Open Graph",  "Nombre del sitio",      "og:site_name — nombre del sitio en compartidos de redes sociales.",        "Fonotarot"),
-    ("seo_og_image_url",        "Open Graph",  "Imagen OG",             "URL absoluta de la imagen por defecto para og:image y twitter:image.",     "/static/og-image.png"),
-    ("seo_twitter_card",        "Twitter / X", "Card type",             "Tipo de card: 'summary_large_image' (imagen grande) o 'summary' (miniatura).", "summary_large_image"),
-    ("seo_twitter_handle",      "Twitter / X", "Handle",                "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator.", "fonotarot"),
-    ("seo_app_title",           "Mobile / PWA","Nombre de la app",      "apple-mobile-web-app-title — nombre corto que aparece bajo el ícono en iOS.", "Fonotarot"),
-    ("seo_theme_color_light",   "Mobile / PWA","Theme color (claro)",   "Color de la barra del navegador en modo claro.",                           "#faf7f3"),
-    ("seo_theme_color_dark",    "Mobile / PWA","Theme color (oscuro)",  "Color de la barra del navegador en modo oscuro.",                          "#1a1a2e"),
-    ("seo_tile_color",          "Mobile / PWA","Tile color",            "Color del tile de Windows (msapplication-TileColor y navbutton-color).",   "#6b3fa0"),
-    ("seo_google_verification", "Webmaster",   "Google Verification",   "Contenido del meta tag google-site-verification (Google Search Console).", ""),
-    ("seo_bing_verification",   "Webmaster",   "Bing Verification",     "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools).",             ""),
+    (
+        "seo_site_title",
+        "Sitio",
+        "Título del sitio",
+        "Título por defecto en la pestaña del navegador y resultados de búsqueda.",
+        "Fonotarot - Tarot por Teléfono con Personas Reales | Chile",
+    ),
+    (
+        "seo_site_description",
+        "Sitio",
+        "Descripción",
+        "Meta descripción por defecto (aprox. 155 caracteres).",
+        "Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.",
+    ),
+    (
+        "seo_site_keywords",
+        "Sitio",
+        "Keywords",
+        "Palabras clave separadas por coma (uso moderno limitado).",
+        "tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot",
+    ),
+    ("seo_site_author", "Sitio", "Autor", "Valor del meta tag author.", "Fonotarot"),
+    (
+        "seo_copyright",
+        "Sitio",
+        "Copyright",
+        "Texto de copyright para el meta tag.",
+        "Fonotarot",
+    ),
+    (
+        "seo_robots",
+        "Sitio",
+        "Robots",
+        "Directiva para todos los bots, ej. 'index, follow' o 'noindex, nofollow'.",
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+    ),
+    (
+        "seo_language",
+        "Sitio",
+        "Idioma",
+        "Valor del meta tag language, ej. 'Spanish'.",
+        "Spanish",
+    ),
+    (
+        "seo_geo_region",
+        "Geo",
+        "Región",
+        "Código ISO de región, ej. 'CL', 'MX-CMX'.",
+        "CL",
+    ),
+    ("seo_geo_country", "Geo", "País", "Nombre del país, ej. 'Chile'.", "Chile"),
+    (
+        "seo_geo_placename",
+        "Geo",
+        "Lugar",
+        "Ciudad o lugar principal, ej. 'Santiago'.",
+        "Chile",
+    ),
+    (
+        "seo_og_site_name",
+        "Open Graph",
+        "Nombre del sitio",
+        "og:site_name — nombre del sitio en compartidos de redes sociales.",
+        "Fonotarot",
+    ),
+    (
+        "seo_og_image_url",
+        "Open Graph",
+        "Imagen OG",
+        "URL absoluta de la imagen por defecto para og:image y twitter:image.",
+        "/static/og-image.png",
+    ),
+    (
+        "seo_twitter_card",
+        "Twitter / X",
+        "Card type",
+        "Tipo de card: 'summary_large_image' (imagen grande) o 'summary' (miniatura).",
+        "summary_large_image",
+    ),
+    (
+        "seo_twitter_handle",
+        "Twitter / X",
+        "Handle",
+        "Cuenta de Twitter/X sin @, ej. fonotarot. Usada en twitter:site y twitter:creator.",
+        "fonotarot",
+    ),
+    (
+        "seo_app_title",
+        "Mobile / PWA",
+        "Nombre de la app",
+        "apple-mobile-web-app-title — nombre corto que aparece bajo el ícono en iOS.",
+        "Fonotarot",
+    ),
+    (
+        "seo_theme_color_light",
+        "Mobile / PWA",
+        "Theme color (claro)",
+        "Color de la barra del navegador en modo claro.",
+        "#faf7f3",
+    ),
+    (
+        "seo_theme_color_dark",
+        "Mobile / PWA",
+        "Theme color (oscuro)",
+        "Color de la barra del navegador en modo oscuro.",
+        "#1a1a2e",
+    ),
+    (
+        "seo_tile_color",
+        "Mobile / PWA",
+        "Tile color",
+        "Color del tile de Windows (msapplication-TileColor y navbutton-color).",
+        "#6b3fa0",
+    ),
+    (
+        "seo_google_verification",
+        "Webmaster",
+        "Google Verification",
+        "Contenido del meta tag google-site-verification (Google Search Console).",
+        "",
+    ),
+    (
+        "seo_bing_verification",
+        "Webmaster",
+        "Bing Verification",
+        "Contenido del meta tag msvalidate.01 (Bing Webmaster Tools).",
+        "",
+    ),
 ]
 
 
@@ -423,7 +596,11 @@ class SeoSettingsAdminView(BaseView):
     def index(self):
         from .models import SiteSettings
 
-        _COLOR_KEYS = ("seo_theme_color_light", "seo_theme_color_dark", "seo_tile_color")
+        _COLOR_KEYS = (
+            "seo_theme_color_light",
+            "seo_theme_color_dark",
+            "seo_tile_color",
+        )
         if request.method == "POST":
             for key, *_ in _SEO_KEYS:
                 # Color fields post a paired _text input; prefer it so the
@@ -445,7 +622,12 @@ class SeoSettingsAdminView(BaseView):
 class OrderAdminView(JsonColumnsMixin, SecureModelView):
     """Admin view for customer orders."""
 
-    json_columns = ["extra_args", "request_payload", "response_payload", "payment_object"]
+    json_columns = [
+        "extra_args",
+        "request_payload",
+        "response_payload",
+        "payment_object",
+    ]
     column_list = (
         "id",
         "status",
@@ -611,6 +793,18 @@ def init_admin(app, admin_ext):
         )
     )
     static_path = os.path.join(os.path.dirname(__file__), "static")
+    media_path = os.path.join(static_path, "media-library")
+    admin_ext.add_view(
+        MediaLibraryAdmin(
+            media_path,
+            "/static/media-library/",
+            name=_l("Media Library"),
+            category=_l("Content"),
+            endpoint="media_library",
+            menu_icon_type="tabler",
+            menu_icon_value="photo",
+        )
+    )
     admin_ext.add_view(
         SecureFileAdmin(
             static_path,
@@ -620,6 +814,13 @@ def init_admin(app, admin_ext):
             endpoint="static_files",
             menu_icon_type="tabler",
             menu_icon_value="folder",
+        )
+    )
+    admin_ext.add_view(
+        MediaBrowserView(
+            name="media_browser",
+            endpoint="media_browser",
+            url="/media",
         )
     )
     admin_ext.add_link(
