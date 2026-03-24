@@ -266,15 +266,34 @@
   <script src="{{ url_for('static', filename='vendor/hugerte/hugerte.min.js') }}"></script>
   <script>
     (function () {
-      const titleField    = document.getElementById('title-field');
-      const slugField     = document.getElementById('slug-field');
-      const contentField  = document.getElementById('content-field');
-      const excerptField  = document.getElementById('excerpt-field');
-      const excerptCount  = document.getElementById('excerpt-count');
-      const publishedField = document.getElementById('published-field');
-      const publishedBadge = document.getElementById('published-badge');
-      const draftBadge    = document.getElementById('draft-badge');
-      const saveBtnLabel  = document.getElementById('save-btn-label');
+      var titleField    = document.getElementById('title-field');
+      var slugField     = document.getElementById('slug-field');
+      var contentField  = document.getElementById('content-field');
+      var excerptField  = document.getElementById('excerpt-field');
+      var excerptCount  = document.getElementById('excerpt-count');
+      var publishedField = document.getElementById('published-field');
+      var publishedBadge = document.getElementById('published-badge');
+      var draftBadge    = document.getElementById('draft-badge');
+      var saveBtnLabel  = document.getElementById('save-btn-label');
+
+      /* ── Debounce helper ────────────────────────────────────────────── */
+      function debounce(fn, ms) {
+        var t; return function() { clearTimeout(t); t = setTimeout(fn.bind(this, arguments[0]), ms); };
+      }
+
+      /* ── Slug generation ────────────────────────────────────────────── */
+      var slugUserEdited = false;
+      function makeSlug(text) {
+        return text.toLowerCase()
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .substring(0, 200);
+      }
+      slugField.addEventListener('input', function () { slugUserEdited = true; });
+      titleField.addEventListener('input', function () {
+        if (!slugUserEdited) slugField.value = makeSlug(this.value);
+      });
 
       /* ── Published badge + save label ──────────────────────────────── */
       function syncPublished() {
@@ -298,6 +317,7 @@
         excerptCount.style.color = excerptField.value.length > 160
           ? 'var(--tblr-danger)' : '';
       }
+      var excerptUserEdited = false;
       excerptField.addEventListener('input', function () {
         excerptUserEdited = true;
         updateExcerptCount();
@@ -305,48 +325,70 @@
       updateExcerptCount();
 
       /* ── Auto-excerpt from editor ───────────────────────────────────── */
-      var excerptUserEdited = excerptField.value.trim() !== '';
-
-      function updateExcerpt(editor) {
+      function updateExcerpt(ed) {
         if (excerptUserEdited) return;
-        var text = editor.getContent({ format: 'text' }).replace(/\s+/g, ' ').trim();
+        var text = ed.getContent({ format: 'text' }).replace(/\s+/g, ' ').trim();
         if (text.length > 160) text = text.slice(0, 157) + '\u2026';
         excerptField.value = text;
         updateExcerptCount();
       }
 
-      /* ── HugeRTE ────────────────────────────────────────────────────── */
-      var theme = document.documentElement.getAttribute('data-bs-theme');
-      var opts = {
-        selector: '#hugerte-editor',
-        height: 520,
-        menubar: false,
-        statusbar: false,
-        base_url: '{{ url_for("static", filename="vendor/hugerte") }}',
-        plugins: [
-          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
-          'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',
-          'fullscreen', 'insertdatetime', 'media', 'table', 'wordcount',
-        ],
-        toolbar:
-          'undo redo | formatselect | bold italic backcolor | ' +
-          'alignleft aligncenter alignright alignjustify | ' +
-          'bullist numlist outdent indent | removeformat | ' +
-          'preview code fullscreen',
-        content_style:
-          'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; }',
-        setup: function (editor) {
-          editor.on('blur', function () { updateExcerpt(editor); });
-        },
-      };
-      if (theme === 'dark') { opts.skin = 'oxide-dark'; opts.content_css = 'dark'; }
+      /* ── HugeRTE: build options for current theme ───────────────────── */
+      function contentStyle(isDark) {
+        return isDark
+          ? 'body{background:#182230;color:#c8d3e0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.6;padding:1rem}a{color:#4da6ff}'
+          : 'body{background:#fff;color:#1a2332;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.6;padding:1rem}a{color:#066fd1}';
+      }
+      function buildOpts(isDark) {
+        var o = {
+          selector: '#hugerte-editor',
+          height: 520,
+          menubar: false,
+          statusbar: false,
+          base_url: '{{ url_for("static", filename="vendor/hugerte") }}',
+          plugins: ['advlist','autolink','lists','link','image','charmap',
+            'preview','anchor','searchreplace','visualblocks','code',
+            'fullscreen','insertdatetime','media','table','wordcount'],
+          toolbar:
+            'undo redo | formatselect | bold italic backcolor | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | removeformat | ' +
+            'preview code fullscreen',
+          content_style: contentStyle(isDark),
+        };
+        if (isDark) { o.skin = 'oxide-dark'; o.content_css = 'dark'; }
+        return o;
+      }
 
-      hugeRTE.init(opts).then(function (editors) {
-        var ed = editors[0];
-        document.getElementById('blog-form').addEventListener('submit', function () {
-          if (ed) { contentField.value = ed.getContent(); updateExcerpt(ed); }
+      /* ── HugeRTE: init / reinit ─────────────────────────────────────── */
+      var _ed = null;
+      function initEditor(savedContent) {
+        var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        hugeRTE.init(buildOpts(isDark)).then(function (editors) {
+          _ed = editors[0];
+          if (_ed && savedContent) _ed.setContent(savedContent);
+          _ed.on('keyup change', debounce(function () { updateExcerpt(_ed); }, 600));
         });
+      }
+
+      /* ── Submit: flush editor to hidden field ───────────────────────── */
+      document.getElementById('blog-form').addEventListener('submit', function () {
+        if (_ed) { contentField.value = _ed.getContent(); updateExcerpt(_ed); }
       });
+
+      /* ── Theme observer: reinit editor on dark/light toggle ─────────── */
+      new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          if (m.attributeName === 'data-bs-theme') {
+            var saved = _ed ? _ed.getContent() : contentField.value;
+            if (_ed) { hugeRTE.remove(_ed); _ed = null; }
+            // small delay so Tabler finishes updating the DOM
+            setTimeout(function () { initEditor(saved); }, 50);
+          }
+        });
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
+      initEditor('');
     })();
   </script>
 {% endblock %}
