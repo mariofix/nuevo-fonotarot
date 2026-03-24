@@ -115,7 +115,7 @@ def _init_extensions(app: Flask) -> None:
 
     admin.name = app.config.get("ADMIN_NAME", "Fonotarot Admin")
     admin.theme = theme
-    admin.init_app(app, index_view=SecureAdminIndexView())
+    admin.init_app(app, index_view=SecureAdminIndexView(url="/ft-admin"))
     init_admin(app, admin)
 
     # Apply a per-IP rate limit to every Flask-Admin route.  The decorator

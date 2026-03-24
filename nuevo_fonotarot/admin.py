@@ -35,6 +35,12 @@ _MONTHS_ES = {
 class SecureAdminIndexView(AdminIndexView):
     """Admin index view that requires an authenticated user with the 'admin' role."""
 
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.has_role("admin")
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
     @expose("/")
     def index(self):
         today = date.today()
@@ -79,8 +85,7 @@ class MonthlyCarrierReportView(BaseView):
     """
 
     def is_accessible(self):
-        # return current_user.is_authenticated and current_user.has_role("admin")
-        return True
+        return current_user.is_authenticated and current_user.has_role("admin")
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
@@ -181,8 +186,7 @@ class SecureModelView(ModelView):
     can_view_details = True
 
     def is_accessible(self):
-        # return current_user.is_authenticated and current_user.has_role("admin")
-        return True
+        return current_user.is_authenticated and current_user.has_role("admin")
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
@@ -192,8 +196,7 @@ class SecureFileAdmin(FileAdmin):
     """FileAdmin accessible only to authenticated users with the 'admin' role."""
 
     def is_accessible(self):
-        # return current_user.is_authenticated and current_user.has_role("admin")
-        return True
+        return current_user.is_authenticated and current_user.has_role("admin")
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
