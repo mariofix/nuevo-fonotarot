@@ -4,6 +4,7 @@ from flask import render_template
 
 from . import lab_bp
 from ..log import get_logger
+from ..models import BlogPost
 from ..placeholder import PLANS, TESTIMONIALS
 
 logger = get_logger(__name__)
@@ -82,6 +83,46 @@ def home8():
     """Índigo Místico (bento grid)."""
     logger.debug("lab: rendering home8")
     return render_template("old-experiments/home8.html", **_ctx())
+
+
+# ---------------------------------------------------------------------------
+# Checkout design experiments
+# ---------------------------------------------------------------------------
+
+
+def _blog_posts():
+    """Return published posts for blog lab views, newest first."""
+    return (
+        BlogPost.query.filter_by(published=True)
+        .order_by(BlogPost.published_at.desc())
+        .all()
+    )
+
+
+# ---------------------------------------------------------------------------
+# Blog design experiments
+# ---------------------------------------------------------------------------
+
+
+@lab_bp.route("/blog-a")
+def blog_a():
+    """Blog A — Arcana Dispatch: numbered editorial list."""
+    logger.debug("lab: rendering blog-a")
+    return render_template("old-experiments/blog-a.html", posts=_blog_posts())
+
+
+@lab_bp.route("/blog-b")
+def blog_b():
+    """Blog B — Lectura: typographic reading-room list."""
+    logger.debug("lab: rendering blog-b")
+    return render_template("old-experiments/blog-b.html", posts=_blog_posts())
+
+
+@lab_bp.route("/blog-c")
+def blog_c():
+    """Blog C — Arcana Grid: immersive photo mosaic."""
+    logger.debug("lab: rendering blog-c")
+    return render_template("old-experiments/blog-c.html", posts=_blog_posts())
 
 
 # ---------------------------------------------------------------------------

@@ -342,15 +342,16 @@
   {{ super() }}
   {{ lib.form_js() }}
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-bootstrap5.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-preset-webpage.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-basic.min.js') }}"></script>
   <script>
     (function () {
       var isActiveField  = document.getElementById('is-active-field');
       var activeBadge    = document.getElementById('active-badge');
       var inactiveBadge  = document.getElementById('inactive-badge');
       var contentField   = document.getElementById('content-field');
+      var titleField     = document.getElementById('title-field');
+      var pathField      = document.getElementById('path-field');
+      var pathUserEdited = false;
 
       /* ── Active / inactive badge sync ──────────────────────────────── */
       function syncActive() {
@@ -365,6 +366,18 @@
       syncActive();
       isActiveField.addEventListener('change', syncActive);
 
+      /* ── Path auto-fill from title ──────────────────────────────────── */
+      function makePath(text) {
+        return text.toLowerCase()
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '').substring(0, 100);
+      }
+      pathField.addEventListener('input', function () { pathUserEdited = true; });
+      titleField.addEventListener('input', function () {
+        if (!pathUserEdited) { pathField.value = makePath(this.value); }
+      });
+
       /* ── GrapesJS ───────────────────────────────────────────────────── */
       var editor = grapesjs.init({
         container: '#gjs',
@@ -375,11 +388,32 @@
           styles: ['{{ url_for("static", filename="vendor/tabler/css/tabler.min.css") }}'],
           scripts: ['{{ url_for("static", filename="vendor/tabler/js/tabler.min.js") }}'],
         },
-        plugins: ['grapesjs-blocks-bootstrap-5', 'gjs-preset-webpage', 'gjs-blocks-basic'],
+        plugins: ['gjs-preset-webpage'],
         pluginsOpts: {
-          'grapesjs-blocks-bootstrap-5': {},
+          'gjs-preset-webpage': {
+            blocks: [],
+            blocksBasicOpts: { blocks: [] },
+            navbarOpts: false,
+            countdownOpts: false,
+            formsOpts: false,
+          },
         },
       });
+
+      /* ── Curated content blocks ─────────────────────────────────────── */
+      var _blocks = [
+        { id: 'heading',   label: 'Encabezado',  category: 'Contenido',   content: '<h2>Título de sección</h2>' },
+        { id: 'paragraph', label: 'Párrafo',     category: 'Contenido',   content: '<p>Escribe tu contenido aquí...</p>' },
+        { id: 'image',     label: 'Imagen',      category: 'Contenido',   content: { type: 'image' }, activate: true },
+        { id: 'button',    label: 'Botón',        category: 'Contenido',   content: '<a href="#" class="btn btn-primary">Haz clic aquí</a>' },
+        { id: 'divider',   label: 'Separador',   category: 'Contenido',   content: '<hr/>' },
+        { id: 'cols-2',    label: '2 Columnas',  category: 'Estructura',  content: '<div class="row"><div class="col-md-6 p-2"><p>Columna 1</p></div><div class="col-md-6 p-2"><p>Columna 2</p></div></div>' },
+        { id: 'cols-3',    label: '3 Columnas',  category: 'Estructura',  content: '<div class="row"><div class="col-md-4 p-2"><p>Col 1</p></div><div class="col-md-4 p-2"><p>Col 2</p></div><div class="col-md-4 p-2"><p>Col 3</p></div></div>' },
+        { id: 'section',   label: 'Sección',     category: 'Estructura',  content: '<section class="py-5"><div class="container"><p>Contenido de sección</p></div></section>' },
+        { id: 'hero',      label: 'Hero Banner', category: 'Estructura',  content: '<section class="py-5 text-center bg-light"><div class="container"><h1 class="display-4">Título principal</h1><p class="lead">Descripción breve de tu página.</p><a href="#" class="btn btn-primary btn-lg">Acción principal</a></div></section>' },
+        { id: 'card',      label: 'Tarjeta',     category: 'Componentes', content: '<div class="card" style="max-width:320px"><div class="card-body"><h5 class="card-title">Título</h5><p class="card-text">Descripción breve del contenido.</p><a href="#" class="btn btn-primary">Ver más</a></div></div>' },
+      ];
+      _blocks.forEach(function (b) { editor.BlockManager.add(b.id, b); });
 
       /* ── Route GrapesJS image picker through our media browser ───────── */
       editor.Commands.add('open-assets', {
@@ -394,7 +428,10 @@
       });
 
       document.getElementById('page-form').addEventListener('submit', function () {
-        contentField.value = editor.getHtml();
+        var html = editor.getHtml();
+        /* Strip the <body> wrapper GrapesJS adds around canvas content */
+        html = html.replace(/^\s*<body[^>]*>\s*/i, '').replace(/\s*<\/body>\s*$/i, '');
+        contentField.value = html;
       });
     })();
   </script>

@@ -266,3 +266,6 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,flask
 node_modules
+
+# Media library generated thumbnails cache
+nuevo_fonotarot/static/media-library/.thumbs/

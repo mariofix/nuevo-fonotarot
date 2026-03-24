@@ -1,5 +1,10 @@
 # Global Claude Code Standards
 
+## General
+- Project's Name: Nuevo Fonotarot (then it will just be Fonotarot), an aditional brand is Alotarot.
+- This project's tagline is: El universo marca el camino, ¡descubrelo!
+
+
 ## Behavior
 - After every change, self-verify: check imports, lint mentally, confirm no regressions
 - Proactively flag best practice violations even when not asked — report them before proceeding

@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{# Lab B — Lectura: typographic reading-room list #}
+
+{% block title %}Lab B · Blog — Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --blog-serif: 'Playfair Display', Georgia, serif;
+    --blog-sans:  'Source Sans 3', sans-serif;
+  }
+
+  /* ── Constrained column ────────────────────────────────────────── */
+  .B-wrap { max-width: 760px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── Masthead ──────────────────────────────────────────────────── */
+  .B-masthead {
+    padding: 3rem 0 2rem;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 2px solid var(--text); margin-bottom: 0;
+  }
+  .B-masthead__kicker {
+    font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
+    letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+  }
+  .B-masthead__title {
+    font-family: var(--blog-serif); font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 700; color: var(--text); line-height: .9; letter-spacing: -.03em;
+  }
+  .B-masthead__right {
+    font-family: var(--blog-sans); font-size: .75rem; color: var(--muted);
+    text-align: right; padding-bottom: .4rem;
+  }
+  .B-masthead__count {
+    display: block; font-size: 2.25rem; font-weight: 700;
+    color: var(--text); line-height: 1;
+  }
+
+  /* ── Featured post ─────────────────────────────────────────────── */
+  .B-hero {
+    padding: 2.75rem 0; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 4px 1fr; gap: 0 2rem;
+    color: inherit; text-decoration: none; transition: opacity .2s;
+  }
+  .B-hero:hover { opacity: .78; color: inherit; text-decoration: none; }
+  .B-hero__rule { background: var(--gold); border-radius: 2px; }
+  .B-hero__tag {
+    font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+  }
+  .B-hero__title {
+    font-family: var(--blog-serif); font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    font-weight: 700; line-height: 1.15; color: var(--text);
+    margin-bottom: 1rem; letter-spacing: -.02em;
+  }
+  .B-hero__excerpt {
+    font-family: var(--blog-sans); font-size: 1rem; line-height: 1.8;
+    color: var(--muted); margin-bottom: 1.5rem; max-width: 580px;
+  }
+  .B-hero__foot { display: flex; align-items: center; gap: 1.5rem; }
+  .B-hero__date { font-family: var(--blog-sans); font-size: .75rem; color: var(--muted); }
+  .B-hero__read {
+    font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--plum);
+    display: flex; align-items: center; gap: .35rem;
+    padding: .45rem 1rem; border: 1.5px solid currentColor; border-radius: 3px;
+    transition: background .2s, color .2s;
+  }
+  .B-hero:hover .B-hero__read { background: var(--plum); color: white; }
+
+  /* ── Post list ──────────────────────────────────────────────────── */
+  .B-item {
+    padding: 2rem 0; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 4px 1fr auto; gap: 0 2rem; align-items: start;
+    color: inherit; text-decoration: none; transition: opacity .2s;
+  }
+  .B-item:last-child { border-bottom: none; }
+  .B-item:hover { opacity: .78; color: inherit; text-decoration: none; }
+  .B-item__rule {
+    background: var(--border); border-radius: 2px;
+    align-self: stretch; min-height: 100%; transition: background .25s;
+  }
+  .B-item:hover .B-item__rule { background: var(--plum); }
+  .B-item__body { min-width: 0; }
+  .B-item__category {
+    font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--rose); margin-bottom: .5rem;
+  }
+  .B-item__title {
+    font-family: var(--blog-serif); font-size: 1.25rem; font-weight: 700;
+    line-height: 1.3; color: var(--text); margin-bottom: .5rem; transition: color .2s;
+  }
+  .B-item:hover .B-item__title { color: var(--plum); }
+  .B-item__excerpt {
+    font-family: var(--blog-sans); font-size: .875rem; line-height: 1.6; color: var(--muted);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .B-item__side { text-align: right; flex-shrink: 0; padding-top: .125rem; }
+  .B-item__min {
+    font-family: var(--blog-sans); font-size: 1.625rem; font-weight: 700;
+    color: var(--text); line-height: 1; display: block;
+  }
+  .B-item__minlabel {
+    font-family: var(--blog-sans); font-size: .6rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted); display: block; margin-bottom: .5rem;
+  }
+  .B-item__date {
+    font-family: var(--blog-sans); font-size: .75rem; color: var(--muted); white-space: nowrap;
+  }
+
+  /* ── Empty ─────────────────────────────────────────────────────── */
+  .B-empty { text-align: center; padding: 6rem 1rem; }
+  .B-empty__symbol { font-family: var(--blog-serif); font-size: 4rem; color: var(--gold); opacity: .3; margin-bottom: 1.5rem; }
+  .B-empty__title { font-family: var(--blog-serif); font-size: 1.5rem; color: var(--text); }
+
+  /* ── Responsive ────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .B-item { grid-template-columns: 4px 1fr; }
+    .B-item__side { display: none; }
+    .B-masthead { flex-direction: column; align-items: flex-start; gap: .5rem; }
+    .B-masthead__right { text-align: left; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="B-wrap">
+
+  <div class="B-masthead reveal">
+    <div>
+      <div class="B-masthead__kicker">Fonotarot · Lecturas &amp; Reflexiones</div>
+      <h1 class="B-masthead__title">Blog</h1>
+    </div>
+    <div class="B-masthead__right">
+      <span class="B-masthead__count">{{ posts|length }}</span>
+      artículo{% if posts|length != 1 %}s{% endif %}
+    </div>
+  </div>
+
+  {% if posts %}
+    {% set hero = posts[0] %}
+    {% set rest  = posts[1:] %}
+
+    <a href="{{ url_for('blog.detail', slug=hero.slug) }}" class="B-hero reveal" style="animation-delay:.08s">
+      <div class="B-hero__rule"></div>
+      <div>
+        <div class="B-hero__tag">✦ Artículo destacado</div>
+        <h2 class="B-hero__title">{{ hero.title }}</h2>
+        {% if hero.excerpt %}
+          <p class="B-hero__excerpt">{{ hero.excerpt }}</p>
+        {% endif %}
+        <div class="B-hero__foot">
+          <span class="B-hero__date">
+            {% if hero.published_at %}{{ hero.published_at.strftime('%d de %B, %Y') }} · {% endif %}{{ hero.reading_time }} min de lectura
+          </span>
+          <span class="B-hero__read">Leer artículo</span>
+        </div>
+      </div>
+    </a>
+
+    {% for post in rest %}
+    <a href="{{ url_for('blog.detail', slug=post.slug) }}"
+       class="B-item reveal" style="animation-delay:{{ (0.14 + loop.index0 * 0.06)|round(2) }}s">
+      <div class="B-item__rule"></div>
+      <div class="B-item__body">
+        <div class="B-item__category">{{ _('Artículo') }}</div>
+        <div class="B-item__title">{{ post.title }}</div>
+        {% if post.excerpt %}
+          <p class="B-item__excerpt">{{ post.excerpt }}</p>
+        {% endif %}
+      </div>
+      <div class="B-item__side">
+        <span class="B-item__min">{{ post.reading_time }}</span>
+        <span class="B-item__minlabel">min</span>
+        {% if post.published_at %}
+          <span class="B-item__date">{{ post.published_at.strftime('%d %b %Y') }}</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+
+  {% else %}
+    <div class="B-empty reveal">
+      <div class="B-empty__symbol">✦</div>
+      <p class="B-empty__title">{{ _("Aún no hay publicaciones") }}</p>
+    </div>
+  {% endif %}
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.06 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+{% endblock %}

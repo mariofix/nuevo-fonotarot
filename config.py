@@ -126,7 +126,7 @@ class Config:
     SECURITY_RESET_URL: str = "/ft-reset"
     SECURITY_VERIFY_URL: str = "/ft-verify"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
-    SECURITY_POST_LOGIN_VIEW: str = "/admin"
+    SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 
     # Flask-Admin locale
@@ -142,8 +142,8 @@ class Config:
     # Managed here (not in SiteSettings) so Flask-Admin Babel and Babel
     # locale negotiation know the list before any DB request is made.
     AVAILABLE_LANGUAGES: list = [
-        ["es", "es_CL", "Español"],
-        ["es", "es_MX", "Español (México)"],
+        ["es", "es_CL", "Chile"],
+        ["es", "es_MX", "México"],
         # ["en", "en_US", "English"],
         # ["pt", "pt_BR", "Português"],
     ]
@@ -182,7 +182,7 @@ class Config:
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "audiotex")
 
-    DEBUG_TB_ENABLED: bool = True
+    DEBUG_TB_ENABLED: bool = False
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",
