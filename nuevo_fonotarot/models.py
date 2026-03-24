@@ -89,11 +89,11 @@ class User(db.Model, UserMixin):
 class StaticPage(db.Model):
     """A static HTML page served from a configurable URL path.
 
-    The ``content`` field stores raw HTML and is served directly to the
-    browser.  When ``template_name`` is set, the view renders that Jinja2
-    template (with full homepage context) instead of the raw ``content``.
-    Access to create or edit pages must be restricted to trusted
-    administrators only.
+    The ``content`` field stores raw HTML edited via GrapesJS in the admin
+    panel.  Setting ``is_homepage = True`` makes this page serve as the site
+    homepage (only one page may be the homepage at a time — the admin enforces
+    this automatically).  Access to create or edit pages must be restricted to
+    trusted administrators only.
     """
 
     __tablename__ = "static_pages"
@@ -105,7 +105,7 @@ class StaticPage(db.Model):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     featured_image_url: Mapped[str | None] = mapped_column(String(500))
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    template_name: Mapped[str | None] = mapped_column(String(255))
+    is_homepage: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False

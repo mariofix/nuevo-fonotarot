@@ -255,34 +255,26 @@ content_bp = Blueprint("content", __name__)
 def index():
     """Render the home page.
 
-    The output is driven by the ``homepage_type`` SiteSettings key:
+    Priority order:
 
-    * ``"static"`` — render the StaticPage whose path matches
-      ``homepage_slug``.  Returns 404 if the page is missing or inactive.
-    * ``"blog"``   — render the published blog post listing.
-    * unset        — fall back to the hardcoded ``index.html`` template.
+    1. ``homepage_type == "blog"`` SiteSetting → published blog post listing.
+    2. A ``StaticPage`` with ``is_homepage=True`` and ``is_active=True`` →
+       render its database content via ``pages/page.html``.
+    3. Default → the hardcoded ``index.html`` template.
     """
-    homepage_type = SiteSettings.get("homepage_type")
-
-    if homepage_type == "static":
-        slug = SiteSettings.get("homepage_slug", "")
-        page = StaticPage.query.filter_by(path=slug, is_active=True).first()
-        if page is None:
-            abort(404)
-        if page.template_name:
-            response = make_response(render_template(page.template_name, **_homepage_ctx()))
-        else:
-            response = make_response(render_template("pages/page.html", page=page))
-        response.headers["Cache-Control"] = "no-store"
-        return response
-
-    if homepage_type == "blog":
+    if SiteSettings.get("homepage_type") == "blog":
         posts = (
             BlogPost.query.filter_by(published=True)
             .order_by(BlogPost.published_at.desc())
             .all()
         )
         return render_template("blog/index.html", posts=posts)
+
+    page = StaticPage.query.filter_by(is_homepage=True, is_active=True).first()
+    if page is not None:
+        response = make_response(render_template("pages/page.html", page=page))
+        response.headers["Cache-Control"] = "no-store"
+        return response
 
     # Default: hardcoded home template.
     return render_template("index.html", **_homepage_ctx())
@@ -466,9 +458,6 @@ def static_page(page_path: str):
     page = StaticPage.query.filter_by(path=normalised, is_active=True).first()
     if page is None:
         abort(404)
-    if page.template_name:
-        response = make_response(render_template(page.template_name, **_homepage_ctx()))
-    else:
-        response = make_response(render_template("pages/page.html", page=page))
+    response = make_response(render_template("pages/page.html", page=page))
     response.headers["Cache-Control"] = "no-store"
     return response

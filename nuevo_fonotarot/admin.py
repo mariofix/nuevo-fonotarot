@@ -284,6 +284,11 @@ class StaticPageAdminView(SecureModelView):
         from .models import StaticPage
 
         model.path = StaticPage.normalize_path(model.path)
+        if model.is_homepage:
+            # Ensure only one page is the homepage at a time.
+            self.session.query(StaticPage).filter(
+                StaticPage.id != model.id
+            ).update({"is_homepage": False}, synchronize_session="fetch")
 
 
 class BlogPostAdminView(SecureModelView):

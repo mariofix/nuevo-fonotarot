@@ -253,6 +253,19 @@
             </div>
           </div>
 
+          {# Homepage #}
+          <div class="status-card">
+            <div class="status-card-header">{{ _gettext('Homepage') }}</div>
+            <div class="status-card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="text-muted small">{{ _gettext('Set as homepage') }}</span>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_homepage(class="form-check-input", role="switch", id="is-homepage-field") }}
+                </label>
+              </div>
+            </div>
+          </div>
+
           {# Featured Image #}
           <div class="featured-image-card" id="featured-image-card">
             <div class="featured-image-card-header d-flex justify-content-between align-items-center">
