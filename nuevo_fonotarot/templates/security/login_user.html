@@ -315,34 +315,21 @@
         {{ login_user_form.hidden_tag() }}
 
         <div class="auth-field">
-          <label class="auth-label" for="username">
-            Teléfono
-          </label>
-          <input
-            class="auth-input{% if login_user_form.username.errors %} is-invalid{% endif %}"
-            type="tel"
-            id="username"
-            name="username"
-            placeholder="56912345678"
-            autocomplete="username"
-            value="{{ login_user_form.username.data or '' }}"
-          />
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" for="email">
-            Email
+          <label class="auth-label" for="identity">
+            Teléfono o Email
             <a href="{{ url_for_security('forgot_password') }}">¿Olvidaste tu contraseña?</a>
           </label>
           <input
-            class="auth-input{% if login_user_form.email.errors %} is-invalid{% endif %}"
-            type="email"
-            id="email"
-            name="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            value="{{ login_user_form.email.data or '' }}"
+            class="auth-input{% if login_user_form.username.errors or login_user_form.email.errors %} is-invalid{% endif %}"
+            type="text"
+            id="identity"
+            placeholder="56912345678 o tu@email.com"
+            autocomplete="username"
+            value="{{ login_user_form.username.data or login_user_form.email.data or '' }}"
           />
+          {# Flask-Security expects these fields — populated by the script below before submit #}
+          <input type="hidden" id="username" name="username" />
+          <input type="hidden" id="email" name="email" />
         </div>
 
         <div class="auth-field">
@@ -383,5 +370,15 @@
   </div>
 
 </div>
+<script>
+  document.querySelector('form').addEventListener('submit', function () {
+    var val = document.getElementById('identity').value.trim();
+    if (val.indexOf('@') !== -1) {
+      document.getElementById('email').value = val;
+    } else {
+      document.getElementById('username').value = val;
+    }
+  });
+</script>
 </body>
 </html>
