@@ -269,6 +269,14 @@ class StaticPageAdminView(SecureModelView):
     column_searchable_list = ("path", "title")
     column_filters = ("is_active",)
     form_excluded_columns = ("created_at", "updated_at")
+    form_widget_args = {
+        "featured_image_url": {
+            "placeholder": "https://ejemplo.com/imagen.jpg",
+        },
+    }
+    column_descriptions = {
+        "featured_image_url": "URL absoluta de la imagen destacada (1200×630 recomendado).",
+    }
     edit_template = "admin/staticpage/edit.html"
     create_template = "admin/staticpage/create.html"
 

@@ -6,68 +6,384 @@
   {{ lib.form_css() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='vendor/grapesjs/css/grapes.min.css') }}">
   <style>
-    #gjs-editor-wrapper { height: 550px; border: 1px solid #dee2e6; border-radius: 4px; }
+    /* ── Editorial layout ──────────────────────────────────────────────── */
+    .page-editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      grid-template-rows: auto 1fr;
+      gap: 0 1.5rem;
+      min-height: calc(100vh - 180px);
+    }
+    .page-editor-main  { grid-column: 1; grid-row: 1 / 3; min-width: 0; }
+    .page-editor-aside { grid-column: 2; grid-row: 1 / 3; }
+
+    /* ── Title input ───────────────────────────────────────────────────── */
+    .page-title-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--tblr-body-color);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .page-title-input::placeholder { color: var(--tblr-muted); opacity: 0.5; }
+    .page-title-input:focus { border-bottom-color: var(--tblr-primary); }
+
+    /* ── Path row ──────────────────────────────────────────────────────── */
+    .page-path-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+    }
+    .page-path-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.125rem 0;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .page-path-input:focus {
+      border-bottom-color: var(--tblr-primary);
+      color: var(--tblr-body-color);
+    }
+
+    /* ── GrapesJS wrapper ──────────────────────────────────────────────── */
+    #gjs-editor-wrapper { height: 520px; border: 1px solid var(--tblr-border-color); border-radius: var(--tblr-border-radius); }
     #gjs { height: 100%; }
+
+    /* ── Sticky sidebar ────────────────────────────────────────────────── */
+    .page-sidebar-sticky { position: sticky; top: 1.5rem; }
+
+    /* ── Status card ───────────────────────────────────────────────────── */
+    .status-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .status-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .status-card-body { padding: 1rem; }
+
+    /* ── Metadata card ─────────────────────────────────────────────────── */
+    .meta-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .meta-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .meta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      font-size: 0.8125rem;
+      border-bottom: 1px solid var(--tblr-border-color-light, var(--tblr-border-color));
+    }
+    .meta-item:last-child { border-bottom: none; }
+    .meta-item-icon { color: var(--tblr-muted); margin-top: 0.1rem; flex-shrink: 0; }
+    .meta-item-label { font-size: 0.6875rem; color: var(--tblr-muted); }
+    .meta-item-value { color: var(--tblr-body-color); }
+
+    /* ── Featured image card ───────────────────────────────────────────── */
+    .featured-image-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .featured-image-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--tblr-muted);
+    }
+    .featured-image-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .featured-image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .featured-image-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      gap: 0.5rem;
+      color: var(--tblr-muted);
+      font-size: 0.8125rem;
+    }
+    .featured-image-empty i { font-size: 1.75rem; opacity: .4; }
+
+    /* ── Media browser modal ───────────────────────────────────────────── */
+    .media-browser-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: .75rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: .25rem;
+    }
+    .media-browser-item {
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      aspect-ratio: 1 / 1;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .media-browser-item:hover { border-color: var(--tblr-primary); transform: scale(1.02); }
+    .media-browser-item.selected { border-color: var(--tblr-primary); box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb),.2); }
+    .media-browser-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-browser-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--tblr-muted);
+      font-size: .875rem;
+    }
+
+    /* ── Save actions ──────────────────────────────────────────────────── */
+    .save-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+    }
+    .save-card-body { padding: 1rem; }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .page-editor-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .page-editor-main  { grid-column: 1; grid-row: 1; }
+      .page-editor-aside { grid-column: 1; grid-row: 2; }
+      .page-sidebar-sticky { position: static; }
+    }
   </style>
 {% endblock %}
 
 {% block body %}
-  <ul class="nav nav-tabs mb-3">
-    <li class="nav-item">
-      <a href="{{ return_url }}" class="nav-link">{{ _gettext('List') }}</a>
-    </li>
+  {# ── Top nav ─────────────────────────────────────────────────────────── #}
+  <div class="d-flex align-items-center mb-3 gap-3">
+    <a href="{{ return_url }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Pages') }}
+    </a>
     {%- if admin_view.can_create -%}
-    <li class="nav-item">
-      <a href="{{ get_url('.create_view', url=return_url) }}" class="nav-link">{{ _gettext('Create') }}</a>
-    </li>
+    <a href="{{ get_url('.create_view', url=return_url) }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-plus me-1"></i>{{ _gettext('New Page') }}
+    </a>
     {%- endif -%}
-    <li class="nav-item">
-      <a href="javascript:void(0)" class="nav-link active">{{ _gettext('Edit') }}</a>
-    </li>
-  </ul>
+    <span class="text-muted small ms-auto">{{ _gettext('Editing') }}</span>
+    {%- if admin_view.can_view_details and model -%}
+    <a href="{{ get_url('.details_view', id=model.id, url=return_url) }}"
+       class="btn btn-sm btn-ghost-secondary" title="{{ _gettext('View details') }}">
+      <i class="ti ti-info-circle"></i>
+    </a>
+    {%- endif -%}
+  </div>
 
-  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data">
-    <fieldset>
-      {% if form.hidden_tag is defined %}
-        {{ form.hidden_tag() }}
-      {% elif csrf_token is defined and csrf_token %}
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      {% endif %}
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data" id="page-form">
+    {% if form.hidden_tag is defined %}
+      {{ form.hidden_tag() }}
+    {% elif csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% endif %}
 
-      <div class="mb-3">
-        {{ form.path.label(class="form-label") }}
-        {{ form.path(class="form-control") }}
-        {% for error in form.path.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-      </div>
+    <div class="page-editor-layout">
 
-      <div class="mb-3">
-        {{ form.title.label(class="form-label") }}
-        {{ form.title(class="form-control") }}
-        {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-      </div>
+      {# ── Main area ───────────────────────────────────────────────────── #}
+      <div class="page-editor-main">
 
-      <div class="mb-3 form-check">
-        {{ form.is_active(class="form-check-input") }}
-        {{ form.is_active.label(class="form-check-label") }}
-      </div>
+        {# Title #}
+        {{ form.title(class="page-title-input", id="title-field",
+                      placeholder=_gettext('Page title…'),
+                      autocomplete="off") }}
 
-      <div class="mb-3">
-        <label class="form-label">{{ form.content.label.text }}</label>
-        {# Hidden textarea — GrapesJS syncs its HTML here before submit #}
-        {{ form.content(id="content-field", style="display:none;") }}
-        <div id="gjs-editor-wrapper">
-          <div id="gjs"></div>
+        {# Path row #}
+        <div class="page-path-row">
+          <span>/</span>
+          {{ form.path(class="page-path-input", id="path-field") }}
         </div>
-        {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        {% for error in form.path.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        {# GrapesJS editor #}
+        <div class="mb-3">
+          {# Hidden textarea — GrapesJS syncs its HTML here before submit #}
+          {{ form.content(id="content-field", style="display:none;") }}
+          <div id="gjs-editor-wrapper">
+            <div id="gjs"></div>
+          </div>
+          {% for error in form.content.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
       </div>
 
-      <hr>
-      <div class="mb-3 submit-row">
-        <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}">
-        <a href="{{ return_url }}" class="btn btn-danger">{{ _gettext('Cancel') }}</a>
+      {# ── Sidebar ────────────────────────────────────────────────────── #}
+      <div class="page-editor-aside">
+        <div class="page-sidebar-sticky">
+
+          {# Active status #}
+          <div class="status-card">
+            <div class="status-card-header">{{ _gettext('Status') }}</div>
+            <div class="status-card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge bg-success-lt d-none" id="active-badge">
+                    <i class="ti ti-circle-check me-1"></i>{{ _gettext('Active') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="inactive-badge">
+                    <i class="ti ti-eye-off me-1"></i>{{ _gettext('Inactive') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_active(class="form-check-input", role="switch", id="is-active-field") }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {# Timestamps #}
+          {% if model %}
+          <div class="meta-card">
+            <div class="meta-card-header">{{ _gettext('Info') }}</div>
+            <div class="meta-item">
+              <i class="ti ti-clock meta-item-icon"></i>
+              <div>
+                <div class="meta-item-label">{{ _gettext('Created') }}</div>
+                <div class="meta-item-value">{{ model.created_at.strftime('%d %b %Y') }}</div>
+              </div>
+            </div>
+            <div class="meta-item">
+              <i class="ti ti-edit meta-item-icon"></i>
+              <div>
+                <div class="meta-item-label">{{ _gettext('Last modified') }}</div>
+                <div class="meta-item-value">{{ model.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {# Featured Image #}
+          <div class="featured-image-card" id="featured-image-card">
+            <div class="featured-image-card-header d-flex justify-content-between align-items-center">
+              <span>{{ _gettext('Featured Image') }}</span>
+              <button type="button" class="btn btn-sm btn-ghost-secondary" id="clear-image-btn" style="display:none!important;" onclick="clearFeaturedImage()">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+            {{ form.featured_image_url(id="featured-image-url", type="hidden") }}
+            <div id="featured-image-preview" class="featured-image-preview" style="display:none;">
+              <img id="featured-image-thumb" src="" alt="Featured image" />
+            </div>
+            <div id="featured-image-empty" class="featured-image-empty">
+              <i class="ti ti-photo"></i>
+              <span>{{ _gettext('No image selected') }}</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="openMediaBrowser()">
+              <i class="ti ti-photo-search me-1"></i>{{ _gettext('Browse Media') }}
+            </button>
+          </div>
+
+          {# Save actions #}
+          <div class="save-card">
+            <div class="save-card-body d-flex flex-column gap-2">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="ti ti-device-floppy me-1"></i>
+                {{ _gettext('Save Page') }}
+              </button>
+              <a href="{{ return_url }}" class="btn btn-ghost-secondary w-100">
+                <i class="ti ti-x me-1"></i>{{ _gettext('Discard') }}
+              </a>
+            </div>
+          </div>
+
+        </div>
       </div>
-    </fieldset>
+
+    </div>
   </form>
+
+  {# ── Media Browser Modal ───────────────────────────────────────────────── #}
+  <button type="button" id="mediaBrowserTrigger" data-bs-toggle="modal" data-bs-target="#mediaBrowserModal" style="display:none;" aria-hidden="true"></button>
+  <div class="modal modal-blur fade" id="mediaBrowserModal" tabindex="-1" role="dialog" aria-labelledby="mediaBrowserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mediaBrowserLabel">
+            <i class="ti ti-photo me-2"></i>{{ _gettext('Media Library') }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _gettext('Close') }}"></button>
+        </div>
+        <div class="modal-body">
+          <div id="media-browser-loading" class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            {{ _gettext('Loading…') }}
+          </div>
+          <div class="media-browser-grid" id="media-browser-grid" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <span class="text-muted me-auto" id="media-browser-selected-name" style="font-size:.8125rem;"></span>
+          <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">
+            {{ _gettext('Cancel') }}
+          </button>
+          <button type="button" class="btn btn-primary" id="media-browser-confirm" disabled onclick="confirmFeaturedImage()">
+            <i class="ti ti-check me-1"></i>{{ _gettext('Select') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block tail %}
@@ -77,26 +393,130 @@
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-preset-webpage.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-basic.min.js') }}"></script>
   <script>
-    const contentField = document.getElementById('content-field');
-    const editor = grapesjs.init({
-      container: '#gjs',
-      height: '100%',
-      width: 'auto',
-      storageManager: false,
-      canvas: {
-        styles: ['{{ url_for("static", filename="vendor/tabler/css/tabler.min.css") }}'],
-        scripts: ['{{ url_for("static", filename="vendor/tabler/js/tabler.min.js") }}'],
-      },
-      plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
-    });
+    (function () {
+      var isActiveField  = document.getElementById('is-active-field');
+      var activeBadge    = document.getElementById('active-badge');
+      var inactiveBadge  = document.getElementById('inactive-badge');
+      var contentField   = document.getElementById('content-field');
 
-    const existingHtml = contentField.value.trim();
-    if (existingHtml) {
-      editor.setComponents(existingHtml);
+      /* ── Active / inactive badge sync ──────────────────────────────── */
+      function syncActive() {
+        if (isActiveField.checked) {
+          activeBadge.classList.remove('d-none');
+          inactiveBadge.classList.add('d-none');
+        } else {
+          activeBadge.classList.add('d-none');
+          inactiveBadge.classList.remove('d-none');
+        }
+      }
+      syncActive();
+      isActiveField.addEventListener('change', syncActive);
+
+      /* ── GrapesJS ───────────────────────────────────────────────────── */
+      var editor = grapesjs.init({
+        container: '#gjs',
+        height: '100%',
+        width: 'auto',
+        storageManager: false,
+        canvas: {
+          styles: ['{{ url_for("static", filename="vendor/tabler/css/tabler.min.css") }}'],
+          scripts: ['{{ url_for("static", filename="vendor/tabler/js/tabler.min.js") }}'],
+        },
+        plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
+      });
+
+      var existingHtml = contentField.value.trim();
+      if (existingHtml) {
+        editor.setComponents(existingHtml);
+      }
+
+      document.getElementById('page-form').addEventListener('submit', function () {
+        contentField.value = editor.getHtml();
+      });
+    })();
+  </script>
+  <script>
+    /* ── Featured Image Picker ──────────────────────────────────────────── */
+    var _selectedImageUrl = null;
+
+    function _buildMediaGrid(files, grid, loading, confirmBtn, selName) {
+      loading.style.display = 'none';
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      if (!files.length) {
+        var emptyDiv = document.createElement('div');
+        emptyDiv.className = 'media-browser-empty';
+        emptyDiv.textContent = '{{ _gettext("No images found. Upload images to the Media Library first.") }}';
+        grid.appendChild(emptyDiv);
+      } else {
+        files.forEach(function(f) {
+          var item = document.createElement('div');
+          item.className = 'media-browser-item';
+          item.dataset.url = f.url;
+          item.dataset.name = f.name;
+          var img = document.createElement('img');
+          img.src = f.url;
+          img.alt = f.name;
+          img.loading = 'lazy';
+          item.appendChild(img);
+          item.addEventListener('click', function() {
+            grid.querySelectorAll('.media-browser-item').forEach(function(el) {
+              el.classList.remove('selected');
+            });
+            item.classList.add('selected');
+            _selectedImageUrl = f.url;
+            selName.textContent = f.name;
+            confirmBtn.disabled = false;
+          });
+          grid.appendChild(item);
+        });
+      }
+      grid.style.display = '';
     }
 
-    document.querySelector('.admin-form').addEventListener('submit', function () {
-      contentField.value = editor.getHtml();
-    });
+    function openMediaBrowser() {
+      var grid       = document.getElementById('media-browser-grid');
+      var loading    = document.getElementById('media-browser-loading');
+      var confirmBtn = document.getElementById('media-browser-confirm');
+      var selName    = document.getElementById('media-browser-selected-name');
+
+      grid.style.display    = 'none';
+      loading.style.display = '';
+      confirmBtn.disabled   = true;
+      selName.textContent   = '';
+      _selectedImageUrl     = null;
+
+      fetch('{{ url_for("media_browser.images") }}')
+        .then(function(r) { return r.json(); })
+        .then(function(files) { _buildMediaGrid(files, grid, loading, confirmBtn, selName); })
+        .catch(function() { loading.textContent = '{{ _gettext("Failed to load images.") }}'; });
+
+      document.getElementById('mediaBrowserTrigger').click();
+    }
+
+    function confirmFeaturedImage() {
+      if (_selectedImageUrl) selectFeaturedImage(_selectedImageUrl);
+      document.querySelector('#mediaBrowserModal [data-bs-dismiss="modal"]').click();
+    }
+
+    function selectFeaturedImage(url) {
+      document.getElementById('featured-image-url').value = url;
+      document.getElementById('featured-image-thumb').src = url;
+      document.getElementById('featured-image-preview').style.display = '';
+      document.getElementById('featured-image-empty').style.display   = 'none';
+      document.getElementById('clear-image-btn').style.removeProperty('display');
+    }
+
+    function clearFeaturedImage() {
+      document.getElementById('featured-image-url').value = '';
+      document.getElementById('featured-image-thumb').src = '';
+      document.getElementById('featured-image-preview').style.display = 'none';
+      document.getElementById('featured-image-empty').style.display   = '';
+      document.getElementById('clear-image-btn').style.setProperty('display', 'none', 'important');
+    }
+
+    (function() {
+      var existing = document.getElementById('featured-image-url').value;
+      if (existing) selectFeaturedImage(existing);
+    })();
   </script>
 {% endblock %}
