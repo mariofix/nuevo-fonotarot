@@ -143,9 +143,7 @@ class Config:
     # locale negotiation know the list before any DB request is made.
     AVAILABLE_LANGUAGES: list = [
         ["es", "es_CL", "Chile"],
-        ["es", "es_MX", "México"],
-        # ["en", "en_US", "English"],
-        # ["pt", "pt_BR", "Português"],
+        ["es", "es_US", "EEUU"],
     ]
 
     # merchants
