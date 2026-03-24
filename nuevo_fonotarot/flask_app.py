@@ -133,59 +133,48 @@ def _init_extensions(app: Flask) -> None:
         return {"site_languages": _parse_available_langs()}
 
     @app.context_processor
-    def inject_seo_config() -> dict:
-        """Expose SEO keys to all templates as lowercase Jinja globals."""
-        from .admin import _SEO_KEYS
-        from .models import SiteSettings
+    def inject_site_settings() -> dict:
+        """Expose SEO, analytics, and theme settings to all templates.
 
-        keys = [key for key, *_ in _SEO_KEYS]
-        try:
-            return {key: SiteSettings.get(key) or "" for key in keys}
-        except Exception:
-            return {key: "" for key in keys}
-
-    @app.context_processor
-    def inject_analytics_config() -> dict:
-        """Expose analytics keys to all templates as lowercase Jinja globals.
-
-        Values are read from SiteSettings at request time so they can be
-        changed in the admin panel without restarting the server.
-        """
-        from .admin import _ANALYTICS_KEYS
-        from .models import SiteSettings
-
-        keys = [key for key, *_ in _ANALYTICS_KEYS]
-        try:
-            return {key: SiteSettings.get(key) or "" for key in keys}
-        except Exception:
-            return {key: "" for key in keys}
-
-    @app.context_processor
-    def inject_current_theme() -> dict:
-        """Compute the default theme based on current server time and SiteSettings.
-
-        Reads ``dark_hours_start`` (default 20) and ``dark_hours_end`` (default 8)
-        from SiteSettings.  Returns ``default_theme='dark'`` when the current hour
-        falls inside that window, ``'light'`` otherwise.
+        Fetches every needed key in a **single** DB query via
+        ``SiteSettings.bulk_get`` so that runtime changes in the admin
+        panel are reflected immediately without a restart.
         """
         from datetime import datetime
 
-        try:
-            from .models import SiteSettings
+        from .admin import _ANALYTICS_KEYS, _SEO_KEYS
+        from .models import SiteSettings
 
-            start = int(SiteSettings.get("dark_hours_start", "20"))
-            end = int(SiteSettings.get("dark_hours_end", "8"))
+        seo_keys = [key for key, *_ in _SEO_KEYS]
+        analytics_keys = [key for key, *_ in _ANALYTICS_KEYS]
+        theme_keys = ["dark_hours_start", "dark_hours_end"]
+
+        all_keys = seo_keys + analytics_keys + theme_keys
+        defaults = {"dark_hours_start": "20", "dark_hours_end": "8"}
+
+        try:
+            settings = SiteSettings.bulk_get(all_keys, defaults=defaults)
         except Exception:
+            settings = {key: defaults.get(key, "") for key in all_keys}
+
+        # Build template context — SEO & analytics keys as-is (empty string fallback)
+        ctx: dict[str, str] = {key: settings.get(key) or "" for key in seo_keys + analytics_keys}
+
+        # Theme: derive from dark_hours_start / dark_hours_end
+        try:
+            start = int(settings.get("dark_hours_start") or "20")
+            end = int(settings.get("dark_hours_end") or "8")
+        except (ValueError, TypeError):
             start, end = 20, 8
 
         hour = datetime.now().hour
         if start < end:
             is_dark = start <= hour < end
         else:
-            # wraps midnight: e.g. start=20, end=8 → dark 20..23 and 0..7
             is_dark = hour >= start or hour < end
 
-        return {"default_theme": "dark" if is_dark else "light"}
+        ctx["default_theme"] = "dark" if is_dark else "light"
+        return ctx
 
 
 def _init_merchants(app: Flask, admin: Any) -> None:

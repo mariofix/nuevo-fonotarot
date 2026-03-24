@@ -712,6 +712,20 @@ class SiteSettings(db.Model):
         return row.value if row else default
 
     @classmethod
+    def bulk_get(
+        cls, keys: list[str], defaults: dict[str, str] | None = None
+    ) -> dict[str, str | None]:
+        """Return values for all *keys* in a single query.
+
+        Missing keys resolve to the value in *defaults* (if provided)
+        or ``None``.
+        """
+        defaults = defaults or {}
+        rows = cls.query.filter(cls.key.in_(keys)).all()
+        found = {row.key: row.value for row in rows}
+        return {key: found.get(key) or defaults.get(key) for key in keys}
+
+    @classmethod
     def set(
         cls,
         key: str,
