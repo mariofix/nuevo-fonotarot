@@ -355,6 +355,7 @@
   </form>
 
   {# ── Media Browser Modal ───────────────────────────────────────────────── #}
+  <button type="button" id="mediaBrowserTrigger" data-bs-toggle="modal" data-bs-target="#mediaBrowserModal" style="display:none;" aria-hidden="true"></button>
   <div class="modal modal-blur fade" id="mediaBrowserModal" tabindex="-1" role="dialog" aria-labelledby="mediaBrowserLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -519,7 +520,6 @@
   <script>
     /* ── Featured Image Picker ──────────────────────────────────────────── */
     var _selectedImageUrl = null;
-    var _mediaBrowserModal = null;
 
     function _buildMediaGrid(files, grid, loading, confirmBtn, selName) {
       loading.style.display = 'none';
@@ -556,31 +556,28 @@
     }
 
     function openMediaBrowser() {
-      if (!_mediaBrowserModal) {
-        _mediaBrowserModal = new bootstrap.Modal(document.getElementById('mediaBrowserModal'));
-      }
-      var grid      = document.getElementById('media-browser-grid');
-      var loading   = document.getElementById('media-browser-loading');
+      var grid       = document.getElementById('media-browser-grid');
+      var loading    = document.getElementById('media-browser-loading');
       var confirmBtn = document.getElementById('media-browser-confirm');
-      var selName   = document.getElementById('media-browser-selected-name');
+      var selName    = document.getElementById('media-browser-selected-name');
 
-      grid.style.display   = 'none';
+      grid.style.display    = 'none';
       loading.style.display = '';
-      confirmBtn.disabled  = true;
-      selName.textContent  = '';
-      _selectedImageUrl    = null;
+      confirmBtn.disabled   = true;
+      selName.textContent   = '';
+      _selectedImageUrl     = null;
 
       fetch('{{ url_for("media_browser.images") }}')
         .then(function(r) { return r.json(); })
         .then(function(files) { _buildMediaGrid(files, grid, loading, confirmBtn, selName); })
         .catch(function() { loading.textContent = '{{ _gettext("Failed to load images.") }}'; });
 
-      _mediaBrowserModal.show();
+      document.getElementById('mediaBrowserTrigger').click();
     }
 
     function confirmFeaturedImage() {
       if (_selectedImageUrl) selectFeaturedImage(_selectedImageUrl);
-      if (_mediaBrowserModal) _mediaBrowserModal.hide();
+      document.querySelector('#mediaBrowserModal [data-bs-dismiss="modal"]').click();
     }
 
     function selectFeaturedImage(url) {
