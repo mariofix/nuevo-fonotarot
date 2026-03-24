@@ -403,6 +403,7 @@
   {{ super() }}
   {{ lib.form_js() }}
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-bootstrap5.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-preset-webpage.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/grapesjs/js/grapesjs-blocks-basic.min.js') }}"></script>
   <script>
@@ -435,7 +436,10 @@
           styles: ['{{ url_for("static", filename="vendor/tabler/css/tabler.min.css") }}'],
           scripts: ['{{ url_for("static", filename="vendor/tabler/js/tabler.min.js") }}'],
         },
-        plugins: ['gjs-preset-webpage', 'gjs-blocks-basic'],
+        plugins: ['grapesjs-blocks-bootstrap-5', 'gjs-preset-webpage', 'gjs-blocks-basic'],
+        pluginsOpts: {
+          'grapesjs-blocks-bootstrap-5': {},
+        },
       });
 
       var existingHtml = contentField.value.trim();
