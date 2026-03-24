@@ -216,18 +216,35 @@ class MediaLibraryAdmin(SecureFileAdmin):
         return ext in _IMAGE_EXTENSIONS
 
 
+_THUMB_SIZE = (240, 240)
+
+
 class MediaBrowserView(BaseView):
-    """Hidden JSON API that returns images from the media-library folder."""
+    """Hidden JSON API that returns images from the media-library folder.
+
+    Endpoints
+    ---------
+    GET /media/          — JSON list of {name, url, thumb_url} for every image.
+    GET /media/thumb     — Returns a 240×240 thumbnail for ?f=<filename>,
+                           generated on first request and cached in .thumbs/.
+    """
 
     def is_accessible(self):
-        return True
+        return current_user.is_authenticated and current_user.has_role("admin")
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
 
     def is_visible(self):
         return False
 
+    @staticmethod
+    def _media_path() -> str:
+        return os.path.join(os.path.dirname(__file__), "static", "media-library")
+
     @expose("/")
     def images(self):
-        media_path = os.path.join(os.path.dirname(__file__), "static", "media-library")
+        media_path = self._media_path()
         files = []
         if os.path.isdir(media_path):
             for name in sorted(os.listdir(media_path)):
@@ -238,8 +255,47 @@ class MediaBrowserView(BaseView):
                     files.append({
                         "name": name,
                         "url": url_for("static", filename=f"media-library/{name}"),
+                        "thumb_url": url_for("media_browser.thumb", f=name),
                     })
         return jsonify(files)
+
+    @expose("/thumb")
+    def thumb(self):
+        """Return a 240×240 thumbnail for the requested media-library image.
+
+        The thumbnail is generated once and cached in media-library/.thumbs/.
+        Path traversal is rejected — only bare filenames with known image
+        extensions are accepted.
+        """
+        from PIL import Image
+        from flask import abort, send_file
+
+        filename = request.args.get("f", "")
+        # Reject anything that looks like a path traversal.
+        if not filename or os.sep in filename or "/" in filename or ".." in filename:
+            abort(400)
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        if ext not in _IMAGE_EXTENSIONS:
+            abort(400)
+
+        media_path = self._media_path()
+        src = os.path.join(media_path, filename)
+        if not os.path.isfile(src):
+            abort(404)
+
+        thumbs_dir = os.path.join(media_path, ".thumbs")
+        os.makedirs(thumbs_dir, exist_ok=True)
+        thumb_path = os.path.join(thumbs_dir, filename)
+
+        if not os.path.isfile(thumb_path):
+            with Image.open(src) as img:
+                img = img.convert("RGB") if img.mode not in ("RGB", "RGBA") else img
+                img.thumbnail(_THUMB_SIZE, Image.LANCZOS)
+                save_fmt = "JPEG" if ext in ("jpg", "jpeg") else ext.upper()
+                img.save(thumb_path, format=save_fmt, quality=82, optimize=True)
+
+        mime = "image/jpeg" if ext in ("jpg", "jpeg") else f"image/{ext}"
+        return send_file(thumb_path, mimetype=mime, max_age=86400)
 
 
 class UserAdminView(SecureModelView):
