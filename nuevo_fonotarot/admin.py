@@ -222,7 +222,7 @@ class MediaBrowserView(BaseView):
     def is_visible(self):
         return False
 
-    @expose("/images/")
+    @expose("/")
     def images(self):
         media_path = os.path.join(os.path.dirname(__file__), "static", "media-library")
         files = []
