@@ -155,6 +155,11 @@ def _init_extensions(app: Flask) -> None:
         try:
             settings = SiteSettings.bulk_get(all_keys, defaults=defaults)
         except Exception:
+            from .log import get_logger
+            get_logger(__name__).exception(
+                "inject_site_settings: failed to fetch SiteSettings — "
+                "analytics/SEO values will be empty for this request"
+            )
             settings = {key: defaults.get(key, "") for key in all_keys}
 
         # Build template context — SEO & analytics keys as-is (empty string fallback)

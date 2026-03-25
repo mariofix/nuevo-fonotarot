@@ -1,6 +1,6 @@
 """Payment callbacks, order status, store index and customer profile."""
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, current_app, flash, redirect, render_template, request, url_for
 from flask_security import current_user
 
 from ...decorators import login_required_modal
@@ -11,6 +11,73 @@ from ..utils import _get_cart, _save_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Order confirmation email
+# ---------------------------------------------------------------------------
+
+
+def _send_order_confirmation_email(order: Order) -> None:
+    """Send order confirmation email to customer and admin users via Daleks."""
+    from daleks.contrib.client import DaleksClient
+
+    from ...models import Role
+
+    daleks_url = current_app.config.get("DALEKS_URL")
+    if not daleks_url:
+        logger.warning("DALEKS_URL not configured — skipping order confirmation email")
+        return
+
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
+    site_url = current_app.config.get("SITE_URL", "")
+
+    recipient_name = order.shipping_name or order.shipping_email or ""
+
+    # --- Customer email ---
+    if order.shipping_email:
+        try:
+            html_body = render_template(
+                "tienda/email/orden_confirmada.html",
+                order=order,
+                recipient_name=recipient_name,
+                site_url=site_url,
+            )
+            with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+                client.send_email(
+                    from_address=from_address,
+                    to=[order.shipping_email],
+                    subject=f"Orden #{order.id} confirmada — Fonotarot",
+                    html_body=html_body,
+                )
+            logger.info("Order confirmation email sent to %s for order=%s", order.shipping_email, order.id)
+        except Exception:
+            logger.exception("Failed to send order confirmation email for order=%s", order.id)
+
+    # --- Admin notification ---
+    admin_role = Role.query.filter_by(name="admin").first()
+    if admin_role:
+        admin_emails = [u.email for u in admin_role.users.all() if u.active and u.email]
+        if admin_emails:
+            try:
+                html_body = render_template(
+                    "tienda/email/orden_confirmada.html",
+                    order=order,
+                    recipient_name=f"Admin (compra de {recipient_name})",
+                    site_url=site_url,
+                )
+                with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+                    for email in admin_emails:
+                        client.send_email(
+                            from_address=from_address,
+                            to=[email],
+                            subject=f"[Admin] Nueva orden #{order.id} pagada — ${order.total_display}",
+                            html_body=html_body,
+                        )
+                logger.info("Admin order notification sent for order=%s", order.id)
+            except Exception:
+                logger.exception("Failed to send admin order notification for order=%s", order.id)
 
 
 # ---------------------------------------------------------------------------
@@ -92,6 +159,8 @@ def pago_confirmacion():
                 logger.info(
                     "Payment confirmed (succeeded): order=%s token=%r", order.id, token
                 )
+                db.session.commit()
+                _send_order_confirmation_email(order)
             elif order.state in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
@@ -100,7 +169,7 @@ def pago_confirmacion():
                     order.state,
                     token,
                 )
-            db.session.commit()
+                db.session.commit()
     except Exception as exc:
         logger.error("Payment confirmation error: %s", exc, exc_info=True)
     return "OK", 200
@@ -126,6 +195,7 @@ def pago_retorno(order_id: str):
                 order.status = OrderStatus.PAID
                 logger.info("Payment return: order=%s status updated to PAID", order_id)
                 db.session.commit()
+                _send_order_confirmation_email(order)
             elif order.state in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
