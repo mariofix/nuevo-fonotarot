@@ -33,6 +33,7 @@
     <meta property="og:url"         content="https://{{ site_domain }}{{ request.path }}" />
     <meta property="og:site_name"   content="{{ seo_og_site_name or "Fonotarot" }}" />
     <meta property="og:locale"      content="{{ get_locale() }}" />
+    <meta property="og:locale:alternate" content="es_US" />
     <meta property="og:title"       content="{% block og_title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
     <meta property="og:description" content="{% block og_description %}{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
     <meta property="og:image"       content="{{ seo_og_image_url or "https://" ~ site_domain ~ "/static/og-image.png" }}" />

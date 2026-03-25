@@ -2361,7 +2361,7 @@
     <div class="row g-4">
       {% for agent in ejecutivos %}
       <div class="col-6 col-md-4 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
-        <div class="agent-card" data-option="{{ agent.option }}" {% if agent.avatar %}style="background-image: url(https://www.fonotarot.com/ejecutivos/{{ agent.avatar }}.png)"{% endif %}>
+        <div class="agent-card" data-option="{{ agent.option }}" {% if agent.avatar %}style="background-image: url(https://www.fonotarot.com/ejecutivos/{{ agent.avatar }}.png)" role="img" aria-label="{{ agent.name }} - Tarotista Fonotarot"{% endif %}>
           {% if not agent.avatar %}
           <div class="agent-no-photo-bg">{{ agent.name[0] }}</div>
           {% endif %}
@@ -2934,7 +2934,7 @@
   }
 
   poll();                      /* immediate first fetch */
-  setInterval(poll, 5000);
+  setInterval(poll, 15000);   /* poll every 15 s — reduces main-thread work for CWV */
     }) ();
 </script>
 
