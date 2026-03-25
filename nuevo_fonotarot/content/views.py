@@ -255,6 +255,104 @@ content_bp = Blueprint("content", __name__)
 
 
 # ---------------------------------------------------------------------------
+# robots.txt & sitemap.xml
+# ---------------------------------------------------------------------------
+
+
+@content_bp.route("/robots.txt")
+def robots_txt():
+    """Serve a dynamic robots.txt."""
+    site_url = f"https://{current_app.config.get('TRUSTED_HOSTS', ['localhost'])[0]}"
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "",
+        "Disallow: /ft-admin/",
+        "Disallow: /account/",
+        "Disallow: /api/",
+        "Disallow: /promo/",
+        "",
+        f"Sitemap: {site_url}/sitemap.xml",
+    ]
+    resp = make_response("\n".join(lines) + "\n")
+    resp.headers["Content-Type"] = "text/plain; charset=utf-8"
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+@content_bp.route("/sitemap.xml")
+def sitemap_xml():
+    """Generate a dynamic XML sitemap with homepage, blog posts, and static pages."""
+    from datetime import datetime, timezone
+
+    site_url = f"https://{current_app.config.get('TRUSTED_HOSTS', ['localhost'])[0]}"
+    blog_prefix = current_app.config.get("BLOG_URL_PREFIX", "/blog")
+
+    urls = []
+
+    # Homepage
+    urls.append({
+        "loc": f"{site_url}/",
+        "changefreq": "daily",
+        "priority": "1.0",
+    })
+
+    # Blog listing
+    urls.append({
+        "loc": f"{site_url}{blog_prefix}/",
+        "changefreq": "daily",
+        "priority": "0.8",
+    })
+
+    # Published blog posts
+    posts = (
+        BlogPost.query.filter_by(published=True)
+        .order_by(BlogPost.published_at.desc())
+        .all()
+    )
+    for post in posts:
+        entry = {
+            "loc": f"{site_url}{blog_prefix}/{post.slug}",
+            "changefreq": "monthly",
+            "priority": "0.7",
+        }
+        if post.updated_at:
+            entry["lastmod"] = post.updated_at.strftime("%Y-%m-%d")
+        urls.append(entry)
+
+    # Active static pages (excluding homepage-flagged ones)
+    pages = StaticPage.query.filter_by(is_active=True, is_homepage=False).all()
+    for page in pages:
+        entry = {
+            "loc": f"{site_url}/{page.path}",
+            "changefreq": "monthly",
+            "priority": "0.5",
+        }
+        if page.updated_at:
+            entry["lastmod"] = page.updated_at.strftime("%Y-%m-%d")
+        urls.append(entry)
+
+    xml_parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for u in urls:
+        xml_parts.append("  <url>")
+        xml_parts.append(f"    <loc>{u['loc']}</loc>")
+        if "lastmod" in u:
+            xml_parts.append(f"    <lastmod>{u['lastmod']}</lastmod>")
+        xml_parts.append(f"    <changefreq>{u['changefreq']}</changefreq>")
+        xml_parts.append(f"    <priority>{u['priority']}</priority>")
+        xml_parts.append("  </url>")
+    xml_parts.append("</urlset>")
+
+    resp = make_response("\n".join(xml_parts))
+    resp.headers["Content-Type"] = "application/xml; charset=utf-8"
+    resp.headers["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
+# ---------------------------------------------------------------------------
 # Homepage
 # ---------------------------------------------------------------------------
 
