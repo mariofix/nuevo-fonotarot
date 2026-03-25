@@ -232,6 +232,13 @@ def _homepage_ctx() -> dict:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
         ejecutivos = []
 
+    latest_posts = (
+        BlogPost.query.filter_by(published=True)
+        .order_by(BlogPost.published_at.desc())
+        .limit(3)
+        .all()
+    )
+
     return {
         "firenze_token": firenze_token,
         "firenze_ejecutivos_url": firenze_ejecutivos_url,
@@ -240,6 +247,7 @@ def _homepage_ctx() -> dict:
         "minute_packs": minute_packs,
         "plans": minute_packs,  # alias used by older experiment templates
         "current_moon_phase": get_moon_phase_index(),
+        "latest_posts": latest_posts,
     }
 
 blog_bp = Blueprint("blog", __name__)
