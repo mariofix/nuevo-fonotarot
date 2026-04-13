@@ -14,7 +14,7 @@ dependencies = [
     "pyflowcl (>=2026.3.0,<2027.0.0)",
     "khipu-tools (>=2025.1.0,<2026.0.0)",
     "flask-debugtoolbar (>=0.16.0,<0.17.0)",
-    "pymysql (>=1.1.0,<2.0.0)",
+    "pymysql (>=1.1.2,<2.0.0)",
     "flask-debugtoolbar-extrapanels (>=0.1.0,<0.2.0)",
     "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
     "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
