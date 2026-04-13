@@ -21,7 +21,7 @@ dependencies = [
     "daleks[contrib] @ git+https://github.com/mariofix/daleks.git",
     "requests (>=2.31.0,<3.0.0)",
     "gunicorn (>=25.2.0,<26.0.0)",
-    "ephem (>=4.1,<5.0)",
+    "ephem (>=4.2.1,<5.0)",
 ]
 
 [project.scripts]
