@@ -28,10 +28,10 @@ def _sync_firenze_on_payment(order: Order) -> None:
 
     All errors are swallowed and logged — this must never block payment processing.
     """
+    from ...firenze import create_client as _firenze_create
+
     if order.firenze_client_id:
         return
-
-    from ...firenze import create_client as _firenze_create
 
     try:
         client_id = _firenze_create(

@@ -75,7 +75,10 @@ def comprar_minutos(pack_id: int):
                     if current_user.is_authenticated and not current_user.firenze_client_id:
                         current_user.firenze_client_id = firenze_id
             except Exception:
-                logger.exception("comprar_minutos: Firenze lookup failed for order=%s", order.id)
+                logger.exception(
+                    "comprar_minutos: Firenze search_client or user update failed for order=%s",
+                    order.id,
+                )
 
         item = OrderItem(
             order_id=order.id,

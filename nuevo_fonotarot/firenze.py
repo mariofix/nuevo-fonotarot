@@ -26,7 +26,7 @@ Configuration (via ``app.config`` / environment variables)
 """
 
 import json
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode, urljoin, urlparse, urlunparse
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 
@@ -74,7 +74,9 @@ def search_client(
     if phone:
         params["phone"] = phone
 
-    url = urljoin(_base_url(), "/api/v1/client") + "?" + urlencode(params)
+    base = urljoin(_base_url(), "/api/v1/client")
+    parsed = urlparse(base)
+    url = urlunparse(parsed._replace(query=urlencode(params)))
     try:
         req = Request(url, headers={"Accept": "application/json"})
         with urlopen(req, timeout=_timeout()) as resp:
