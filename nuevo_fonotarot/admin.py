@@ -750,9 +750,15 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
             firenze_ok = _sync_firenze_on_payment(order)
             order.status = OrderStatus.PAID
             db.session.commit()
-            _send_order_confirmation_email(order)
+            try:
+                _send_order_confirmation_email(order)
+            except Exception:
+                pass  # already logged inside _send_order_confirmation_email
             if not firenze_ok:
-                _send_firenze_failure_email(order)
+                try:
+                    _send_firenze_failure_email(order)
+                except Exception:
+                    pass  # already logged inside _send_firenze_failure_email
             processed += 1
 
         if processed:

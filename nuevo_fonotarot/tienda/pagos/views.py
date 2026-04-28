@@ -176,6 +176,34 @@ def _send_order_confirmation_email(order: Order) -> None:
                 logger.exception("Failed to send admin order notification for order=%s", order.id)
 
 
+def _complete_succeeded_order(order: Order, label: str) -> None:
+    """Shared post-payment completion logic for a ``succeeded`` order.
+
+    Calls Firenze to register the client.  If Firenze succeeds, the order is
+    marked PAID and confirmation emails are sent to the customer and admins.
+    If Firenze fails, the order remains PENDING and an admin failure email is
+    sent so operators can retry via the "Completar Orden" admin action.
+
+    Args:
+        order: The Order to complete (must have ``state == "succeeded"``).
+        label: Short context string used in log messages (e.g. ``"webhook"``).
+    """
+    firenze_ok = _sync_firenze_on_payment(order)
+    if firenze_ok:
+        order.status = OrderStatus.PAID
+        logger.info(
+            "%s: Firenze OK — order=%s marked PAID", label, order.id
+        )
+        db.session.commit()
+        _send_order_confirmation_email(order)
+    else:
+        logger.warning(
+            "%s: Firenze failed for order=%s — notifying admins", label, order.id
+        )
+        db.session.commit()
+        _send_firenze_failure_email(order)
+
+
 # ---------------------------------------------------------------------------
 # Store index
 # ---------------------------------------------------------------------------
@@ -261,24 +289,7 @@ def pago_confirmacion():
                     sync_exc,
                 )
             if order.state == "succeeded":
-                firenze_ok = _sync_firenze_on_payment(order)
-                if firenze_ok:
-                    order.status = OrderStatus.PAID
-                    logger.info(
-                        "Payment confirmed (succeeded) + Firenze OK: order=%s token=%r",
-                        order.id,
-                        token,
-                    )
-                    db.session.commit()
-                    _send_order_confirmation_email(order)
-                else:
-                    logger.warning(
-                        "Payment confirmed but Firenze failed: order=%s token=%r",
-                        order.id,
-                        token,
-                    )
-                    db.session.commit()
-                    _send_firenze_failure_email(order)
+                _complete_succeeded_order(order, "webhook")
             elif order.state in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
@@ -310,19 +321,7 @@ def pago_retorno(order_id: str):
             order.sync_from_provider()
             logger.debug("pago_retorno: synced order=%s new_state=%r", order_id, order.state)
             if order.state == "succeeded":
-                firenze_ok = _sync_firenze_on_payment(order)
-                if firenze_ok:
-                    order.status = OrderStatus.PAID
-                    logger.info("Payment return: order=%s status updated to PAID", order_id)
-                    db.session.commit()
-                    _send_order_confirmation_email(order)
-                else:
-                    logger.warning(
-                        "Payment return: Firenze failed for order=%s — notifying admins",
-                        order_id,
-                    )
-                    db.session.commit()
-                    _send_firenze_failure_email(order)
+                _complete_succeeded_order(order, "retorno")
             elif order.state in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
