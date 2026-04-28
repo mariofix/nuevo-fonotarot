@@ -1,0 +1,115 @@
+{#
+  Context:
+    order        — Order model instance
+    error_msg    — string describing the failure (optional, omit or leave blank to hide)
+    site_url     — base site URL string
+#}
+{% extends "email/base.html" %}
+
+{% block email_title %}[Admin] Fallo Firenze — Orden #{{ order.id }}{% endblock %}
+{% block preview_text %}No se pudo registrar al cliente en Firenze para la orden #{{ order.id }}. Se requiere intervención manual.{% endblock %}
+
+{% block content %}
+
+  {# ── Heading ── #}
+  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
+              font-weight:700; color:#a02020; line-height:1.2;">
+    ⚠ Fallo al registrar en Firenze
+  </h1>
+  <div style="width:40px; height:3px; background:#c9a84c;
+               border-radius:2px; margin:0 0 20px;"></div>
+
+  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.7; color:#2d2233;">
+    El pago de la orden <strong>#{{ order.id }}</strong> fue confirmado correctamente,
+    pero <strong>no se pudo registrar al cliente en Firenze</strong>.
+    La orden permanece en estado <code>pendiente</code> y requiere intervención manual.
+  </p>
+
+  {# ── Order summary box ── #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+         style="margin:0 0 28px; border:1px solid #f0c0c0; border-radius:10px;
+                overflow:hidden;">
+    <tr>
+      <td colspan="2"
+          style="background-color:#fff0f0; padding:12px 20px;
+                 border-bottom:1px solid #f0c0c0;">
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+                   font-weight:700; color:#a02020; letter-spacing:.5px;">
+          ORDEN&nbsp;
+          <span style="color:#8a7a8e; font-weight:400;">#{{ order.id }}</span>
+          &nbsp;— PAGO CONFIRMADO / FIRENZE PENDIENTE
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233; font-weight:700;">
+        Cliente
+      </td>
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233;">
+        {{ order.shipping_name or '(sin nombre)' }}
+        {% if order.shipping_email %} — {{ order.shipping_email }}{% endif %}
+        {% if order.shipping_phone %} — {{ order.shipping_phone }}{% endif %}
+      </td>
+    </tr>
+    <tr style="border-top:1px solid #f0c0c0;">
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233; font-weight:700;">
+        Total
+      </td>
+      <td style="padding:11px 20px; font-family:Georgia,serif; font-size:15px;
+                  font-weight:700; color:#a02020;">
+        $&nbsp;{{ order.total_display }}&nbsp;CLP
+      </td>
+    </tr>
+    <tr style="border-top:1px solid #f0c0c0;">
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233; font-weight:700;">
+        Proveedor
+      </td>
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233;">
+        {{ order.provider or '(desconocido)' }}
+      </td>
+    </tr>
+    {% if error_msg %}
+    <tr style="border-top:1px solid #f0c0c0;">
+      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                  color:#2d2233; font-weight:700; vertical-align:top;">
+        Error
+      </td>
+      <td style="padding:11px 20px; font-family:monospace; font-size:13px;
+                  color:#a02020;">
+        {{ error_msg }}
+      </td>
+    </tr>
+    {% endif %}
+  </table>
+
+  {# ── CTA ── #}
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 28px;">
+    <tr>
+      <td align="center" style="border-radius:30px; background-color:#a02020;">
+        <a href="{{ site_url }}/admin/order/edit/?id={{ order.id }}"
+           style="display:inline-block; padding:13px 32px; font-family:Arial,sans-serif;
+                  font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;
+                  border-radius:30px;">
+          Ver orden en el panel admin
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
+
+  <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
+             color:#8a7a8e; line-height:1.7;">
+    Este mensaje fue generado automáticamente. Usa la acción
+    <strong>"Completar Orden"</strong> en el panel de administración
+    para reintentar el registro en Firenze y marcar la orden como pagada.
+  </p>
+
+{% endblock %}
