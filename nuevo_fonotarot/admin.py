@@ -5,6 +5,7 @@ from datetime import date
 
 from flask import jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
+from flask_admin.actions import action
 from flask_admin.menu import MenuLink
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -712,6 +713,58 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     column_filters = ("status", "provider", "anonymous_shipping")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
+
+    @action(
+        "completar_orden",
+        "Completar Orden",
+        "¿Completar las órdenes seleccionadas? Solo se procesarán las que tengan estado de pago 'succeeded'.",
+    )
+    def action_completar_orden(self, ids):
+        """Complete selected orders: call Firenze, send emails, mark as PAID.
+
+        Only orders whose payment ``state`` is ``succeeded`` are processed.
+        The fulfillment ``status`` is always set to PAID regardless of whether
+        the Firenze call succeeds; when Firenze fails an admin notification email
+        is sent so the operator can follow up.
+        """
+        from flask import flash
+
+        from .extensions import db
+        from .models import Order, OrderStatus
+        from .tienda.pagos.views import (
+            _send_firenze_failure_email,
+            _send_order_confirmation_email,
+            _sync_firenze_on_payment,
+        )
+
+        processed = 0
+        skipped = 0
+        for order_id in ids:
+            order = db.session.get(Order, int(order_id))
+            if order is None:
+                continue
+            if order.state != "succeeded":
+                skipped += 1
+                continue
+
+            firenze_ok = _sync_firenze_on_payment(order)
+            order.status = OrderStatus.PAID
+            db.session.commit()
+            _send_order_confirmation_email(order)
+            if not firenze_ok:
+                _send_firenze_failure_email(order)
+            processed += 1
+
+        if processed:
+            flash(
+                f"{processed} orden(es) completada(s) y marcada(s) como pagadas.",
+                "success",
+            )
+        if skipped:
+            flash(
+                f"{skipped} orden(es) omitida(s): el pago no está en estado 'succeeded'.",
+                "warning",
+            )
 
 
 def init_admin(app, admin_ext):
