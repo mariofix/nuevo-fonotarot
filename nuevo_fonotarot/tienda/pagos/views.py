@@ -14,8 +14,44 @@ logger = get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Order confirmation email
+# Firenze client-ID sync
 # ---------------------------------------------------------------------------
+
+
+def _sync_firenze_on_payment(order: Order) -> None:
+    """After payment confirmation, ensure the order (and linked user) have a Firenze client_id.
+
+    If ``order.firenze_client_id`` is already set this is a no-op.  Otherwise
+    a new client is created in Firenze using the order's contact details.
+    For orders tied to a registered user that has no ``firenze_client_id``
+    the value is propagated to the user record as well.
+
+    All errors are swallowed and logged — this must never block payment processing.
+    """
+    if order.firenze_client_id:
+        return
+
+    from ...firenze import create_client as _firenze_create
+
+    try:
+        client_id = _firenze_create(
+            name=order.shipping_name,
+            email=order.shipping_email,
+            ani=order.shipping_phone,
+            transaction_id=order.transaction_id,
+        )
+        if client_id is not None:
+            order.firenze_client_id = client_id
+            if order.user_id:
+                from ...models import User as _User
+
+                linked_user = db.session.get(_User, order.user_id)
+                if linked_user and not linked_user.firenze_client_id:
+                    linked_user.firenze_client_id = client_id
+    except Exception:
+        logger.exception(
+            "_sync_firenze_on_payment: failed for order=%s", order.id
+        )
 
 
 def _send_order_confirmation_email(order: Order) -> None:
@@ -159,6 +195,7 @@ def pago_confirmacion():
                 logger.info(
                     "Payment confirmed (succeeded): order=%s token=%r", order.id, token
                 )
+                _sync_firenze_on_payment(order)
                 db.session.commit()
                 _send_order_confirmation_email(order)
             elif order.state in ("failed", "cancelled"):
@@ -194,6 +231,7 @@ def pago_retorno(order_id: str):
             if order.state == "succeeded":
                 order.status = OrderStatus.PAID
                 logger.info("Payment return: order=%s status updated to PAID", order_id)
+                _sync_firenze_on_payment(order)
                 db.session.commit()
                 _send_order_confirmation_email(order)
             elif order.state in ("failed", "cancelled"):

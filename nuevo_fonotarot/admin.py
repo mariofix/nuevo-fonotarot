@@ -301,7 +301,7 @@ class MediaBrowserView(BaseView):
 class UserAdminView(SecureModelView):
     """Admin view for the User model."""
 
-    column_list = ("email", "username", "active", "roles", "created_at")
+    column_list = ("email", "username", "active", "roles", "firenze_client_id", "created_at")
     column_searchable_list = ("email", "username")
     column_filters = ("active",)
     form_excluded_columns = ("password", "fs_uniquifier", "created_at")
@@ -705,6 +705,7 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
         "status",
         "total",
         "provider",
+        "firenze_client_id",
         "anonymous_shipping",
         "created_at",
     )

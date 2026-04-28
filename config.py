@@ -180,6 +180,10 @@ class Config:
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "audiotex")
 
+    # Firenze client lookup/creation service (internal, not internet-accessible)
+    FIRENZE_URL: str = os.environ.get("FIRENZE_URL", "http://firenze.local")
+    FIRENZE_TIMEOUT: int = int(os.environ.get("FIRENZE_TIMEOUT", "5"))
+
     DEBUG_TB_ENABLED: bool = False
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",

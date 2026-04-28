@@ -75,6 +75,9 @@ class User(db.Model, UserMixin):
     # Preferred payment provider key ('flow' or 'khipu')
     preferred_payment: Mapped[str | None] = mapped_column(String(30))
 
+    # Firenze company-wide client identifier (populated at registration or first purchase).
+    firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+
     def __repr__(self) -> str:
         return f"<User {self.email}>"
 
@@ -384,6 +387,9 @@ class Order(db.Model, PaymentMixin):
     provider: Mapped[str | None] = mapped_column(String(64), index=True)
     amount: Mapped[Decimal | None] = mapped_column(Numeric(19, 4))
     currency: Mapped[str | None] = mapped_column(String(3))
+
+    # Firenze company-wide client identifier (linked after lookup or confirmed payment).
+    firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
 
     items = db.relationship(
         "OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan"

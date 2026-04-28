@@ -101,6 +101,25 @@ def _init_extensions(app: Flask) -> None:
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, _ext.user_datastore)
 
+    # After a new user registers, look them up in Firenze and persist client_id.
+    from flask_security.signals import user_registered as _user_registered_signal
+
+    @_user_registered_signal.connect_via(app)
+    def _on_user_registered(sender, user, confirm_token, confirmation_token, **extra):
+        """Query Firenze for the newly registered user and save the client_id."""
+        from .firenze import search_client
+
+        try:
+            client_id = search_client(email=user.email, phone=user.username)
+            if client_id is not None:
+                user.firenze_client_id = client_id
+                db.session.commit()
+        except Exception:
+            from .log import get_logger as _get_logger
+            _get_logger(__name__).exception(
+                "_on_user_registered: failed to sync Firenze client_id for user=%s", user.id
+            )
+
     # TablerTheme blueprint must be registered before Admin registers its own
     # blueprint — Flask resolves templates in blueprint registration order.
     from flask_admin_tabler import TablerTheme
