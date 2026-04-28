@@ -25,11 +25,9 @@ Configuration (via ``app.config`` / environment variables)
     Request timeout in seconds.  Defaults to ``5``.
 """
 
-import json
-from urllib.parse import urlencode, urljoin, urlparse, urlunparse
-from urllib.request import Request, urlopen
-from urllib.error import URLError
+from urllib.parse import urljoin
 
+import requests
 from flask import current_app
 
 from .log import get_logger
@@ -74,37 +72,34 @@ def search_client(
     if phone:
         params["phone"] = phone
 
-    base = urljoin(_base_url(), "/api/v1/client")
-    parsed = urlparse(base)
-    url = urlunparse(parsed._replace(query=urlencode(params)))
+    url = urljoin(_base_url(), "/api/v1/client")
     try:
-        req = Request(url, headers={"Accept": "application/json"})
-        with urlopen(req, timeout=_timeout()) as resp:
-            if resp.status != 200:
-                logger.warning(
-                    "firenze.search_client: unexpected status %s for email=%r phone=%r",
-                    resp.status,
-                    email,
-                    phone,
-                )
-                return None
-            data = json.loads(resp.read().decode())
-            client_id = data.get("client_id")
-            if client_id is not None:
-                logger.debug(
-                    "firenze.search_client: found client_id=%s for email=%r phone=%r",
-                    client_id,
-                    email,
-                    phone,
-                )
-                return int(client_id)
-            logger.debug(
-                "firenze.search_client: no client_id in response for email=%r phone=%r",
+        resp = requests.get(url, params=params, timeout=_timeout())
+        if resp.status_code != 200:
+            logger.warning(
+                "firenze.search_client: unexpected status %s for email=%r phone=%r",
+                resp.status_code,
                 email,
                 phone,
             )
             return None
-    except URLError as exc:
+        data = resp.json()
+        client_id = data.get("client_id")
+        if client_id is not None:
+            logger.debug(
+                "firenze.search_client: found client_id=%s for email=%r phone=%r",
+                client_id,
+                email,
+                phone,
+            )
+            return int(client_id)
+        logger.debug(
+            "firenze.search_client: no client_id in response for email=%r phone=%r",
+            email,
+            phone,
+        )
+        return None
+    except requests.RequestException as exc:
         logger.warning(
             "firenze.search_client: network error for email=%r phone=%r — %s",
             email,
@@ -150,42 +145,32 @@ def create_client(
     }
     url = urljoin(_base_url(), "/api/v1/client")
     try:
-        body = json.dumps(payload).encode()
-        req = Request(
-            url,
-            data=body,
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            method="POST",
-        )
-        with urlopen(req, timeout=_timeout()) as resp:
-            if resp.status not in (200, 201):
-                logger.warning(
-                    "firenze.create_client: unexpected status %s for email=%r ani=%r",
-                    resp.status,
-                    email,
-                    ani,
-                )
-                return None
-            data = json.loads(resp.read().decode())
-            client_id = data.get("client_id")
-            if client_id is not None:
-                logger.info(
-                    "firenze.create_client: created client_id=%s for email=%r ani=%r",
-                    client_id,
-                    email,
-                    ani,
-                )
-                return int(client_id)
+        resp = requests.post(url, json=payload, timeout=_timeout())
+        if resp.status_code not in (200, 201):
             logger.warning(
-                "firenze.create_client: no client_id in response for email=%r ani=%r",
+                "firenze.create_client: unexpected status %s for email=%r ani=%r",
+                resp.status_code,
                 email,
                 ani,
             )
             return None
-    except URLError as exc:
+        data = resp.json()
+        client_id = data.get("client_id")
+        if client_id is not None:
+            logger.info(
+                "firenze.create_client: created client_id=%s for email=%r ani=%r",
+                client_id,
+                email,
+                ani,
+            )
+            return int(client_id)
+        logger.warning(
+            "firenze.create_client: no client_id in response for email=%r ani=%r",
+            email,
+            ani,
+        )
+        return None
+    except requests.RequestException as exc:
         logger.warning(
             "firenze.create_client: network error for email=%r ani=%r — %s",
             email,
