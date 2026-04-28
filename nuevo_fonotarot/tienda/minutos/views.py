@@ -62,6 +62,24 @@ def comprar_minutos(pack_id: int):
         db.session.add(order)
         db.session.flush()
 
+        # Resolve Firenze client_id as early as possible.
+        from ...firenze import search_client as _firenze_search
+
+        if current_user.is_authenticated and current_user.firenze_client_id:
+            order.firenze_client_id = current_user.firenze_client_id
+        else:
+            try:
+                firenze_id = _firenze_search(email=email, phone=phone or None)
+                if firenze_id is not None:
+                    order.firenze_client_id = firenze_id
+                    if current_user.is_authenticated and not current_user.firenze_client_id:
+                        current_user.firenze_client_id = firenze_id
+            except Exception:
+                logger.exception(
+                    "comprar_minutos: Firenze search_client or user update failed for order=%s",
+                    order.id,
+                )
+
         item = OrderItem(
             order_id=order.id,
             item_type=OrderItemType.MINUTE_PACK,

@@ -24,6 +24,12 @@
         <h1 class="fw-bold mb-1">Mi Perfil</h1>
         <p class="text-secondary mb-4">{{ user.email }}</p>
 
+        {% if user.firenze_client_id %}
+        <div class="mb-3 text-secondary small">
+          <i class="ti ti-id me-1"></i>ID cliente: <span class="font-monospace">{{ user.firenze_client_id }}</span>
+        </div>
+        {% endif %}
+
         <!-- Profile completeness -->
         {% if user.has_physical_profile %}
         <div class="profile-complete mb-4">
