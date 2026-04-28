@@ -6,10 +6,14 @@ updates:
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     labels:
       - dependencies
       - python
+    groups:
+      all-python:
+        patterns:
+          - "*"
 
   # ── Frontend vendor libraries (package.json) ──────────────────────────────
   # After merging a Dependabot PR for npm deps, run `npm install` then
@@ -19,23 +23,11 @@ updates:
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     labels:
       - dependencies
       - frontend
     groups:
-      tabler:
+      all-npm:
         patterns:
-          - "@tabler/*"
-      fontsource:
-        patterns:
-          - "@fontsource/*"
-      grapesjs:
-        patterns:
-          - "grapesjs*"
-      highlightjs:
-        patterns:
-          - "@highlightjs/*"
-      hugerte:
-        patterns:
-          - "hugerte"
+          - "*"
