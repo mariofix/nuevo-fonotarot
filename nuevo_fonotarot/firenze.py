@@ -51,8 +51,8 @@ def search_client(
 ) -> int | None:
     """Search for an existing Firenze client by email and/or phone.
 
-    Calls ``GET /api/v1/client?email=<email>&phone=<phone>``.  At least one
-    of *email* or *phone* must be provided.
+    Calls ``GET /api/v1/clients/search?service=fonotarot-cl&email=<email>&phone=<phone>``.  
+    At least one of *email* or *phone* must be provided.
 
     Args:
         email: Customer e-mail address (optional but recommended).
@@ -67,12 +67,13 @@ def search_client(
         return None
 
     params: dict[str, str] = {}
+    params["service"] = "fonotarot-cl"
     if email:
         params["email"] = email
     if phone:
-        params["phone"] = phone
+        params["ani"] = phone
 
-    url = urljoin(_base_url(), "/api/v1/client")
+    url = urljoin(_base_url(), "/api/v1/clients/search")
     try:
         resp = requests.get(url, params=params, timeout=_timeout())
         if resp.status_code != 200:
@@ -124,7 +125,7 @@ def create_client(
 ) -> int | None:
     """Create a new client in Firenze after a confirmed anonymous payment.
 
-    Calls ``POST /api/v1/client`` with a JSON body containing *name*,
+    Calls ``POST /api/v1/payments/complete`` with a JSON body containing *name*,
     *email*, *ani* (phone number), and *transaction_id*.
 
     Args:
@@ -138,12 +139,14 @@ def create_client(
         request failed for any reason.
     """
     payload = {
-        "name": name or "",
+        "service": "fonotarot-cl",
+        "full_name": name or "",
         "email": email or "",
+        "phone_number": ani or "",
         "ani": ani or "",
         "transaction_id": transaction_id or "",
     }
-    url = urljoin(_base_url(), "/api/v1/client")
+    url = urljoin(_base_url(), "/api/v1/payments/complete")
     try:
         resp = requests.post(url, json=payload, timeout=_timeout())
         if resp.status_code not in (200, 201):
