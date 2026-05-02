@@ -20,7 +20,7 @@ Usage::
 Configuration (via ``app.config`` / environment variables)
 ----------------------------------------------------------
 ``FIRENZE_URL``
-    Base URL of the Firenze API.  Defaults to ``http://firenze.local``.
+    Base URL of the Firenze API.  Defaults to ``http://zvn-lin3.local:9002``.
 ``FIRENZE_TIMEOUT``
     Request timeout in seconds.  Defaults to ``5``.
 """
@@ -37,7 +37,7 @@ logger = get_logger(__name__)
 
 def _base_url() -> str:
     """Return the configured Firenze base URL."""
-    return current_app.config.get("FIRENZE_URL", "http://firenze.local")
+    return current_app.config.get("FIRENZE_URL", "http://zvn-lin3.local:9002")
 
 
 def _timeout() -> int:

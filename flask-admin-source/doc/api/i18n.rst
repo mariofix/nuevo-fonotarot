@@ -1,4 +1,0 @@
-Internalization
-===============
-
-See WTForms' documentation on internationalisation: https://wtforms.readthedocs.io/en/main/i18n/.

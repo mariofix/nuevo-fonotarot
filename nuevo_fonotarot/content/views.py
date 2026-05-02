@@ -216,15 +216,9 @@ def _homepage_ctx() -> dict:
     """
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
 
-    # Fetch a short-lived bearer token for the client to use directly.
-    firenze_token = ""
-    try:
-        firenze_token = _firenze_token()
-    except RequestException as exc:
-        logger.warning("Firenze token unavailable for homepage context: %s", exc)
-
-    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    firenze_ejecutivos_url = f"{api_url}/audiotex/ejecutivos" if api_url else ""
+    
+    api_url = current_app.config.get("FIRENZE_URL", "").rstrip("/")
+    firenze_ejecutivos_url = f"{api_url}/api/v1/public/ejecutivos" if api_url else ""
 
     try:
         ejecutivos = _json.loads(SiteSettings.get("ejecutivos") or "[]")
@@ -240,7 +234,6 @@ def _homepage_ctx() -> dict:
     )
 
     return {
-        "firenze_token": firenze_token,
         "firenze_ejecutivos_url": firenze_ejecutivos_url,
         "ejecutivos": ejecutivos,
         "testimonials": TESTIMONIALS,

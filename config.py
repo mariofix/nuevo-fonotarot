@@ -181,7 +181,8 @@ class Config:
     FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "audiotex")
 
     # Firenze client lookup/creation service (internal, not internet-accessible)
-    FIRENZE_URL: str = os.environ.get("FIRENZE_URL", "http://firenze.local")
+    # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
+    FIRENZE_URL: str = os.environ.get("FIRENZE_URL", "http://zvn-lin3.local:9002")
     FIRENZE_TIMEOUT: int = int(os.environ.get("FIRENZE_TIMEOUT", "5"))
 
     DEBUG_TB_ENABLED: bool = False
