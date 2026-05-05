@@ -243,7 +243,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(minutos_bp)
     app.register_blueprint(suscripciones_bp)
     app.register_blueprint(productos_bp)
-    app.register_blueprint(account_bp)
+    app.register_blueprint(account_bp, url_prefix="/ft-cuenta")
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)
 
