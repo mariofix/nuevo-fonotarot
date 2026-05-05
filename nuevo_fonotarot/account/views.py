@@ -53,21 +53,6 @@ def settings():
 
     return render_template("account/settings.html", user=current_user)
 
-        current_user.full_name = request.form.get("full_name", "").strip() or None
-        current_user.phone = request.form.get("phone", "").strip() or None
-        current_user.rut = request.form.get("rut", "").strip() or None
-        current_user.address = request.form.get("address", "").strip() or None
-        current_user.commune = request.form.get("commune", "").strip() or None
-        current_user.postal_code = request.form.get("postal_code", "").strip() or None
-        pref = request.form.get("preferred_payment", "").strip()
-        current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
-        db.session.commit()
-        logger.info("Profile updated for user=%s", current_user.id)
-        flash("Perfil actualizado correctamente.", "success")
-        return redirect(url_for("account.settings"))
-
-    return render_template("account/settings.html", user=current_user)
-
 
 @account_bp.route("/set-language/<lang>")
 def set_language(lang: str):
