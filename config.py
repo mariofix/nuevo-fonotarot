@@ -124,7 +124,7 @@ class Config:
     SECURITY_REGISTER_URL: str = "/ft-register"
     SECURITY_RESET_URL: str = "/ft-reset"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
-    SECURITY_CHANGE_URL: str = "/ft-settings/password-update"
+    SECURITY_CHANGE_URL: str = "/ft-settings"
     SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 

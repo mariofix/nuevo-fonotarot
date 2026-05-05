@@ -65,9 +65,28 @@
   <div class="card mb-4">
     <div class="card-header">{{ _("Seguridad") }}</div>
     <div class="card-body">
-      <a href="{{ url_for('security.change_password') }}" class="btn btn-outline-secondary btn-sm">
-        {{ _("Cambiar contraseña") }}
-      </a>
+      {% set pw_min = config.SECURITY_PASSWORD_LENGTH_MIN or 8 %}
+      <form method="post" action="{{ url_for('account.settings') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="form_type" value="password" />
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label" for="current_password">{{ _("Contraseña actual") }}</label>
+            <input type="password" id="current_password" name="current_password" class="form-control" required />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="new_password">{{ _("Nueva contraseña") }}</label>
+            <input type="password" id="new_password" name="new_password" class="form-control" required minlength="{{ pw_min }}" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="confirm_password">{{ _("Confirmar nueva contraseña") }}</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="{{ pw_min }}" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline-secondary btn-sm mt-3">
+          <i class="ti ti-lock me-1"></i>{{ _("Cambiar contraseña") }}
+        </button>
+      </form>
     </div>
   </div>
 
