@@ -97,18 +97,14 @@ class Config:
     TRUSTED_HOSTS: list = ["nuevo.fonotarot.com", "tardis.local"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI: str = os.environ.get(
-        "DATABASE_URL", "sqlite:///fonotarot.db"
-    )
+    SQLALCHEMY_DATABASE_URI: str = os.environ.get("DATABASE_URL", "sqlite:///fonotarot.db")
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     SQLALCHEMY_RECORD_QUERIES: bool = True
     # Flask-Limiter
     RATELIMIT_STORAGE_URI: str = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
     # Flask-Security
-    SECURITY_PASSWORD_SALT: str = os.environ.get(
-        "SECURITY_PASSWORD_SALT", "dev-password-salt-change-me"
-    )
+    SECURITY_PASSWORD_SALT: str = os.environ.get("SECURITY_PASSWORD_SALT", "dev-password-salt-change-me")
     SECURITY_PASSWORD_HASH: str = "bcrypt"
 
     # Username support: the username field stores an E.164 phone number
@@ -117,8 +113,10 @@ class Config:
     SECURITY_USERNAME_ENABLE: bool = True
     SECURITY_USERNAME_MIN_LENGTH: int = 10
     SECURITY_USERNAME_MAX_LENGTH: int = 13
+    SECURITY_ANONYMOUS_USER_DISABLED: bool = True
 
     # Custom login/logout routing
+    SECURITY_CONFIRMABLE: bool = True
     SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
@@ -159,13 +157,9 @@ class Config:
 
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
-    DALEKS_TIMEOUT: int = int(os.environ.get("DALEKS_TIMEOUT", "10"))
-    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get(
-        "DALEKS_SMTP_ACCOUNT", "fonotarot-cl"
-    )
-    SECURITY_EMAIL_SENDER: str = os.environ.get(
-        "MAIL_DEFAULT_SENDER", f"hola@{TRUSTED_HOSTS[0]}"
-    )
+    DALEKS_TIMEOUT: int = int(os.environ.get("DALEKS_TIMEOUT", "5"))
+    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT", "fonotarot-cl")
+    SECURITY_EMAIL_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", f"hola@fonotarot.cl")
 
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
@@ -175,15 +169,13 @@ class Config:
     LEGACY_FIRENZE_DB_URL: str = ""
 
     # Firenze API (external telephony platform for promotions)
-    FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "https://firenze.156.cl")
-    FIRENZE_API_USER: str = os.environ.get("FIRENZE_API_USER", "")
-    FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
-    FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "audiotex")
-
     # Firenze client lookup/creation service (internal, not internet-accessible)
     # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
-    FIRENZE_URL: str = os.environ.get("FIRENZE_URL", "http://zvn-lin3.local:9002")
-    FIRENZE_TIMEOUT: int = int(os.environ.get("FIRENZE_TIMEOUT", "5"))
+    FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "http://firenze.local")
+    FIRENZE_API_USER: str = os.environ.get("FIRENZE_API_USER", "")
+    FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
+    FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "")
+    FIRENZE_API_TIMEOUT: int = int(os.environ.get("FIRENZE_API_TIMEOUT", "5"))
 
     DEBUG_TB_ENABLED: bool = False
     DEBUG_TB_PANELS = (
