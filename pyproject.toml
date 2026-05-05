@@ -14,7 +14,7 @@ dependencies = [
   "khipu-tools (>=2025.1.0,<2026.0.0)",
   "flask-debugtoolbar (>=0.16.0,<0.17.0)",
   "pymysql (>=1.1.3,<2.0.0)",
-  "flask-debugtoolbar-extrapanels @ git+https://github.com/mariofix/flask-debugtoolbar-extrapanels.git@main",
+  "flask-debugtoolbar-extrapanels @ git+https://github.com/mariofix/flask-debugtoolbar-extrapanels.git@sandbox",
   "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
   "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
   "daleks[contrib] @ git+https://github.com/mariofix/daleks.git",
