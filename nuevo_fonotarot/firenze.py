@@ -37,7 +37,7 @@ logger = get_logger(__name__)
 
 def _base_url() -> str:
     """Return the configured Firenze base URL."""
-    return current_app.config.get("FIRENZE_URL", "http://zvn-lin3.local:9002")
+    return current_app.config.get("FIRENZE_API_URL", "")
 
 
 def _timeout() -> int:

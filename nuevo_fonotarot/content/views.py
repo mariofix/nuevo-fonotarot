@@ -217,7 +217,7 @@ def _homepage_ctx() -> dict:
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
 
     
-    api_url = current_app.config.get("FIRENZE_URL", "").rstrip("/")
+    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     firenze_ejecutivos_url = f"{api_url}/api/v1/public/ejecutivos" if api_url else ""
 
     try:
