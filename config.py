@@ -39,10 +39,11 @@ setting.  If you need ``FLASK_DEBUG`` to toggle debug mode, use the
 """
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 
 def _make_logging_config(log_level: str = "DEBUG") -> dict:
@@ -97,7 +98,7 @@ class Config:
     TRUSTED_HOSTS: list = ["localhost", "tardis.local"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI: str = os.environ.get("DATABASE_URL", "sqlite:///fonotarot.db")
+    SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     SQLALCHEMY_RECORD_QUERIES: bool = True
     # Flask-Limiter
