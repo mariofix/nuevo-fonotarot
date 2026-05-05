@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
+from flask_security import AsaList, naive_utcnow
 from flask_security.core import RoleMixin, UserMixin
 from flask_merchants.models import PaymentMixin
 from slugify import slugify
@@ -19,7 +20,9 @@ from sqlalchemy import (
     Text,
     text,
 )
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
 from .extensions import db
 
@@ -39,6 +42,13 @@ class Role(db.Model, RoleMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     description: Mapped[str | None] = mapped_column(String(255))
+    # Comma-separated permission strings stored by Flask-Security.
+    permissions: Mapped[list[str] | None] = mapped_column(
+        MutableList.as_mutable(AsaList()), nullable=True
+    )
+    update_datetime: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=naive_utcnow
+    )
 
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
@@ -49,13 +59,37 @@ class User(db.Model, UserMixin):
 
     __tablename__ = "users"
 
+    # --- Flask-Security core fields -------------------------------------------
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    username: Mapped[str | None] = mapped_column(String(80), unique=True, index=True)
-    password: Mapped[str] = mapped_column(String(256), nullable=False)
-    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    # Required by Flask-Security ≥ 4.0 for token invalidation.
+    # username stores an E.164 phone number (see PhoneUsernameUtil).
+    username: Mapped[str | None] = mapped_column(String(255), unique=True, nullable=True)
+    # Nullable so social / passwordless accounts can exist (fsqla v3).
+    password: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    # Session identifier — required since Flask-Security 4.0.
     fs_uniquifier: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+
+    # Confirmable (SECURITY_CONFIRMABLE) ---------------------------------------
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    # Trackable (SECURITY_TRACKABLE) -------------------------------------------
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime)
+    current_login_at: Mapped[datetime | None] = mapped_column(DateTime)
+    last_login_ip: Mapped[str | None] = mapped_column(String(64))
+    current_login_ip: Mapped[str | None] = mapped_column(String(64))
+    login_count: Mapped[int | None] = mapped_column(Integer)
+
+    # Two-factor authentication (SECURITY_TWO_FACTOR) --------------------------
+    tf_primary_method: Mapped[str | None] = mapped_column(String(64))
+    tf_totp_secret: Mapped[str | None] = mapped_column(String(255))
+    tf_phone_number: Mapped[str | None] = mapped_column(String(128))
+
+    # Unified sign-in (SECURITY_UNIFIED_SIGNIN) --------------------------------
+    us_totp_secrets: Mapped[str | None] = mapped_column(Text)
+    # Must be unique when set; used as an alternative login identifier.
+    us_phone_number: Mapped[str | None] = mapped_column(String(128), unique=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
