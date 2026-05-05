@@ -237,6 +237,58 @@
       }
       .btn-gold:hover, .btn-rose:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.35); }
 
+      /* ─── User menu ────────────────────────────────── */
+      .btn-user-menu {
+        background: none;
+        border: 1px solid rgba(107,63,160,.3);
+        border-radius: 20px;
+        padding: .3rem .65rem;
+        cursor: pointer;
+        color: var(--plum);
+        font-size: 1rem;
+        line-height: 1;
+        transition: border-color .2s, color .2s, background .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+      }
+      .btn-user-menu:hover, .btn-user-menu:focus {
+        border-color: var(--plum);
+        background: rgba(107,63,160,.08);
+        color: var(--plum);
+        outline: none;
+        box-shadow: none;
+      }
+      [data-theme="dark"] .btn-user-menu {
+        border-color: rgba(168,125,212,.35);
+        color: var(--plum);
+      }
+      .user-dropdown-menu {
+        min-width: 11rem;
+        border: 1px solid var(--border);
+        background: var(--cream);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(107,63,160,.12);
+        padding: .35rem 0;
+      }
+      [data-theme="dark"] .user-dropdown-menu {
+        background: var(--sand);
+        border-color: var(--border);
+      }
+      .user-dropdown-menu .dropdown-item {
+        color: var(--text);
+        font-size: .9rem;
+        padding: .55rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        transition: background .15s, color .15s;
+      }
+      .user-dropdown-menu .dropdown-item:hover {
+        background: rgba(107,63,160,.08);
+        color: var(--plum);
+      }
+
       /* ─── Theme toggle button ──────────────────────── */
       .btn-theme-toggle {
         background: none;
@@ -427,6 +479,34 @@
             {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
           </div>
           <div class="d-none d-md-flex">{{ lang_switcher(get_locale(), site_languages) }}</div>
+          <!-- User menu -->
+          <div class="dropdown">
+            <button class="btn-user-menu" id="userMenuToggle"
+                    data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="{{ _('Menú de usuario') }}" title="{{ _('Menú de usuario') }}">
+              <i class="ti ti-user-circle"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userMenuToggle">
+              {% if current_user.is_authenticated %}
+              <li>
+                <a class="dropdown-item" href="{{ url_for('account.settings') }}">
+                  <i class="ti ti-settings"></i> {{ _("Configuración") }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{{ url_for('security.logout') }}">
+                  <i class="ti ti-logout"></i> {{ _("Cerrar sesión") }}
+                </a>
+              </li>
+              {% else %}
+              <li>
+                <a class="dropdown-item" href="{{ url_for('security.login') }}">
+                  <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
           <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
             <span class="icon-moon">🌙</span>
             <span class="icon-sun">☀️</span>
@@ -457,9 +537,21 @@
         </div>
         <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
           <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3 mb-3">
             {{ lang_switcher(get_locale(), site_languages) }}
           </div>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+            <i class="ti ti-settings me-1"></i>{{ _("Configuración") }}
+          </a>
+          <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+            <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
+          </a>
+          {% else %}
+          <a href="{{ url_for('security.login') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+            <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
+          </a>
+          {% endif %}
         </div>
       </div>
     </div>
