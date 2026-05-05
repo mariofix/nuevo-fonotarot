@@ -9,7 +9,7 @@ Validation rule (mirrors the inline check in ``content/views.py``):
     * length between 10 and 13 characters (after stripping the leading ``+``)
 """
 
-from flask_security import UsernameUtil
+from flask_security.username_util import UsernameUtil
 
 
 class PhoneUsernameUtil(UsernameUtil):

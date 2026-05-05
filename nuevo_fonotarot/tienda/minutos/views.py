@@ -115,7 +115,7 @@ def comprar_minutos(pack_id: int):
     if current_user.is_authenticated:
         preferred = current_user.preferred_payment
         prefilled_email = current_user.email or ""
-        prefilled_phone = current_user.phone or ""
+        prefilled_phone = current_user.username or ""
 
     return render_template(
         "tienda/comprar_minutos.html",
