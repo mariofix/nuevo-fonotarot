@@ -106,27 +106,15 @@ def _init_extensions(app: Flask) -> None:
 
     @_user_registered_signal.connect_via(app)
     def _on_user_registered(sender, user, confirm_token, confirmation_token, **extra):
-        """Query Firenze for the newly registered user and save the client_id.
-
-        Also copies ``username`` (the phone number field in registration) into
-        ``user.phone`` when ``phone`` is not already set, so both fields stay
-        in sync without enforcing it.
-        """
-        from .firenze import search_client
-
-        # Copy username → phone if phone is blank (non-enforced convenience sync).
-        if user.username and not user.phone:
-            user.phone = user.username
+        """Execute post-registration steps for the new user."""
+        from .actions import process_user_registration
 
         try:
-            client_id = search_client(email=user.email, phone=user.phone or user.username)
-            if client_id is not None:
-                user.firenze_client_id = client_id
-            db.session.commit()
+            process_user_registration(user)
         except Exception:
             from .log import get_logger as _get_logger
             _get_logger(__name__).exception(
-                "_on_user_registered: failed to sync Firenze client_id for user=%s", user.id
+                "_on_user_registered: failed to process user=%s", user.id
             )
 
     # TablerTheme blueprint must be registered before Admin registers its own
@@ -256,7 +244,8 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)
 
-    from .cli import lang_cli, seed_promo_cli
+    from .cli import lang_cli, seed_promo_cli, user_cli
 
     app.cli.add_command(lang_cli)
     app.cli.add_command(seed_promo_cli)
+    app.cli.add_command(user_cli)

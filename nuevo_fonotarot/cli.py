@@ -232,3 +232,71 @@ def seed_promo_cli() -> None:
         f"✓ promo_free_minutes_remaining {action} → {stock}",
         fg="green",
     ))
+
+
+# ---------------------------------------------------------------------------
+# User management commands
+# ---------------------------------------------------------------------------
+
+
+@click.group("user")
+def user_cli() -> None:
+    """Manage users and user data."""
+
+
+@user_cli.command("sync-firenze")
+@click.option(
+    "--filter",
+    "filter_by",
+    type=click.Choice(["all", "missing"]),
+    default="missing",
+    show_default=True,
+    help="'all': process every user; 'missing': process only users without a firenze_client_id.",
+)
+@with_appcontext
+def user_sync_firenze(filter_by: str) -> None:
+    """Run post-registration steps for existing users.
+
+    Processes each user through the standard post-registration flow (e.g., Firenze sync).
+    Use this to backfill Firenze client_ids for existing users who registered
+    before this feature was available.
+
+    --filter all     Process every user (slow for large user bases)
+    --filter missing Process only users without a firenze_client_id (default, faster)
+    """
+    from .actions import process_user_registration
+    from .models import User
+
+    if filter_by == "missing":
+        query = User.query.filter(User.firenze_client_id.is_(None))
+    else:
+        query = User.query
+
+    users = query.all()
+    if not users:
+        click.echo(click.style("✓ No users to process.", fg="green"))
+        return
+
+    click.echo(f"→ Processing {len(users)} user(s) …")
+    processed = 0
+    errors = 0
+
+    with click.progressbar(
+        users,
+        label="Progress",
+        show_pos=True,
+    ) as bar:
+        for user in bar:
+            try:
+                if process_user_registration(user):
+                    processed += 1
+            except Exception:
+                errors += 1
+
+    click.echo()
+    click.echo(
+        click.style(
+            f"✓ Done: {processed} user(s) processed, {errors} error(s).",
+            fg="green",
+        )
+    )

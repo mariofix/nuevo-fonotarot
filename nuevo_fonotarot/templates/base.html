@@ -2,627 +2,1042 @@
 {% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script, meta_pixel, segment_head with context %}
 <!doctype html>
 <html lang="{{ get_locale() | replace('_', '-') }}" prefix="og: https://ogp.me/ns#" data-theme="{{ default_theme }}" data-bs-theme="{{ default_theme }}">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <!-- ── Primary meta ──────────────────────────────────────────── -->
-    <title>{% block title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}</title>
-    <meta name="description" content="{% block description %}{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
-    <meta name="keywords" content="{% block keywords %}{{ seo_site_keywords or _("tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
-    <meta name="author" content="{{ seo_site_author or "Fonotarot" }}" />
-    <meta name="robots" content="{{ seo_robots or "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" }}" />
-    <meta name="googlebot" content="{{ seo_robots or "index, follow" }}" />
-    <meta name="bingbot" content="{{ seo_robots or "index, follow" }}" />
-    <meta name="language" content="{{ seo_language or "Spanish" }}" />
-    <meta name="geo.region" content="{{ seo_geo_region or "CL" }}" />
-    <meta name="geo.country" content="{{ seo_geo_country or "Chile" }}" />
-    <meta name="geo.placename" content="{{ seo_geo_placename or "Chile" }}" />
-    <meta name="copyright" content="{{ seo_copyright or "Fonotarot" }}" />
-    {% if seo_google_verification %}<meta name="google-site-verification" content="{{ seo_google_verification }}" />{% endif %}
-    {% if seo_bing_verification %}<meta name="msvalidate.01" content="{{ seo_bing_verification }}" />{% endif %}
-    <link rel="canonical" href="https://{{ site_domain }}{{ request.path }}" />
-    <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.path }}" />
-    <link rel="alternate" hreflang="es-US" href="https://{{ site_domain }}{{ request.path }}" />
-    <link rel="alternate" hreflang="x-default" href="https://{{ site_domain }}{{ request.path }}" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-    <!-- ── Open Graph / Facebook ──────────────────────────────────── -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://{{ site_domain }}{{ request.path }}" />
-    <meta property="og:site_name"   content="{{ seo_og_site_name or "Fonotarot" }}" />
-    <meta property="og:locale"      content="{{ get_locale() }}" />
-    <meta property="og:locale:alternate" content="es_US" />
-    <meta property="og:title"       content="{% block og_title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
-    <meta property="og:description" content="{% block og_description %}{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
-    <meta property="og:image"       content="{{ seo_og_image_url or "https://" ~ site_domain ~ "/static/og-image.png" }}" />
-    <meta property="og:image:width"  content="1200" />
-    <meta property="og:image:height" content="630" />
+  <!-- ── Primary meta ──────────────────────────────────────────── -->
+  <title>{% block title %}{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ seo_site_description or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo,
+    salud y más.") }}{% endblock %}" />
+  <meta name="keywords" content="{% block keywords %}{{ seo_site_keywords or _(" tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
+  <meta name="author" content="{{ seo_site_author or " Fonotarot" }}" />
+  <meta name="robots" content="{{ seo_robots or " index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" }}" />
+  <meta name="googlebot" content="{{ seo_robots or " index, follow" }}" />
+  <meta name="bingbot" content="{{ seo_robots or " index, follow" }}" />
+  <meta name="language" content="{{ seo_language or " Spanish" }}" />
+  <meta name="geo.region" content="{{ seo_geo_region or " CL" }}" />
+  <meta name="geo.country" content="{{ seo_geo_country or " Chile" }}" />
+  <meta name="geo.placename" content="{{ seo_geo_placename or " Chile" }}" />
+  <meta name="copyright" content="{{ seo_copyright or " Fonotarot" }}" />
+  {% if seo_google_verification %}
+  <meta name="google-site-verification" content="{{ seo_google_verification }}" />{% endif %}
+  {% if seo_bing_verification %}
+  <meta name="msvalidate.01" content="{{ seo_bing_verification }}" />{% endif %}
+  <link rel="canonical" href="https://{{ site_domain }}{{ request.path }}" />
+  <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.path }}" />
+  <link rel="alternate" hreflang="es-US" href="https://{{ site_domain }}{{ request.path }}" />
+  <link rel="alternate" hreflang="x-default" href="https://{{ site_domain }}{{ request.path }}" />
 
-    <!-- ── Twitter / X Card ──────────────────────────────────────── -->
-    <meta name="twitter:card"        content="{{ seo_twitter_card or "summary_large_image" }}" />
-    <meta name="twitter:site"        content="@{{ seo_twitter_handle or "fonotarot" }}" />
-    <meta name="twitter:creator"     content="@{{ seo_twitter_handle or "fonotarot" }}" />
-    <meta name="twitter:title"       content="{{ seo_site_title or _("Fonotarot - Tarot por Teléfono con Personas Reales") }}" />
-    <meta name="twitter:description" content="{{ seo_site_description or _("Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
-    <meta name="twitter:image"       content="{{ seo_og_image_url or "https://" ~ site_domain ~ "/static/og-image.png" }}" />
+  <!-- ── Open Graph / Facebook ──────────────────────────────────── -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://{{ site_domain }}{{ request.path }}" />
+  <meta property="og:site_name" content="{{ seo_og_site_name or " Fonotarot" }}" />
+  <meta property="og:locale" content="{{ get_locale() }}" />
+  <meta property="og:locale:alternate" content="es_US" />
+  <meta property="og:title" content="{% block og_title %}{{ seo_site_title or _(" Fonotarot - Tarot por Teléfono con Personas Reales | Chile") }}{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}{{ seo_site_description or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor,
+    trabajo, salud y más.") }}{% endblock %}" />
+  <meta property="og:image" content="{{ seo_og_image_url or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
-    <!-- ── Apple / Mobile ────────────────────────────────────────── -->
-    <meta name="apple-mobile-web-app-capable"          content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="{{ "black-translucent" if default_theme == "dark" else "default" }}" />
-    <meta name="apple-mobile-web-app-title"            content="{{ seo_app_title or "Fonotarot" }}" />
-    <meta name="theme-color"                           content="{{ seo_theme_color_light or "#faf7f3" }}" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color"                           content="{{ seo_theme_color_dark or "#1a1a2e" }}" media="(prefers-color-scheme: dark)" />
-    <meta name="msapplication-TileColor"               content="{{ seo_tile_color or "#6b3fa0" }}" />
-    <meta name="msapplication-navbutton-color"         content="{{ seo_tile_color or "#6b3fa0" }}" />
-    <meta name="format-detection" content="telephone=yes" />
+  <!-- ── Twitter / X Card ──────────────────────────────────────── -->
+  <meta name="twitter:card" content="{{ seo_twitter_card or " summary_large_image" }}" />
+  <meta name="twitter:site" content="@{{ seo_twitter_handle or " fonotarot" }}" />
+  <meta name="twitter:creator" content="@{{ seo_twitter_handle or " fonotarot" }}" />
+  <meta name="twitter:title" content="{{ seo_site_title or _(" Fonotarot - Tarot por Teléfono con Personas Reales") }}" />
+  <meta name="twitter:description" content="{{ seo_site_description or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
+  <meta name="twitter:image" content="{{ seo_og_image_url or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
 
-    <!-- ── Favicons ──────────────────────────────────────────────── -->
-    <link rel="icon"             href="/static/favicon.ico" sizes="any" />
-    <link rel="icon"             href="/static/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
-    <link rel="manifest"         href="/static/site.webmanifest" />
+  <!-- ── Apple / Mobile ────────────────────────────────────────── -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="{{ " black-translucent" if default_theme=="dark" else "default" }}" />
+  <meta name="apple-mobile-web-app-title" content="{{ seo_app_title or " Fonotarot" }}" />
+  <meta name="theme-color" content="{{ seo_theme_color_light or " #faf7f3" }}" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="{{ seo_theme_color_dark or " #1a1a2e" }}" media="(prefers-color-scheme: dark)" />
+  <meta name="msapplication-TileColor" content="{{ seo_tile_color or " #6b3fa0" }}" />
+  <meta name="msapplication-navbutton-color" content="{{ seo_tile_color or " #6b3fa0" }}" />
+  <meta name="format-detection" content="telephone=yes" />
 
-    <!-- ── Analytics (head) ──────────────────────────────────────── -->
-    {{ gtm_head() }}
-    {{ ga_script() }}
-    {{ meta_pixel() }}
-    {{ segment_head() }}
-    {{ umami_script() }}
+  <!-- ── Favicons ──────────────────────────────────────────────── -->
+  <link rel="icon" href="/static/favicon.ico" sizes="any" />
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
+  <link rel="manifest" href="/static/site.webmanifest" />
 
-    <!-- ── Per-page extra head elements ──────────────────────────── -->
-    {% block extra_head %}{% endblock %}
+  <!-- ── Analytics (head) ──────────────────────────────────────── -->
+  {{ gtm_head() }}
+  {{ ga_script() }}
+  {{ meta_pixel() }}
+  {{ segment_head() }}
+  {{ umami_script() }}
 
-    <!-- ── Base styles ───────────────────────────────────────────── -->
-    <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='vendor/tabler/css/tabler-flags.min.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='vendor/fonts/source-sans-3.css') }}" rel="stylesheet" />
-    <style>
+  <!-- ── Per-page extra head elements ──────────────────────────── -->
+  {% block extra_head %}{% endblock %}
 
-      /* ─── Light theme (default) ────────────────────── */
-      :root {
-        --cream:    #faf7f3;
-        --sand:     #f0e8dc;
-        --blush:    #f5e6e8;
-        --lavender: #e8e0f0;
-        --plum:     #6b3fa0;
-        --plum-dk:  #4a2872;
-        --rose:     #c06080;
-        --warm:     #8b5e3c;
-        --text:     #2d2233;
-        --muted:    #8a7a8e;
-        --border:   #e0d4e8;
-        --gold:     #c9a84c;
-        --gold-lt:  #e8c56a;
+  <!-- ── Base styles ───────────────────────────────────────────── -->
+  <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/tabler/css/tabler-flags.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/fonts/source-sans-3.css') }}" rel="stylesheet" />
+  <style>
+    /* ─── Light theme (default) ────────────────────── */
+    :root {
+      --cream: #faf7f3;
+      --sand: #f0e8dc;
+      --blush: #f5e6e8;
+      --lavender: #e8e0f0;
+      --plum: #6b3fa0;
+      --plum-dk: #4a2872;
+      --rose: #c06080;
+      --warm: #8b5e3c;
+      --text: #2d2233;
+      --muted: #8a7a8e;
+      --border: #e0d4e8;
+      --gold: #c9a84c;
+      --gold-lt: #e8c56a;
 
-        /* Logo colour tokens — 2A La Carta Viva */
-        --logo-card-a:  #4a2872;
-        --logo-card-b:  #6b3fa0;
-        --logo-almond:  #0d0d1a;
-        --logo-iris-a:  #6b3fa0;
-        --logo-iris-b:  #c06080;
-        --logo-pupil:   #080810;
-        --logo-text-a:  #4a2872;
-        --logo-text-b:  #6b3fa0;
-        --logo-text-b2: #c06080;
+      /* Logo colour tokens — 2A La Carta Viva */
+      --logo-card-a: #4a2872;
+      --logo-card-b: #6b3fa0;
+      --logo-almond: #0d0d1a;
+      --logo-iris-a: #6b3fa0;
+      --logo-iris-b: #c06080;
+      --logo-pupil: #080810;
+      --logo-text-a: #4a2872;
+      --logo-text-b: #6b3fa0;
+      --logo-text-b2: #c06080;
 
-        /* Compatibility aliases — tienda templates use these names */
-        --deep:   var(--cream);
-        --void:   var(--sand);
-        --cosmic: var(--lavender);
-        --star:   var(--text);
-        --violet: var(--plum);
+      /* Compatibility aliases — tienda templates use these names */
+      --deep: var(--cream);
+      --void: var(--sand);
+      --cosmic: var(--lavender);
+      --star: var(--text);
+      --violet: var(--plum);
 
-        --nav-bg:    rgba(250,247,243,.95);
-        --footer-bg: var(--plum-dk);
-      }
+      --nav-bg: rgba(250, 247, 243, .95);
+      --footer-bg: var(--plum-dk);
+    }
 
-      /* ─── Dark theme ───────────────────────────────── */
-      [data-theme="dark"] {
-        --cream:    #0d0d1a;
-        --sand:     #141428;
-        --blush:    #1a1030;
-        --lavender: #1e1535;
-        --plum:     #a87dd4;
-        --plum-dk:  #c4a0e8;
-        --rose:     #d98aaa;
-        --warm:     #c49a6c;
-        --text:     #e8e0ff;
-        --muted:    #9d8fbe;
-        --border:   rgba(168,125,212,.22);
-        --gold:     #c9a84c;
-        --gold-lt:  #e8c56a;
+    /* ─── Dark theme ───────────────────────────────── */
+    [data-theme="dark"] {
+      --cream: #0d0d1a;
+      --sand: #141428;
+      --blush: #1a1030;
+      --lavender: #1e1535;
+      --plum: #a87dd4;
+      --plum-dk: #c4a0e8;
+      --rose: #d98aaa;
+      --warm: #c49a6c;
+      --text: #e8e0ff;
+      --muted: #9d8fbe;
+      --border: rgba(168, 125, 212, .22);
+      --gold: #c9a84c;
+      --gold-lt: #e8c56a;
 
-        /* Logo colour tokens — 2A La Carta Viva */
-        --logo-card-a:  #1e1535;
-        --logo-card-b:  #2a1545;
-        --logo-almond:  #080810;
-        --logo-iris-a:  #4a2872;
-        --logo-iris-b:  #a87dd4;
-        --logo-pupil:   #080810;
-        --logo-text-a:  #c4a0e8;
-        --logo-text-b:  #a87dd4;
-        --logo-text-b2: #d98aaa;
+      /* Logo colour tokens — 2A La Carta Viva */
+      --logo-card-a: #1e1535;
+      --logo-card-b: #2a1545;
+      --logo-almond: #080810;
+      --logo-iris-a: #4a2872;
+      --logo-iris-b: #a87dd4;
+      --logo-pupil: #080810;
+      --logo-text-a: #c4a0e8;
+      --logo-text-b: #a87dd4;
+      --logo-text-b2: #d98aaa;
 
-        /* Compatibility aliases */
-        --deep:   #0d0d1a;
-        --void:   #141428;
-        --cosmic: #1e1535;
-        --star:   #e8e0ff;
-        --violet: #a87dd4;
+      /* Compatibility aliases */
+      --deep: #0d0d1a;
+      --void: #141428;
+      --cosmic: #1e1535;
+      --star: #e8e0ff;
+      --violet: #a87dd4;
 
-        --nav-bg:    rgba(13,13,26,.93);
-        --footer-bg: #080810;
-      }
+      --nav-bg: rgba(13, 13, 26, .93);
+      --footer-bg: #080810;
+    }
 
-      * { box-sizing: border-box; }
-      body {
-        font-family: 'Source Sans 3', 'Montserrat', sans-serif;
-        background: var(--cream);
-        color: var(--text);
-        margin: 0;
-        padding-top: 65px;
-        transition: background .3s, color .3s;
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      /* ─── Scroll-reveal base ────────────────────────── */
-      .reveal {
-        opacity: 0;
-        transform: translateY(28px);
-        transition: opacity .6s ease, transform .6s ease;
-      }
-      .reveal.visible {
-        opacity: 1;
-        transform: none;
-      }
-      .reveal-d1 { transition-delay: .1s; }
-      .reveal-d2 { transition-delay: .2s; }
-      .reveal-d3 { transition-delay: .3s; }
-      .reveal-d4 { transition-delay: .4s; }
+    body {
+      font-family: 'Source Sans 3', 'Montserrat', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      margin: 0;
+      padding-top: 65px;
+      transition: background .3s, color .3s;
+    }
 
-      /* ─── Navbar ───────────────────────────────────── */
-      .site-nav {
-        position: fixed; top: 0; left: 0; right: 0; z-index: 1030;
-        background: var(--nav-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--border);
-        padding: 1rem 0;
-        transition: background .3s, border-color .3s;
-      }
-      .site-nav .brand {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--plum);
-        text-decoration: none;
-        letter-spacing: -.01em;
-        transition: color .2s;
-      }
-      .site-nav .brand:hover {
-        color: var(--plum-dk);
-        text-decoration: none;
-      }
-      [data-theme="dark"] .site-nav .brand:hover {
-        color: var(--plum);
-        opacity: .8;
-      }
-      .site-nav .nav-link {
-        color: var(--text);
-        opacity: .75;
-        transition: opacity .2s, color .2s;
-        text-decoration: none;
-        font-size: .95rem;
-      }
-      .site-nav .nav-link:hover { opacity: 1; color: var(--plum); }
-      .nav-link-soft { color: var(--muted); text-decoration: none; font-size: .95rem; transition: color .2s; }
-      .nav-link-soft:hover { color: var(--plum); }
+    /* ─── Scroll-reveal base ────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
 
-      /* Primary CTA buttons */
-      .btn-gold, .btn-rose {
-        background: var(--plum);
-        color: #fff !important;
-        font-weight: 700;
-        border: none;
-        border-radius: 30px;
-        padding: .45rem 1.4rem;
-        transition: background .2s, box-shadow .2s;
-        text-decoration: none;
-        display: inline-block;
-        font-size: .9rem;
-      }
-      .btn-gold:hover, .btn-rose:hover { background: var(--plum-dk); box-shadow: 0 4px 16px rgba(107,63,160,.35); }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
 
-      /* ─── User menu ────────────────────────────────── */
-      .btn-user-menu {
-        background: none;
-        border: 1px solid rgba(107,63,160,.3);
-        border-radius: 20px;
-        padding: .3rem .65rem;
-        cursor: pointer;
-        color: var(--plum);
-        font-size: 1rem;
-        line-height: 1;
-        transition: border-color .2s, color .2s, background .2s;
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-      }
-      .btn-user-menu:hover, .btn-user-menu:focus {
-        border-color: var(--plum);
-        background: rgba(107,63,160,.08);
-        color: var(--plum);
-        outline: none;
-        box-shadow: none;
-      }
-      [data-theme="dark"] .btn-user-menu {
-        border-color: rgba(168,125,212,.35);
-        color: var(--plum);
-      }
-      .user-dropdown-menu {
-        min-width: 11rem;
-        border: 1px solid var(--border);
-        background: var(--cream);
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(107,63,160,.12);
-        padding: .35rem 0;
-      }
-      [data-theme="dark"] .user-dropdown-menu {
-        background: var(--sand);
-        border-color: var(--border);
-      }
-      .user-dropdown-menu .dropdown-item {
-        color: var(--text);
-        font-size: .9rem;
-        padding: .55rem 1rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        transition: background .15s, color .15s;
-      }
-      .user-dropdown-menu .dropdown-item:hover {
-        background: rgba(107,63,160,.08);
-        color: var(--plum);
-      }
+    .reveal-d1 {
+      transition-delay: .1s;
+    }
 
-      /* ─── Theme toggle button ──────────────────────── */
-      .btn-theme-toggle {
-        background: none;
-        border: 1px solid rgba(107,63,160,.3);
-        border-radius: 20px;
-        padding: .3rem .65rem;
-        cursor: pointer;
-        color: var(--plum);
-        font-size: 1rem;
-        line-height: 1;
-        transition: border-color .2s, color .2s, background .2s;
-        display: inline-flex;
-        align-items: center;
-        gap: .3rem;
-      }
-      .btn-theme-toggle:hover {
-        border-color: var(--plum);
-        background: rgba(107,63,160,.08);
-      }
-      .btn-theme-toggle .icon-sun  { display: none; }
-      .btn-theme-toggle .icon-moon { display: inline; }
-      [data-theme="dark"] .btn-theme-toggle .icon-sun  { display: inline; }
-      [data-theme="dark"] .btn-theme-toggle .icon-moon { display: none; }
-      [data-theme="dark"] .btn-theme-toggle {
-        border-color: rgba(168,125,212,.35);
-        color: var(--plum);
-      }
+    .reveal-d2 {
+      transition-delay: .2s;
+    }
 
-      /* ─── Language switcher ────────────────────────── */
-      .lang-switcher { display: flex; align-items: center; gap: .35rem; }
-      .lang-flag {
-        display: inline-flex;
-        align-items: center;
-        opacity: .5;
-        transition: opacity .2s, transform .15s;
-        border-radius: 2px;
-      }
-      .lang-flag:hover { opacity: 1; transform: scale(1.18); }
-      .lang-flag.active { opacity: 1; box-shadow: 0 0 0 1.5px var(--plum); border-radius: 2px; }
+    .reveal-d3 {
+      transition-delay: .3s;
+    }
 
-      /* ─── Page content wrapper ──────────────────────── */
-      .page-content { position: relative; }
+    .reveal-d4 {
+      transition-delay: .4s;
+    }
 
-      /* ─── Generic section helpers ───────────────────── */
-      .section-tag {
-        display: inline-flex; align-items: center; gap: .4rem;
-        font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
-        font-weight: 700; color: var(--rose);
-        background: rgba(192,96,128,.08); border-radius: 20px;
-        padding: .3rem .9rem; margin-bottom: .75rem;
-      }
-      .section-title {
-        font-family: 'Playfair Display', serif;
-        font-size: clamp(1.7rem, 4vw, 2.5rem);
-        color: var(--plum-dk);
-        margin-bottom: .4rem;
-        line-height: 1.2;
-        font-weight: 700;
-      }
-      .section-subtitle { color: var(--muted); font-size: .95rem; }
-      .divider-gold {
-        width: 48px; height: 3px;
-        background: linear-gradient(90deg, var(--gold), transparent);
-        margin: .75rem auto 1.5rem;
-        border-radius: 2px;
-      }
+    /* ─── Navbar ───────────────────────────────────── */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1030;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      transition: background .3s, border-color .3s;
+    }
 
-      /* ─── Mobile nav ───────────────────────────────── */
-      .btn-hamburger {
-        background: none; border: 1px solid rgba(107,63,160,.3);
-        border-radius: 8px; padding: .3rem .5rem;
-        cursor: pointer; color: var(--text); line-height: 1; font-size: 1.1rem;
-        align-items: center; justify-content: center; transition: border-color .2s, color .2s;
-      }
-      .btn-hamburger:hover { border-color: var(--plum); color: var(--plum); }
-      .mobile-nav-offcanvas { background: var(--cream); color: var(--text); }
-      .mobile-nav-offcanvas .offcanvas-header { border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
-      .mobile-nav-offcanvas .offcanvas-title { font-family: 'Playfair Display', serif; color: var(--plum-dk); font-size: 1.15rem; font-weight: 700; }
-      .mobile-nav-offcanvas .btn-close { filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg); }
-      .mobile-nav-link { display: block; padding: .8rem 0; color: var(--text); text-decoration: none; font-size: 1rem; font-weight: 500; border-bottom: 1px solid var(--border); transition: color .2s; }
-      .mobile-nav-link:hover { color: var(--plum); }
+    .site-nav .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--plum);
+      text-decoration: none;
+      letter-spacing: -.01em;
+      transition: color .2s;
+    }
 
-      /* ─── Footer ───────────────────────────────────── */
-      footer.site-footer { background: var(--plum-dk); color: rgba(255,255,255,.6); padding: 3.5rem 0 2rem; font-size: .88rem; transition: background .3s; }
-      .footer-brand { font-family: 'Playfair Display', serif; color: #fff; font-size: 1.35rem; font-weight: 700; text-decoration: none; display: block; margin-bottom: .4rem; }
-      .footer-tagline { color: rgba(255,255,255,.45); font-size: .83rem; line-height: 1.6; margin-bottom: 1.25rem; }
-      .footer-phone { color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem; transition: color .2s; }
-      .footer-phone:hover { color: #fff; }
-      .footer-col-title { color: rgba(255,255,255,.35); font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; margin-bottom: .75rem; }
-      .footer-links { display: flex; flex-direction: column; gap: .4rem; }
-      .footer-links a { color: rgba(255,255,255,.55); text-decoration: none; font-size: .85rem; transition: color .2s; }
-      .footer-links a:hover { color: rgba(255,255,255,.9); }
-      .footer-areas { color: rgba(255,255,255,.5); font-size: .83rem; line-height: 2; }
-      hr.footer-hr { border-color: rgba(255,255,255,.08); margin: 1.75rem 0 1.25rem; }
-      .footer-copy { color: rgba(255,255,255,.3); font-size: .78rem; text-align: center; }
-      [data-theme="dark"] footer.site-footer { background: #080810; }
+    .site-nav .brand:hover {
+      color: var(--plum-dk);
+      text-decoration: none;
+    }
 
-      /* ─── Dark mode card adjustments ───────────────── */
-      [data-theme="dark"] .card {
-        background: var(--sand);
-        border-color: var(--border);
-        color: var(--text);
-      }
-      [data-theme="dark"] .card .text-secondary { color: var(--muted) !important; }
-      [data-theme="dark"] .text-white { color: var(--text) !important; }
-    </style>
+    [data-theme="dark"] .site-nav .brand:hover {
+      color: var(--plum);
+      opacity: .8;
+    }
 
-    <!-- ── Per-page extra CSS ─────────────────────────────────────── -->
-    {% block extra_css %}{% endblock %}
-  </head>
-  <body>
-    {{ gtm_body() }}
+    .site-nav .nav-link {
+      color: var(--text);
+      opacity: .75;
+      transition: opacity .2s, color .2s;
+      text-decoration: none;
+      font-size: .95rem;
+    }
 
-    <!-- ── NAVBAR ──────────────────────────────────── -->
-    <nav class="site-nav">
-      <div class="container d-flex align-items-center justify-content-between">
-        <a href="/" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
-          <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="fonotarot">
-            <defs>
-              <linearGradient id="bnb_card" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-card-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-card-b)"/>
-              </linearGradient>
-              <linearGradient id="bnb_gold" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#e8c56a"/>
-                <stop offset="100%" stop-color="#c9a84c"/>
-              </linearGradient>
-              <linearGradient id="bnb_iris" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-iris-a)"/>
-                <stop offset="100%" style="stop-color:var(--logo-iris-b)"/>
-              </linearGradient>
-              <linearGradient id="bnb_text" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style="stop-color:var(--logo-text-b)"/>
-                <stop offset="100%" style="stop-color:var(--logo-text-b2)"/>
-              </linearGradient>
-              <radialGradient id="bnb_glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25"/>
-                <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-            <!-- Card -->
-            <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#bnb_card)"/>
-            <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#bnb_gold)" stroke-width="1"/>
-            <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".5"/>
-            <!-- Eye -->
-            <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#bnb_glow)"/>
-            <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z" style="fill:var(--logo-almond)" stroke="url(#bnb_gold)" stroke-width="1.2"/>
-            <circle cx="41" cy="60" r="12" fill="url(#bnb_iris)"/>
-            <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)"/>
-            <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85"/>
-            <circle cx="41" cy="60" r="12" fill="none" stroke="url(#bnb_gold)" stroke-width=".6" stroke-dasharray="2 3"/>
-            <!-- Copas NW -->
-            <g transform="translate(17,17)">
-              <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#bnb_gold)"/>
-              <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
-              <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round"/>
-            </g>
-            <!-- Bastos NE -->
-            <g transform="translate(65,17)">
-              <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#bnb_gold)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#bnb_gold)"/>
-            </g>
-            <!-- Espadas SW -->
-            <g transform="translate(17,103)">
-              <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#bnb_iris)" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#bnb_gold)" stroke-width="1.2" stroke-linecap="round"/>
-              <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#bnb_gold)"/>
-            </g>
-            <!-- Pentáculos SE -->
-            <g transform="translate(65,103)">
-              <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#bnb_gold)"/>
-            </g>
-            <!-- Wordmark (Fono/Tarot: matches the original modified logo design;
+    .site-nav .nav-link:hover {
+      opacity: 1;
+      color: var(--plum);
+    }
+
+    .nav-link-soft {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .95rem;
+      transition: color .2s;
+    }
+
+    .nav-link-soft:hover {
+      color: var(--plum);
+    }
+
+    /* Primary CTA buttons */
+    .btn-gold,
+    .btn-rose {
+      background: var(--plum);
+      color: #fff !important;
+      font-weight: 700;
+      border: none;
+      border-radius: 30px;
+      padding: .45rem 1.4rem;
+      transition: background .2s, box-shadow .2s;
+      text-decoration: none;
+      display: inline-block;
+      font-size: .9rem;
+    }
+
+    .btn-gold:hover,
+    .btn-rose:hover {
+      background: var(--plum-dk);
+      box-shadow: 0 4px 16px rgba(107, 63, 160, .35);
+    }
+
+    /* ─── User menu ────────────────────────────────── */
+    .btn-user-menu {
+      background: none;
+      border: 1px solid rgba(107, 63, 160, .3);
+      border-radius: 20px;
+      padding: .3rem .65rem;
+      cursor: pointer;
+      color: var(--plum);
+      font-size: 1rem;
+      line-height: 1;
+      transition: border-color .2s, color .2s, background .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .btn-user-menu:hover,
+    .btn-user-menu:focus {
+      border-color: var(--plum);
+      background: rgba(107, 63, 160, .08);
+      color: var(--plum);
+      outline: none;
+      box-shadow: none;
+    }
+
+    [data-theme="dark"] .btn-user-menu {
+      border-color: rgba(168, 125, 212, .35);
+      color: var(--plum);
+    }
+
+    .user-dropdown-menu {
+      min-width: 11rem;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(107, 63, 160, .12);
+      padding: .35rem 0;
+    }
+
+    [data-theme="dark"] .user-dropdown-menu {
+      background: var(--sand);
+      border-color: var(--border);
+    }
+
+    .user-dropdown-menu .dropdown-item {
+      color: var(--text);
+      font-size: .9rem;
+      padding: .55rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      transition: background .15s, color .15s;
+    }
+
+    .user-dropdown-menu .dropdown-item:hover {
+      background: rgba(107, 63, 160, .08);
+      color: var(--plum);
+    }
+
+    .user-dropdown-menu .dropdown-item-text {
+      padding: .55rem 1rem;
+      color: var(--muted);
+    }
+
+    /* Theme toggle in dropdown menu */
+    .btn-theme-toggle-menu {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: .9rem;
+      padding: .55rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .btn-theme-toggle-menu:hover {
+      background: rgba(107, 63, 160, .08);
+      color: var(--plum);
+    }
+
+    .btn-theme-toggle-menu .theme-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    /* Language switcher in dropdown */
+    .lang-switcher-dropdown {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    .lang-flag-dropdown {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      padding: .4rem .6rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text);
+      opacity: .6;
+      transition: opacity .2s, background .15s;
+      font-size: .85rem;
+    }
+
+    .lang-flag-dropdown:hover {
+      opacity: 1;
+      background: rgba(107, 63, 160, .08);
+    }
+
+    .lang-flag-dropdown.active {
+      opacity: 1;
+      background: rgba(107, 63, 160, .12);
+      color: var(--plum);
+      font-weight: 600;
+    }
+
+    .lang-flag-dropdown .flag {
+      margin: 0;
+    }
+
+    /* ─── Theme toggle button ──────────────────────── */
+    .btn-theme-toggle {
+      background: none;
+      border: 1px solid rgba(107, 63, 160, .3);
+      border-radius: 20px;
+      padding: .3rem .65rem;
+      cursor: pointer;
+      color: var(--plum);
+      font-size: 1rem;
+      line-height: 1;
+      transition: border-color .2s, color .2s, background .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .btn-theme-toggle:hover {
+      border-color: var(--plum);
+      background: rgba(107, 63, 160, .08);
+    }
+
+    .btn-theme-toggle .icon-sun {
+      display: none;
+    }
+
+    .btn-theme-toggle .icon-moon {
+      display: inline;
+    }
+
+    [data-theme="dark"] .btn-theme-toggle .icon-sun {
+      display: inline;
+    }
+
+    [data-theme="dark"] .btn-theme-toggle .icon-moon {
+      display: none;
+    }
+
+    [data-theme="dark"] .btn-theme-toggle {
+      border-color: rgba(168, 125, 212, .35);
+      color: var(--plum);
+    }
+
+    /* ─── Language switcher ────────────────────────── */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    .lang-flag {
+      display: inline-flex;
+      align-items: center;
+      opacity: .5;
+      transition: opacity .2s, transform .15s;
+      border-radius: 2px;
+    }
+
+    .lang-flag:hover {
+      opacity: 1;
+      transform: scale(1.18);
+    }
+
+    .lang-flag.active {
+      opacity: 1;
+      box-shadow: 0 0 0 1.5px var(--plum);
+      border-radius: 2px;
+    }
+
+    /* ─── Page content wrapper ──────────────────────── */
+    .page-content {
+      position: relative;
+    }
+
+    /* ─── Generic section helpers ───────────────────── */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--rose);
+      background: rgba(192, 96, 128, .08);
+      border-radius: 20px;
+      padding: .3rem .9rem;
+      margin-bottom: .75rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      color: var(--plum-dk);
+      margin-bottom: .4rem;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .divider-gold {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: .75rem auto 1.5rem;
+      border-radius: 2px;
+    }
+
+    /* ─── Mobile nav ───────────────────────────────── */
+    .btn-hamburger {
+      background: none;
+      border: 1px solid rgba(107, 63, 160, .3);
+      border-radius: 8px;
+      padding: .3rem .5rem;
+      cursor: pointer;
+      color: var(--text);
+      line-height: 1;
+      font-size: 1.1rem;
+      align-items: center;
+      justify-content: center;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-hamburger:hover {
+      border-color: var(--plum);
+      color: var(--plum);
+    }
+
+    .mobile-nav-offcanvas {
+      background: var(--cream);
+      color: var(--text);
+    }
+
+    .mobile-nav-offcanvas .offcanvas-header {
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+    }
+
+    .mobile-nav-offcanvas .offcanvas-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--plum-dk);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .mobile-nav-offcanvas .btn-close {
+      filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg);
+    }
+
+    .mobile-nav-link {
+      display: block;
+      padding: .8rem 0;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+
+    .mobile-nav-link:hover {
+      color: var(--plum);
+    }
+
+    /* ─── Footer ───────────────────────────────────── */
+    footer.site-footer {
+      background: var(--plum-dk);
+      color: rgba(255, 255, 255, .6);
+      padding: 3.5rem 0 2rem;
+      font-size: .88rem;
+      transition: background .3s;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: block;
+      margin-bottom: .4rem;
+    }
+
+    .footer-tagline {
+      color: rgba(255, 255, 255, .45);
+      font-size: .83rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-phone {
+      color: rgba(255, 255, 255, .75);
+      text-decoration: none;
+      font-size: .9rem;
+      transition: color .2s;
+    }
+
+    .footer-phone:hover {
+      color: #fff;
+    }
+
+    .footer-col-title {
+      color: rgba(255, 255, 255, .35);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      margin-bottom: .75rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, .55);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover {
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .footer-areas {
+      color: rgba(255, 255, 255, .5);
+      font-size: .83rem;
+      line-height: 2;
+    }
+
+    hr.footer-hr {
+      border-color: rgba(255, 255, 255, .08);
+      margin: 1.75rem 0 1.25rem;
+    }
+
+    .footer-copy {
+      color: rgba(255, 255, 255, .3);
+      font-size: .78rem;
+      text-align: center;
+    }
+
+    [data-theme="dark"] footer.site-footer {
+      background: #080810;
+    }
+
+    /* ─── Dark mode card adjustments ───────────────── */
+    [data-theme="dark"] .card {
+      background: var(--sand);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    [data-theme="dark"] .card .text-secondary {
+      color: var(--muted) !important;
+    }
+
+    [data-theme="dark"] .text-white {
+      color: var(--text) !important;
+    }
+  </style>
+
+  <!-- ── Per-page extra CSS ─────────────────────────────────────── -->
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  {{ gtm_body() }}
+
+  <!-- ── NAVBAR ──────────────────────────────────── -->
+  <nav class="site-nav">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a href="/" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
+        <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="fonotarot">
+          <defs>
+            <linearGradient id="bnb_card" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" style="stop-color:var(--logo-card-a)" />
+              <stop offset="100%" style="stop-color:var(--logo-card-b)" />
+            </linearGradient>
+            <linearGradient id="bnb_gold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e8c56a" />
+              <stop offset="100%" stop-color="#c9a84c" />
+            </linearGradient>
+            <linearGradient id="bnb_iris" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" style="stop-color:var(--logo-iris-a)" />
+              <stop offset="100%" style="stop-color:var(--logo-iris-b)" />
+            </linearGradient>
+            <linearGradient id="bnb_text" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" style="stop-color:var(--logo-text-b)" />
+              <stop offset="100%" style="stop-color:var(--logo-text-b2)" />
+            </linearGradient>
+            <radialGradient id="bnb_glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#c9a84c" stop-opacity=".25" />
+              <stop offset="100%" stop-color="#c9a84c" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <!-- Card -->
+          <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#bnb_card)" />
+          <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#bnb_gold)" stroke-width="1" />
+          <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)" stroke-width=".5" />
+          <!-- Eye -->
+          <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#bnb_glow)" />
+          <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z" style="fill:var(--logo-almond)" stroke="url(#bnb_gold)" stroke-width="1.2" />
+          <circle cx="41" cy="60" r="12" fill="url(#bnb_iris)" />
+          <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)" />
+          <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85" />
+          <circle cx="41" cy="60" r="12" fill="none" stroke="url(#bnb_gold)" stroke-width=".6" stroke-dasharray="2 3" />
+          <!-- Copas NW -->
+          <g transform="translate(17,17)">
+            <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#bnb_gold)" />
+            <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round" />
+            <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round" />
+            <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#bnb_gold)" stroke-width="1" stroke-linecap="round" />
+          </g>
+          <!-- Bastos NE -->
+          <g transform="translate(65,17)">
+            <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#bnb_gold)" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#bnb_gold)" />
+          </g>
+          <!-- Espadas SW -->
+          <g transform="translate(17,103)">
+            <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#bnb_iris)" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#bnb_gold)" stroke-width="1.2" stroke-linecap="round" />
+            <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#bnb_gold)" />
+          </g>
+          <!-- Pentáculos SE -->
+          <g transform="translate(65,103)">
+            <path d="M 0,-7 L 1.646,-2.264 L 6.657,-2.264 L 2.66,0.864 L 4.114,5.728 L 0,2.8 L -4.114,5.728 L -2.66,0.864 L -6.657,-2.264 L -1.646,-2.264 Z" fill="url(#bnb_gold)" />
+          </g>
+          <!-- Wordmark (Fono/Tarot: matches the original modified logo design;
                  the 24px right-offset on "Tarot" is intentional for visual cascade) -->
-            <text x="96"  y="40" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
-            <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40" font-weight="600" fill="url(#bnb_text)">Tarot</text>
-          </svg>
+          <text x="96" y="40" font-family="'Playfair Display', Georgia, serif" font-size="32" font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
+          <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40" font-weight="600" fill="url(#bnb_text)">Tarot</text>
+        </svg>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        {% block nav_links %}
+        <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
+        <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
+        <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
+        <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
+        {% endblock %}
+        <div class="d-none d-md-block">
+          {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
+        </div>
+        <!-- User menu -->
+        <div class="dropdown">
+          <button class="btn-user-menu" id="userMenuToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ _('Menú de usuario') }}" title="{{ _('Menú de usuario') }}">
+            <i class="ti ti-user-circle"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userMenuToggle">
+            {% if current_user.is_authenticated %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('account.settings') }}">
+                <i class="ti ti-settings"></i> {{ _("Configuración") }}
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            {% endif %}
+            <!-- Language Switcher -->
+            <li>
+              <span class="dropdown-item-text small text-secondary">{{ _("Selecciona tu País") }}</span>
+            </li>
+            <li>
+              <div class="px-3 py-2">
+                <div class="lang-switcher-dropdown" aria-label="{{ _('Seleccionar idioma') }}">
+                  {%- for lang in site_languages %}
+                  <a href="{{ url_for('account.set_language', lang=lang.locale, next=request.path) }}" title="{{ lang.label }}" aria-label="{{ lang.label }}"
+                    class="lang-flag-dropdown{% if get_locale() == lang.locale %} active{% endif %}">
+                    <span class="flag flag-xs {{ lang.flag_class }}" aria-hidden="true"></span>
+                    <span class="lang-label">{{ lang.label }}</span>
+                  </a>
+                  {%- endfor %}
+                </div>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <!-- Theme Toggle -->
+            <li>
+              <button class="dropdown-item btn-theme-toggle-menu" id="theme-toggle-menu" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-label">{{ _("Tema oscuro") }}</span>
+              </button>
+            </li>
+            {% if current_user.is_authenticated %}
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('security.logout') }}">
+                <i class="ti ti-logout"></i> {{ _("Cerrar sesión") }}
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('security.login') }}">
+                <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- Mobile hamburger (hidden on md+) -->
+        <button class="btn-hamburger d-flex d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavCanvas" aria-controls="mobileNavCanvas" aria-label="{{ _('Abrir menú') }}">
+          <i class="ti ti-menu-2"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── MOBILE NAV OFFCANVAS ──────────────────────── -->
+  <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1" id="mobileNavCanvas" aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
+    <div class="offcanvas-header">
+      <span class="offcanvas-title" id="mobileNavLabel">FonoTarot</span>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ _('Cerrar') }}"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column gap-0 p-0">
+      <div class="px-3 pt-2">
+        <a href="/#tarotistas" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
+        <a href="/#planes" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
+        <a href="/blog/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Blog") }}</a>
+        <a href="/#faq" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
+      </div>
+      <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
+        <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          {{ lang_switcher(get_locale(), site_languages) }}
+        </div>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+          <i class="ti ti-settings me-1"></i>{{ _("Configuración") }}
         </a>
-        <div class="d-flex align-items-center gap-2">
-          {% block nav_links %}
-          <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
-          <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
-          <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
-          <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
-          {% endblock %}
-          <div class="d-none d-md-block">
-            {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
-          </div>
-          <div class="d-none d-md-flex">{{ lang_switcher(get_locale(), site_languages) }}</div>
-          <!-- User menu -->
-          <div class="dropdown">
-            <button class="btn-user-menu" id="userMenuToggle"
-                    data-bs-toggle="dropdown" aria-expanded="false"
-                    aria-label="{{ _('Menú de usuario') }}" title="{{ _('Menú de usuario') }}">
-              <i class="ti ti-user-circle"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userMenuToggle">
-              {% if current_user.is_authenticated %}
-              <li>
-                <a class="dropdown-item" href="{{ url_for('account.settings') }}">
-                  <i class="ti ti-settings"></i> {{ _("Configuración") }}
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{{ url_for('security.logout') }}">
-                  <i class="ti ti-logout"></i> {{ _("Cerrar sesión") }}
-                </a>
-              </li>
-              {% else %}
-              <li>
-                <a class="dropdown-item" href="{{ url_for('security.login') }}">
-                  <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
-                </a>
-              </li>
-              {% endif %}
-            </ul>
-          </div>
-          <button class="btn-theme-toggle" id="theme-toggle" aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
-            <span class="icon-moon">🌙</span>
-            <span class="icon-sun">☀️</span>
-          </button>
-          <!-- Mobile hamburger (hidden on md+) -->
-          <button class="btn-hamburger d-flex d-md-none" type="button"
-                  data-bs-toggle="offcanvas" data-bs-target="#mobileNavCanvas"
-                  aria-controls="mobileNavCanvas" aria-label="{{ _('Abrir menú') }}">
-            <i class="ti ti-menu-2"></i>
-          </button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- ── MOBILE NAV OFFCANVAS ──────────────────────── -->
-    <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1"
-         id="mobileNavCanvas" aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
-      <div class="offcanvas-header">
-        <span class="offcanvas-title" id="mobileNavLabel">FonoTarot</span>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ _('Cerrar') }}"></button>
-      </div>
-      <div class="offcanvas-body d-flex flex-column gap-0 p-0">
-        <div class="px-3 pt-2">
-          <a href="/#tarotistas" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
-          <a href="/#planes"     class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
-          <a href="/blog/"       class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Blog") }}</a>
-          <a href="/#faq"        class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
-        </div>
-        <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
-          <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
-          <div class="d-flex align-items-center gap-3 mb-3">
-            {{ lang_switcher(get_locale(), site_languages) }}
-          </div>
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-            <i class="ti ti-settings me-1"></i>{{ _("Configuración") }}
-          </a>
-          <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-            <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
-          </a>
-          {% else %}
-          <a href="{{ url_for('security.login') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-            <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
-          </a>
-          {% endif %}
-        </div>
+        <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+          <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
+        </a>
+        {% else %}
+        <a href="{{ url_for('security.login') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+          <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
+        </a>
+        {% endif %}
       </div>
     </div>
+  </div>
 
-    <!-- ── PAGE CONTENT ────────────────────────────── -->
-    <div class="page-content">
-      {% block content %}{% endblock %}
-    </div>
+  <!-- ── PAGE CONTENT ────────────────────────────── -->
+  <div class="page-content">
+    {% block content %}{% endblock %}
+  </div>
 
-    <!-- ── FOOTER ───────────────────────────────────── -->
-    {% block footer %}
-    <footer class="site-footer">
-      <div class="container">
-        <div class="row g-5">
-          <div class="col-md-4">
-            <a href="/" class="footer-brand">FonoTarot</a>
-            <p class="footer-tagline">{{ _("Servicio de orientación espiritual telefónica · Chile · Desde 2010") }}</p>
-            <a href="tel:+{{ _('56222301515') }}" class="footer-phone"><i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}</a>
-          </div>
-          <div class="col-6 col-md-4">
-            <p class="footer-col-title">{{ _("Navegación") }}</p>
-            <div class="footer-links">
-              <a href="/#tarotistas">{{ _("Tarotistas") }}</a>
-              <a href="/#planes">{{ _("Planes y Precios") }}</a>
-              <a href="/#faq">{{ _("Preguntas Frecuentes") }}</a>
-              <a href="/blog/">{{ _("Blog") }}</a>
-              <a href="{{ url_for('pagos.index') }}">{{ _("Tienda") }}</a>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <p class="footer-col-title">{{ _("Áreas de consulta") }}</p>
-            <div class="footer-areas">
-              💕 {{ _("Amor y Relaciones") }}<br>
-              💼 {{ _("Trabajo y Finanzas") }}<br>
-              🏥 {{ _("Salud y Bienestar") }}<br>
-              👨‍👩‍👧 {{ _("Familia") }}<br>
-              🌱 {{ _("Crecimiento Personal") }}
-            </div>
+  <!-- ── FOOTER ───────────────────────────────────── -->
+  {% block footer %}
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-md-4">
+          <a href="/" class="footer-brand">FonoTarot</a>
+          <p class="footer-tagline">{{ _("Servicio de orientación espiritual telefónica · Chile · Desde 2010") }}</p>
+          <a href="tel:+{{ _('56222301515') }}" class="footer-phone"><i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}</a>
+        </div>
+        <div class="col-6 col-md-4">
+          <p class="footer-col-title">{{ _("Navegación") }}</p>
+          <div class="footer-links">
+            <a href="/#tarotistas">{{ _("Tarotistas") }}</a>
+            <a href="/#planes">{{ _("Planes y Precios") }}</a>
+            <a href="/#faq">{{ _("Preguntas Frecuentes") }}</a>
+            <a href="/blog/">{{ _("Blog") }}</a>
+            <a href="{{ url_for('pagos.index') }}">{{ _("Tienda") }}</a>
           </div>
         </div>
-        <hr class="footer-hr">
-        <p class="footer-copy">&copy; 2025 Fonotarot Chile · {{ _("Todos los derechos reservados") }}</p>
+        <div class="col-6 col-md-4">
+          <p class="footer-col-title">{{ _("Áreas de consulta") }}</p>
+          <div class="footer-areas">
+            💕 {{ _("Amor y Relaciones") }}<br>
+            💼 {{ _("Trabajo y Finanzas") }}<br>
+            🏥 {{ _("Salud y Bienestar") }}<br>
+            👨‍👩‍👧 {{ _("Familia") }}<br>
+            🌱 {{ _("Crecimiento Personal") }}
+          </div>
+        </div>
       </div>
-    </footer>
-    {% endblock %}
+      <hr class="footer-hr">
+      <p class="footer-copy">&copy; 2025 Fonotarot Chile · {{ _("Todos los derechos reservados") }}</p>
+    </div>
+  </footer>
+  {% endblock %}
 
-    <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
-    <script>
-      // ── Theme toggle ──────────────────────────────────────────────
-      (function () {
-        var html = document.documentElement;
-        var btn  = document.getElementById('theme-toggle');
+  <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
 
-        // Override server-set theme with user's saved preference.
-        var saved = localStorage.getItem('ft-theme');
-        if (saved === 'dark' || saved === 'light') {
-          html.setAttribute('data-theme', saved);
-          html.setAttribute('data-bs-theme', saved);
+  <!-- ── Toast Notifications for Flash Messages ─────────────────── -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+    <div id="toastContainer"></div>
+  </div>
+
+  <template id="toastTemplate">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <span class="me-auto d-flex align-items-center">
+          <i class="toast-icon me-2"></i>
+          <strong class="toast-title"></strong>
+        </span>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body"></div>
+    </div>
+  </template>
+
+  <script>
+    function showToast(message, category = 'info', autoDismiss = 3000) {
+      const container = document.getElementById('toastContainer');
+      const template = document.getElementById('toastTemplate');
+      const toastEl = template.content.cloneNode(true);
+      const toast = toastEl.querySelector('.toast');
+
+      // Map Flask flash categories to toast styles
+      const categoryMap = {
+        'success': { icon: 'ti ti-circle-check', bgClass: 'bg-success', title: '{{ _("Éxito") }}' },
+        'danger': { icon: 'ti ti-alert-circle', bgClass: 'bg-danger', title: '{{ _("Error") }}' },
+        'warning': { icon: 'ti ti-alert-triangle', bgClass: 'bg-warning', title: '{{ _("Advertencia") }}' },
+        'info': { icon: 'ti ti-info-circle', bgClass: 'bg-info', title: '{{ _("Información") }}' }
+      };
+
+      const config = categoryMap[category] || categoryMap['info'];
+
+      // Set icon, title, and message
+      toastEl.querySelector('.toast-icon').className = `toast-icon ${config.icon}`;
+      toastEl.querySelector('.toast-title').textContent = config.title;
+      toastEl.querySelector('.toast-body').textContent = message;
+
+      // Add category styling
+      toast.classList.add(config.bgClass, 'text-white');
+
+      // Append to container
+      container.appendChild(toastEl);
+
+      // Show toast with Bootstrap
+      const bsToast = new bootstrap.Toast(toast, {
+        delay: autoDismiss || 3000
+      });
+      bsToast.show();
+
+      // Remove from DOM after hidden
+      toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+      });
+    }
+
+    // Auto-show flashed messages on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const flashes = {{ get_flashed_messages(with_categories = True) | tojson
+    }};
+    flashes.forEach(([category, message]) => {
+      showToast(message, category);
+    });
+      });
+  </script>
+
+  <style>
+    .toast {
+      min-width: 320px;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .toast-header {
+      background: inherit;
+      border-bottom: none;
+    }
+
+    .toast-body {
+      padding: 1rem;
+    }
+
+    @media (max-width: 576px) {
+      .position-fixed.bottom-0.end-0 {
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+      }
+
+      .toast {
+        min-width: auto;
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+  </style>
+
+  <script>
+    // ── Theme toggle ──────────────────────────────────────────────
+    (function() {
+      var html = document.documentElement;
+      var btn = document.getElementById('theme-toggle-menu') || document.getElementById('theme-toggle');
+
+      // Override server-set theme with user's saved preference.
+      var saved = localStorage.getItem('ft-theme');
+      if (saved === 'dark' || saved === 'light') {
+        html.setAttribute('data-theme', saved);
+        html.setAttribute('data-bs-theme', saved);
+      }
+
+      if (!btn) return;
+      btn.addEventListener('click', function() {
+        var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        html.setAttribute('data-bs-theme', next);
+        localStorage.setItem('ft-theme', next);
+
+        // Update icon/label if it's the dropdown button
+        if (btn.id === 'theme-toggle-menu') {
+          var label = btn.querySelector('.theme-label');
+          if (label) {
+            label.textContent = next === 'dark' ? '{{ _("Tema claro") }}' : '{{ _("Tema oscuro") }}';
+          }
         }
+      });
+    })();
+  </script>
+  <!-- ── Per-page extra JS ──────────────────────────────────────── -->
+  {% block extra_js %}{% endblock %}
+</body>
 
-        if (!btn) return;
-        btn.addEventListener('click', function () {
-          var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-          var next    = current === 'dark' ? 'light' : 'dark';
-          html.setAttribute('data-theme', next);
-          html.setAttribute('data-bs-theme', next);
-          localStorage.setItem('ft-theme', next);
-        });
-      })();
-    </script>
-    <!-- ── Per-page extra JS ──────────────────────────────────────── -->
-    {% block extra_js %}{% endblock %}
-  </body>
 </html>

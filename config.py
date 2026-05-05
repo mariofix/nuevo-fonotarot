@@ -95,7 +95,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS: list = ["localhost", "tardis.local"]
+    TRUSTED_HOSTS: list = ["localhost", "tardis.local", "nuevo.fonotarot.com", "zvn-lin4.local", "10.0.0.4"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")
@@ -128,6 +128,7 @@ class Config:
     SECURITY_CHANGE_URL: str = "/ft-settings"
     SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
+    SECURITY_EMAIL_SUBJECT_REGISTER: str = "Te damos la bienvenida a Fonotarot"
 
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "es_CL")
