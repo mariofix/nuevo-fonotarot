@@ -1,13 +1,11 @@
-"""Payment callbacks, order status, store index and customer profile."""
+"""Payment callbacks, order status, and store index."""
 
-from flask import abort, current_app, flash, redirect, render_template, request, url_for
-from flask_security import current_user
+from flask import abort, current_app, redirect, render_template, request, url_for
 
-from ...decorators import login_required_modal
 from ...extensions import db
 from ...log import get_logger
 from ...models import MinutePack, Order, OrderStatus, Product, SubscriptionPlan
-from ..utils import _get_cart, _save_cart
+from ..utils import _get_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
@@ -222,36 +220,6 @@ def index():
         subscription_plans=subscription_plans,
         featured_products=featured_products,
         cart_count=len(cart),
-    )
-
-
-# ---------------------------------------------------------------------------
-# Customer profile
-# ---------------------------------------------------------------------------
-
-
-@pagos_bp.route("/perfil/", methods=["GET", "POST"])
-@login_required_modal
-def perfil():
-    """View and update the logged-in customer's profile."""
-    if request.method == "POST":
-        current_user.full_name = request.form.get("full_name", "").strip() or None
-        current_user.phone = request.form.get("phone", "").strip() or None
-        current_user.rut = request.form.get("rut", "").strip() or None
-        current_user.address = request.form.get("address", "").strip() or None
-        current_user.commune = request.form.get("commune", "").strip() or None
-        current_user.postal_code = request.form.get("postal_code", "").strip() or None
-        pref = request.form.get("preferred_payment", "").strip()
-        current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
-        db.session.commit()
-        logger.info("Profile updated for user=%s", current_user.id)
-        flash("Perfil actualizado correctamente.", "success")
-        return redirect(url_for("pagos.perfil"))
-
-    return render_template(
-        "tienda/perfil.html",
-        user=current_user,
-        cart_count=len(_get_cart()),
     )
 
 
