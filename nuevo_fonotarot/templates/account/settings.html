@@ -4,9 +4,31 @@
 
 {% block extra_css %}
 <style>
-  .section-title { color:var(--plum); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:.05em; }
-  .profile-complete { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
-  .profile-incomplete { background:rgba(220,38,38,.06); color:#991b1b; border:1px solid rgba(220,38,38,.2); border-radius:8px; padding:.6rem 1rem; font-size:.85rem; }
+  .section-title {
+    color: var(--plum);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .profile-complete {
+    background: rgba(16, 185, 129, .08);
+    color: #065f46;
+    border: 1px solid rgba(16, 185, 129, .25);
+    border-radius: 8px;
+    padding: .6rem 1rem;
+    font-size: .85rem;
+  }
+
+  .profile-incomplete {
+    background: rgba(220, 38, 38, .06);
+    color: #991b1b;
+    border: 1px solid rgba(220, 38, 38, .2);
+    border-radius: 8px;
+    padding: .6rem 1rem;
+    font-size: .85rem;
+  }
 </style>
 {% endblock %}
 
@@ -14,11 +36,11 @@
 <div class="container py-5" style="max-width:720px">
 
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible mb-4">
-        {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible mb-4">
+    {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
   {% endwith %}
 
   <h1 class="fw-bold mb-4">{{ _("Mi cuenta") }}</h1>
@@ -43,7 +65,7 @@
   <div class="card mb-4">
     <div class="card-header">{{ _("Seguridad") }}</div>
     <div class="card-body">
-      <a href="{{ url_for('security.forgot_password') }}" class="btn btn-outline-secondary btn-sm">
+      <a href="{{ url_for('security.change_password') }}" class="btn btn-outline-secondary btn-sm">
         {{ _("Cambiar contraseña") }}
       </a>
     </div>
@@ -63,7 +85,7 @@
   {% endif %}
 
   <form method="post" action="{{ url_for('account.settings') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     <!-- Basic data -->
     <div class="card p-4 mb-4">
@@ -71,13 +93,11 @@
       <div class="row g-3">
         <div class="col-md-7">
           <label class="form-label" for="full_name">{{ _("Nombre completo") }}</label>
-          <input type="text" id="full_name" name="full_name" class="form-control"
-                 value="{{ user.full_name or '' }}"/>
+          <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name or '' }}" />
         </div>
         <div class="col-md-5">
           <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
-          <input type="tel" id="phone" name="phone" class="form-control"
-                 value="{{ user.phone or '' }}"/>
+          <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}" />
         </div>
       </div>
     </div>
@@ -89,25 +109,19 @@
       <div class="row g-3">
         <div class="col-md-4">
           <label class="form-label" for="rut">{{ _("RUT") }}</label>
-          <input type="text" id="rut" name="rut" class="form-control"
-                 placeholder="12.345.678-9"
-                 value="{{ user.rut or '' }}"/>
+          <input type="text" id="rut" name="rut" class="form-control" placeholder="12.345.678-9" value="{{ user.rut or '' }}" />
         </div>
         <div class="col-md-8">
           <label class="form-label" for="address">{{ _("Dirección") }}</label>
-          <input type="text" id="address" name="address" class="form-control"
-                 placeholder="{{ _('Calle, número, depto.') }}"
-                 value="{{ user.address or '' }}"/>
+          <input type="text" id="address" name="address" class="form-control" placeholder="{{ _('Calle, número, depto.') }}" value="{{ user.address or '' }}" />
         </div>
         <div class="col-md-6">
           <label class="form-label" for="commune">{{ _("Comuna") }}</label>
-          <input type="text" id="commune" name="commune" class="form-control"
-                 value="{{ user.commune or '' }}"/>
+          <input type="text" id="commune" name="commune" class="form-control" value="{{ user.commune or '' }}" />
         </div>
         <div class="col-md-6">
           <label class="form-label" for="postal_code">{{ _("Código postal") }}</label>
-          <input type="text" id="postal_code" name="postal_code" class="form-control"
-                 value="{{ user.postal_code or '' }}"/>
+          <input type="text" id="postal_code" name="postal_code" class="form-control" value="{{ user.postal_code or '' }}" />
         </div>
       </div>
     </div>
@@ -121,23 +135,17 @@
       <div class="row g-3">
         <div class="col-md-6">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="preferred_payment"
-                   id="pref_none" value=""
-                   {% if not user.preferred_payment %}checked{% endif %}/>
+            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_none" value="" {% if not user.preferred_payment %}checked{% endif %} />
             <label class="form-check-label text-secondary" for="pref_none">{{ _("Sin preferencia") }}</label>
           </div>
         </div>
         <div class="col-md-6">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="preferred_payment"
-                   id="pref_flow" value="flow"
-                   {% if user.preferred_payment == 'flow' %}checked{% endif %}/>
+            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_flow" value="flow" {% if user.preferred_payment=='flow' %}checked{% endif %} />
             <label class="form-check-label text-secondary" for="pref_flow">Flow ({{ _("tarjeta") }})</label>
           </div>
           <div class="form-check mt-1">
-            <input class="form-check-input" type="radio" name="preferred_payment"
-                   id="pref_khipu" value="khipu"
-                   {% if user.preferred_payment == 'khipu' %}checked{% endif %}/>
+            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_khipu" value="khipu" {% if user.preferred_payment=='khipu' %}checked{% endif %} />
             <label class="form-check-label text-secondary" for="pref_khipu">Khipu ({{ _("transferencia") }})</label>
           </div>
         </div>

@@ -94,7 +94,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS: list = ["nuevo.fonotarot.com", "tardis.local"]
+    TRUSTED_HOSTS: list = ["localhost", "tardis.local"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("DATABASE_URL", "sqlite:///fonotarot.db")
@@ -119,11 +119,12 @@ class Config:
     SECURITY_CONFIRMABLE: bool = True
     SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
+    SECURITY_CHANGEABLE: bool = True
     SECURITY_LOGIN_URL: str = "/ft-login"
     SECURITY_REGISTER_URL: str = "/ft-register"
     SECURITY_RESET_URL: str = "/ft-reset"
-    SECURITY_VERIFY_URL: str = "/ft-verify"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
+    SECURITY_CHANGE_URL: str = "/ft-settings/password-update"
     SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
 
@@ -158,8 +159,8 @@ class Config:
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
     DALEKS_TIMEOUT: int = int(os.environ.get("DALEKS_TIMEOUT", "5"))
-    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT", "fonotarot-cl")
-    SECURITY_EMAIL_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", f"hola@fonotarot.cl")
+    DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT", "")
+    SECURITY_EMAIL_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", "")
 
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
