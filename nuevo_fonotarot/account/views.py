@@ -34,7 +34,12 @@ def settings():
 
 @account_bp.route("/set-language/<lang>")
 def set_language(lang: str):
-    """Persist the chosen locale in the session and redirect back."""
+    """Persist the chosen locale in the session and redirect back.
+
+    The redirect target is taken from the ``next`` query-string parameter when
+    it is a safe same-site relative path (starts with ``/`` but not ``//``).
+    Falls back to the site index when ``next`` is absent or unsafe.
+    """
     active = [
         item[1]
         for item in current_app.config.get("AVAILABLE_LANGUAGES", [])
@@ -45,6 +50,14 @@ def set_language(lang: str):
         logger.debug("Language set to %r for session", lang)
     else:
         logger.warning("Requested language %r is not in active list %s; ignoring", lang, active)
+
+    next_param = request.args.get("next", "").strip()
+    if next_param:
+        from urllib.parse import urlsplit as _urlsplit
+        parsed_next = _urlsplit(next_param)
+        # Accept only relative paths (no scheme, no netloc, must start with / but not //)
+        if not parsed_next.scheme and not parsed_next.netloc and parsed_next.path.startswith("/") and not parsed_next.path.startswith("//"):
+            return redirect(next_param)
 
     return redirect(url_for("content.index"))
 

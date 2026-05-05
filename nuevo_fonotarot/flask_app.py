@@ -106,14 +106,23 @@ def _init_extensions(app: Flask) -> None:
 
     @_user_registered_signal.connect_via(app)
     def _on_user_registered(sender, user, confirm_token, confirmation_token, **extra):
-        """Query Firenze for the newly registered user and save the client_id."""
+        """Query Firenze for the newly registered user and save the client_id.
+
+        Also copies ``username`` (the phone number field in registration) into
+        ``user.phone`` when ``phone`` is not already set, so both fields stay
+        in sync without enforcing it.
+        """
         from .firenze import search_client
 
+        # Copy username → phone if phone is blank (non-enforced convenience sync).
+        if user.username and not user.phone:
+            user.phone = user.username
+
         try:
-            client_id = search_client(email=user.email, phone=user.username)
+            client_id = search_client(email=user.email, phone=user.phone or user.username)
             if client_id is not None:
                 user.firenze_client_id = client_id
-                db.session.commit()
+            db.session.commit()
         except Exception:
             from .log import get_logger as _get_logger
             _get_logger(__name__).exception(
