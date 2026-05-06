@@ -5,7 +5,7 @@ import os
 from typing import Any
 
 from flask import Flask, request, session
-from flask_babel import get_locale
+from flask_babel import get_locale, _
 from flask_security.datastore import SQLAlchemyUserDatastore
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -100,6 +100,33 @@ def _init_extensions(app: Flask) -> None:
 
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, _ext.user_datastore)
+    
+    # Hook into Flask-Security to customize the unified signin form
+    from flask_security import UnifiedSigninForm
+    from .forms import customize_unified_signin_form
+    
+    # Override the form's __init__ to customize it after creation
+    original_init = UnifiedSigninForm.__init__
+    def custom_init(self, *args, **kwargs):
+        original_init(self, *args, **kwargs)
+        customize_unified_signin_form(self)
+    UnifiedSigninForm.__init__ = custom_init
+    
+    # Register custom authentication handlers for remember-me functionality
+    from .auth_handlers import register_auth_handlers, ensure_user_email_signin
+    register_auth_handlers(app)
+    
+    # Hook into Flask-Security's lookup_identity to auto-setup email signin
+    from flask_security.utils import lookup_identity as _original_lookup_identity
+    def _patched_lookup_identity(identity):
+        user = _original_lookup_identity(identity)
+        if user:
+            ensure_user_email_signin(user)
+        return user
+    
+    # Monkey-patch the lookup_identity function
+    import flask_security.unified_signin
+    flask_security.unified_signin.lookup_identity = _patched_lookup_identity
 
     # After a new user registers, look them up in Firenze and persist client_id.
     from flask_security.signals import user_registered as _user_registered_signal

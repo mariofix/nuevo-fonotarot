@@ -135,7 +135,10 @@ class Config:
     SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
     SECURITY_CHANGEABLE: bool = True
-    SECURITY_LOGIN_URL: str = "/ft-login"
+    SECURITY_UNIFIED_SIGNIN: bool = True
+    SECURITY_US_ENABLED_METHODS: list = ["email"]  # Only email, not SMS
+    SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = True  # Replace /login with /us-signin
+    SECURITY_LOGIN_URL: str = "/signin"
     SECURITY_REGISTER_URL: str = "/ft-register"
     SECURITY_RESET_URL: str = "/ft-reset"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
@@ -143,6 +146,16 @@ class Config:
     SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
     SECURITY_EMAIL_SUBJECT_REGISTER: str = "Te damos la bienvenida a Fonotarot"
+    SECURITY_EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Confirma tu correo para acceder a Fonotarot"
+    
+    # Unified signin settings
+    SECURITY_US_EMAIL_VALIDITY: int = 300  # One-time code valid for 5 minutes
+    SECURITY_US_TOKEN_VALIDITY: int = 300  # One-time link valid for 5 minutes
+    SECURITY_REMEMBER_ME_DAYS: int = 31  # Trust window for remember_me checkbox
+    
+    # TOTP settings (required for unified signin)
+    SECURITY_TOTP_SECRETS: dict = {"1": "JBSWY3DPEBLW64TMMQQ"}
+    SECURITY_TOTP_ISSUER: str = "Fonotarot"
 
     # Flask-Admin locale
     ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "es_CL")
@@ -230,6 +243,12 @@ class DevelopmentConfig(Config):
     # Development: default to DEBUG; override with LOG_LEVEL env var.
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "DEBUG")
     LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
+    # Development email configuration: use console backend if no SMTP server configured
+    MAIL_DEBUG: bool = True
+    # If DALEKS_URL is not set, use Python's debugging backend
+    if not os.environ.get("DALEKS_URL"):
+        # Use a simple testing backend that just logs emails
+        MAIL_SUPPRESS_SEND: bool = False
 
 
 class ProductionConfig(Config):

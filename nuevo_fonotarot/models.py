@@ -89,6 +89,9 @@ class User(db.Model, UserMixin):
     us_totp_secrets: Mapped[str | None] = mapped_column(Text)
     # Must be unique when set; used as an alternative login identifier.
     us_phone_number: Mapped[str | None] = mapped_column(String(128), unique=True)
+    # Trust window for passwordless signin: if set and current time < trusted_until,
+    # user is automatically logged in without requiring email verification.
+    trusted_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
