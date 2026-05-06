@@ -110,7 +110,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS: list = ["localhost", "tardis.local", "nuevo.fonotarot.com", "zvn-lin4.local", "10.0.0.4"]
+    TRUSTED_HOSTS: list = ["nuevo.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")
