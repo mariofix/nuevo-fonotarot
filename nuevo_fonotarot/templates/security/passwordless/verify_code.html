@@ -1,103 +1,278 @@
-{% extends "security/base.html" %}
-{% from "security/_macros.html" import render_form_row, render_form %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{{ _('Verificar Código') }} — Fonotarot</title>
+  <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-{% block content %}
-  {% include "security/_messages.html" %}
-  
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-body p-5">
-            <h2 class="mb-4 text-center">{{ _("Verificar Código") }}</h2>
-            <p class="text-muted text-center mb-4">
-              {% if method == 'email' %}
-                {{ _("Hemos enviado un código de 6 dígitos a tu email") }}
-              {% elif method == 'sms' %}
-                {{ _("Hemos enviado un código de 6 dígitos a tu teléfono") }}
-              {% elif method == 'authenticator' %}
-                {{ _("Ingresa el código de 6 dígitos de tu aplicación autenticadora") }}
-              {% endif %}
-            </p>
+    :root {
+      --plum:    #6b3fa0;
+      --plum-dk: #4a2872;
+      --gold:    #d4af37;
+      --cream:   #fffef0;
+      --dark:    #1a1a1a;
+      --gray:    #888;
+    }
 
-            <form method="POST" action="{{ url_for('passwordless.verify_code') }}">
-              {{ form.hidden_tag() }}
+    body {
+      background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
+      color: var(--dark);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-              <!-- Passcode Field -->
-              <div class="mb-3">
-                {{ form.passcode.label(class="form-label") }}
-                <div class="input-group input-group-lg">
-                  {% if form.passcode.errors %}
-                    {{ form.passcode(
-                      class="form-control form-control-lg text-center font-monospace is-invalid",
-                      autocomplete="one-time-code",
-                      maxlength="6",
-                      autofocus=True
-                    ) }}
-                    <div class="invalid-feedback d-block">
-                      {% for error in form.passcode.errors %}
-                        <div>{{ error }}</div>
-                      {% endfor %}
-                    </div>
-                  {% else %}
-                    {{ form.passcode(
-                      class="form-control form-control-lg text-center font-monospace",
-                      autocomplete="one-time-code",
-                      maxlength="6",
-                      autofocus=True
-                    ) }}
-                  {% endif %}
-                </div>
+    .container-center {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      background: var(--cream);
+    }
+
+    .card-body {
+      padding: 40px;
+    }
+
+    h2 {
+      color: var(--plum-dk);
+      font-weight: 700;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      font-size: 14px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-label {
+      color: var(--dark);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      transition: border-color 0.3s;
+      color: var(--dark);
+      background-color: white;
+      text-align: center;
+    }
+
+    .form-control:focus {
+      border-color: var(--plum);
+      box-shadow: 0 0 0 0.2rem rgba(107, 63, 160, 0.1);
+      color: var(--dark);
+    }
+
+    .form-check {
+      margin: 20px 0;
+    }
+
+    .form-check-input {
+      border: 2px solid #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-check-input:checked {
+      background-color: var(--plum);
+      border-color: var(--plum);
+    }
+
+    .form-check-label {
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 8px;
+      color: var(--dark);
+    }
+
+    .btn-primary {
+      background-color: var(--plum);
+      border: none;
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-weight: 600;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background-color 0.3s;
+      width: 100%;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--plum-dk);
+      color: white;
+    }
+
+    .alert {
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+    .alert-info {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    .alert-danger {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .text-muted-custom {
+      color: var(--gray);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    a {
+      color: var(--plum);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      color: var(--plum-dk);
+      text-decoration: underline;
+    }
+
+    .error-list {
+      color: #c62828;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .is-invalid {
+      border-color: #c62828 !important;
+    }
+
+    .invalid-feedback {
+      color: #c62828;
+      font-size: 13px;
+      display: block;
+      margin-top: 6px;
+    }
+
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 12px; }
+    .mt-4 { margin-top: 24px; }
+    .mb-3 { margin-bottom: 16px; }
+    .mb-4 { margin-bottom: 24px; }
+    .my-4 { margin-top: 24px; margin-bottom: 24px; }
+    .d-grid { display: grid; }
+  </style>
+</head>
+<body>
+  <div class="container-center">
+    <div class="card">
+      <div class="card-body">
+        {% include "security/_messages.html" %}
+        
+        <h2>{{ _("Verificar Código") }}</h2>
+        <p class="subtitle">{{ _("Hemos enviado un código a tu correo. Ingresalo abajo.") }}</p>
+
+        <form method="POST">
+          {{ form.hidden_tag() }}
+
+          <!-- Code Field -->
+          <div class="mb-4">
+            {{ form.passcode.label(class="form-label") }}
+            {% if form.passcode.errors %}
+              {{ form.passcode(class="form-control is-invalid", autofocus=True, maxlength="6", placeholder="000000") }}
+              <div class="invalid-feedback">
+                {% for error in form.passcode.errors %}
+                  {{ error }}<br>
+                {% endfor %}
               </div>
+            {% else %}
+              {{ form.passcode(class="form-control", autofocus=True, maxlength="6", placeholder="000000") }}
+            {% endif %}
+          </div>
 
-              <!-- Remember Me -->
-              <div class="mb-4">
-                <div class="form-check">
-                  {{ form.remember_me(class="form-check-input") }}
-                  {{ form.remember_me.label(class="form-check-label") }}
-                </div>
-              </div>
-
-              <!-- Form Errors -->
-              {% if form.form_errors %}
-                <div class="alert alert-danger" role="alert">
-                  {% for error in form.form_errors %}
-                    <div>{{ error }}</div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-
-              <!-- Submit Button -->
-              <div class="d-grid">
-                {{ form.submit(class="btn btn-primary btn-lg") }}
-              </div>
-
-              <hr class="my-4">
-
-              <!-- Back Link -->
-              <div class="text-center">
-                <p class="text-muted">
-                  <a href="{{ url_for('passwordless.request_code') }}">{{ _("Usar otro método") }}</a>
-                </p>
-              </div>
-            </form>
-
-            <!-- Security Info -->
-            <div class="alert alert-info mt-4" role="alert">
-              <small>
-                🔒 {{ _("El código expira en 2 minutos. Si no lo recibes, vuelve atrás y solicita uno nuevo.") }}
-              </small>
+          <!-- Remember Me Checkbox -->
+          <div class="form-check mb-4">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label") }}
+            <div class="text-muted-custom mt-2">
+              {{ _("Permanecerás conectado durante 31 días sin necesidad de ingresar el código") }}
             </div>
           </div>
-        </div>
+
+          <!-- Security Warning -->
+          <div class="alert alert-warning" role="alert">
+            <strong>{{ _("⚠ Seguridad:") }}</strong> {{ _("No compartas este código con nadie. Fonotarot nunca te pedirá tu código.") }}
+          </div>
+
+          <!-- Form Errors -->
+          {% if form.form_errors %}
+            <div class="alert alert-danger" role="alert">
+              {% for error in form.form_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Back Link -->
+          <div class="text-center">
+            <p class="text-muted-custom">
+              <a href="{{ url_for('passwordless.request_code') }}">{{ _("Usar otro método") }}</a>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
+  <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
   <script>
-    // Auto-format passcode input (numbers only)
-    document.getElementById('passcode').addEventListener('input', function(e) {
-      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+    document.addEventListener('DOMContentLoaded', function() {
+      const codeInput = document.querySelector('input[type="text"][maxlength="6"]');
+      if (codeInput) {
+        codeInput.addEventListener('input', function(e) {
+          e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+        });
+      }
     });
   </script>
-{% endblock %}
+</body>
+</html>

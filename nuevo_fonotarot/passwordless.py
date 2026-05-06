@@ -22,7 +22,8 @@ import typing as t
 from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, request, session, redirect, current_app
-from flask_login import current_user, login_user
+from flask_login import current_user
+from flask_security.utils import login_user
 from wtforms import StringField, RadioField, PasswordField, BooleanField, SubmitField, validators, ValidationError
 from flask_security.forms import Form
 from flask_security.utils import config_value as cv
@@ -284,12 +285,12 @@ def create_passwordless_blueprint() -> Blueprint:
             session.pop("_pwl_method", None)
             session.pop("_pwl_timestamp", None)
 
-            # Log user in
-            login_user(user, remember=remember_me, authn_via=[form.authn_via])
+            # Log user in with Flask-Security's login_user which supports authn_via
+            login_user(user, remember=remember_me, authn_via=[method])
 
             logger.info(
                 f"Passwordless authentication successful for user {user.id} "
-                f"({user.email}) via {form.authn_via}"
+                f"({user.email}) via {method}"
             )
 
             # Redirect to next or dashboard
