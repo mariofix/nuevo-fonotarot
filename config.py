@@ -57,12 +57,19 @@ def _make_logging_config(log_level: str = "DEBUG") -> dict:
     Returns:
         A dict suitable for :func:`logging.config.dictConfig`.
     """
+    # Ensure logs directory exists
+    logs_dir = Path(__file__).resolve().parent / "logs"
+    logs_dir.mkdir(exist_ok=True)
+    
+    log_file = logs_dir / "nuevo-fonotarot.log"
+    
     return {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
             "verbose": {
-                "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
+                "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
             },
             "simple": {
                 "format": "[%(levelname)s] %(name)s: %(message)s",
@@ -73,19 +80,27 @@ def _make_logging_config(log_level: str = "DEBUG") -> dict:
                 "class": "logging.StreamHandler",
                 "formatter": "verbose",
             },
+            "file": {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "filename": str(log_file),
+                "when": "midnight",
+                "interval": 1,
+                "backupCount": 3,
+                "formatter": "verbose",
+            },
         },
         "loggers": {
             # Root application logger — all nuevo_fonotarot.* loggers inherit
             # from this unless they are explicitly configured below.
             "nuevo_fonotarot": {
-                "handlers": ["console"],
+                "handlers": ["console", "file"],
                 "level": log_level,
                 "propagate": False,
             },
         },
         # Keep third-party / stdlib root at WARNING to avoid noise.
         "root": {
-            "handlers": ["console"],
+            "handlers": ["console", "file"],
             "level": "WARNING",
         },
     }

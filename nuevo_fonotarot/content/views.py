@@ -244,7 +244,10 @@ def _homepage_ctx() -> dict:
     }
 
 blog_bp = Blueprint("blog", __name__)
+logger.debug("blog_bp: blueprint created")
+
 content_bp = Blueprint("content", __name__)
+logger.debug("content_bp: blueprint created")
 
 
 # ---------------------------------------------------------------------------
