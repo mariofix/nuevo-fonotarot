@@ -136,7 +136,7 @@ class Config:
     SECURITY_RECOVERABLE: bool = True
     SECURITY_CHANGEABLE: bool = True
     SECURITY_UNIFIED_SIGNIN: bool = True
-    SECURITY_US_ENABLED_METHODS: list = ["email"]  # Only email, not SMS
+    SECURITY_US_ENABLED_METHODS: list = ["email", "authenticator"]  # Email and authenticator app
     SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = True  # Replace /login with /us-signin
     SECURITY_LOGIN_URL: str = "/signin"
     SECURITY_REGISTER_URL: str = "/ft-register"
