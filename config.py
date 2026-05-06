@@ -121,7 +121,6 @@ class Config:
 
     # Flask-Security
     SECURITY_PASSWORD_SALT: str = os.environ.get("SECURITY_PASSWORD_SALT", "dev-password-salt-change-me")
-    SECURITY_PASSWORD_HASH: str = "bcrypt"
 
     # Username support: the username field stores an E.164 phone number
     # (digits only, no leading +).  Users can register/login with phone OR
@@ -189,7 +188,7 @@ class Config:
     # Firenze API (external telephony platform for promotions)
     # Firenze client lookup/creation service (internal, not internet-accessible)
     # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
-    FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "http://firenze.local")
+    FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "")
     FIRENZE_API_USER: str = os.environ.get("FIRENZE_API_USER", "")
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "")
