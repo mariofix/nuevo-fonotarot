@@ -425,14 +425,46 @@
 
         {# Buttons: Request code or Verify code #}
         <div class="auth-buttons" style="display: flex; gap: 1rem;">
-          <button type="submit" name="submit_send_code" class="auth-btn" style="flex: 1;">
+          <button type="submit" name="submit_send_code" class="auth-btn" style="flex: 1;" id="btn-send-code">
             {{ _('Enviar código') }}
           </button>
-          <button type="submit" name="submit" class="auth-btn" style="flex: 1;">
+          <button type="submit" name="submit" class="auth-btn" style="flex: 1;" id="btn-verify-code">
             {{ _('Verificar código') }}
           </button>
         </div>
       </form>
+
+      <script>
+        (function() {
+          const form = document.querySelector('form');
+          const passcodeField = document.querySelector('[name="passcode"]');
+          const sendBtn = document.getElementById('btn-send-code');
+          const verifyBtn = document.getElementById('btn-verify-code');
+
+          // Check if passcode has a value when form is submitted
+          form.addEventListener('submit', function(e) {
+            const hasCode = passcodeField.value && passcodeField.value.trim().length > 0;
+            
+            if (hasCode) {
+              // User is trying to verify - ensure only submit button is sent
+              sendBtn.disabled = true;
+              sendBtn.style.opacity = '0.5';
+            } else {
+              // User is sending code - ensure only send_code button is sent
+              verifyBtn.disabled = true;
+              verifyBtn.style.opacity = '0.5';
+            }
+          });
+
+          // Re-enable buttons if form reset
+          form.addEventListener('reset', function() {
+            sendBtn.disabled = false;
+            verifyBtn.disabled = false;
+            sendBtn.style.opacity = '1';
+            verifyBtn.style.opacity = '1';
+          });
+        })();
+      </script>
 
       <div class="auth-footer">
         <div class="auth-footer-row">
