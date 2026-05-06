@@ -178,6 +178,10 @@ class Config:
     DALEKS_SMTP_ACCOUNT: str | None = os.environ.get("DALEKS_SMTP_ACCOUNT", "")
     SECURITY_EMAIL_SENDER: str = os.environ.get("MAIL_DEFAULT_SENDER", "")
 
+    # Telegram notifications (Watchtower webhook)
+    # Format: telegram://BOT_TOKEN@telegram?chats=CHAT_ID&preview=No
+    TELEGRAM_WEBHOOK_URL: str = os.environ.get("TELEGRAM_WEBHOOK_URL", "")
+
     # Blog URL prefix — change via BLOG_URL_PREFIX env var (e.g. "/noticias")
     BLOG_URL_PREFIX: str = os.environ.get("BLOG_URL_PREFIX", "/blog")
 

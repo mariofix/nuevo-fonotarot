@@ -4,6 +4,7 @@ from .extensions import db, user_datastore
 from .firenze import search_client
 from .log import get_logger
 from .models import User
+from .notifications import notify_new_user_registration
 
 logger = get_logger(__name__)
 
@@ -12,6 +13,7 @@ def process_user_registration(user: User) -> bool:
     """Execute post-registration steps for a newly registered user.
 
     Performs all necessary setup after user registration, including:
+    - Sending a Telegram notification about the new registration
     - Syncing username (phone) into the phone field if not already set
     - Looking up and saving Firenze client_id if available
     - Adding user to 'clientes' role if client_id is found
@@ -30,6 +32,19 @@ def process_user_registration(user: User) -> bool:
         user.email,
         user.username,
     )
+    
+    # Send Telegram notification about new registration
+    try:
+        notify_new_user_registration(email=user.email, phone=user.phone or user.username)
+        logger.debug(
+            "process_user_registration: Telegram notification sent for user=%s",
+            user.id,
+        )
+    except Exception:
+        logger.exception(
+            "process_user_registration: failed to send Telegram notification for user=%s",
+            user.id,
+        )
     
     # Copy username → phone if phone is blank (non-enforced convenience sync).
     if user.username and not user.phone:
