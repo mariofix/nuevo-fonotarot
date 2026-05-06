@@ -259,6 +259,7 @@ def _register_blueprints(app: Flask) -> None:
     from .content import blog_bp, content_bp
     from .lab import lab_bp
     from .legacy import legacy_bp
+    from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, suscripciones_bp
 
     app.register_blueprint(content_bp)
@@ -270,6 +271,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(account_bp, url_prefix="/ft-settings")
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)
+    app.register_blueprint(create_passwordless_blueprint())
 
     from .cli import lang_cli, seed_promo_cli, user_cli
 

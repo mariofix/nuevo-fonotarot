@@ -1,0 +1,89 @@
+{% extends "security/base.html" %}
+{% from "security/_macros.html" import render_form_row, render_form %}
+
+{% block content %}
+  {% include "security/_messages.html" %}
+  
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body p-5">
+            <h2 class="mb-4 text-center">{{ _("Acceso sin Contraseña") }}</h2>
+            <p class="text-muted text-center mb-4">
+              {{ _("Ingresa tu email o identidad y elige cómo quieres recibir el código") }}
+            </p>
+
+            <form method="POST" action="{{ url_for('passwordless.request_code') }}">
+              {{ form.hidden_tag() }}
+
+              <!-- Identity Field -->
+              <div class="mb-3">
+                {{ form.identity.label(class="form-label") }}
+                {% if form.identity.errors %}
+                  {{ form.identity(class="form-control is-invalid") }}
+                  <div class="invalid-feedback d-block">
+                    {% for error in form.identity.errors %}
+                      <div>{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.identity(class="form-control", autofocus=True) }}
+                {% endif %}
+              </div>
+
+              <!-- Method Selection -->
+              <div class="mb-4">
+                <label class="form-label">{{ form.method.label.text }}</label>
+                <div>
+                  {% for value, label in form.method.choices %}
+                    <div class="form-check">
+                      {{ form.method(
+                        value=value,
+                        class="form-check-input" + (" is-invalid" if form.method.errors else ""),
+                        _value=value
+                      ) }}
+                      <label class="form-check-label" for="method-{{ value }}">
+                        {{ label }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                  {% if form.method.errors %}
+                    <div class="invalid-feedback d-block">
+                      {% for error in form.method.errors %}
+                        <div>{{ error }}</div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Form Errors -->
+              {% if form.form_errors %}
+                <div class="alert alert-danger" role="alert">
+                  {% for error in form.form_errors %}
+                    <div>{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                {{ form.submit(class="btn btn-primary btn-lg") }}
+              </div>
+
+              <hr class="my-4">
+
+              <!-- Fallback Link -->
+              <div class="text-center">
+                <p class="text-muted">
+                  <a href="{{ url_for('security.login') }}">{{ _("Usar contraseña") }}</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
