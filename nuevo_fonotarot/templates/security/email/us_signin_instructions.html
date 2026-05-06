@@ -4,7 +4,7 @@
 {% extends "email/base.html" %}
 
 {% block email_title %}{{ _('Tu código de acceso a Fonotarot') }} — fonotarot{% endblock %}
-{% block preview_text %}{{ _('Aquí está tu enlace de acceso seguro a Fonotarot. Válido por 5 minutos.') }}{% endblock %}
+{% block preview_text %}{{ _('Tu código de acceso de un solo uso. Válido por 5 minutos.') }}{% endblock %}
 
 {% block content %}
   <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
@@ -12,13 +12,34 @@
     {{ _('Tu código de acceso') }}
   </h1>
   <div style="width:40px; height:3px; background:#c9a84c;
-               border-radius:2px; margin:0 0 20px;"></div>
+               border-radius:2px; margin:0 0 24px;"></div>
 
-  <p style="margin:0 0 24px; font-family:Arial,sans-serif; font-size:15px;
-             line-height:1.7; color:#2d2233;">
-    {{ _('Haz clic en el botón para acceder a tu cuenta en <strong>fonotarot</strong>. Este enlace expira en 5 minutos.') }}
+  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:15px;
+             line-height:1.65; color:#2d2233;">
+    {{ _('Bienvenido de nuevo a Fonotarot. Usa el código de un solo uso que aparece más abajo para acceder a tu cuenta. Este código expira en <strong>5 minutos</strong>.') }}
   </p>
 
+  <!-- Code box -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 28px; width:100%;">
+    <tr>
+      <td align="center" style="background-color:#f0e8ff; border-radius:12px;
+                               border:2px solid #e0d4e8; padding:28px 20px;">
+        <p style="margin:0 0 8px; font-family:Arial,sans-serif; font-size:11px;
+                  color:#8a7a8e; letter-spacing:.5px; text-transform:uppercase;
+                  font-weight:600;">
+          {{ _('Código de acceso') }}
+        </p>
+        <p style="margin:0; font-family:'Courier New',monospace; font-size:28px;
+                  font-weight:700; color:#4a2872; letter-spacing:2px;
+                  word-spacing:4px;">
+          {{ confirmation_token }}
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <!-- CTA Button -->
   <table role="presentation" border="0" cellpadding="0" cellspacing="0"
          style="margin:0 0 28px;">
     <tr>
@@ -33,17 +54,29 @@
     </tr>
   </table>
 
-  <p style="margin:0 0 6px; font-family:Arial,sans-serif; font-size:12px; color:#8a7a8e;">
-    {{ _('Si el botón no funciona, copia y pega esta URL:') }}
-  </p>
-  <p style="margin:0 0 28px; font-family:Arial,sans-serif; font-size:11px;
-             word-break:break-all; color:#6b3fa0;">
-    {{ confirmation_link }}
+  <p style="margin:0 0 12px; font-family:Arial,sans-serif; font-size:12px;
+             color:#8a7a8e; text-align:center;">
+    {{ _('o ingresa manualmente el código anterior') }}
   </p>
 
   <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
 
-  <p style="margin:0; font-family:Arial,sans-serif; font-size:13px; color:#8a7a8e;">
-    {{ _('Si no solicitaste acceso, ignora este correo. Tu cuenta está protegida.') }}
+  <!-- Security note -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+         style="margin:0 0 20px; width:100%;">
+    <tr>
+      <td style="padding:12px 14px; background-color:#faf8fc;
+                 border-radius:8px; border-left:3px solid #c9a84c;">
+        <p style="margin:0; font-family:Arial,sans-serif; font-size:12px;
+                  color:#6b3fa0; line-height:1.6;">
+          <strong>🔒 {{ _('Seguridad:') }}</strong> {{ _('Nunca compartiremos tu código por teléfono o redes sociales. Si no solicitaste acceso, ignora este correo y tu cuenta estará protegida.') }}
+        </p>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin:0 0 6px; font-family:Arial,sans-serif; font-size:11px;
+             color:#8a7a8e; text-align:center;">
+    {{ _('Este código expira automáticamente después de 5 minutos.') }}
   </p>
 {% endblock %}
