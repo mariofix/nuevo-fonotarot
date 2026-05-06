@@ -17,6 +17,7 @@ Architecture:
 
 from __future__ import annotations
 
+import json
 import typing as t
 from datetime import datetime, timedelta, timezone
 
@@ -24,6 +25,7 @@ from flask import Blueprint, request, session, redirect, current_app
 from flask_login import current_user, login_user
 from wtforms import StringField, RadioField, PasswordField, BooleanField, SubmitField, validators, ValidationError
 from flask_security.forms import Form
+from flask_security.utils import config_value as cv
 
 from .extensions import db, security
 from .models import User
@@ -33,6 +35,14 @@ if t.TYPE_CHECKING:
     from flask.typing import ResponseValue
 
 logger = get_logger(__name__)
+
+
+def _get_totp_secrets(user: User) -> dict:
+    """Get TOTP secrets dictionary for a user (handles JSON parsing)."""
+    secrets = user.us_totp_secrets
+    if isinstance(secrets, str):
+        return json.loads(secrets) if secrets else {}
+    return secrets or {}
 
 
 
@@ -75,15 +85,13 @@ class RequestCodeForm(Form):
             return False
 
         # Check if method is enabled and available for this user
-        enabled_methods = current_app.config.get("SECURITY_US_ENABLED_METHODS", ["email"])
+        enabled_methods = cv("US_ENABLED_METHODS")
         if self.method.data not in enabled_methods:
             self.method.errors.append("Método no disponible")
             return False
 
         # Check if user has set up this method
-        totp_secrets = db.session.execute(
-            db.select(User.us_totp_secrets).where(User.id == self.user.id)
-        ).scalar_one()
+        totp_secrets = _get_totp_secrets(self.user)
 
         if self.method.data not in totp_secrets:
             self.method.errors.append(
@@ -146,9 +154,7 @@ class VerifyCodeForm(Form):
         self.user = user
 
         # Verify passcode against stored TOTP secret
-        totp_secrets = db.session.execute(
-            db.select(User.us_totp_secrets).where(User.id == user.id)
-        ).scalar_one()
+        totp_secrets = _get_totp_secrets(user)
 
         if method not in totp_secrets:
             self.form_errors.append("Método no válido")
@@ -159,7 +165,7 @@ class VerifyCodeForm(Form):
             token=self.passcode.data,
             totp_secret=totp_secrets[method],
             user=user,
-            window=current_app.config.get("SECURITY_US_TOKEN_VALIDITY", 120),
+            window=cv("US_TOKEN_VALIDITY"),
         ):
             user.track_failed_authn("passcode")
             self.passcode.errors.append("Código inválido o expirado")
@@ -194,9 +200,7 @@ def create_passwordless_blueprint() -> Blueprint:
             method = form.method.data
 
             # Get TOTP secret for this method
-            totp_secrets = db.session.execute(
-                db.select(User.us_totp_secrets).where(User.id == user.id)
-            ).scalar_one()
+            totp_secrets = _get_totp_secrets(user)
 
             # Send code via the chosen method
             msg = user.us_send_security_token(
@@ -212,7 +216,8 @@ def create_passwordless_blueprint() -> Blueprint:
                 logger.warning(
                     f"Failed to send {method} code to user {user.id}: {msg}"
                 )
-                return security.render_template(
+                from flask import render_template
+                return render_template(
                     "security/passwordless/request_code.html",
                     form=form,
                 )
@@ -228,7 +233,8 @@ def create_passwordless_blueprint() -> Blueprint:
 
             return redirect("/passwordless/verify-code")
 
-        return security.render_template(
+        from flask import render_template
+        return render_template(
             "security/passwordless/request_code.html",
             form=form,
         )
@@ -293,7 +299,8 @@ def create_passwordless_blueprint() -> Blueprint:
 
             return redirect("/")
 
-        return security.render_template(
+        from flask import render_template
+        return render_template(
             "security/passwordless/verify_code.html",
             form=form,
             method=method,
