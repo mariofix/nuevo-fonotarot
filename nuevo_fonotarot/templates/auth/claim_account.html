@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Activar cuenta — Fonotarot</title>
+  <title>{{ _('Activar cuenta') }} — Fonotarot</title>
   <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
@@ -294,15 +294,13 @@
         <span>✦</span>Fonotarot
       </a>
 
-      <h1 class="auth-heading">Activa tu acceso</h1>
-      <p class="auth-sub">Para clientes que ya consultan por teléfono</p>
+      <h1 class="auth-heading">{{ _('Activa tu acceso') }}</h1>
+      <p class="auth-sub">{{ _('Para clientes que ya consultan por teléfono') }}</p>
 
       <div class="auth-info">
         <i class="ti ti-phone-check"></i>
         <span>
-          Si ya eres cliente de Fonotarot por teléfono, ingresa el email y el
-          número que usas habitualmente. Verificaremos tus datos y crearemos tu
-          cuenta web al instante.
+          {{ _('Si ya eres cliente de Fonotarot por teléfono, ingresa el email y el número que usas habitualmente. Verificaremos tus datos y crearemos tu cuenta web al instante.') }}
         </span>
       </div>
 
@@ -334,7 +332,7 @@
         {{ form.hidden_tag() }}
 
         <div class="auth-field">
-          <label class="auth-label" for="email">Email</label>
+          <label class="auth-label" for="email">{{ _('Email') }}</label>
           <input
             class="auth-input{% if form.email.errors %} is-invalid{% endif %}"
             type="email"
@@ -353,8 +351,8 @@
 
         <div class="auth-field">
           <label class="auth-label" for="phone">
-            Teléfono
-            <span class="auth-hint">solo dígitos, sin +</span>
+            {{ _('Teléfono') }}
+            <span class="auth-hint">{{ _('solo dígitos, sin +') }}</span>
           </label>
           <input
             class="auth-input{% if form.phone.errors %} is-invalid{% endif %}"
@@ -373,7 +371,7 @@
         </div>
 
         <div class="auth-field">
-          <label class="auth-label" for="password">Contraseña</label>
+          <label class="auth-label" for="password">{{ _('Contraseña') }}</label>
           <input
             class="auth-input{% if form.password.errors %} is-invalid{% endif %}"
             type="password"
@@ -390,7 +388,7 @@
         </div>
 
         <div class="auth-field">
-          <label class="auth-label" for="password_confirm">Confirmar contraseña</label>
+          <label class="auth-label" for="password_confirm">{{ _('Confirmar contraseña') }}</label>
           <input
             class="auth-input{% if form.password_confirm.errors %} is-invalid{% endif %}"
             type="password"
@@ -406,17 +404,17 @@
           {% endif %}
         </div>
 
-        <button type="submit" class="auth-btn">Activar mi cuenta</button>
+        <button type="submit" class="auth-btn">{{ _('Activar mi cuenta') }}</button>
       </form>
 
       <div class="auth-footer">
         <a href="{{ url_for_security('register') }}" class="auth-footer-link">
-          ¿Eres cliente nuevo? <strong>Regístrate aquí</strong>
+          {{ _('¿Eres cliente nuevo?') }} <strong>{{ _('Regístrate aquí') }}</strong>
         </a>
         <a href="{{ url_for_security('login') }}" class="auth-footer-link">
-          ¿Ya tienes cuenta web? <strong>Ingresa aquí</strong>
+          {{ _('¿Ya tienes cuenta web?') }} <strong>{{ _('Ingresa aquí') }}</strong>
         </a>
-        <a href="{{ url_for('content.index') }}" class="auth-footer-link">← Volver al inicio</a>
+        <a href="{{ url_for('content.index') }}" class="auth-footer-link">← {{ _('Volver al inicio') }}</a>
       </div>
 
     </div>
@@ -427,7 +425,7 @@
     <div class="auth-cover-img" style="background-image: url('{{ url_for('static', filename='login-cover.jpg') }}')"></div>
     <div class="auth-cover-overlay"></div>
     <div class="auth-cover-text">
-      <p class="auth-cover-quote">"Tu historia con el tarot<br>continúa aquí."</p>
+      <p class="auth-cover-quote">"{{ _('Tu historia con el tarot') }}<br>{{ _('continúa aquí.') }}"</p>
       <p class="auth-cover-credit">Fonotarot · Chile</p>
     </div>
   </div>

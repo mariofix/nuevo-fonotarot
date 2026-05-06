@@ -353,11 +353,11 @@
             ¿Aún no tienes cuenta? <strong>Regístrate</strong>
           </a>
         </div>
-        <a href="/passwordless/request-code" class="auth-footer-link">
-          ¿Prefieres no usar contraseña? <strong>Ingresa sin contraseña</strong>
+        <a href="{{ url_for('passwordless.request_code') }}" class="auth-footer-link">
+          {{ _('¿Prefieres no usar contraseña?') }} <strong>{{ _('Ingresa sin contraseña') }}</strong>
         </a>
         <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
-          ¿Eres cliente por teléfono? <strong>Activa tu acceso web aquí</strong>
+          {{ _('¿Eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso web aquí') }}</strong>
         </a>
         <a href="{{ url_for('content.index') }}" class="auth-footer-link">← Volver al inicio</a>
       </div>
