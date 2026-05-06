@@ -135,19 +135,21 @@ class Config:
     SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = True
     SECURITY_CHANGEABLE: bool = True
+    SECURITY_WEBAUTHN: bool = True
     SECURITY_UNIFIED_SIGNIN: bool = True
-    SECURITY_US_ENABLED_METHODS: list = ["email", "authenticator"]  # Email and authenticator app
-    SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = True  # Replace /login with /us-signin
-    SECURITY_LOGIN_URL: str = "/signin"
+    SECURITY_US_ENABLED_METHODS: list = ["email"]  # Email and authenticator app
+    SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = False  # Replace /login with /us-signin
+    SECURITY_LOGIN_URL: str = "/ft-admin-login"
     SECURITY_REGISTER_URL: str = "/ft-register"
     SECURITY_RESET_URL: str = "/ft-reset"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
     SECURITY_CHANGE_URL: str = "/ft-settings"
-    SECURITY_POST_LOGIN_VIEW: str = "/ft-admin"
+    SECURITY_POST_LOGIN_VIEW: str = "/"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
     SECURITY_EMAIL_SUBJECT_REGISTER: str = "Te damos la bienvenida a Fonotarot"
     SECURITY_EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Confirma tu correo para acceder a Fonotarot"
-    
+    SECURITY_US_EMAIL_SUBJECT: str = "Esta es tu contraseña para ingresar a Fonotarot"
+
     # Unified signin settings
     SECURITY_US_EMAIL_VALIDITY: int = 300  # One-time code valid for 5 minutes
     SECURITY_US_TOKEN_VALIDITY: int = 300  # One-time link valid for 5 minutes
