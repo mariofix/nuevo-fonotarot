@@ -350,7 +350,7 @@
       <div class="auth-footer">
         <div class="auth-footer-row">
           <a href="{{ url_for_security('register') }}" class="auth-footer-link">
-            ¿Aún no tienes cuenta? <strong>Regístrate</strong>
+            {{ _('¿Aún no tienes cuenta?') }} <strong>{{ _('Regístrate') }}</strong>
           </a>
         </div>
         <a href="{{ url_for('passwordless.request_code') }}" class="auth-footer-link">
@@ -359,7 +359,7 @@
         <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
           {{ _('¿Eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso web aquí') }}</strong>
         </a>
-        <a href="{{ url_for('content.index') }}" class="auth-footer-link">← Volver al inicio</a>
+        <a href="{{ url_for('content.index') }}" class="auth-footer-link">{{ _('← Volver al inicio') }}</a>
       </div>
 
     </div>
