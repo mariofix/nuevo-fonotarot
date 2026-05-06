@@ -373,9 +373,12 @@
 
       <div class="auth-footer">
         <a href="{{ url_for_security('login') }}" class="auth-footer-link">
-          ¿Ya tienes cuenta? <strong>Ingresa aquí</strong>
+          {{ _('¿Ya tienes cuenta?') }} <strong>{{ _('Ingresa aquí') }}</strong>
         </a>
-        <a href="{{ url_for('content.index') }}" class="auth-footer-link">← Volver al inicio</a>
+        <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
+          {{ _('¿Ya eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso aquí') }}</strong>
+        </a>
+        <a href="{{ url_for('content.index') }}" class="auth-footer-link">{{ _('← Volver al inicio') }}</a>
       </div>
 
     </div>
