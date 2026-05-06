@@ -119,8 +119,10 @@ def claim_account():
                 phone,
             )
             flash(
-                _("No encontramos una cuenta con esos datos en nuestro sistema. "
-                  "Verifica tu email y teléfono, o regístrate como cliente nuevo."),
+                _(
+                    "No encontramos una cuenta con esos datos en nuestro sistema. "
+                    "Verifica tu email y teléfono, o regístrate como cliente nuevo."
+                ),
                 "danger",
             )
             return render_template("auth/claim_account.html", form=form)

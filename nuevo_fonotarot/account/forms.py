@@ -1,6 +1,7 @@
 """Forms for the account blueprint."""
 
 from flask import current_app
+from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, StringField, SubmitField
 from wtforms import validators
@@ -14,49 +15,53 @@ class ClaimAccountForm(FlaskForm):
     """
 
     email = EmailField(
-        "Email",
+        _l("Email"),
         validators=[
-            validators.DataRequired(message="El email es obligatorio."),
-            validators.Email(message="Ingresa un email válido."),
+            validators.DataRequired(message=_l("El email es obligatorio.")),
+            validators.Email(message=_l("Ingresa un email válido.")),
         ],
         render_kw={"placeholder": "tu@email.com", "autocomplete": "email"},
     )
 
     phone = StringField(
-        "Teléfono",
+        _l("Teléfono"),
         validators=[
-            validators.DataRequired(message="El teléfono es obligatorio."),
+            validators.DataRequired(message=_l("El teléfono es obligatorio.")),
             validators.Regexp(
                 r"^\d{7,15}$",
-                message="Ingresa el teléfono en formato E.164 sin el signo + (ej: 56912345678).",
+                message=_l(
+                    "Ingresa el teléfono en formato E.164 sin el signo + (ej: 56912345678)."
+                ),
             ),
         ],
         render_kw={"placeholder": "56912345678", "autocomplete": "tel", "type": "tel"},
     )
 
     password = PasswordField(
-        "Contraseña",
+        _l("Contraseña"),
         validators=[
-            validators.DataRequired(message="La contraseña es obligatoria."),
+            validators.DataRequired(message=_l("La contraseña es obligatoria.")),
         ],
         render_kw={"placeholder": "••••••••", "autocomplete": "new-password"},
     )
 
     password_confirm = PasswordField(
-        "Confirmar contraseña",
+        _l("Confirmar contraseña"),
         validators=[
-            validators.DataRequired(message="Confirma tu contraseña."),
-            validators.EqualTo("password", message="Las contraseñas no coinciden."),
+            validators.DataRequired(message=_l("Confirma tu contraseña.")),
+            validators.EqualTo("password", message=_l("Las contraseñas no coinciden.")),
         ],
         render_kw={"placeholder": "••••••••", "autocomplete": "new-password"},
     )
 
-    submit = SubmitField("Activar mi cuenta")
+    submit = SubmitField(_l("Activar mi cuenta"))
 
     def validate_password(self, field: PasswordField) -> None:
         """Enforce the minimum password length configured for the app."""
+        from flask_babel import _
+
         min_length: int = current_app.config.get("SECURITY_PASSWORD_LENGTH_MIN", 8)
         if field.data and len(field.data) < min_length:
             raise validators.ValidationError(
-                f"La contraseña debe tener al menos {min_length} caracteres."
+                _("La contraseña debe tener al menos %(n)d caracteres.", n=min_length)
             )

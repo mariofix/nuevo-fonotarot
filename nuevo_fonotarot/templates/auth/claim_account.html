@@ -425,7 +425,7 @@
     <div class="auth-cover-img" style="background-image: url('{{ url_for('static', filename='login-cover.jpg') }}')"></div>
     <div class="auth-cover-overlay"></div>
     <div class="auth-cover-text">
-      <p class="auth-cover-quote">"{{ _('Tu historia con el tarot') }}<br>{{ _('continúa aquí.') }}"</p>
+      <p class="auth-cover-quote">"{{ _('Tu historia con el tarot<br>continúa aquí.') | safe }}"</p>
       <p class="auth-cover-credit">Fonotarot · Chile</p>
     </div>
   </div>
