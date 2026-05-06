@@ -472,6 +472,9 @@
             {{ _('¿Aún no tienes cuenta?') }} <strong>{{ _('Regístrate') }}</strong>
           </a>
         </div>
+        <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
+          {{ _('¿Eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso web aquí') }}</strong>
+        </a>
         <a href="{{ url_for('content.index') }}" class="auth-footer-link">← {{ _('Volver al inicio') }}</a>
       </div>
 

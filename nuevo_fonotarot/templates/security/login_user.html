@@ -353,6 +353,12 @@
             ¿Aún no tienes cuenta? <strong>Regístrate</strong>
           </a>
         </div>
+        <a href="/passwordless/request-code" class="auth-footer-link">
+          ¿Prefieres no usar contraseña? <strong>Ingresa sin contraseña</strong>
+        </a>
+        <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
+          ¿Eres cliente por teléfono? <strong>Activa tu acceso web aquí</strong>
+        </a>
         <a href="{{ url_for('content.index') }}" class="auth-footer-link">← Volver al inicio</a>
       </div>
 
