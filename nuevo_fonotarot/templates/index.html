@@ -852,6 +852,8 @@
     background: #0f0520;
     position: relative;
     overflow: hidden;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 1200px;
   }
 
   .agents-section::before {
@@ -906,6 +908,17 @@
     background-repeat: no-repeat;
     border: none;
     padding: 0;
+  }
+
+  .agent-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    background: linear-gradient(160deg, #2d1155 0%, #6b3fa0 50%, #c06080 100%);
   }
 
   .agent-card:hover {
@@ -1061,6 +1074,8 @@
   .plans-section {
     padding: 90px 0;
     background: #fff;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
   }
 
   .plan-card {
@@ -1267,6 +1282,8 @@
   .testimonials-section {
     padding: 90px 0;
     background: linear-gradient(160deg, var(--lavender) 0%, var(--blush) 100%);
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 700px;
   }
 
   .testi-grid {
@@ -1334,6 +1351,8 @@
   .faq-section {
     padding: 90px 0;
     background: var(--cream);
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
   }
 
   .faq-accordion .accordion-button {
@@ -1819,6 +1838,8 @@
     background: var(--cream);
     position: relative;
     overflow: hidden;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 1000px;
   }
 
   .blog-preview-section::before {
@@ -2324,10 +2345,20 @@
     <div class="row g-4">
       {% for agent in ejecutivos %}
       <div class="col-6 col-md-4 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
-        <div class="agent-card" data-option="{{ agent.option }}" {% if agent.avatar %}style="background-image: url(https://www.fonotarot.com/ejecutivos/{{ agent.avatar }}.png)" role="img"
-          aria-label="{{ agent.name }} - Tarotista Fonotarot" {% endif %}>
+        <div class="agent-card" data-option="{{ agent.option }}">
           {% if not agent.avatar %}
           <div class="agent-no-photo-bg">{{ agent.name[0] }}</div>
+          {% else %}
+          <img
+            class="agent-photo"
+            src="https://www.fonotarot.com/ejecutivos/{{ agent.avatar }}.png"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            fetchpriority="low"
+            width="600"
+            height="900">
           {% endif %}
           <div class="agent-overlay"></div>
           <span class="agent-ivr">Opción {{ agent.option }}</span>
