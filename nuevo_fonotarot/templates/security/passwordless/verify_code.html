@@ -3,240 +3,80 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>{{ _('Verificar Código') }} — Fonotarot</title>
+  <title>{{ _('Verificar código') }} — Fonotarot</title>
+  <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --plum:    #6b3fa0;
-      --plum-dk: #4a2872;
-      --gold:    #d4af37;
-      --cream:   #fffef0;
-      --dark:    #1a1a1a;
-      --gray:    #888;
+      --ft-plum: #6b3fa0;
+      --ft-plum-dark: #4a2872;
+      --ft-gold: #c9a84c;
+      --ft-ink: #0d0818;
     }
 
     body {
-      background: linear-gradient(135deg, var(--plum-dk) 0%, var(--plum) 100%);
-      color: var(--dark);
-      font-family: 'Montserrat', sans-serif;
+      font-family: "Montserrat", sans-serif;
+      background:
+        radial-gradient(1000px 500px at 80% -10%, rgba(201, 168, 76, 0.18), transparent 60%),
+        radial-gradient(900px 450px at -20% 100%, rgba(107, 63, 160, 0.25), transparent 65%),
+        var(--ft-ink);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
     }
 
-    .container-center {
-      width: 100%;
-      max-width: 450px;
-    }
-
-    .card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      background: var(--cream);
-    }
-
-    .card-body {
-      padding: 40px;
-    }
-
-    h2 {
-      color: var(--plum-dk);
+    .auth-logo {
+      color: var(--ft-gold);
       font-weight: 700;
-      margin-bottom: 10px;
-      font-size: 28px;
-    }
-
-    .subtitle {
-      color: var(--gray);
-      font-size: 14px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .form-label {
-      color: var(--dark);
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .form-control {
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      padding: 12px 16px;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      transition: border-color 0.3s;
-      color: var(--dark);
-      background-color: white;
-      text-align: center;
-    }
-
-    .form-control:focus {
-      border-color: var(--plum);
-      box-shadow: 0 0 0 0.2rem rgba(107, 63, 160, 0.1);
-      color: var(--dark);
-    }
-
-    .form-check {
-      margin: 20px 0;
-    }
-
-    .form-check-input {
-      border: 2px solid #e0e0e0;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .form-check-input:checked {
-      background-color: var(--plum);
-      border-color: var(--plum);
-    }
-
-    .form-check-label {
-      cursor: pointer;
-      font-size: 14px;
-      margin-left: 8px;
-      color: var(--dark);
-    }
-
-    .btn-primary {
-      background-color: var(--plum);
-      border: none;
-      border-radius: 6px;
-      padding: 12px 24px;
-      font-weight: 600;
-      font-size: 15px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: background-color 0.3s;
-      width: 100%;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--plum-dk);
-      color: white;
-    }
-
-    .alert {
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-top: 20px;
-    }
-
-    .alert-info {
-      background-color: #e3f2fd;
-      color: #0d47a1;
-    }
-
-    .alert-danger {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-
-    .alert-warning {
-      background-color: #fff3cd;
-      color: #856404;
-    }
-
-    .text-muted-custom {
-      color: var(--gray);
-      text-align: center;
-      font-size: 13px;
-    }
-
-    a {
-      color: var(--plum);
       text-decoration: none;
-      font-weight: 600;
+      letter-spacing: 0.02em;
     }
 
-    a:hover {
-      color: var(--plum-dk);
-      text-decoration: underline;
+    .otp-input {
+      text-align: center;
+      font-size: 1.6rem;
+      line-height: 1;
+      padding-top: 0.85rem;
+      padding-bottom: 0.85rem;
+      font-weight: 700;
     }
 
-    .error-list {
-      color: #c62828;
-      font-size: 13px;
-      margin-top: 6px;
+    .btn-ft-primary {
+      --tblr-btn-bg: var(--ft-plum);
+      --tblr-btn-border-color: var(--ft-plum);
+      --tblr-btn-hover-bg: var(--ft-plum-dark);
+      --tblr-btn-hover-border-color: var(--ft-plum-dark);
+      --tblr-btn-active-bg: var(--ft-plum-dark);
+      --tblr-btn-active-border-color: var(--ft-plum-dark);
+      --tblr-btn-color: #fff;
+      --tblr-btn-hover-color: #fff;
+      --tblr-btn-active-color: #fff;
     }
-
-    .is-invalid {
-      border-color: #c62828 !important;
-    }
-
-    .invalid-feedback {
-      color: #c62828;
-      font-size: 13px;
-      display: block;
-      margin-top: 6px;
-    }
-
-    .text-center { text-align: center; }
-    .mt-2 { margin-top: 12px; }
-    .mt-4 { margin-top: 24px; }
-    .mb-3 { margin-bottom: 16px; }
-    .mb-4 { margin-bottom: 24px; }
-    .my-4 { margin-top: 24px; margin-bottom: 24px; }
-    .d-grid { display: grid; }
   </style>
 </head>
 <body>
-  <div class="container-center">
-    <div class="card">
-      <div class="card-body">
-        {% include "security/_messages.html" %}
-        
-        <h2>{{ _("Verificar Código") }}</h2>
-        <p class="subtitle">{{ _("Hemos enviado un código a tu correo. Ingresalo abajo.") }}</p>
+  <div class="page page-center">
+    <div class="container container-tight py-4">
+      <div class="text-center mb-4">
+        <a href="{{ url_for('content.index') }}" class="auth-logo">Fonotarot</a>
+      </div>
 
-        <form method="POST">
-          {{ form.hidden_tag() }}
+      <form class="card card-md" method="POST" autocomplete="one-time-code" novalidate>
+        <div class="card-body">
+          <h2 class="card-title card-title-lg text-center mb-3">{{ _("Verifica tu cuenta") }}</h2>
+          <p class="text-secondary text-center mb-4">
+            {{ _("Te enviamos un código de 6 dígitos a tu correo. Ingrésalo para continuar.") }}
+          </p>
 
-          <!-- Code Field -->
-          <div class="mb-4">
-            {{ form.passcode.label(class="form-label") }}
-            {% if form.passcode.errors %}
-              {{ form.passcode(class="form-control is-invalid", autofocus=True, maxlength="6", placeholder="000000") }}
-              <div class="invalid-feedback">
-                {% for error in form.passcode.errors %}
-                  {{ error }}<br>
-                {% endfor %}
-              </div>
-            {% else %}
-              {{ form.passcode(class="form-control", autofocus=True, maxlength="6", placeholder="000000") }}
-            {% endif %}
-          </div>
+          {% include "security/_messages.html" %}
 
-          <!-- Remember Me Checkbox -->
-          <div class="form-check mb-4">
-            {{ form.remember_me(class="form-check-input") }}
-            {{ form.remember_me.label(class="form-check-label") }}
-            <div class="text-muted-custom mt-2">
-              {{ _("Permanecerás conectado durante 31 días sin necesidad de ingresar el código") }}
+          {% if form.passcode.errors %}
+            <div class="alert alert-danger" role="alert">
+              {% for error in form.passcode.errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
             </div>
-          </div>
+          {% endif %}
 
-          <!-- Security Warning -->
-          <div class="alert alert-warning" role="alert">
-            <strong>{{ _("⚠ Seguridad:") }}</strong> {{ _("No compartas este código con nadie. Fonotarot nunca te pedirá tu código.") }}
-          </div>
-
-          <!-- Form Errors -->
           {% if form.form_errors %}
             <div class="alert alert-danger" role="alert">
               {% for error in form.form_errors %}
@@ -245,33 +85,94 @@
             </div>
           {% endif %}
 
-          <!-- Submit Button -->
-          <div class="d-grid">
-            {{ form.submit(class="btn btn-primary") }}
+          {{ form.hidden_tag() }}
+          {{ form.passcode(type="hidden", id="passcode-hidden") }}
+
+          <div class="my-4">
+            <div class="row g-2">
+              {% for idx in range(6) %}
+                <div class="col">
+                  <input
+                    type="text"
+                    class="form-control otp-input"
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    autocomplete="one-time-code"
+                    data-code-input
+                    data-code-index="{{ idx }}"
+                    {% if loop.first %}autofocus{% endif %}
+                  />
+                </div>
+              {% endfor %}
+            </div>
           </div>
 
-          <hr class="my-4">
-
-          <!-- Back Link -->
-          <div class="text-center">
-            <p class="text-muted-custom">
-              <a href="{{ url_for('passwordless.request_code') }}">{{ _("Usar otro método") }}</a>
-            </p>
+          <div class="mb-4">
+            <label class="form-check">
+              {{ form.remember_me(class="form-check-input") }}
+              <span class="form-check-label">{{ form.remember_me.label.text }}</span>
+            </label>
           </div>
-        </form>
+
+          <div class="form-footer">
+            {{ form.submit(class="btn btn-ft-primary w-100") }}
+          </div>
+        </div>
+      </form>
+
+      <div class="text-center text-secondary mt-3">
+        {{ _("¿No te llegó el código?") }}
+        <a href="{{ url_for('passwordless.request_code', next=request.args.get('next')) }}">{{ _("Solicitar uno nuevo") }}</a>
       </div>
     </div>
   </div>
 
-  <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const codeInput = document.querySelector('input[type="text"][maxlength="6"]');
-      if (codeInput) {
-        codeInput.addEventListener('input', function(e) {
-          e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputs = Array.from(document.querySelectorAll("[data-code-input]"));
+      const hidden = document.getElementById("passcode-hidden");
+      const currentCode = (hidden.value || "").replace(/\D/g, "").slice(0, inputs.length);
+
+      currentCode.split("").forEach((char, idx) => {
+        if (inputs[idx]) inputs[idx].value = char;
+      });
+
+      const syncHidden = function () {
+        hidden.value = inputs.map((input) => input.value.replace(/\D/g, "").slice(0, 1)).join("");
+      };
+
+      inputs.forEach((input, idx) => {
+        input.addEventListener("input", function (event) {
+          const value = event.target.value.replace(/\D/g, "").slice(0, 1);
+          event.target.value = value;
+          syncHidden();
+          if (value && idx + 1 < inputs.length) {
+            inputs[idx + 1].focus();
+          }
         });
-      }
+
+        input.addEventListener("keydown", function (event) {
+          if (event.key === "Backspace" && !event.target.value && idx > 0) {
+            inputs[idx - 1].focus();
+          }
+        });
+
+        input.addEventListener("paste", function (event) {
+          event.preventDefault();
+          const pasted = (event.clipboardData || window.clipboardData)
+            .getData("text")
+            .replace(/\D/g, "")
+            .slice(0, inputs.length);
+          pasted.split("").forEach((char, position) => {
+            inputs[position].value = char;
+          });
+          syncHidden();
+          const next = Math.min(pasted.length, inputs.length - 1);
+          inputs[next].focus();
+        });
+      });
     });
   </script>
 </body>

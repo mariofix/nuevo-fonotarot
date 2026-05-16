@@ -6,8 +6,7 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 .env
-flask-admin-source/
-tabler-example-source/
+tabler-source-examples/
 .vscode/
 .mcp.json
 

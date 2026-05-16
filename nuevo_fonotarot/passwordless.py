@@ -3,7 +3,7 @@ Passwordless (two-step) authentication blueprint.
 
 This implements a cleaner UX than Flask-Security's unified signin by splitting
 the process into two distinct steps:
-1. Request Code: User enters identity and selects method (email/authenticator/sms)
+1. Request Code: User enters their email in a login modal
 2. Verify Code: User enters the 6-digit code they received
 
 This avoids confusing UX where both "Send Code" and "Verify Code" buttons
@@ -21,10 +21,10 @@ import json
 import typing as t
 from datetime import datetime, timedelta, timezone
 
-from flask import Blueprint, request, session, redirect, current_app
-from flask_login import current_user
+from flask import Blueprint, request, session, redirect, flash, url_for
+from flask_babel import lazy_gettext as _l
 from flask_security.utils import login_user
-from wtforms import StringField, RadioField, PasswordField, BooleanField, SubmitField, validators, ValidationError
+from wtforms import StringField, HiddenField, PasswordField, BooleanField, SubmitField, validators
 from flask_security.forms import Form
 from flask_security.utils import config_value as cv
 
@@ -49,25 +49,20 @@ def _get_totp_secrets(user: User) -> dict:
 
 
 class RequestCodeForm(Form):
-    """Step 1: User enters identity and selects delivery method."""
+    """Step 1: User enters email to receive the access code."""
 
     identity = StringField(
-        label="Email o Identidad",
-        validators=[validators.DataRequired(message="Ingresa tu email o identidad")],
-        render_kw={"placeholder": "tu@email.com"},
-    )
-
-    method = RadioField(
-        label="Método de entrega",
-        choices=[
-            ("email", "Código por email"),
-            ("authenticator", "Aplicación autenticadora"),
-            ("sms", "Código por SMS"),
+        label=_l("Correo electrónico"),
+        validators=[
+            validators.DataRequired(message=_l("Ingresa tu correo electrónico")),
+            validators.Email(message=_l("Ingresa un correo válido")),
         ],
-        validators=[validators.DataRequired()],
+        render_kw={"placeholder": "tu@email.com", "autocomplete": "email"},
     )
 
-    submit = SubmitField("Enviar Código")
+    method = HiddenField(default="email")
+
+    submit = SubmitField(_l("Enviar código"))
 
     def validate(self, **kwargs: t.Any) -> bool:
         if not super().validate(**kwargs):
@@ -78,31 +73,25 @@ class RequestCodeForm(Form):
 
         self.user = lookup_identity(self.identity.data)
         if not self.user:
-            self.identity.errors.append("Email o identidad no encontrado")
+            self.identity.errors.append(_l("Correo no encontrado"))
             return False
 
         if not self.user.is_active:
-            self.identity.errors.append("Cuenta desactivada")
+            self.identity.errors.append(_l("Cuenta desactivada"))
             return False
 
         # Check if method is enabled and available for this user
+        self.method.data = "email"
         enabled_methods = cv("US_ENABLED_METHODS")
         if self.method.data not in enabled_methods:
-            self.method.errors.append("Método no disponible")
+            self.method.errors.append(_l("Método no disponible"))
             return False
 
         # Check if user has set up this method
         totp_secrets = _get_totp_secrets(self.user)
 
         if self.method.data not in totp_secrets:
-            self.method.errors.append(
-                f"Primero debes configurar el método {self.method.data}"
-            )
-            return False
-
-        # For SMS: verify phone number is set
-        if self.method.data == "sms" and not self.user.us_phone_number:
-            self.method.errors.append("Primero debes registrar tu número telefónico")
+            self.method.errors.append(_l("Primero debes configurar el acceso por correo"))
             return False
 
         return True
@@ -112,10 +101,10 @@ class VerifyCodeForm(Form):
     """Step 2: User enters the code they received."""
 
     passcode = PasswordField(
-        label="Código de acceso",
+        label=_l("Código de acceso"),
         validators=[
-            validators.DataRequired(message="Ingresa el código que recibiste"),
-            validators.Length(min=6, max=6, message="El código debe tener 6 dígitos"),
+            validators.DataRequired(message=_l("Ingresa el código que recibiste")),
+            validators.Length(min=6, max=6, message=_l("El código debe tener 6 dígitos")),
         ],
         render_kw={
             "placeholder": "000000",
@@ -124,9 +113,9 @@ class VerifyCodeForm(Form):
         },
     )
 
-    remember_me = BooleanField("Recuérdame por 31 días")
+    remember_me = BooleanField(_l("Recuérdame por 31 días"))
 
-    submit = SubmitField("Verificar Código")
+    submit = SubmitField(_l("Verificar código"))
 
     def validate(self, **kwargs: t.Any) -> bool:
         if not super().validate(**kwargs):
@@ -137,7 +126,7 @@ class VerifyCodeForm(Form):
         method = session.get("_pwl_method")
 
         if not identity or not method:
-            self.form_errors.append("Sesión expirada. Intenta de nuevo.")
+            self.form_errors.append(_l("Sesión expirada. Intenta de nuevo."))
             return False
 
         # Look up user
@@ -145,11 +134,11 @@ class VerifyCodeForm(Form):
 
         user = lookup_identity(identity)
         if not user:
-            self.form_errors.append("Usuario no encontrado")
+            self.form_errors.append(_l("Usuario no encontrado"))
             return False
 
         if not user.is_active:
-            self.form_errors.append("Cuenta desactivada")
+            self.form_errors.append(_l("Cuenta desactivada"))
             return False
 
         self.user = user
@@ -158,7 +147,7 @@ class VerifyCodeForm(Form):
         totp_secrets = _get_totp_secrets(user)
 
         if method not in totp_secrets:
-            self.form_errors.append("Método no válido")
+            self.form_errors.append(_l("Método no válido"))
             return False
 
         # Use Flask-Security's TOTP factory to verify
@@ -169,7 +158,8 @@ class VerifyCodeForm(Form):
             window=cv("US_TOKEN_VALIDITY"),
         ):
             user.track_failed_authn("passcode")
-            self.passcode.errors.append("Código inválido o expirado")
+            db.session.commit()
+            self.passcode.errors.append(_l("Código inválido o expirado"))
             return False
 
         self.authn_via = method
@@ -189,16 +179,34 @@ def create_passwordless_blueprint() -> Blueprint:
     @bp.route("/request-code", methods=["GET", "POST"])
     def request_code() -> ResponseValue:
         """
-        Step 1: Request a code via email, SMS, or authenticator.
+        Step 1: Request a code via email.
 
-        GET: Display the form
-        POST: Process form, send code, redirect to verify page
+        GET: Redirect to a public page and open the modal form
+        POST: Process modal form, send code, redirect to verify page
         """
+        from urllib.parse import urlencode
+
+        next_url = request.values.get("next")
+        safe_next_url = next_url if next_url and next_url.startswith("/") else ""
+
+        def _modal_redirect(identity: str = "") -> ResponseValue:
+            target = safe_next_url or "/"
+            params: dict[str, str] = {"passwordless": "1"}
+            if identity:
+                params["identity"] = identity
+            if safe_next_url:
+                params["next"] = safe_next_url
+            separator = "&" if "?" in target else "?"
+            return redirect(f"{target}{separator}{urlencode(params)}")
+
+        if request.method == "GET":
+            return _modal_redirect()
+
         form = RequestCodeForm()
 
         if form.validate_on_submit():
             user = form.user
-            method = form.method.data
+            method = "email"
 
             # Get TOTP secret for this method
             totp_secrets = _get_totp_secrets(user)
@@ -213,15 +221,13 @@ def create_passwordless_blueprint() -> Blueprint:
 
             if msg:
                 # Error sending code
-                form.method.errors.append(f"Error enviando código: {msg}")
+                form.identity.errors.append(_l("Error enviando el código. Intenta de nuevo."))
                 logger.warning(
                     f"Failed to send {method} code to user {user.id}: {msg}"
                 )
-                from flask import render_template
-                return render_template(
-                    "security/passwordless/request_code.html",
-                    form=form,
-                )
+                for error in form.identity.errors:
+                    flash(str(error), "error")
+                return _modal_redirect(form.identity.data or "")
 
             # Success: Store identity/method in session and redirect
             session["_pwl_identity"] = form.identity.data
@@ -232,13 +238,15 @@ def create_passwordless_blueprint() -> Blueprint:
                 f"Passwordless code sent via {method} to user {user.id} ({user.email})"
             )
 
-            return redirect("/passwordless/verify-code")
+            verify_url = url_for(
+                "passwordless.verify_code",
+                next=safe_next_url or None,
+            )
+            return redirect(verify_url)
 
-        from flask import render_template
-        return render_template(
-            "security/passwordless/request_code.html",
-            form=form,
-        )
+        for error in form.identity.errors + form.method.errors + form.form_errors:
+            flash(str(error), "error")
+        return _modal_redirect(form.identity.data or "")
 
     @bp.route("/verify-code", methods=["GET", "POST"])
     def verify_code() -> ResponseValue:
@@ -287,6 +295,7 @@ def create_passwordless_blueprint() -> Blueprint:
 
             # Log user in with Flask-Security's login_user which supports authn_via
             login_user(user, remember=remember_me, authn_via=[method])
+            db.session.commit()
 
             logger.info(
                 f"Passwordless authentication successful for user {user.id} "

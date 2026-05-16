@@ -34,36 +34,27 @@ _PROMO_DURATION_SECONDS = 300  # 5 minutes of free trial credit
 logger = get_logger(__name__)
 
 
-def _firenze_token() -> str:
-    """Obtain a JWT bearer token from the Firenze API (OAuth2 password grant)."""
-    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    user = current_app.config.get("FIRENZE_API_USER", "")
-    password = current_app.config.get("FIRENZE_API_PASSWORD", "")
-    scopes = current_app.config.get("FIRENZE_API_SCOPES", "")
-
-    url = f"{api_url}/token"
-    logger.debug(
-        "Firenze token → POST %s  data={username=%r, password=***, grant_type='password', scope=%r}",
-        url,
-        user,
-        scopes,
-    )
-    resp = requests.post(
-        url,
-        data={"username": user, "password": password, "grant_type": "password", "scope": scopes},
-        timeout=10,
-    )
-    logger.debug("Firenze token ← %s", resp.status_code)
-    resp.raise_for_status()
-    return resp.json()["access_token"]
+def _firenze_auth_headers() -> dict[str, str]:
+    """Build Firenze auth headers using API key/secret credentials."""
+    api_key = (
+        current_app.config.get("FIRENZE_API_KEY", "")
+        or current_app.config.get("FIRENZE_API_USER", "")
+    ).strip()
+    api_secret = (
+        current_app.config.get("FIRENZE_API_SECRET", "")
+        or current_app.config.get("FIRENZE_API_PASSWORD", "")
+    ).strip()
+    if not api_key or not api_secret:
+        raise RequestException("FIRENZE_API_KEY/FIRENZE_API_SECRET not configured")
+    return {"x-api-key": api_key, "x-api-secret": api_secret}
 
 
-def _firenze_get(path: str, token: str) -> tuple[int, Any]:
+def _firenze_get(path: str, headers: dict[str, str]) -> tuple[int, Any]:
     """GET request to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     url = f"{api_url}{path}"
     logger.debug("Firenze GET → %s", url)
-    resp = requests.get(url, headers={"Authorization": f"Bearer {token}"}, timeout=10)
+    resp = requests.get(url, headers=headers, timeout=10)
     logger.debug("Firenze GET ← %s  body=%s", resp.status_code, resp.text[:500])
     try:
         body = resp.json()
@@ -72,7 +63,7 @@ def _firenze_get(path: str, token: str) -> tuple[int, Any]:
     return resp.status_code, body
 
 
-def _firenze_post(path: str, token: str, payload: dict) -> tuple[int, Any]:
+def _firenze_post(path: str, headers: dict[str, str], payload: dict) -> tuple[int, Any]:
     """POST JSON to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     url = f"{api_url}{path}"
@@ -80,7 +71,7 @@ def _firenze_post(path: str, token: str, payload: dict) -> tuple[int, Any]:
     resp = requests.post(
         url,
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers,
         timeout=10,
     )
     logger.debug("Firenze POST ← %s  body=%s", resp.status_code, resp.text[:500])
@@ -91,7 +82,7 @@ def _firenze_post(path: str, token: str, payload: dict) -> tuple[int, Any]:
     return resp.status_code, body
 
 
-def _firenze_patch(path: str, token: str, payload: dict) -> tuple[int, Any]:
+def _firenze_patch(path: str, headers: dict[str, str], payload: dict) -> tuple[int, Any]:
     """PATCH JSON to the Firenze API. Returns (status_code, body_dict)."""
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     url = f"{api_url}{path}"
@@ -99,7 +90,7 @@ def _firenze_patch(path: str, token: str, payload: dict) -> tuple[int, Any]:
     resp = requests.patch(
         url,
         json=payload,
-        headers={"Authorization": f"Bearer {token}"},
+        headers=headers,
         timeout=10,
     )
     logger.debug("Firenze PATCH ← %s  body=%s", resp.status_code, resp.text[:500])
@@ -210,7 +201,7 @@ def _send_user_promo_instructions(email: str, remaining: int) -> None:
 def _homepage_ctx() -> dict:
     """Return the shared context dict used by all homepage template variants.
 
-    The Firenze bearer token is obtained here so the browser can call the
+    Firenze public endpoint URLs are injected here so the browser can call the
     ejecutivos endpoint directly via JavaScript, avoiding per-poll server-side
     log entries.
     """
@@ -456,13 +447,13 @@ def api_promo_cobrar():
         return jsonify({"error": "invalid_phone", "message": "Ingresa un número válido (solo dígitos, sin +)."}), 400
 
     try:
-        token = _firenze_token()
+        firenze_headers = _firenze_auth_headers()
     except RequestException as exc:
-        logger.error("Firenze token error: %s", exc, exc_info=True)
+        logger.error("Firenze auth header error: %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error de conexión con el servicio. Inténtalo más tarde."}), 503
 
     try:
-        status, _ = _firenze_get(f"/audiotex/fonotarot-cl/phone/{ani}", token)
+        status, _ = _firenze_get(f"/audiotex/fonotarot-cl/phone/{ani}", firenze_headers)
     except RequestException as exc:
         logger.error("Firenze check-phone error: %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error al verificar el número. Inténtalo más tarde."}), 503
@@ -483,7 +474,7 @@ def api_promo_cobrar():
     try:
         create_status, create_body = _firenze_post(
             "/audiotex/fonotarot-cl/client/",
-            token,
+            firenze_headers,
             {"telefonos": [ani], "correo": f"{ani}@fonotarot.com", "creditos": _PROMO_DURATION_SECONDS},
         )
     except RequestException as exc:
@@ -521,13 +512,17 @@ def api_promo_actualizar_email():
         return jsonify({"error": "invalid_email", "message": "Ingresa un email válido."}), 400
 
     try:
-        token = _firenze_token()
+        firenze_headers = _firenze_auth_headers()
     except RequestException as exc:
-        logger.error("Firenze token error (email update): %s", exc, exc_info=True)
+        logger.error("Firenze auth header error (email update): %s", exc, exc_info=True)
         return jsonify({"error": "api_error", "message": "Error de conexión. Inténtalo más tarde."}), 503
 
     try:
-        status, _ = _firenze_patch(f"/audiotex/fonotarot-cl/client/{ani}", token, {"correo": email})
+        status, _ = _firenze_patch(
+            f"/audiotex/fonotarot-cl/client/{ani}",
+            firenze_headers,
+            {"correo": email},
+        )
     except RequestException as exc:
         logger.error("Firenze update-email error: %s", exc, exc_info=True)
         # return jsonify({"error": "api_error", "message": "Error al actualizar el email."}), 503

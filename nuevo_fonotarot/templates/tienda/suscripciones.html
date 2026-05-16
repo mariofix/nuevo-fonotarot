@@ -58,7 +58,7 @@
                   <i class="ti ti-link me-1"></i>Suscribirme
                 </a>
                 {% else %}
-                <a href="{{ url_for('security.login') }}" class="btn btn-primary w-100">
+                <a href="#" class="btn btn-primary w-100 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}">
                   <i class="ti ti-login me-1"></i>Inicia sesión para suscribirte
                 </a>
                 {% endif %}

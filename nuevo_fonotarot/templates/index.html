@@ -2035,9 +2035,6 @@
 <a href="tel:+{{ _('56222301515') }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
   <i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}
 </a>
-<button class="btn btn-oc-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas">
-  <span class="oc-dot-online"></span>Especialistas
-</button>
 {% endblock %}
 
 {# ── CTA overrides "Carga Minutos" to scroll to #planes on homepage ─────── #}
@@ -2045,89 +2042,6 @@
 
 {# ── Page content ─────────────────────────────────────────────────────── #}
 {% block content %}
-
-<!-- ── OFF-CANVAS: AGENT PANEL ─────────────────── -->
-<div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
-      <i class="ti ti-stars me-2"></i>Especialistas
-    </h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-  </div>
-  <div class="offcanvas-body">
-    <ul class="nav oc-tabs mb-4" role="tablist">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">Todas</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab"><span class="oc-dot-online"></span>Disponibles</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab"><span class="oc-dot-busy"></span>En consulta</button></li>
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
-        {% for agent in agents %}
-        <div class="oc-row" data-agent-option="{{ agent.option }}">
-          <div class="oc-avatar">{{ agent.name[0] }}</div>
-          <div class="oc-info">
-            <div class="oc-name">{{ agent.name }}</div>
-            <div class="oc-spec">Opción {{ agent.option }}</div>
-            <div class="mt-1 agent-status-wrap">
-              {% if agent.status == 'available' %}<span class="s-online">● Disponible</span>
-              {% elif agent.status == 'busy' %}<span class="s-busy">● En consulta</span>
-              {% else %}<span class="s-offline">● No disponible</span>{% endif %}
-            </div>
-          </div>
-          <span class="agent-action-wrap">
-            {% if agent.status == 'available' %}<a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-            {% else %}<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>{% endif %}
-          </span>
-        </div>
-        {% endfor %}
-      </div>
-      <div class="tab-pane fade" id="oc-online" role="tabpanel">
-        {% set online = agents | selectattr('status', 'eq', 'available') | list %}
-        {% if online %}
-        {% for agent in online %}
-        <div class="oc-row">
-          <div class="oc-avatar">{{ agent.name[0] }}</div>
-          <div class="oc-info">
-            <div class="oc-name">{{ agent.name }}</div>
-            <div class="oc-spec">Opción {{ agent.option }}</div>
-            <div class="mt-1"><span class="s-online">● Disponible</span></div>
-          </div>
-          <a href="tel:+{{ _('56222301515') }}" class="btn btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p class="text-center py-4" style="color:var(--muted);">Todas las especialistas están ocupadas. Inténtalo pronto.</p>
-        {% endif %}
-      </div>
-      <div class="tab-pane fade" id="oc-busy" role="tabpanel">
-        {% set busy = agents | selectattr('status', 'eq', 'busy') | list %}
-        {% if busy %}
-        {% for agent in busy %}
-        <div class="oc-row">
-          <div class="oc-avatar">{{ agent.name[0] }}</div>
-          <div class="oc-info">
-            <div class="oc-name">{{ agent.name }}</div>
-            <div class="oc-spec">Opción {{ agent.option }}</div>
-            <div class="mt-1"><span class="s-busy">● En consulta</span></div>
-          </div>
-          <button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>Ocupada</button>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p class="text-center py-4" style="color:var(--muted);">No hay especialistas en consulta ahora.</p>
-        {% endif %}
-      </div>
-    </div>
-    <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
-      <a href="tel:+{{ _('56222301515') }}" class="btn-call d-block mb-2" style="border-radius:30px; padding:.6rem 0; text-align:center;">
-        <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('+56 2 2230 1515') }}
-      </a>
-      <a href="{{ url_for('minutos.index') }}" class="btn-plan-outline d-block" style="padding:.55rem 0; text-align:center;" data-bs-dismiss="offcanvas">
-        <i class="ti ti-wallet me-2"></i>Ver Planes
-      </a>
-    </div>
-  </div>
-</div>
 
 <!-- ── HERO ────────────────────────────────────── -->
 <section class="hero" id="hero-section">

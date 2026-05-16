@@ -307,6 +307,39 @@ class UserAdminView(SecureModelView):
     column_filters = ("active",)
     form_excluded_columns = ("password", "fs_uniquifier", "created_at")
 
+    @action(
+        "reprocess_registration",
+        _l("Reprocesar registro"),
+        _l("Ejecuta nuevamente el flujo posterior al registro para los usuarios seleccionados."),
+    )
+    def action_reprocess_registration(self, ids):
+        """Rerun the standard post-registration flow for selected users."""
+        from flask import flash
+
+        from .actions import process_user_registration
+
+        processed = 0
+        missing = 0
+        for user_id in ids:
+            user = self.session.get(self.model, int(user_id))
+            if user is None:
+                missing += 1
+                continue
+
+            process_user_registration(user)
+            processed += 1
+
+        if processed:
+            flash(
+                _l("%(count)s usuario(s) reprocesado(s).") % {"count": processed},
+                "success",
+            )
+        if missing:
+            flash(
+                _l("%(count)s usuario(s) no se encontraron.") % {"count": missing},
+                "warning",
+            )
+
 
 class RoleAdminView(SecureModelView):
     """Admin view for the Role model."""

@@ -1,181 +1,245 @@
 {% extends "base.html" %}
 
-{% block title %}{{ _("Mi cuenta") }} - Fonotarot{% endblock %}
-
-{% block extra_css %}
-<style>
-  .section-title {
-    color: var(--plum);
-    font-weight: 700;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-  }
-
-  .profile-complete {
-    background: rgba(16, 185, 129, .08);
-    color: #065f46;
-    border: 1px solid rgba(16, 185, 129, .25);
-    border-radius: 8px;
-    padding: .6rem 1rem;
-    font-size: .85rem;
-  }
-
-  .profile-incomplete {
-    background: rgba(220, 38, 38, .06);
-    color: #991b1b;
-    border: 1px solid rgba(220, 38, 38, .2);
-    border-radius: 8px;
-    padding: .6rem 1rem;
-    font-size: .85rem;
-  }
-</style>
-{% endblock %}
+{% block title %}{{ _("Configuración de cuenta") }} - Fonotarot{% endblock %}
 
 {% block content %}
-<div class="container py-5" style="max-width:720px">
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-  <div class="alert alert-{{ category }} alert-dismissible mb-4">
-    {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  {% endfor %}
-  {% endwith %}
-
-  <h1 class="fw-bold mb-4">{{ _("Mi cuenta") }}</h1>
-
-  <!-- Account info -->
-  <div class="card mb-4">
-    <div class="card-header">{{ _("Información de la cuenta") }}</div>
-    <div class="card-body">
-      <p class="mb-1"><strong>{{ _("Email") }}:</strong> {{ user.email }}</p>
-      {% if user.username %}
-      <p class="mb-1"><strong>{{ _("Usuario") }}:</strong> {{ user.username }}</p>
-      {% endif %}
-      {% if user.firenze_client_id %}
-      <p class="mb-0 text-secondary small">
-        <i class="ti ti-id me-1"></i>ID cliente: <span class="font-monospace">{{ user.firenze_client_id }}</span>
-      </p>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Security -->
-  <div class="card mb-4">
-    <div class="card-header">{{ _("Seguridad") }}</div>
-    <div class="card-body">
-      {% set pw_min = config.SECURITY_PASSWORD_LENGTH_MIN or 8 %}
-      <form method="post" action="{{ url_for('account.settings') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <input type="hidden" name="form_type" value="password" />
-        <div class="row g-3">
-          <div class="col-12">
-            <label class="form-label" for="current_password">{{ _("Contraseña actual") }}</label>
-            <input type="password" id="current_password" name="current_password" class="form-control" required />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="new_password">{{ _("Nueva contraseña") }}</label>
-            <input type="password" id="new_password" name="new_password" class="form-control" required minlength="{{ pw_min }}" />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label" for="confirm_password">{{ _("Confirmar nueva contraseña") }}</label>
-            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="{{ pw_min }}" />
-          </div>
-        </div>
-        <button type="submit" class="btn btn-outline-secondary btn-sm mt-3">
-          <i class="ti ti-lock me-1"></i>{{ _("Cambiar contraseña") }}
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Profile completeness -->
-  {% if user.has_physical_profile %}
-  <div class="profile-complete mb-4">
-    <i class="ti ti-circle-check me-1"></i>
-    <strong>{{ _("Perfil completo") }}</strong> - {{ _("puedes comprar productos físicos, paquetes y suscripciones.") }}
-  </div>
-  {% else %}
-  <div class="profile-incomplete mb-4">
-    <i class="ti ti-alert-circle me-1"></i>
-    <strong>{{ _("Perfil incompleto") }}</strong> - {{ _("completa todos los campos para poder comprar productos físicos.") }}
-  </div>
-  {% endif %}
-
-  <form method="post" action="{{ url_for('account.settings') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-    <!-- Basic data -->
-    <div class="card p-4 mb-4">
-      <p class="section-title mb-3">{{ _("Datos básicos") }}</p>
-      <div class="row g-3">
-        <div class="col-md-7">
-          <label class="form-label" for="full_name">{{ _("Nombre completo") }}</label>
-          <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name or '' }}" />
-        </div>
-        <div class="col-md-5">
-          <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
-          <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}" />
+<div class="page-wrapper">
+  <div class="page-header d-print-none">
+    <div class="container-xl">
+      <div class="row g-2 align-items-center">
+        <div class="col">
+          <h1 class="page-title">{{ _("Configuración de cuenta") }}</h1>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Physical profile -->
-    <div class="card p-4 mb-4">
-      <p class="section-title mb-1">{{ _("Datos para productos físicos") }}</p>
-      <p class="text-secondary small mb-3">{{ _("Requeridos para recibir envíos.") }}</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label" for="rut">{{ _("RUT") }}</label>
-          <input type="text" id="rut" name="rut" class="form-control" placeholder="12.345.678-9" value="{{ user.rut or '' }}" />
+  <main class="page-body">
+    <div class="container-xl">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible mb-3">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div class="col-md-8">
-          <label class="form-label" for="address">{{ _("Dirección") }}</label>
-          <input type="text" id="address" name="address" class="form-control" placeholder="{{ _('Calle, número, depto.') }}" value="{{ user.address or '' }}" />
-        </div>
-        <div class="col-md-6">
-          <label class="form-label" for="commune">{{ _("Comuna") }}</label>
-          <input type="text" id="commune" name="commune" class="form-control" value="{{ user.commune or '' }}" />
-        </div>
-        <div class="col-md-6">
-          <label class="form-label" for="postal_code">{{ _("Código postal") }}</label>
-          <input type="text" id="postal_code" name="postal_code" class="form-control" value="{{ user.postal_code or '' }}" />
+        {% endfor %}
+      {% endwith %}
+
+      <div class="card">
+        <div class="row g-0">
+          <div class="col-12 col-md-3 border-end">
+            <div class="card-body">
+              <h4 class="subheader">{{ _("Mi cuenta") }}</h4>
+              <nav class="list-group list-group-transparent" id="settings-sections-tab" role="tablist">
+                <a
+                  href="#tab-profile"
+                  class="list-group-item list-group-item-action d-flex align-items-center {% if active_tab == 'profile' %}active{% endif %}"
+                  data-bs-toggle="list"
+                  role="tab"
+                  aria-controls="tab-profile"
+                  aria-selected="{% if active_tab == 'profile' %}true{% else %}false{% endif %}"
+                >
+                  {{ _("Perfil") }}
+                </a>
+                <a
+                  href="#tab-additional-phones"
+                  class="list-group-item list-group-item-action d-flex align-items-center {% if active_tab == 'additional-phones' %}active{% endif %}"
+                  data-bs-toggle="list"
+                  role="tab"
+                  aria-controls="tab-additional-phones"
+                  aria-selected="{% if active_tab == 'additional-phones' %}true{% else %}false{% endif %}"
+                >
+                  {{ _("Teléfonos adicionales") }}
+                </a>
+                <a
+                  href="#tab-notifications"
+                  class="list-group-item list-group-item-action d-flex align-items-center {% if active_tab == 'notifications' %}active{% endif %}"
+                  data-bs-toggle="list"
+                  role="tab"
+                  aria-controls="tab-notifications"
+                  aria-selected="{% if active_tab == 'notifications' %}true{% else %}false{% endif %}"
+                >
+                  {{ _("Notificaciones") }}
+                </a>
+              </nav>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-9 d-flex flex-column">
+            <div class="card-body tab-content">
+              <div
+                class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}"
+                id="tab-profile"
+                role="tabpanel"
+              >
+                <form method="post" action="{{ url_for('account.settings', tab='profile') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="hidden" name="form_type" value="profile" />
+
+                  <h2 class="mb-4">{{ _("Mi cuenta") }}</h2>
+
+                  <h3 class="card-title">{{ _("Datos de la cuenta") }}</h3>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="account_email" class="form-label">{{ _("Email") }}</label>
+                      <input id="account_email" type="text" class="form-control" value="{{ user.email }}" disabled />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="account_username" class="form-label">{{ _("Usuario") }}</label>
+                      <input id="account_username" type="text" class="form-control" value="{{ user.username or '' }}" disabled />
+                    </div>
+                  </div>
+
+                  <h3 class="card-title mt-4">{{ _("Datos básicos") }}</h3>
+                  <div class="row g-3">
+                    <div class="col-md-7">
+                      <label class="form-label" for="full_name">{{ _("Nombre completo") }}</label>
+                      <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name or '' }}" />
+                    </div>
+                    <div class="col-md-5">
+                      <label class="form-label" for="phone">{{ _("Teléfono principal") }}</label>
+                      <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}" />
+                    </div>
+                  </div>
+
+                  <h3 class="card-title mt-4">{{ _("Datos para productos físicos") }}</h3>
+                  <p class="card-subtitle">{{ _("Requeridos para recibir envíos.") }}</p>
+                  <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                      <label class="form-label" for="rut">{{ _("RUT") }}</label>
+                      <input type="text" id="rut" name="rut" class="form-control" placeholder="12.345.678-9" value="{{ user.rut or '' }}" />
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label" for="address">{{ _("Dirección") }}</label>
+                      <input type="text" id="address" name="address" class="form-control" placeholder="{{ _('Calle, número, depto.') }}" value="{{ user.address or '' }}" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="commune">{{ _("Comuna") }}</label>
+                      <input type="text" id="commune" name="commune" class="form-control" value="{{ user.commune or '' }}" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="postal_code">{{ _("Código postal") }}</label>
+                      <input type="text" id="postal_code" name="postal_code" class="form-control" value="{{ user.postal_code or '' }}" />
+                    </div>
+                  </div>
+
+                  <h3 class="card-title mt-4">{{ _("Pago preferido") }}</h3>
+                  <p class="card-subtitle">
+                    {{ _("Si seleccionas un método preferido, el botón Comprar ahora te llevará directamente al formulario de pago sin pasos intermedios.") }}
+                  </p>
+                  <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="preferred_payment" id="pref_none" value="" {% if not user.preferred_payment %}checked{% endif %} />
+                        <label class="form-check-label" for="pref_none">{{ _("Sin preferencia") }}</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="preferred_payment" id="pref_flow" value="flow" {% if user.preferred_payment=='flow' %}checked{% endif %} />
+                        <label class="form-check-label" for="pref_flow">Flow ({{ _("tarjeta") }})</label>
+                      </div>
+                      <div class="form-check mt-1">
+                        <input class="form-check-input" type="radio" name="preferred_payment" id="pref_khipu" value="khipu" {% if user.preferred_payment=='khipu' %}checked{% endif %} />
+                        <label class="form-check-label" for="pref_khipu">Khipu ({{ _("transferencia") }})</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="ti ti-device-floppy me-1"></i>{{ _("Guardar cambios") }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <div
+                class="tab-pane fade {% if active_tab == 'additional-phones' %}show active{% endif %}"
+                id="tab-additional-phones"
+                role="tabpanel"
+              >
+                <h3 class="card-title">{{ _("Teléfonos adicionales") }}</h3>
+                {% if user.firenze_client_id %}
+                <p class="card-subtitle">{{ _("Administra aquí los números autorizados para consultas telefónicas.") }}</p>
+
+                <div class="mt-3">
+                  {% if additional_phones %}
+                  <div class="list-group">
+                    {% for ani in additional_phones %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <span class="font-monospace">{{ ani }}</span>
+                      <form method="post" action="{{ url_for('account.settings', tab='additional-phones') }}" class="m-0">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="form_type" value="delete_ani" />
+                        <input type="hidden" name="ani" value="{{ ani }}" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                          <i class="ti ti-trash me-1"></i>{{ _("Eliminar") }}
+                        </button>
+                      </form>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  <p class="text-secondary mb-0">{{ _("No tienes teléfonos adicionales registrados.") }}</p>
+                  {% endif %}
+                </div>
+
+                <form method="post" action="{{ url_for('account.settings', tab='additional-phones') }}" class="row g-3 mt-3">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="hidden" name="form_type" value="add_ani" />
+                  <div class="col-md-8">
+                    <label class="form-label" for="additional_phone_1">{{ _("Nuevo teléfono adicional") }}</label>
+                    <input
+                      type="tel"
+                      id="additional_phone_1"
+                      name="ani"
+                      class="form-control"
+                      placeholder="{{ _('Ej: +56912345678') }}"
+                      required
+                    />
+                    <div class="form-hint">{{ _("Formato permitido: 8 a 15 dígitos.") }}</div>
+                  </div>
+                  <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                      <i class="ti ti-plus me-1"></i>{{ _("Agregar teléfono") }}
+                    </button>
+                  </div>
+                </form>
+                {% else %}
+                <p class="text-warning mb-0">
+                  {{ _("Tu cuenta aún no tiene un cliente Firenze asociado. Completa tu perfil y vuelve a intentar.") }}
+                </p>
+                {% endif %}
+              </div>
+
+              <div
+                class="tab-pane fade {% if active_tab == 'notifications' %}show active{% endif %}"
+                id="tab-notifications"
+                role="tabpanel"
+              >
+                <h3 class="card-title">{{ _("Notificaciones") }}</h3>
+                <p class="card-subtitle">{{ _("Sección preparada para elegir cómo deseas recibir avisos.") }}</p>
+                <div class="row g-3 mt-1">
+                  <div class="col-md-6">
+                    <label class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" disabled />
+                      <span class="form-check-label">{{ _("Avisos por email") }}</span>
+                    </label>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" disabled />
+                      <span class="form-check-label">{{ _("Avisos por WhatsApp") }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Preferred payment -->
-    <div class="card p-4 mb-4">
-      <p class="section-title mb-1">{{ _("Pago preferido") }}</p>
-      <p class="text-secondary small mb-3">
-        {{ _("Si seleccionas un método preferido, el botón Comprar ahora te llevará directamente al formulario de pago sin pasos intermedios.") }}
-      </p>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_none" value="" {% if not user.preferred_payment %}checked{% endif %} />
-            <label class="form-check-label text-secondary" for="pref_none">{{ _("Sin preferencia") }}</label>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_flow" value="flow" {% if user.preferred_payment=='flow' %}checked{% endif %} />
-            <label class="form-check-label text-secondary" for="pref_flow">Flow ({{ _("tarjeta") }})</label>
-          </div>
-          <div class="form-check mt-1">
-            <input class="form-check-input" type="radio" name="preferred_payment" id="pref_khipu" value="khipu" {% if user.preferred_payment=='khipu' %}checked{% endif %} />
-            <label class="form-check-label text-secondary" for="pref_khipu">Khipu ({{ _("transferencia") }})</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-      <i class="ti ti-device-floppy me-1"></i>{{ _("Guardar cambios") }}
-    </button>
-
-  </form>
-
+  </main>
 </div>
 {% endblock %}

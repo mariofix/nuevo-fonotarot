@@ -131,11 +131,12 @@ class Config:
     SECURITY_ANONYMOUS_USER_DISABLED: bool = True
 
     # Custom login/logout routing
+    SECURITY_TRACKABLE: bool = True
     SECURITY_CONFIRMABLE: bool = True
-    SECURITY_REGISTERABLE: bool = True
-    SECURITY_RECOVERABLE: bool = True
-    SECURITY_CHANGEABLE: bool = True
-    SECURITY_WEBAUTHN: bool = True
+    SECURITY_REGISTERABLE: bool = False
+    SECURITY_RECOVERABLE: bool = False
+    SECURITY_CHANGEABLE: bool = False
+    SECURITY_WEBAUTHN: bool = False
     SECURITY_UNIFIED_SIGNIN: bool = True
     SECURITY_US_ENABLED_METHODS: list = ["email"]  # Email and authenticator app
     SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = False  # Replace /login with /us-signin
@@ -144,6 +145,7 @@ class Config:
     SECURITY_RESET_URL: str = "/ft-reset"
     SECURITY_CONFIRM_URL: str = "/ft-confirm"
     SECURITY_CHANGE_URL: str = "/ft-settings"
+    SECURITY_POST_CONFIRM_VIEW: str = "/passwordless/request-code"
     SECURITY_POST_LOGIN_VIEW: str = "/"
     SECURITY_POST_LOGOUT_VIEW: str = "/"
     SECURITY_EMAIL_SUBJECT_REGISTER: str = "Te damos la bienvenida a Fonotarot"
@@ -208,12 +210,14 @@ class Config:
     # Firenze client lookup/creation service (internal, not internet-accessible)
     # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
     FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "")
+    FIRENZE_API_KEY: str = os.environ.get("FIRENZE_API_KEY", "")
+    FIRENZE_API_SECRET: str = os.environ.get("FIRENZE_API_SECRET", "")
+    # Backward compatibility with previous Firenze credential names.
     FIRENZE_API_USER: str = os.environ.get("FIRENZE_API_USER", "")
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
-    FIRENZE_API_SCOPES: str = os.environ.get("FIRENZE_API_SCOPES", "")
     FIRENZE_API_TIMEOUT: int = int(os.environ.get("FIRENZE_API_TIMEOUT", "5"))
 
-    DEBUG_TB_ENABLED: bool = False
+    DEBUG_TB_ENABLED: bool = True
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",

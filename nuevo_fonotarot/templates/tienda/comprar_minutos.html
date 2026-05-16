@@ -4,10 +4,34 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
+<style>
+  .ck-submit-spinner {
+    display: none;
+    align-items: center;
+    margin-right: .5rem;
+  }
+
+  .ck-submit.is-loading .ck-submit-spinner {
+    display: inline-flex;
+  }
+
+  .ck-submit.is-loading .ck-submit-lock {
+    display: none;
+  }
+
+  .ck-submit-spinner i {
+    animation: ck-btn-spin .75s linear infinite;
+  }
+
+  @keyframes ck-btn-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}">
+<form method="post" action="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" id="checkout-form">
 
 
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -65,11 +89,22 @@
         <div class="ck-form-section">
           <div class="section-label"><i class="ti ti-user"></i> Datos de contacto</div>
 
-          {% if not current_user.is_authenticated %}
+          {% if not current_user %}
           <div class="ck-info anon">
             <i class="ti ti-ghost me-1"></i>
             <strong>Compra anónima.</strong> Solo necesitamos tu email para enviarte el comprobante.
-            <a href="{{ url_for('security.login') }}" class="ms-1" style="color:var(--plum)">¿Ya tienes cuenta?</a>
+            <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
+              {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
+            </a>
+          </div>
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
+            <label class="form-check-label" for="create_account">
+              {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
+            </label>
+            <div class="form-text">
+              {{ _("Te enviaremos un correo de bienvenida y confirmación.") }}
+            </div>
           </div>
           {% else %}
           <div class="ck-info known">
@@ -82,11 +117,24 @@
           <div class="row g-2">
             <div class="col-md-7">
               <label class="form-label" for="email">Email *</label>
-              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user.is_authenticated %}readonly{% endif %} />
+               <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif
+                 %} />
             </div>
             <div class="col-md-5">
               <label class="form-label" for="phone">Teléfono</label>
               <input type="tel" id="phone" name="phone" class="form-control" placeholder="+56 9 ..." value="{{ prefilled_phone }}" />
+              <div class="form-text">{{ _("Este número se usa como usuario y ANI.") }}</div>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label" for="shipping_phone">Teléfono de Contacto</label>
+              <input
+                type="tel"
+                id="shipping_phone"
+                name="shipping_phone"
+                class="form-control"
+                placeholder="+56 9 ..."
+                value="{{ prefilled_shipping_phone }}"
+              />
             </div>
           </div>
         </div>
@@ -97,7 +145,7 @@
           <div class="ck-pay-pills">
 
             <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="flow" id="pay_flow" required {% if preferred == 'flow' %}checked{% endif %} />
+              <input type="radio" name="payment_method" value="flow" id="pay_flow" required {% if preferred=='flow' %}checked{% endif %} />
               <div class="ck-pill {% if preferred == 'flow' %}selected{% endif %}" id="flow_box">
                 <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
                 <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
@@ -107,7 +155,7 @@
             </label>
 
             <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="khipu" id="pay_khipu" {% if preferred == 'khipu' %}checked{% endif %} />
+              <input type="radio" name="payment_method" value="khipu" id="pay_khipu" {% if preferred=='khipu' %}checked{% endif %} />
               <div class="ck-pill {% if preferred == 'khipu' %}selected{% endif %}" id="khipu_box">
                 <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
                 <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
@@ -120,8 +168,14 @@
         </div>
 
         <!-- ── Submit ─────────────────────────────── -->
-        <button type="submit" class="ck-submit">
-          <i class="ti ti-lock me-2"></i>Pagar ahora - ${{ pack.price_display }}
+        <button
+          type="submit"
+          class="ck-submit"
+          id="checkout-submit-btn"
+          data-loading-text="{{ _('Procesando pago...') }}"
+        >
+          <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
+          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">Pagar ahora - ${{ pack.price_display }}</span>
         </button>
         <p class="ck-note">
           <i class="ti ti-shield-check me-1"></i>Transacción encriptada · Acreditación inmediata
@@ -137,9 +191,9 @@
 {% block extra_js %}
 <script>
   /* Sync pill selected state when radio changes */
-  document.querySelectorAll('input[name="payment_method"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-      document.querySelectorAll('.ck-pill').forEach(function (pill) {
+  document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.ck-pill').forEach(function(pill) {
         pill.classList.remove('selected');
       });
       var box = this.value === 'flow'
@@ -148,5 +202,20 @@
       if (box) box.classList.add('selected');
     });
   });
+
+  var checkoutForm = document.getElementById('checkout-form');
+  var checkoutBtn = document.getElementById('checkout-submit-btn');
+  var checkoutLabel = document.getElementById('checkout-submit-label');
+  if (checkoutForm && checkoutBtn && checkoutLabel) {
+    checkoutForm.addEventListener('submit', function() {
+      if (checkoutBtn.disabled) {
+        return false;
+      }
+      checkoutBtn.disabled = true;
+      checkoutBtn.classList.add('disabled', 'is-loading');
+      checkoutLabel.textContent = checkoutBtn.dataset.loadingText || '';
+      return true;
+    });
+  }
 </script>
 {% endblock %}

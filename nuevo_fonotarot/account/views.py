@@ -1,50 +1,143 @@
-"""Views for the account settings blueprint."""
+"""Views for the account profile and settings blueprint."""
 
-from datetime import datetime, timezone
-
-from flask import current_app, flash, redirect, render_template, request, session, url_for
+from flask import current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import _
-from flask_security import current_user, verify_password
-from flask_security.changeable import change_user_password
-from flask_security.utils import login_user
+from flask_security import current_user
 
 from . import account_bp
-from .forms import ClaimAccountForm
-from ..actions import _assign_clientes_role
-from ..auth_handlers import ensure_user_email_signin
 from ..decorators import login_required_modal
 from ..extensions import db
-from ..firenze import search_client
+from ..firenze import (
+    add_client_ani,
+    delete_client_ani,
+    list_client_anis,
+    search_client_minutes_by_email,
+    update_client_profile,
+)
 from ..log import get_logger
-from ..models import User
+from ..models import BlogPost, Order
 
 logger = get_logger(__name__)
 
+_SETTINGS_TABS = {"profile", "additional-phones", "notifications"}
 
-@account_bp.route("/", methods=["GET", "POST"])
+
+def _settings_tab_from_request(default: str = "profile") -> str:
+    """Return the current settings tab from query args."""
+    requested = request.args.get("tab", default).strip()
+    if requested in _SETTINGS_TABS:
+        return requested
+    return default
+
+
+@account_bp.route("/", methods=["GET"])
+@account_bp.route("/profile", methods=["GET"])
+@login_required_modal
+def profile():
+    """Read-only profile page with recent activity."""
+    recent_orders = (
+        current_user.orders.order_by(Order.created_at.desc()).limit(5).all()
+    )
+    recent_posts = (
+        BlogPost.query.filter_by(published=True)
+        .order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc())
+        .limit(5)
+        .all()
+    )
+    return render_template(
+        "account/profile.html",
+        user=current_user,
+        recent_orders=recent_orders,
+        recent_posts=recent_posts,
+        profile_credits_url=url_for("account.profile_credits"),
+        subscriptions_enabled=False,
+        products_purchased_enabled=False,
+    )
+
+
+@account_bp.route("/profile/credits", methods=["GET"])
+@login_required_modal
+def profile_credits():
+    """Return the signed-in user's Firenze credit balance in seconds."""
+    email = (current_user.email or "").strip().lower()
+    if not email:
+        return jsonify({"ok": True, "found": False, "seconds": 0}), 200
+
+    minutes, error_code = search_client_minutes_by_email(email)
+    if error_code is not None:
+        logger.warning(
+            "profile_credits: Firenze lookup failed for user=%s email=%r error=%s",
+            current_user.id,
+            email,
+            error_code,
+        )
+        return jsonify({"ok": False, "error": error_code}), 503
+
+    seconds = max(0, int((minutes or 0) * 60))
+    return jsonify({"ok": True, "found": minutes is not None, "seconds": seconds}), 200
+
+@account_bp.route("/settings", methods=["GET", "POST"])
 @login_required_modal
 def settings():
     """User account settings and profile management."""
+    active_tab = _settings_tab_from_request()
+
     if request.method == "POST":
         form_type = request.form.get("form_type", "profile")
 
         if form_type == "password":
-            current_password = request.form.get("current_password", "")
-            new_password = request.form.get("new_password", "")
-            confirm_password = request.form.get("confirm_password", "")
-            min_length: int = current_app.config.get("SECURITY_PASSWORD_LENGTH_MIN", 8)
-
-            if not verify_password(current_password, current_user.password):
-                flash(_("La contraseña actual es incorrecta."), "danger")
-            elif len(new_password) < min_length:
-                flash(_("La nueva contraseña debe tener al menos %(n)s caracteres.", n=min_length), "danger")
-            elif new_password != confirm_password:
-                flash(_("Las contraseñas nuevas no coinciden."), "danger")
-            else:
-                change_user_password(current_user._get_current_object(), new_password)
-                logger.info("Password changed for user=%s", current_user.id)
-                flash(_("Contraseña actualizada correctamente."), "success")
+            flash(
+                _("El acceso es sin contraseña. La gestión de contraseña está deshabilitada."),
+                "info",
+            )
             return redirect(url_for("account.settings"))
+        if form_type == "add_ani":
+            if not current_user.firenze_client_id:
+                flash(
+                    _("Tu cuenta no tiene un cliente Firenze asociado."),
+                    "warning",
+                )
+                return redirect(url_for("account.settings", tab="additional-phones"))
+
+            candidate_ani = request.form.get("ani", "").strip()
+            created_ok, was_created = add_client_ani(
+                int(current_user.firenze_client_id),
+                candidate_ani,
+            )
+            if created_ok and was_created:
+                flash(_("Teléfono adicional agregado."), "success")
+            elif created_ok:
+                flash(_("Ese teléfono adicional ya existe."), "info")
+            else:
+                flash(
+                    _("No se pudo agregar el teléfono adicional. Verifica el formato e inténtalo de nuevo."),
+                    "danger",
+                )
+            return redirect(url_for("account.settings", tab="additional-phones"))
+
+        if form_type == "delete_ani":
+            if not current_user.firenze_client_id:
+                flash(
+                    _("Tu cuenta no tiene un cliente Firenze asociado."),
+                    "warning",
+                )
+                return redirect(url_for("account.settings", tab="additional-phones"))
+
+            target_ani = request.form.get("ani", "").strip()
+            delete_ok, was_deleted = delete_client_ani(
+                int(current_user.firenze_client_id),
+                target_ani,
+            )
+            if delete_ok and was_deleted:
+                flash(_("Teléfono adicional eliminado."), "success")
+            elif delete_ok:
+                flash(_("Ese teléfono no existe en tu lista."), "info")
+            else:
+                flash(_("No se pudo eliminar el teléfono adicional."), "danger")
+            return redirect(url_for("account.settings", tab="additional-phones"))
+
+        previous_full_name = current_user.full_name
+        previous_phone = current_user.phone
 
         current_user.full_name = request.form.get("full_name", "").strip() or None
         current_user.phone = request.form.get("phone", "").strip() or None
@@ -55,11 +148,48 @@ def settings():
         pref = request.form.get("preferred_payment", "").strip()
         current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
         db.session.commit()
-        logger.info("Profile updated for user=%s", current_user.id)
-        flash("Perfil actualizado correctamente.", "success")
-        return redirect(url_for("account.settings"))
 
-    return render_template("account/settings.html", user=current_user)
+        full_name_changed = previous_full_name != current_user.full_name
+        phone_changed = previous_phone != current_user.phone
+        if current_user.firenze_client_id and (full_name_changed or phone_changed):
+            update_payload: dict[str, str | None] = {}
+            if full_name_changed:
+                update_payload["full_name"] = current_user.full_name
+            if phone_changed:
+                update_payload["phone"] = current_user.phone
+
+            if not update_client_profile(
+                int(current_user.firenze_client_id),
+                **update_payload,
+            ):
+                logger.warning(
+                    "settings: failed to sync Firenze profile for user=%s client_id=%s changed=%s",
+                    current_user.id,
+                    current_user.firenze_client_id,
+                    list(update_payload.keys()),
+                )
+
+        logger.info("Profile updated for user=%s", current_user.id)
+        flash(_("Perfil actualizado correctamente."), "success")
+        return redirect(url_for("account.settings", tab="profile"))
+
+    additional_phones: list[str] = []
+    if current_user.firenze_client_id:
+        phones = list_client_anis(int(current_user.firenze_client_id))
+        if phones is None:
+            flash(
+                _("No fue posible cargar los teléfonos adicionales desde Firenze."),
+                "warning",
+            )
+        else:
+            additional_phones = phones
+
+    return render_template(
+        "account/settings.html",
+        user=current_user,
+        active_tab=active_tab,
+        additional_phones=additional_phones,
+    )
 
 
 @account_bp.route("/set-language/<lang>")
@@ -94,85 +224,9 @@ def set_language(lang: str):
 
 @account_bp.route("/registro/cliente-existente", methods=["GET", "POST"])
 def claim_account():
-    """Allow captured (telephone) customers to create a web account.
-
-    Verifies the customer's identity against the Firenze telephony platform
-    using their email and phone number.  If found, creates a web account with
-    the matching ``firenze_client_id`` and ``clientes`` role already assigned,
-    then logs the user in immediately.
-    """
-    if current_user.is_authenticated:
-        return redirect(url_for("content.index"))
-
-    form = ClaimAccountForm()
-
-    if form.validate_on_submit():
-        email: str = form.email.data.strip().lower()
-        phone: str = form.phone.data.strip()
-
-        # Step 1 — verify identity via Firenze
-        client_id = search_client(email=email, phone=phone)
-        if client_id is None:
-            logger.info(
-                "claim_account: Firenze lookup found no match for email=%r phone=%r",
-                email,
-                phone,
-            )
-            flash(
-                _(
-                    "No encontramos una cuenta con esos datos en nuestro sistema. "
-                    "Verifica tu email y teléfono, o regístrate como cliente nuevo."
-                ),
-                "danger",
-            )
-            return render_template("auth/claim_account.html", form=form)
-
-        # Step 2 — check for an existing web account with this email
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user is not None:
-            logger.info(
-                "claim_account: email=%r already has a web account (user=%s)",
-                email,
-                existing_user.id,
-            )
-            flash(
-                _("Ya tienes una cuenta registrada con ese email. Ingresa aquí."),
-                "info",
-            )
-            return redirect(url_for("security.login"))
-
-        # Step 3 — create the web account
-        from ..extensions import user_datastore
-
-        new_user: User = user_datastore.create_user(
-            email=email,
-            password=form.password.data,
-            active=True,
-            phone=phone,
-            firenze_client_id=client_id,
-            confirmed_at=datetime.now(timezone.utc),
-        )
-
-        _assign_clientes_role(new_user)
-
-        # Ensure email-based passwordless signin is ready from day one
-        ensure_user_email_signin(new_user)
-
-        db.session.commit()
-
-        logger.info(
-            "claim_account: created web account for user=%s email=%r "
-            "firenze_client_id=%s",
-            new_user.id,
-            email,
-            client_id,
-        )
-
-        # Step 4 — log in immediately
-        login_user(new_user, authn_via=["claim"])
-
-        flash(_("¡Bienvenida! Tu cuenta ha sido activada correctamente."), "success")
-        return redirect(url_for("account.settings"))
-
-    return render_template("auth/claim_account.html", form=form)
-
+    """Legacy endpoint kept for compatibility; account creation is checkout-only."""
+    flash(
+        _("La creación de cuenta está disponible durante el checkout."),
+        "info",
+    )
+    return redirect(url_for("pagos.index"))

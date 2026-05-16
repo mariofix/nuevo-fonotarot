@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Mi perfil") }} - Fonotarot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .section-title {
+    color: var(--plum);
+    font-weight: 700;
+    font-size: .92rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .info-label {
+    color: var(--muted);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .profile-empty,
+  .profile-skeleton {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, .02);
+  }
+
+  [data-theme="dark"] .profile-empty,
+  [data-theme="dark"] .profile-skeleton {
+    background: rgba(255, 255, 255, .02);
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">{{ _("Mi perfil") }}</h1>
+      <p class="text-secondary mb-0">{{ _("Solo lectura con tu información más relevante y actividad reciente.") }}</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="section-title mb-3">{{ _("Datos de la cuenta") }}</p>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Email") }}</div>
+            <div class="fw-semibold">{{ user.email }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Nombre") }}</div>
+            <div>{{ user.full_name or _("No informado") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Usuario (teléfono)") }}</div>
+            <div>{{ user.username or user.phone or _("No informado") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Teléfono") }}</div>
+            <div>{{ user.phone or user.username or _("No informado") }}</div>
+            {% if user.phone and user.username and user.phone != user.username %}
+            <div class="text-secondary small mt-1">{{ _("Idealmente teléfono y usuario deben ser el mismo número.") }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("RUT") }}</div>
+            <div>{{ user.rut or _("No informado") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Dirección") }}</div>
+            <div>{{ user.address or _("No informada") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Comuna") }}</div>
+            <div>{{ user.commune or _("No informada") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Código postal") }}</div>
+            <div>{{ user.postal_code or _("No informado") }}</div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Pago preferido") }}</div>
+            <div>
+              {% if user.preferred_payment == 'flow' %}
+                Flow
+              {% elif user.preferred_payment == 'khipu' %}
+                Khipu
+              {% else %}
+                {{ _("Sin preferencia") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Minutos disponibles") }}</div>
+            <div class="d-flex align-items-center gap-2">
+              <div id="profile-credits-value" class="fw-semibold">{{ _("Consultar Saldo") }}</div>
+              <button
+                id="profile-credits-refresh"
+                type="button"
+                class="btn btn-outline-secondary btn-icon btn-sm"
+                title="{{ _('Actualizar minutos') }}"
+                aria-label="{{ _('Actualizar minutos') }}"
+              >
+                <i class="ti ti-refresh me-1"></i>{{ _("Consultar Saldo") }}
+              </button>
+            </div>
+            <div id="profile-credits-help" class="text-secondary small"></div>
+          </div>
+          {% set missing_profile_data = (not user.full_name) or (not (user.phone or user.username)) or (not user.rut) or (not user.address) or (not user.commune) or (not user.postal_code) %}
+          {% if (not user.firenze_client_id) or missing_profile_data %}
+          <div class="alert alert-warning mb-0">
+            <i class="ti ti-alert-circle me-1"></i>
+            {{ _("Faltan datos de cuenta para sincronización o perfil.") }}
+            <a href="{{ url_for('account.settings') }}" class="alert-link">{{ _("Completar datos en Configuración") }}</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <p class="section-title mb-3">{{ _("Perfil físico") }}</p>
+          {% if user.has_physical_profile %}
+          <div class="alert alert-success mb-0">
+            <i class="ti ti-circle-check me-1"></i>{{ _("Tu perfil está completo para compras físicas.") }}
+          </div>
+          {% else %}
+          <div class="alert alert-warning mb-0">
+            <i class="ti ti-alert-triangle me-1"></i>{{ _("Tu perfil todavía no tiene todos los datos para compras físicas.") }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>{{ _("5 últimas órdenes") }}</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table card-table table-vcenter">
+            <thead>
+              <tr>
+                <th>{{ _("Orden") }}</th>
+                <th>{{ _("Fecha") }}</th>
+                <th>{{ _("Estado") }}</th>
+                <th class="text-end">{{ _("Total") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+              <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.created_at.strftime('%d/%m/%Y') if order.created_at else _("No informada") }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{ order.status }}</span>
+                  {% if order.state %}
+                  <span class="badge bg-info-lt text-info ms-1">{{ order.state }}</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">${{ order.total_display }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4">
+                  <div class="profile-empty p-3 text-secondary">{{ _("Todavía no hay órdenes registradas.") }}</div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <span>{{ _("5 últimos posts") }}</span>
+        </div>
+        <div class="list-group list-group-flush">
+          {% for post in recent_posts %}
+          <a class="list-group-item list-group-item-action" href="{{ url_for('blog.detail', slug=post.slug) }}">
+            <div class="d-flex justify-content-between gap-3">
+              <div>
+                <div class="fw-semibold">{{ post.title }}</div>
+                {% if post.excerpt %}
+                <div class="text-secondary small">{{ post.excerpt }}</div>
+                {% endif %}
+              </div>
+              <div class="text-secondary small text-nowrap">{{ (post.published_at or post.created_at).strftime('%d/%m/%Y') }}</div>
+            </div>
+          </a>
+          {% else %}
+          <div class="list-group-item">
+            <div class="profile-empty p-3 text-secondary">{{ _("Aún no hay posts publicados.") }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100 profile-skeleton">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="section-title mb-0">{{ _("Suscripciones añadidas") }}</p>
+                <span class="badge bg-secondary-lt text-secondary">{{ _("Próximamente") }}</span>
+              </div>
+              <div class="placeholder-glow">
+                <p class="placeholder col-8 mb-2"></p>
+                <p class="placeholder col-10 mb-2"></p>
+                <p class="placeholder col-6 mb-0"></p>
+              </div>
+              <p class="text-secondary small mt-3 mb-0">{{ _("Esta sección todavía no está habilitada.") }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card h-100 profile-skeleton">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="section-title mb-0">{{ _("Productos comprados") }}</p>
+                <span class="badge bg-secondary-lt text-secondary">{{ _("Próximamente") }}</span>
+              </div>
+              <div class="placeholder-glow">
+                <p class="placeholder col-9 mb-2"></p>
+                <p class="placeholder col-7 mb-2"></p>
+                <p class="placeholder col-11 mb-0"></p>
+              </div>
+              <p class="text-secondary small mt-3 mb-0">{{ _("Cuando se active, verás aquí tus productos adquiridos.") }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function() {
+    var PROFILE_CREDITS_URL = {{ profile_credits_url | tojson }};
+
+    function setCreditsText(text, helpText) {
+      var valueEl = document.getElementById('profile-credits-value');
+      var helpEl = document.getElementById('profile-credits-help');
+      if (valueEl) valueEl.textContent = text;
+      if (helpEl) helpEl.textContent = helpText || '';
+    }
+
+    function extractSeconds(payload) {
+      if (!payload || typeof payload !== 'object') return null;
+      var secondKeys = ['seconds', 'segundos', 'available_seconds', 'remaining_seconds', 'credits', 'creditos'];
+      var minuteKeys = ['minutes', 'minutos', 'available_minutes', 'remaining_minutes', 'credit_minutes'];
+      var sources = [payload];
+      ['client', 'data', 'result'].forEach(function(k) {
+        if (payload[k] && typeof payload[k] === 'object') sources.push(payload[k]);
+      });
+      function intFrom(v) {
+        var n = parseInt(v, 10);
+        return Number.isFinite(n) ? n : null;
+      }
+      for (var i = 0; i < sources.length; i += 1) {
+        for (var s = 0; s < secondKeys.length; s += 1) {
+          var sec = intFrom(sources[i][secondKeys[s]]);
+          if (sec != null) return Math.max(0, sec);
+        }
+        for (var j = 0; j < minuteKeys.length; j += 1) {
+          var m = intFrom(sources[i][minuteKeys[j]]);
+          if (m != null) return Math.max(0, m * 60);
+        }
+      }
+      return null;
+    }
+
+    function formatSecondsClock(totalSeconds) {
+      var safe = Math.max(0, Number(totalSeconds || 0));
+      var minutes = Math.floor(safe / 60);
+      var seconds = safe % 60;
+      return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+
+    async function refreshCredits() {
+      if (!PROFILE_CREDITS_URL) {
+        setCreditsText('{{ _("No disponible") }}', '');
+        return;
+      }
+      try {
+        var resp = await fetch(PROFILE_CREDITS_URL, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!resp.ok) throw new Error('credits-status-' + resp.status);
+        var payload = await resp.json();
+
+        if (!payload || payload.ok !== true || payload.found === false) {
+          setCreditsText('00:00', '');
+          return;
+        }
+
+        var seconds = extractSeconds(payload);
+        if (seconds == null) seconds = 0;
+        setCreditsText(formatSecondsClock(seconds), '');
+      } catch (err) {
+        setCreditsText('{{ _("No disponible") }}', '');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var refreshButton = document.getElementById('profile-credits-refresh');
+      if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+          refreshCredits();
+        });
+      }
+    });
+  })();
+</script>
+{% endblock %}

@@ -263,6 +263,41 @@
       color: var(--plum);
     }
 
+    .btn-oc-trigger {
+      background: rgba(107, 63, 160, .1);
+      color: var(--plum) !important;
+      border: 1px solid rgba(107, 63, 160, .28);
+      border-radius: 20px;
+      padding: .38rem 1rem;
+      font-size: .85rem;
+      font-weight: 700;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .btn-oc-trigger:hover {
+      background: rgba(107, 63, 160, .18);
+    }
+
+    .oc-dot-online,
+    .oc-dot-busy {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 3px;
+    }
+
+    .oc-dot-online {
+      background: #059669;
+    }
+
+    .oc-dot-busy {
+      background: #b45309;
+    }
+
     /* Primary CTA buttons */
     .btn-gold,
     .btn-rose {
@@ -483,6 +518,22 @@
       position: relative;
     }
 
+    .credits-strip {
+      border-bottom: 1px solid var(--border);
+      background: rgba(107, 63, 160, .05);
+    }
+
+    [data-theme="dark"] .credits-strip {
+      background: rgba(168, 125, 212, .08);
+    }
+
+    .credits-strip .credits-value {
+      font-weight: 700;
+      color: var(--plum);
+      min-width: 66px;
+      text-align: right;
+    }
+
     /* ─── Generic section helpers ───────────────────── */
     .section-tag {
       display: inline-flex;
@@ -575,6 +626,156 @@
 
     .mobile-nav-link:hover {
       color: var(--plum);
+    }
+
+    .offcanvas-agents {
+      background: #fff;
+      border-left: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .offcanvas-agents .offcanvas-header {
+      background: var(--lavender);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .offcanvas-agents .offcanvas-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--plum-dk);
+      font-size: 1.1rem;
+    }
+
+    .offcanvas-agents .btn-close {
+      filter: invert(28%) sepia(60%) saturate(400%) hue-rotate(250deg);
+    }
+
+    .offcanvas-agents .offcanvas-body {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .oc-tabs .nav-link {
+      border: 0;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .84rem;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: .5rem .7rem;
+    }
+
+    .oc-tabs .nav-link.active {
+      color: var(--plum);
+      background: transparent;
+      border-color: var(--plum);
+    }
+
+    .oc-row {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .oc-row:last-child {
+      border-bottom: none;
+    }
+
+    .oc-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--lavender), var(--blush));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--plum);
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+
+    .oc-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .oc-name {
+      font-family: 'Playfair Display', serif;
+      font-size: .9rem;
+      color: var(--plum-dk);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .oc-spec {
+      color: var(--muted);
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .s-online,
+    .s-busy,
+    .s-offline {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      font-size: .74rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 3px 10px;
+      letter-spacing: .02em;
+    }
+
+    .s-online {
+      background: #dcfce7;
+      color: #047857;
+      border: 1px solid #86efac;
+    }
+
+    .s-busy {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .s-offline {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-oc-call {
+      background: var(--plum);
+      color: #fff !important;
+      border: 0;
+      border-radius: 20px;
+      padding: .35rem .8rem;
+      font-size: .78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn-oc-busy {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted) !important;
+      border-radius: 20px;
+      padding: .3rem .9rem;
+      font-size: .78rem;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    [data-theme="dark"] .offcanvas-agents {
+      background: var(--sand);
+      border-color: var(--border);
     }
 
     /* ─── Footer ───────────────────────────────────── */
@@ -759,16 +960,26 @@
         <div class="d-none d-md-block">
           {% block nav_cta %}<a href="{{ url_for('pagos.index') }}" class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
         </div>
+        <button class="btn btn-oc-trigger d-none d-lg-inline-flex" type="button" data-bs-toggle="offcanvas" data-bs-target="#agentsOffcanvas" aria-controls="agentsOffcanvas">
+          <span class="oc-dot-online"></span>{{ _("Especialistas") }}
+        </button>
         <!-- User menu -->
         <div class="dropdown">
           <button class="btn-user-menu" id="userMenuToggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ _('Menú de usuario') }}" title="{{ _('Menú de usuario') }}">
             <i class="ti ti-user-circle"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userMenuToggle">
-            {% if current_user.is_authenticated %}
+            {% if current_user and current_user.has_role('admin') %}
             <li>
-              <a class="dropdown-item" href="{{ url_for('account.settings') }}">
-                <i class="ti ti-settings"></i> {{ _("Configuración") }}
+              <a class="dropdown-item" href="{{ url_for('admin.index') }}">
+                <i class="ti ti-tool"></i> {{ _("Panel de Administración") }}
+              </a>
+            </li>
+            {% endif %}
+            {% if current_user and current_user.is_authenticated %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('account.profile') }}">
+                <i class="ti ti-user"></i>{{ _("Perfil") }}
               </a>
             </li>
             <li>
@@ -813,9 +1024,9 @@
             </li>
             {% else %}
             <li>
-              <a class="dropdown-item" href="{{ url_for('security.login') }}">
+              <button type="button" class="dropdown-item js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}">
                 <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
-              </a>
+              </button>
             </li>
             {% endif %}
           </ul>
@@ -827,6 +1038,34 @@
       </div>
     </div>
   </nav>
+
+  {% if current_user.is_authenticated %}
+  <section class="credits-strip" aria-label="{{ _('Estado de créditos') }}">
+    <div class="container py-2">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary-lt text-primary"><i class="ti ti-wallet me-1"></i>{{ _("Créditos") }}</span>
+          <span class="small text-secondary">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span id="global-credits-value" class="credits-value" aria-live="polite">{{ _("Consultando saldo...") }}</span>
+          <button
+            id="global-credits-refresh"
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            aria-label="{{ _('Actualizar saldo') }}"
+            title="{{ _('Actualizar saldo') }}"
+          >
+            <i class="ti ti-refresh me-1"></i>{{ _("Actualizar") }}
+          </button>
+          <a href="{{ url_for('account.profile') }}" class="btn btn-primary btn-sm">
+            <i class="ti ti-user me-1"></i>{{ _("Ir a mi perfil") }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
 
   <!-- ── MOBILE NAV OFFCANVAS ──────────────────────── -->
   <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1" id="mobileNavCanvas" aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
@@ -847,17 +1086,49 @@
           {{ lang_switcher(get_locale(), site_languages) }}
         </div>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-          <i class="ti ti-settings me-1"></i>{{ _("Configuración") }}
+        <a href="{{ url_for('account.profile') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+          <i class="ti ti-user me-1"></i>{{ _("Perfil") }}
         </a>
         <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
           <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
         </a>
         {% else %}
-        <a href="{{ url_for('security.login') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+        <a href="#" class="mobile-nav-link js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" data-bs-dismiss="offcanvas">
           <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
         </a>
         {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
+        <i class="ti ti-stars me-2"></i>{{ _("Especialistas") }}
+      </h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ _('Cerrar') }}"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav oc-tabs mb-4" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all" type="button" role="tab">{{ _("Todas") }}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online" type="button" role="tab"><span class="oc-dot-online"></span>{{ _("Disponibles") }}</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy" type="button" role="tab"><span class="oc-dot-busy"></span>{{ _("En consulta") }}</button></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="oc-all" role="tabpanel">
+          <p class="text-center py-4 text-secondary mb-0">{{ _("Consultando especialistas...") }}</p>
+        </div>
+        <div class="tab-pane fade" id="oc-online" role="tabpanel">
+          <p class="text-center py-4 text-secondary mb-0">{{ _("Consultando especialistas...") }}</p>
+        </div>
+        <div class="tab-pane fade" id="oc-busy" role="tabpanel">
+          <p class="text-center py-4 text-secondary mb-0">{{ _("Consultando especialistas...") }}</p>
+        </div>
+      </div>
+      <div class="text-center mt-4 pt-3" style="border-top:1px solid var(--border);">
+        <a href="tel:+{{ _('56222301515') }}" class="btn-oc-call d-inline-block mb-2">
+          <i class="ti ti-phone me-2"></i>{{ _("Llama Ahora") }} - {{ _('+56 2 2230 1515') }}
+        </a>
       </div>
     </div>
   </div>
@@ -903,6 +1174,52 @@
     </div>
   </footer>
   {% endblock %}
+
+  <div class="modal fade modal-blur" id="passwordlessModal" tabindex="-1" aria-labelledby="passwordlessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-ft">
+        <form method="POST" action="{{ url_for('passwordless.request_code') }}" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title" id="passwordlessModalLabel">{{ _('Ingresa sin contraseña') }}</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Cerrar') }}"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-secondary mb-3">
+              {{ _('Te enviaremos un código de 6 dígitos a tu correo para que ingreses rápido y seguro.') }}
+            </p>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" id="passwordless-next" value="{{ request.full_path.rstrip('?') }}">
+            <div>
+              <label class="form-label" for="passwordless-email">{{ _('Correo electrónico') }}</label>
+              <input
+                id="passwordless-email"
+                name="identity"
+                type="email"
+                class="form-control"
+                placeholder="tu@email.com"
+                autocomplete="email"
+                value="{{ request.args.get('identity', '') }}"
+                required
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
+            <button type="submit" class="btn btn-primary">{{ _('Enviar código') }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <button
+    type="button"
+    id="passwordlessModalLauncher"
+    class="d-none"
+    data-bs-toggle="modal"
+    data-bs-target="#passwordlessModal"
+    aria-hidden="true"
+    tabindex="-1">
+  </button>
 
   <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
 
@@ -953,10 +1270,19 @@
       container.appendChild(toastEl);
 
       // Show toast with Bootstrap
-      const bsToast = new bootstrap.Toast(toast, {
-        delay: autoDismiss || 3000
-      });
-      bsToast.show();
+      if (window.bootstrap && bootstrap.Toast) {
+        const bsToast = new bootstrap.Toast(toast, {
+          delay: autoDismiss || 3000
+        });
+        bsToast.show();
+      } else {
+        toast.classList.add('show');
+        if (autoDismiss !== 0) {
+          setTimeout(() => {
+            toast.remove();
+          }, autoDismiss || 3000);
+        }
+      }
 
       // Remove from DOM after hidden
       toast.addEventListener('hidden.bs.toast', () => {
@@ -975,6 +1301,37 @@
   </script>
 
   <style>
+    .modal-ft {
+      --tblr-modal-bg: #130b24;
+      --tblr-modal-color: #f0e8ff;
+      --tblr-modal-border-color: #2d1a52;
+    }
+
+    .modal-ft .modal-header,
+    .modal-ft .modal-footer {
+      border-color: #2d1a52;
+    }
+
+    .modal-ft .form-control {
+      background: #1c1038;
+      border-color: #2d1a52;
+      color: #f0e8ff;
+    }
+
+    .modal-ft .form-control::placeholder {
+      color: rgba(138, 122, 170, 0.7);
+    }
+
+    .modal-ft .form-control:focus {
+      border-color: #6b3fa0;
+      box-shadow: 0 0 0 3px rgba(107, 63, 160, 0.22);
+    }
+
+    .modal-ft .btn-close {
+      filter: invert(1);
+      opacity: .75;
+    }
+
     .toast {
       min-width: 320px;
       border: none;
@@ -1006,6 +1363,165 @@
   </style>
 
   <script>
+    function openPasswordlessModal(nextValue) {
+      const modalEl = document.getElementById('passwordlessModal');
+      if (!modalEl) return;
+      const nextInput = document.getElementById('passwordless-next');
+      if (nextInput) {
+        nextInput.value = nextValue || '{{ request.full_path.rstrip("?") }}';
+      }
+      const launcher = document.getElementById('passwordlessModalLauncher');
+      if (launcher) {
+        launcher.click();
+      }
+    }
+
+    document.addEventListener('click', function(event) {
+      const trigger = event.target.closest('.js-passwordless-trigger');
+      if (!trigger) return;
+      event.preventDefault();
+      openPasswordlessModal(trigger.dataset.next || '{{ request.full_path.rstrip("?") }}');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const query = new URLSearchParams(window.location.search);
+      if (query.get('passwordless') === '1') {
+        openPasswordlessModal(query.get('next') || '{{ request.full_path.rstrip("?") }}');
+      }
+    });
+
+    (function() {
+      if (document.getElementById('hero-agent-rows')) {
+        return;
+      }
+
+      var PHONE = 'tel:+{{ _("56222301515") }}';
+
+      function statusBadge(status) {
+        if (status === 'available') return '<span class="s-online">● {{ _("Disponible") }}</span>';
+        if (status === 'busy') return '<span class="s-busy">● {{ _("En consulta") }}</span>';
+        return '<span class="s-offline">● {{ _("No disponible") }}</span>';
+      }
+
+      function actionHtml(status) {
+        if (status === 'available') {
+          return '<a href="' + PHONE + '" class="btn-oc-call"><i class="ti ti-phone me-1"></i>{{ _("Llamar") }}</a>';
+        }
+        return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>{{ _("Ocupada") }}</button>';
+      }
+
+      function rowElement(agent) {
+        var row = document.createElement('div');
+        row.className = 'oc-row';
+
+        var avatar = document.createElement('div');
+        avatar.className = 'oc-avatar';
+        avatar.textContent = (agent.name || '★').slice(0, 1);
+
+        var info = document.createElement('div');
+        info.className = 'oc-info';
+
+        var nameEl = document.createElement('div');
+        nameEl.className = 'oc-name';
+        nameEl.textContent = agent.name || '★';
+
+        var specEl = document.createElement('div');
+        specEl.className = 'oc-spec';
+        specEl.textContent = '{{ _("Opción") }} ' + agent.option;
+
+        var statusWrap = document.createElement('div');
+        statusWrap.className = 'mt-1';
+        statusWrap.innerHTML = statusBadge(agent.status);
+
+        var actionWrap = document.createElement('span');
+        actionWrap.className = 'agent-action-wrap';
+        actionWrap.innerHTML = actionHtml(agent.status);
+
+        info.appendChild(nameEl);
+        info.appendChild(specEl);
+        info.appendChild(statusWrap);
+        row.appendChild(avatar);
+        row.appendChild(info);
+        row.appendChild(actionWrap);
+        return row;
+      }
+
+      function normalizeAgents(data) {
+        var statusOrder = { available: 0, busy: 1, offline: 2 };
+        var list = (Array.isArray(data) ? data : []).map(function(raw) {
+          var opcion = parseInt(raw && raw.opcion != null ? raw.opcion : (raw.option || 0), 10);
+          if (Number.isNaN(opcion)) opcion = 0;
+          var ingreso = Boolean(raw && (raw.ingreso != null ? raw.ingreso : raw.status !== 'offline'));
+          var disponible = Boolean(raw && (raw.disponible != null ? raw.disponible : raw.status === 'available'));
+          var status = !ingreso ? 'offline' : (disponible ? 'available' : 'busy');
+          return {
+            name: (raw && (raw.nombre || raw.name)) || '★',
+            option: ('0' + opcion).slice(-2),
+            status: status
+          };
+        });
+        return list.sort(function(a, b) {
+          return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        });
+      }
+
+      function renderList(id, agents, emptyMessage) {
+        var container = document.getElementById(id);
+        if (!container) return;
+        while (container.firstChild) container.removeChild(container.firstChild);
+        if (!agents.length) {
+          var msg = document.createElement('p');
+          msg.className = 'text-center py-4 text-secondary mb-0';
+          msg.textContent = emptyMessage;
+          container.appendChild(msg);
+          return;
+        }
+        agents.forEach(function(agent) { container.appendChild(rowElement(agent)); });
+      }
+
+      function showError() {
+        var msg = '{{ _("Listado de agentes no disponible por ahora.") }}';
+        renderList('oc-all', [], msg);
+        renderList('oc-online', [], msg);
+        renderList('oc-busy', [], msg);
+      }
+
+      function applyAgents(agents) {
+        var available = agents.filter(function(a) { return a.status === 'available'; });
+        var busy = agents.filter(function(a) { return a.status === 'busy'; });
+        renderList('oc-all', agents, '{{ _("No hay especialistas disponibles ahora.") }}');
+        renderList('oc-online', available, '{{ _("Todas las especialistas están ocupadas. Inténtalo pronto.") }}');
+        renderList('oc-busy', busy, '{{ _("No hay especialistas en consulta ahora.") }}');
+      }
+
+      function pollAgents() {
+        var agentsUrl = {{ firenze_ejecutivos_url | tojson }};
+        if (!agentsUrl) {
+          showError();
+          return;
+        }
+        fetch(agentsUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        })
+          .then(function(response) {
+            if (!response.ok) throw new Error('status-' + response.status);
+            return response.json();
+          })
+          .then(function(payload) {
+            applyAgents(normalizeAgents(payload));
+          })
+          .catch(function() {
+            showError();
+          });
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        pollAgents();
+        window.setInterval(pollAgents, 15000);
+      });
+    })();
+
     // ── Theme toggle ──────────────────────────────────────────────
     (function() {
       var html = document.documentElement;
@@ -1032,6 +1548,86 @@
           if (label) {
             label.textContent = next === 'dark' ? '{{ _("Tema claro") }}' : '{{ _("Tema oscuro") }}';
           }
+        }
+      });
+    })();
+
+    (function() {
+      var creditsEl = document.getElementById('global-credits-value');
+      if (!creditsEl) return;
+
+      var refreshButton = document.getElementById('global-credits-refresh');
+      var CREDITS_URL = {{ url_for('account.profile_credits') | tojson }};
+
+      function intFrom(value) {
+        var parsed = parseInt(value, 10);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function extractSeconds(payload) {
+        if (!payload || typeof payload !== 'object') return null;
+        var secondKeys = ['seconds', 'segundos', 'available_seconds', 'remaining_seconds', 'credits', 'creditos'];
+        var minuteKeys = ['minutes', 'minutos', 'available_minutes', 'remaining_minutes', 'credit_minutes'];
+        var sources = [payload];
+        ['client', 'data', 'result'].forEach(function(key) {
+          if (payload[key] && typeof payload[key] === 'object') {
+            sources.push(payload[key]);
+          }
+        });
+
+        for (var i = 0; i < sources.length; i += 1) {
+          for (var s = 0; s < secondKeys.length; s += 1) {
+            var sec = intFrom(sources[i][secondKeys[s]]);
+            if (sec != null) return Math.max(0, sec);
+          }
+          for (var m = 0; m < minuteKeys.length; m += 1) {
+            var min = intFrom(sources[i][minuteKeys[m]]);
+            if (min != null) return Math.max(0, min * 60);
+          }
+        }
+        return null;
+      }
+
+      function formatSecondsClock(totalSeconds) {
+        var safe = Math.max(0, Number(totalSeconds || 0));
+        var minutes = Math.floor(safe / 60);
+        var seconds = safe % 60;
+        return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+      }
+
+      async function refreshCredits() {
+        if (!CREDITS_URL) {
+          creditsEl.textContent = '{{ _("Saldo no disponible") }}';
+          return;
+        }
+        try {
+          var response = await fetch(CREDITS_URL, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error('credits-status-' + response.status);
+          var payload = await response.json();
+          if (!payload || payload.ok !== true) {
+            creditsEl.textContent = '{{ _("Saldo no disponible") }}';
+            return;
+          }
+          if (payload.found === false) {
+            creditsEl.textContent = '00:00';
+            return;
+          }
+          var seconds = extractSeconds(payload);
+          creditsEl.textContent = formatSecondsClock(seconds == null ? 0 : seconds);
+        } catch (err) {
+          creditsEl.textContent = '{{ _("Saldo no disponible") }}';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        refreshCredits();
+        if (refreshButton) {
+          refreshButton.addEventListener('click', function() {
+            refreshCredits();
+          });
         }
       });
     })();

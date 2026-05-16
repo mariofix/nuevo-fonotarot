@@ -1,5 +1,7 @@
 """User-related actions that can be run independently or during lifecycle events."""
 
+from __future__ import annotations
+
 from .extensions import db, user_datastore
 from .firenze import search_client
 from .log import get_logger
@@ -7,6 +9,69 @@ from .models import User
 from .notifications import notify_new_user_registration
 
 logger = get_logger(__name__)
+
+
+class _CheckoutRegistrationForm:
+    """Minimal form adapter for Flask-Security ``register_user``."""
+
+    def __init__(self, email: str, phone: str) -> None:
+        self._email = email
+        self._phone = phone
+
+    def to_dict(self, only_user: bool = False) -> dict:
+        payload = {
+            "email": self._email,
+            "username": self._phone,
+            "phone": self._phone,
+            # Passwordless account: password is intentionally unset.
+            "password": None,
+        }
+        return payload
+
+
+def register_checkout_account(email: str, phone: str) -> tuple[User, bool]:
+    """Create (or fetch) a user from checkout data using Flask-Security flow.
+
+    This uses Flask-Security's ``register_user`` helper so standard registration
+    side effects still happen (signals, confirmation token generation, welcome
+    email dispatch, and unified-signin setup for email codes).
+
+    Returns:
+        A tuple ``(user, created)`` where ``created`` is ``True`` only when a
+        new account was created.
+    """
+    from flask_security.registerable import register_user
+    from sqlalchemy.exc import IntegrityError
+
+    normalized_email = email.strip().lower()
+    normalized_phone = phone.strip().lstrip("+")
+
+    if not normalized_phone:
+        raise ValueError("missing_phone")
+    if not normalized_phone.isdigit() or not (10 <= len(normalized_phone) <= 13):
+        raise ValueError("invalid_phone")
+
+    existing = User.query.filter_by(email=normalized_email).first()
+    if existing is not None:
+        return existing, False
+
+    form = _CheckoutRegistrationForm(email=normalized_email, phone=normalized_phone)
+    try:
+        user = register_user(form)
+    except IntegrityError:
+        db.session.rollback()
+        existing_after_conflict = User.query.filter_by(email=normalized_email).first()
+        if existing_after_conflict is not None:
+            return existing_after_conflict, False
+        raise
+
+    db.session.commit()
+    logger.info(
+        "register_checkout_account: created user=%s from checkout email=%r",
+        user.id,
+        normalized_email,
+    )
+    return user, True
 
 
 def process_user_registration(user: User) -> bool:
@@ -32,7 +97,8 @@ def process_user_registration(user: User) -> bool:
         user.email,
         user.username,
     )
-    
+    changed = False
+
     # Send Telegram notification about new registration
     try:
         notify_new_user_registration(email=user.email, phone=user.phone or user.username)
@@ -49,6 +115,7 @@ def process_user_registration(user: User) -> bool:
     # Copy username → phone if phone is blank (non-enforced convenience sync).
     if user.username and not user.phone:
         user.phone = user.username
+        changed = True
         logger.debug(
             "process_user_registration: synced username to phone field for user=%s (phone=%r)",
             user.id,
@@ -60,12 +127,13 @@ def process_user_registration(user: User) -> bool:
             "process_user_registration: looking up Firenze client for user=%s (email=%r phone=%r)",
             user.id,
             user.email,
-            user.phone or user.username,
+            user.username or user.phone,
         )
-        client_id = search_client(email=user.email, phone=user.phone or user.username)
+        client_id = search_client(email=user.email, phone=user.username or user.phone)
         
         if client_id is not None:
             user.firenze_client_id = client_id
+            changed = True
             logger.debug(
                 "process_user_registration: found Firenze client_id=%s for user=%s",
                 client_id,
@@ -83,6 +151,8 @@ def process_user_registration(user: User) -> bool:
             )
             return True
         else:
+            if changed:
+                db.session.commit()
             logger.debug(
                 "process_user_registration: no Firenze client_id found for user=%s (email=%r phone=%r)",
                 user.id,
@@ -91,6 +161,8 @@ def process_user_registration(user: User) -> bool:
             )
             return False
     except Exception:
+        if changed:
+            db.session.commit()
         logger.exception(
             "process_user_registration: failed for user=%s (email=%r phone=%r)",
             user.id,
@@ -135,4 +207,3 @@ def _assign_clientes_role(user: User) -> None:
             "_assign_clientes_role: user=%s already has 'clientes' role",
             user.id,
         )
-

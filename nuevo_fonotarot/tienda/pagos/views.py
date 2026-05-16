@@ -41,16 +41,21 @@ def _sync_firenze_on_payment(order: Order) -> bool:
         return True
 
     try:
+        firenze_phone = (
+            (order.user.username or "").strip()
+            if order.user and order.user.username
+            else (order.shipping_phone or "").strip()
+        )
         logger.debug(
             "_sync_firenze_on_payment: creating Firenze client for order=%s (email=%r phone=%r)",
             order.id,
             order.shipping_email,
-            order.shipping_phone,
+            firenze_phone,
         )
         client_id = _firenze_create(
             name=order.shipping_name,
             email=order.shipping_email,
-            ani=order.shipping_phone,
+            ani=firenze_phone or None,
             transaction_id=order.transaction_id,
         )
         if client_id is not None:

@@ -60,6 +60,14 @@ def _init_extensions(app: Flask) -> None:
     csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Initialize Flask-Security models before importing User/Role
+    from flask_security.models import fsqla_v3 as fsqla
+    fsqla.FsModels.set_db_info(
+        db, 
+        user_table_name="users", 
+        role_table_name="roles"
+    )
     limiter.init_app(app)
     toolbar.init_app(app)
     available_langs: list = app.config.get(
@@ -174,6 +182,13 @@ def _init_extensions(app: Flask) -> None:
     @app.context_processor
     def inject_site_languages() -> dict:
         return {"site_languages": _parse_available_langs()}
+
+    @app.context_processor
+    def inject_firenze_public_urls() -> dict[str, str]:
+        api_url = app.config.get("FIRENZE_API_URL", "").rstrip("/")
+        return {
+            "firenze_ejecutivos_url": f"{api_url}/api/v1/public/ejecutivos" if api_url else "",
+        }
 
     @app.context_processor
     def inject_site_settings() -> dict:
