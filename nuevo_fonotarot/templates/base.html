@@ -520,18 +520,71 @@
 
     .credits-strip {
       border-bottom: 1px solid var(--border);
-      background: rgba(107, 63, 160, .05);
+      background: linear-gradient(
+        90deg,
+        rgba(107, 63, 160, .08),
+        rgba(192, 96, 128, .07)
+      );
     }
 
     [data-theme="dark"] .credits-strip {
-      background: rgba(168, 125, 212, .08);
+      background: linear-gradient(
+        90deg,
+        rgba(168, 125, 212, .18),
+        rgba(217, 138, 170, .12)
+      );
+    }
+
+    .credits-strip-inner {
+      min-height: 46px;
+    }
+
+    .credits-badge {
+      border-radius: 999px;
+      border: 1px solid rgba(107, 63, 160, .25);
+      background: rgba(107, 63, 160, .12);
+      color: var(--plum);
+      font-weight: 700;
+      font-size: .78rem;
+      padding: .3rem .6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .credits-copy {
+      font-size: .84rem;
+      color: var(--muted);
     }
 
     .credits-strip .credits-value {
       font-weight: 700;
       color: var(--plum);
-      min-width: 66px;
+      min-width: 70px;
       text-align: right;
+      font-size: .96rem;
+      letter-spacing: .01em;
+    }
+
+    .credits-actions .btn {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .credits-strip-inner {
+        align-items: flex-start !important;
+      }
+      .credits-copy {
+        font-size: .8rem;
+      }
+      .credits-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .credits-actions .btn {
+        padding-left: .6rem;
+        padding-right: .6rem;
+      }
     }
 
     /* ─── Generic section helpers ───────────────────── */
@@ -1042,12 +1095,12 @@
   {% if current_user.is_authenticated %}
   <section class="credits-strip" aria-label="{{ _('Estado de créditos') }}">
     <div class="container py-2">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-primary-lt text-primary"><i class="ti ti-wallet me-1"></i>{{ _("Créditos") }}</span>
-          <span class="small text-secondary">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
+          <span class="credits-badge"><i class="ti ti-wallet"></i>{{ _("Créditos") }}</span>
+          <span class="credits-copy">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="credits-actions d-flex align-items-center gap-2">
           <span id="global-credits-value" class="credits-value" aria-live="polite">{{ _("Consultando saldo...") }}</span>
           <button
             id="global-credits-refresh"
