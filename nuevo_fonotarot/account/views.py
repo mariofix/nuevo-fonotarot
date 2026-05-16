@@ -11,7 +11,7 @@ from ..firenze import (
     add_client_ani,
     delete_client_ani,
     list_client_anis,
-    search_client_minutes_by_email,
+    search_client_minutes,
     update_client_profile,
 )
 from ..log import get_logger
@@ -60,14 +60,16 @@ def profile():
 def profile_credits():
     """Return the signed-in user's Firenze credit balance in seconds."""
     email = (current_user.email or "").strip().lower()
-    if not email:
+    client_id = current_user.firenze_client_id
+    if client_id is None and not email:
         return jsonify({"ok": True, "found": False, "seconds": 0}), 200
 
-    minutes, error_code = search_client_minutes_by_email(email)
+    minutes, error_code = search_client_minutes(client_id=client_id, email=email)
     if error_code is not None:
         logger.warning(
-            "profile_credits: Firenze lookup failed for user=%s email=%r error=%s",
+            "profile_credits: Firenze lookup failed for user=%s client_id=%r email=%r error=%s",
             current_user.id,
+            client_id,
             email,
             error_code,
         )

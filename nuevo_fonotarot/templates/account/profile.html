@@ -41,6 +41,9 @@
       <h1 class="fw-bold mb-1">{{ _("Mi perfil") }}</h1>
       <p class="text-secondary mb-0">{{ _("Solo lectura con tu información más relevante y actividad reciente.") }}</p>
     </div>
+    <a href="{{ url_for('account.settings') }}" class="btn btn-outline-primary">
+      <i class="ti ti-settings me-1"></i>{{ _("Editar perfil") }}
+    </a>
   </div>
 
   <div class="row g-4">
@@ -61,8 +64,8 @@
             <div>{{ user.username or user.phone or _("No informado") }}</div>
           </div>
           <div class="mb-3">
-            <div class="info-label">{{ _("Teléfono") }}</div>
-            <div>{{ user.phone or user.username or _("No informado") }}</div>
+            <div class="info-label">{{ _("Teléfono (referencia para compras físicas)") }}</div>
+            <div>{{ user.phone or _("No informado") }}</div>
             {% if user.phone and user.username and user.phone != user.username %}
             <div class="text-secondary small mt-1">{{ _("Idealmente teléfono y usuario deben ser el mismo número.") }}</div>
             {% endif %}
@@ -111,7 +114,7 @@
             </div>
             <div id="profile-credits-help" class="text-secondary small"></div>
           </div>
-          {% set missing_profile_data = (not user.full_name) or (not (user.phone or user.username)) or (not user.rut) or (not user.address) or (not user.commune) or (not user.postal_code) %}
+          {% set missing_profile_data = (not user.full_name) or (not user.phone) or (not user.rut) or (not user.address) or (not user.commune) or (not user.postal_code) %}
           {% if (not user.firenze_client_id) or missing_profile_data %}
           <div class="alert alert-warning mb-0">
             <i class="ti ti-alert-circle me-1"></i>

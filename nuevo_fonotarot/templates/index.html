@@ -2150,6 +2150,7 @@
 </section>
 
 <!-- ── FREE TRIAL ─────────────────────────────────── -->
+{% if not current_user.is_authenticated %}
 <section class="trial-section">
   <div class="container">
     <div class="row g-5 align-items-center">
@@ -2186,6 +2187,7 @@
     </div>
   </div>
 </section>
+{% endif %}
 
 <!-- ── HOW IT WORKS ──────────────────────────────── -->
 <section id="ayuda" class="how-section">
@@ -2543,6 +2545,7 @@
 </button>
 
 <!-- ── PROMO MODAL ──────────────────────────────── -->
+{% if not current_user.is_authenticated %}
 <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-modal="true" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -2588,6 +2591,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
@@ -2907,6 +2911,7 @@
 
 <script>
   /* ── Promo modal: phone validation + API call ───────── */
+  {% if not current_user.is_authenticated %}
   (function() {
     var input = document.getElementById('promoPhoneInput');
     var btn = document.getElementById('promoSubmitBtn');
@@ -2985,5 +2990,6 @@
         });
     });
   })();
+  {% endif %}
 </script>
 {% endblock %}

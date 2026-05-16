@@ -81,15 +81,17 @@ def _auth_headers() -> dict[str, str] | None:
 
 
 def search_client(
+    client_id: int | str | None = None,
     email: str | None = None,
     phone: str | None = None,
 ) -> int | None:
-    """Search for an existing Firenze client by email and/or phone.
+    """Search for an existing Firenze client by client_id/email/phone.
 
-    Calls ``GET /api/v1/clients/search?service=fonotarot-cl&email=<email>&phone=<phone>``.  
-    At least one of *email* or *phone* must be provided.
+    Calls ``GET /api/v1/clients/search`` with ``service=fonotarot-cl`` and one
+    or more lookup fields (``client_id``, ``email``, ``phone``).
 
     Args:
+        client_id: Firenze client identifier (preferred when known).
         email: Customer e-mail address (optional but recommended).
         phone: Customer phone number / ANI (optional but recommended).
 
@@ -97,8 +99,9 @@ def search_client(
         The integer ``client_id`` from Firenze, or ``None`` if the client
         was not found or if the request failed for any reason.
     """
-    if not email and not phone:
-        logger.warning("search_client: called with no email or phone — skipping")
+    normalized_client_id = str(client_id).strip() if client_id is not None else ""
+    if not normalized_client_id and not email and not phone:
+        logger.warning("search_client: called with no client_id/email/phone — skipping")
         return None
 
     headers = _auth_headers()
@@ -108,19 +111,27 @@ def search_client(
 
     params: dict[str, str] = {}
     params["service"] = "fonotarot-cl"
+    if normalized_client_id:
+        params["client_id"] = normalized_client_id
     if email:
         params["email"] = email
     if phone:
         params["phone"] = phone
 
     url = urljoin(_base_url(), "/api/v1/clients/search")
-    logger.debug("search_client: searching for client (email=%r phone=%r)", email, phone)
+    logger.debug(
+        "search_client: searching for client (client_id=%r email=%r phone=%r)",
+        normalized_client_id or None,
+        email,
+        phone,
+    )
     try:
         resp = requests.get(url, params=params, headers=headers, timeout=_timeout())
         if resp.status_code != 200:
             logger.warning(
-                "search_client: unexpected status %s for email=%r phone=%r",
+                "search_client: unexpected status %s for client_id=%r email=%r phone=%r",
                 resp.status_code,
+                normalized_client_id or None,
                 email,
                 phone,
             )
@@ -129,7 +140,8 @@ def search_client(
         found = data.get("found", False)
         if not found:
             logger.debug(
-                "search_client: client not found for email=%r phone=%r",
+                "search_client: client not found for client_id=%r email=%r phone=%r",
+                normalized_client_id or None,
                 email,
                 phone,
             )
@@ -138,22 +150,25 @@ def search_client(
         client_id = data.get("client_id")
         if client_id is not None:
             logger.info(
-                "search_client: found client_id=%s for email=%r phone=%r",
+                "search_client: found client_id=%s for lookup client_id=%r email=%r phone=%r",
                 client_id,
+                normalized_client_id or None,
                 email,
                 phone,
             )
             return int(client_id)
         
         logger.warning(
-            "search_client: found=true but no client_id in response for email=%r phone=%r",
+            "search_client: found=true but no client_id in response for lookup client_id=%r email=%r phone=%r",
+            normalized_client_id or None,
             email,
             phone,
         )
         return None
     except requests.RequestException as exc:
         logger.warning(
-            "search_client: network error for email=%r phone=%r — %s",
+            "search_client: network error for client_id=%r email=%r phone=%r — %s",
+            normalized_client_id or None,
             email,
             phone,
             exc,
@@ -161,7 +176,8 @@ def search_client(
         return None
     except Exception:
         logger.exception(
-            "search_client: unexpected error for email=%r phone=%r",
+            "search_client: unexpected error for client_id=%r email=%r phone=%r",
+            normalized_client_id or None,
             email,
             phone,
         )
@@ -326,27 +342,54 @@ def search_client_minutes_by_email(email: str) -> tuple[int | None, str | None]:
     if not normalized_email:
         return None, None
 
+    return search_client_minutes(client_id=None, email=normalized_email)
+
+
+def search_client_minutes(
+    *,
+    client_id: int | None = None,
+    email: str | None = None,
+) -> tuple[int | None, str | None]:
+    """Return ``(minutes, error_code)`` from Firenze using client_id or email.
+
+    Lookup preference:
+    1. ``client_id`` when provided.
+    2. ``email`` as fallback when ``client_id`` is absent.
+
+    Error codes:
+    - ``auth``: missing Firenze API credentials
+    - ``503``: request/response failure to Firenze
+    - ``None``: request succeeded (minutes may still be None if not found)
+    """
+    normalized_email = (email or "").strip().lower()
+    normalized_client_id = int(client_id) if client_id is not None else None
+    if normalized_client_id is None and not normalized_email:
+        return None, None
+
     headers = _auth_headers()
     if not headers:
-        logger.warning("search_client_minutes_by_email: missing Firenze API credentials")
+        logger.warning("search_client_minutes: missing Firenze API credentials")
         return None, "auth"
 
     url = urljoin(_base_url(), "/api/v1/clients/search")
-    params = {
-        "service": "fonotarot-cl",
-        "email": normalized_email,
-    }
+    params: dict[str, str | int] = {"service": "fonotarot-cl"}
+    if normalized_client_id is not None:
+        params["client_id"] = normalized_client_id
+    else:
+        params["email"] = normalized_email
 
     logger.debug(
-        "search_client_minutes_by_email: searching credits for email=%r",
+        "search_client_minutes: searching credits for client_id=%r email=%r",
+        normalized_client_id,
         normalized_email,
     )
     try:
         resp = requests.get(url, params=params, headers=headers, timeout=_timeout())
         if resp.status_code != 200:
             logger.warning(
-                "search_client_minutes_by_email: unexpected status=%s for email=%r",
+                "search_client_minutes: unexpected status=%s for client_id=%r email=%r",
                 resp.status_code,
+                normalized_client_id,
                 normalized_email,
             )
             return None, "503"
@@ -358,14 +401,16 @@ def search_client_minutes_by_email(email: str) -> tuple[int | None, str | None]:
         return _extract_minutes_from_client_search(payload), None
     except requests.RequestException as exc:
         logger.warning(
-            "search_client_minutes_by_email: network error for email=%r — %s",
+            "search_client_minutes: network error for client_id=%r email=%r — %s",
+            normalized_client_id,
             normalized_email,
             exc,
         )
         return None, "503"
     except Exception:
         logger.exception(
-            "search_client_minutes_by_email: unexpected error for email=%r",
+            "search_client_minutes: unexpected error for client_id=%r email=%r",
+            normalized_client_id,
             normalized_email,
         )
         return None, "503"

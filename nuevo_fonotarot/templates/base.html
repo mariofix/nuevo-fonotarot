@@ -1036,6 +1036,11 @@
               </a>
             </li>
             <li>
+              <a class="dropdown-item" href="{{ url_for('account.settings') }}">
+                <i class="ti ti-settings"></i>{{ _("Editar perfil") }}
+              </a>
+            </li>
+            <li>
               <hr class="dropdown-divider">
             </li>
             {% endif %}
@@ -1141,6 +1146,9 @@
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('account.profile') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
           <i class="ti ti-user me-1"></i>{{ _("Perfil") }}
+        </a>
+        <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+          <i class="ti ti-settings me-1"></i>{{ _("Editar perfil") }}
         </a>
         <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
           <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
