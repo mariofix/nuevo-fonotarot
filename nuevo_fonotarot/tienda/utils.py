@@ -37,8 +37,12 @@ def _save_cart(cart: list) -> None:
     session.modified = True
 
 
-def _cart_total(cart: list) -> int:
-    return sum(item["unit_price"] * item["quantity"] for item in cart)
+def _cart_total(cart: list) -> Decimal:
+    from decimal import Decimal
+    return sum(
+        (Decimal(str(item["unit_price"])) * item["quantity"] for item in cart),
+        Decimal(0),
+    )
 
 
 def create_payment_and_redirect(

@@ -5,6 +5,8 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
+from babel.numbers import format_currency as babel_format_currency
+from flask_babel import get_locale
 from flask_security.models import fsqla_v3 as fsqla
 from flask_merchants.models import PaymentMixin
 from slugify import slugify
@@ -199,9 +201,8 @@ class MinutePack(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     minutes: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[int] = mapped_column(
-        Integer, nullable=False
-    )  # price in CLP (no fractional units)
+    price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
     description: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -214,8 +215,8 @@ class MinutePack(db.Model):
 
     @property
     def price_display(self) -> str:
-        """Format price with thousands separator (CLP style)."""
-        return f"{self.price:,}".replace(",", ".")
+        """Format price using locale-aware currency formatting."""
+        return babel_format_currency(self.price, self.currency, locale=get_locale())
 
 
 class SubscriptionPlan(db.Model):
@@ -226,7 +227,8 @@ class SubscriptionPlan(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(80), nullable=False)
     minutes_per_month: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[int] = mapped_column(Integer, nullable=False)  # monthly price in CLP
+    price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
     description: Mapped[str | None] = mapped_column(Text)
     features: Mapped[str | None] = mapped_column(Text)  # newline-separated feature list
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -240,7 +242,8 @@ class SubscriptionPlan(db.Model):
 
     @property
     def price_display(self) -> str:
-        return f"{self.price:,}".replace(",", ".")
+        """Format price using locale-aware currency formatting."""
+        return babel_format_currency(self.price, self.currency, locale=get_locale())
 
     @property
     def features_list(self) -> list:
@@ -284,7 +287,8 @@ class Product(db.Model):
         "ProductCategory", backref=db.backref("products", lazy="dynamic")
     )
     description: Mapped[str | None] = mapped_column(Text)
-    price: Mapped[int] = mapped_column(Integer, nullable=False)  # price in CLP
+    price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
     stock: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     image_url: Mapped[str | None] = mapped_column(String(500))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -304,7 +308,8 @@ class Product(db.Model):
 
     @property
     def price_display(self) -> str:
-        return f"{self.price:,}".replace(",", ".")
+        """Format price using locale-aware currency formatting."""
+        return babel_format_currency(self.price, self.currency, locale=get_locale())
 
     @staticmethod
     def make_slug(name: str) -> str:
@@ -365,7 +370,12 @@ class Order(db.Model, PaymentMixin):
 
     @property
     def total_display(self) -> str:
-        return f"{self.amount:,}".replace(",", ".")
+        """Format order total using locale-aware currency formatting."""
+        if self.amount is None:
+            return ""
+        return babel_format_currency(
+            Decimal(str(self.amount)), self.currency or "CLP", locale=get_locale()
+        )
 
     def initiate_payment(self, payment_method: str, email: str) -> str:
         """Prepare this order as a payment record and start checkout.
@@ -483,18 +493,20 @@ class OrderItem(db.Model):
     )  # FK to the relevant table
     name: Mapped[str] = mapped_column(String(255), nullable=False)  # denormalised name
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    unit_price: Mapped[int] = mapped_column(Integer, nullable=False)  # CLP
+    unit_price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
 
     def __repr__(self) -> str:
         return f"<OrderItem {self.name} x{self.quantity}>"
 
     @property
-    def subtotal(self) -> int:
-        return self.unit_price * self.quantity
+    def subtotal(self) -> Decimal:
+        return Decimal(str(self.unit_price)) * self.quantity
 
     @property
     def subtotal_display(self) -> str:
-        return f"{self.subtotal:,}".replace(",", ".")
+        """Format subtotal using locale-aware currency formatting."""
+        return babel_format_currency(self.subtotal, self.currency, locale=get_locale())
 
 
 # ---------------------------------------------------------------------------

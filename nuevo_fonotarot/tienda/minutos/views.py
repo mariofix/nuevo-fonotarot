@@ -1,6 +1,7 @@
 """Minute-pack store views."""
 
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_babel import _
@@ -98,7 +99,7 @@ def comprar_minutos(pack_id: int):
             return redirect(url_for("pagos.orden_estado", order_id=existing_order.id))
 
         order = Order(
-            amount=pack.price,
+            amount=Decimal(str(pack.price)),
             provider=payment_method,
             email=email,
             shipping_phone=phone or None,
@@ -175,7 +176,8 @@ def comprar_minutos(pack_id: int):
             item_id=pack.id,
             name=f"{pack.minutes} minutos de tarot",
             quantity=1,
-            unit_price=pack.price,
+            unit_price=Decimal(str(pack.price)),
+            currency=pack.currency,
         )
         db.session.add(item)
         db.session.commit()
