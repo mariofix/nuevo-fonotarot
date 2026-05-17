@@ -75,6 +75,42 @@
   {{ meta_pixel() }}
   {{ segment_head() }}
   {{ umami_script() }}
+  <script>
+    window.fonotarotTrackEvent = window.fonotarotTrackEvent || function (eventName, params) {
+      window.dataLayer = window.dataLayer || [];
+      var payload = params || {};
+      payload.event = eventName;
+      window.dataLayer.push(payload);
+    };
+
+    document.addEventListener('submit', function (event) {
+      var form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+
+      var eventName = form.dataset.trackEvent;
+      if (!eventName || typeof window.fonotarotTrackEvent !== 'function') return;
+
+      var payload = {};
+      if (form.dataset.trackValue) payload.value = Number(form.dataset.trackValue);
+      if (form.dataset.trackCurrency) payload.currency = form.dataset.trackCurrency;
+      if (form.dataset.trackMethod) payload.method = form.dataset.trackMethod;
+
+      var itemId = form.dataset.trackItemId;
+      if (itemId) {
+        var item = {
+          item_id: itemId,
+          item_name: form.dataset.trackItemName || '',
+          item_category: form.dataset.trackItemCategory || '',
+          quantity: Number(form.dataset.trackItemQuantity || '1')
+        };
+        if (form.dataset.trackItemVariant) item.item_variant = form.dataset.trackItemVariant;
+        if (form.dataset.trackItemPrice) item.price = Number(form.dataset.trackItemPrice);
+        payload.items = [item];
+      }
+
+      window.fonotarotTrackEvent(eventName, payload);
+    }, true);
+  </script>
 
   <!-- ── Per-page extra head elements ──────────────────────────── -->
   {% block extra_head %}{% endblock %}

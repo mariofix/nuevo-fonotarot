@@ -91,3 +91,40 @@
 
 </div>
 {% endblock %}
+
+{% block extra_js %}
+{% if order.status == 'paid' %}
+<script>
+  (function () {
+    var storageKey = 'fonotarot_purchase_{{ order.id }}';
+    if (window.sessionStorage && sessionStorage.getItem(storageKey)) {
+      return;
+    }
+
+    if (typeof window.fonotarotTrackEvent === 'function') {
+      window.fonotarotTrackEvent('purchase', {
+        transaction_id: {{ order.transaction_id|tojson }},
+        affiliation: 'Fonotarot',
+        currency: 'CLP',
+        value: {{ order.total }},
+        items: [
+          {% for item in items %}
+          {
+            item_id: {{ (item.item_type ~ '-' ~ item.item_id)|tojson }},
+            item_name: {{ item.name|tojson }},
+            item_category: {{ item.item_type|tojson }},
+            price: {{ item.unit_price }},
+            quantity: {{ item.quantity }}
+          }{% if not loop.last %},{% endif %}
+          {% endfor %}
+        ]
+      });
+    }
+
+    if (window.sessionStorage) {
+      sessionStorage.setItem(storageKey, '1');
+    }
+  })();
+</script>
+{% endif %}
+{% endblock %}

@@ -84,11 +84,12 @@ def search_client(
     client_id: int | str | None = None,
     email: str | None = None,
     phone: str | None = None,
+    ani: str | None = None,
 ) -> int | None:
     """Search for an existing Firenze client by client_id/email/phone.
 
     Calls ``GET /api/v1/clients/search`` with ``service=fonotarot-cl`` and one
-    or more lookup fields (``client_id``, ``email``, ``phone``).
+    or more lookup fields (``client_id``, ``email``, ``phone``, ``ani``).
 
     Args:
         client_id: Firenze client identifier (preferred when known).
@@ -100,8 +101,8 @@ def search_client(
         was not found or if the request failed for any reason.
     """
     normalized_client_id = str(client_id).strip() if client_id is not None else ""
-    if not normalized_client_id and not email and not phone:
-        logger.warning("search_client: called with no client_id/email/phone — skipping")
+    if not normalized_client_id and not email and not phone and not ani:
+        logger.warning("search_client: called with no client_id/email/phone/ani — skipping")
         return None
 
     headers = _auth_headers()
@@ -117,69 +118,78 @@ def search_client(
         params["email"] = email
     if phone:
         params["phone"] = phone
+    if ani:
+        params["ani"] = ani
 
     url = urljoin(_base_url(), "/api/v1/clients/search")
     logger.debug(
-        "search_client: searching for client (client_id=%r email=%r phone=%r)",
+        "search_client: searching for client (client_id=%r email=%r phone=%r ani=%r)",
         normalized_client_id or None,
         email,
         phone,
+        ani,
     )
     try:
         resp = requests.get(url, params=params, headers=headers, timeout=_timeout())
         if resp.status_code != 200:
             logger.warning(
-                "search_client: unexpected status %s for client_id=%r email=%r phone=%r",
+                "search_client: unexpected status %s for client_id=%r email=%r phone=%r ani=%r",
                 resp.status_code,
                 normalized_client_id or None,
                 email,
                 phone,
+                ani,
             )
             return None
         data = resp.json()
         found = data.get("found", False)
         if not found:
             logger.debug(
-                "search_client: client not found for client_id=%r email=%r phone=%r",
+                "search_client: client not found for client_id=%r email=%r phone=%r ani=%r",
                 normalized_client_id or None,
                 email,
                 phone,
+                ani,
             )
             return None
-        
+
         client_id = data.get("client_id")
         if client_id is not None:
             logger.info(
-                "search_client: found client_id=%s for lookup client_id=%r email=%r phone=%r",
+                "search_client: found client_id=%s for lookup client_id=%r email=%r phone=%r ani=%r",
                 client_id,
                 normalized_client_id or None,
                 email,
                 phone,
+                ani,
             )
             return int(client_id)
-        
+
         logger.warning(
-            "search_client: found=true but no client_id in response for lookup client_id=%r email=%r phone=%r",
+            "search_client: found=true but no client_id in response for lookup client_id=%r email=%r phone=%r ani=%r",
             normalized_client_id or None,
             email,
             phone,
+            ani,
         )
         return None
     except requests.RequestException as exc:
         logger.warning(
-            "search_client: network error for client_id=%r email=%r phone=%r — %s",
+            "search_client: network error for client_id=%r email=%r phone=%r ani=%r — %s",
             normalized_client_id or None,
             email,
             phone,
+            ani,
             exc,
         )
         return None
     except Exception:
         logger.exception(
-            "search_client: unexpected error for client_id=%r email=%r phone=%r",
+            "search_client: unexpected error for client_id=%r email=%r phone=%r ani=%r",
             normalized_client_id or None,
             email,
             phone,
+            ani,
         )
         return None
 
@@ -271,6 +281,77 @@ def create_client(
             "create_client: unexpected error for email=%r ani=%r",
             email,
             ani,
+        )
+        return None
+
+
+def complete_promo_credit(ani: str | None, credits: int) -> int | None:
+    """Complete a free-trial promo in Firenze and return the new client id."""
+    headers = _auth_headers()
+    if not headers:
+        logger.warning("complete_promo_credit: missing Firenze API credentials")
+        return None
+
+    normalized_ani = _normalize_ani(ani)
+    if not normalized_ani:
+        logger.warning("complete_promo_credit: invalid ANI value")
+        return None
+
+    payload = {
+        "service": "fonotarot-cl",
+        "credits": credits,
+        "ani": normalized_ani,
+        "transaction_id": f"pr_{normalized_ani}"
+    }
+
+    url = urljoin(_base_url(), "/api/v1/payments/complete")
+    logger.debug(
+        "complete_promo_credit: completing promo (ani=%r credits=%s)",
+        normalized_ani,
+        credits,
+    )
+    try:
+        resp = requests.post(url, json=payload, headers=headers, timeout=_timeout())
+        if resp.status_code not in (200, 201):
+            logger.warning(
+                "complete_promo_credit: unexpected status %s for ani=%r credits=%s body=%r",
+                resp.status_code,
+                normalized_ani,
+                credits,
+                resp.text[:300],
+            )
+            return None
+
+        data = resp.json()
+        client_id = data.get("client_id")
+        if client_id is not None:
+            logger.info(
+                "complete_promo_credit: created client_id=%s for ani=%r credits=%s",
+                client_id,
+                normalized_ani,
+                credits,
+            )
+            return int(client_id)
+
+        logger.warning(
+            "complete_promo_credit: no client_id in response for ani=%r credits=%s",
+            normalized_ani,
+            credits,
+        )
+        return None
+    except requests.RequestException as exc:
+        logger.warning(
+            "complete_promo_credit: network error for ani=%r credits=%s — %s",
+            normalized_ani,
+            credits,
+            exc,
+        )
+        return None
+    except Exception:
+        logger.exception(
+            "complete_promo_credit: unexpected error for ani=%r credits=%s",
+            normalized_ani,
+            credits,
         )
         return None
 
@@ -434,6 +515,7 @@ def update_client_profile(
     *,
     service: str = "fonotarot-cl",
     full_name: str | None | object = _UNSET,
+    email: str | None | object = _UNSET,
     phone: str | None | object = _UNSET,
 ) -> bool:
     """Update a Firenze client profile with changed local user fields.
@@ -444,6 +526,8 @@ def update_client_profile(
     payload: dict[str, str | None] = {}
     if full_name is not _UNSET:
         payload["full_name"] = None if full_name is None else str(full_name)
+    if email is not _UNSET:
+        payload["email"] = None if email is None else str(email)
     if phone is not _UNSET:
         payload["phone"] = "::EMPTY::" if phone is None else str(phone)
 

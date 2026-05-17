@@ -75,7 +75,15 @@
                 <div class="d-flex gap-2 mt-3">
                   <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">Ver</a>
                   {% if product.stock > 0 %}
-                  <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex">
+                   <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex"
+                         data-track-event="add_to_cart"
+                         data-track-value="{{ product.price }}"
+                         data-track-currency="CLP"
+                         data-track-item-id="product-{{ product.id }}"
+                         data-track-item-name="{{ product.name }}"
+                         data-track-item-category="product"
+                         data-track-item-price="{{ product.price }}"
+                         data-track-item-quantity="1">
                     <input type="hidden" name="item_type" value="product"/>
                     <input type="hidden" name="item_id" value="{{ product.id }}"/>
                     <input type="hidden" name="quantity" value="1"/>

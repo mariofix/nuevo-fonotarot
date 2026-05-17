@@ -165,7 +165,15 @@
             <div class="pack-mins">{{ pack.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
             <div class="pack-price">${{ pack.price_display }}<small> CLP</small></div>
             {% if pack.description %}<p class="section-subtitle small mt-2 mb-0">{{ pack.description }}</p>{% endif %}
-            <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-3">
+            <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-3"
+                  data-track-event="add_to_cart"
+                  data-track-value="{{ pack.price }}"
+                  data-track-currency="CLP"
+                  data-track-item-id="minute_pack-{{ pack.id }}"
+                  data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                  data-track-item-category="minute_pack"
+                  data-track-item-price="{{ pack.price }}"
+                  data-track-item-quantity="1">
               <input type="hidden" name="item_type" value="minute_pack"/>
               <input type="hidden" name="item_id" value="{{ pack.id }}"/>
               <input type="hidden" name="quantity" value="1"/>
@@ -219,7 +227,15 @@
               {% endfor %}
             </ul>
             {% endif %}
-            <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto pt-2">
+            <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto pt-2"
+                  data-track-event="add_to_cart"
+                  data-track-value="{{ plan.price }}"
+                  data-track-currency="CLP"
+                  data-track-item-id="subscription-{{ plan.id }}"
+                  data-track-item-name="{{ plan.name }}"
+                  data-track-item-category="subscription"
+                  data-track-item-price="{{ plan.price }}"
+                  data-track-item-quantity="1">
               <input type="hidden" name="item_type" value="subscription"/>
               <input type="hidden" name="item_id" value="{{ plan.id }}"/>
               <input type="hidden" name="quantity" value="1"/>

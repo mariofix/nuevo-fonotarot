@@ -545,7 +545,15 @@
                      class="btn btn-plan btn-plan-primary">
                     <i class="ti ti-bolt me-1"></i>{{ _("Compra Ahora") }}
                   </a>
-                  <form action="{{ url_for('productos.agregar') }}" method="post">
+              <form action="{{ url_for('productos.agregar') }}" method="post"
+                    data-track-event="add_to_cart"
+                    data-track-value="{{ pack.price }}"
+                    data-track-currency="CLP"
+                    data-track-item-id="minute_pack-{{ pack.id }}"
+                    data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                    data-track-item-category="minute_pack"
+                    data-track-item-price="{{ pack.price }}"
+                    data-track-item-quantity="1">
                     <input type="hidden" name="item_type" value="minute_pack"/>
                     <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                     <input type="hidden" name="quantity" value="1"/>

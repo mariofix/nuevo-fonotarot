@@ -17,10 +17,13 @@ from flask import (
     session,
     url_for,
 )
+from flask_security.utils import login_user
 
-from ..extensions import db, limiter
+from ..actions import process_user_registration, register_checkout_account
+from ..extensions import db, limiter, user_datastore
 from ..log import get_logger
-from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, User
+from ..firenze import complete_promo_credit, search_client, update_client_profile
+from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..utils import get_agents, get_moon_phase_index  # get_agents used by /api/agents endpoint
 
@@ -47,58 +50,6 @@ def _firenze_auth_headers() -> dict[str, str]:
     if not api_key or not api_secret:
         raise RequestException("FIRENZE_API_KEY/FIRENZE_API_SECRET not configured")
     return {"x-api-key": api_key, "x-api-secret": api_secret}
-
-
-def _firenze_get(path: str, headers: dict[str, str]) -> tuple[int, Any]:
-    """GET request to the Firenze API. Returns (status_code, body_dict)."""
-    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    url = f"{api_url}{path}"
-    logger.debug("Firenze GET → %s", url)
-    resp = requests.get(url, headers=headers, timeout=10)
-    logger.debug("Firenze GET ← %s  body=%s", resp.status_code, resp.text[:500])
-    try:
-        body = resp.json()
-    except ValueError:
-        body = {}
-    return resp.status_code, body
-
-
-def _firenze_post(path: str, headers: dict[str, str], payload: dict) -> tuple[int, Any]:
-    """POST JSON to the Firenze API. Returns (status_code, body_dict)."""
-    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    url = f"{api_url}{path}"
-    logger.debug("Firenze POST → %s  json=%s", url, payload)
-    resp = requests.post(
-        url,
-        json=payload,
-        headers=headers,
-        timeout=10,
-    )
-    logger.debug("Firenze POST ← %s  body=%s", resp.status_code, resp.text[:500])
-    try:
-        body = resp.json()
-    except ValueError:
-        body = {}
-    return resp.status_code, body
-
-
-def _firenze_patch(path: str, headers: dict[str, str], payload: dict) -> tuple[int, Any]:
-    """PATCH JSON to the Firenze API. Returns (status_code, body_dict)."""
-    api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
-    url = f"{api_url}{path}"
-    logger.debug("Firenze PATCH → %s  json=%s", url, payload)
-    resp = requests.patch(
-        url,
-        json=payload,
-        headers=headers,
-        timeout=10,
-    )
-    logger.debug("Firenze PATCH ← %s  body=%s", resp.status_code, resp.text[:500])
-    try:
-        body = resp.json()
-    except ValueError:
-        body = {}
-    return resp.status_code, body
 
 
 def _promo_claim_remaining() -> tuple[bool, int]:
@@ -174,7 +125,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
         logger.exception("Failed to send admin promo notification email")
 
 
-def _send_user_promo_instructions(email: str, remaining: int) -> None:
+def _send_user_promo_instructions(email: str, remaining: int) -> bool:
     """E-mail usage instructions to the user who just redeemed a free trial."""
     from daleks.contrib.client import DaleksClient
 
@@ -194,8 +145,94 @@ def _send_user_promo_instructions(email: str, remaining: int) -> None:
                 subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
                 html_body=html_body,
             )
+        return True
     except Exception:
         logger.exception("Failed to send user promo instructions email")
+        return False
+
+
+def _complete_promo_claim(ani: str) -> tuple[dict[str, Any], int]:
+    """Complete the promo credit in Firenze for the supplied ANI."""
+    client_id = complete_promo_credit(ani, _PROMO_DURATION_SECONDS)
+    if client_id is None:
+        return {
+            "error": "api_error",
+            "message": "No se pudo activar la promoción. Inténtalo más tarde.",
+        }, 503
+
+    return {
+        "success": True,
+        "client_id": int(client_id),
+        "created": True,
+    }, 200
+
+
+def _finalize_promo_email(email: str) -> tuple[dict[str, Any], int]:
+    """Create the local account, sync the Firenze email, and log the user in."""
+    ani = session.get("promo_ani")
+    client_id = session.get("promo_client_id")
+    if not ani or client_id is None:
+        return {
+            "error": "session_expired",
+            "message": "Sesión expirada. Recarga la página.",
+        }, 401
+
+    normalized_email = email.strip().lower()
+    if session.get("promo_completed") and session.get("promo_email") == normalized_email:
+        return {
+            "success": True,
+            "created": False,
+            "client_id": int(client_id),
+            "authenticated": True,
+            "email_sent": True,
+            "redirect": url_for("account.profile"),
+        }, 200
+
+    try:
+        user, created = register_checkout_account(normalized_email, ani)
+    except ValueError:
+        return {
+            "error": "invalid_data",
+            "message": "No pudimos crear tu cuenta. Verifica tu correo e inténtalo otra vez.",
+        }, 400
+    except Exception:
+        logger.exception("promo email finalize: failed to create account for ani=%s", ani)
+        return {
+            "error": "api_error",
+            "message": "No se pudo crear tu cuenta. Inténtalo más tarde.",
+        }, 503
+
+    process_user_registration(user)
+    if user.firenze_client_id is None:
+        user.firenze_client_id = int(client_id)
+        if user_datastore is not None:
+            clientes_role = user_datastore.find_role("clientes")
+            if clientes_role and clientes_role not in user.roles:
+                user_datastore.add_role_to_user(user, clientes_role)
+        db.session.commit()
+
+    if not update_client_profile(int(user.firenze_client_id), email=normalized_email):
+        return {
+            "error": "api_error",
+            "message": "No se pudo actualizar tu correo en Firenze. Inténtalo más tarde.",
+        }, 503
+
+    login_user(user, remember=False, authn_via=["promo"])
+
+    remaining = session.get("promo_remaining", 0)
+    session["promo_email"] = normalized_email
+    session["promo_completed"] = True
+
+    email_sent = _send_user_promo_instructions(normalized_email, remaining)
+
+    return {
+        "success": True,
+        "created": created,
+        "client_id": int(user.firenze_client_id),
+        "authenticated": True,
+        "email_sent": email_sent,
+        "redirect": url_for("account.profile"),
+    }, 200
 
 
 def _homepage_ctx() -> dict:
@@ -420,13 +457,23 @@ def detail(slug: str):
 # ---------------------------------------------------------------------------
 
 
-@content_bp.route("/promo/exito")
+@content_bp.route("/promo/exito", methods=["GET", "POST"])
 @limiter.limit("30 per hour")
 def promo_exito():
     """Success page shown after a free-trial promotion is activated."""
     ani = session.get("promo_ani")
     if not ani:
         return redirect(url_for("content.index"))
+
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+        email = str(data.get("email", "")).strip()
+        if not email or "@" not in email or "." not in email.split("@")[-1]:
+            return jsonify({"error": "invalid_email", "message": "Ingresa un email válido."}), 400
+
+        response_body, status = _finalize_promo_email(email)
+        return jsonify(response_body), status
+
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
     return render_template("promo_exito.html", ani=ani, minute_packs=minute_packs)
 
@@ -434,11 +481,11 @@ def promo_exito():
 @content_bp.route("/api/promo/cobrar", methods=["POST"])
 @limiter.limit("5 per hour; 2 per minute")
 def api_promo_cobrar():
-    """Check phone eligibility against the Firenze API and activate the promotion.
+    """Check phone eligibility against Firenze and activate the free minutes.
 
     Flow:
-    * 2xx from ``/phone/{ani}`` → phone already registered → not eligible (409).
-    * 404 from ``/phone/{ani}`` → new user → create client → store ANI in session.
+    * Found via ``/api/v1/clients/search`` with ``ani`` → already registered → not eligible (409).
+    * Not found → reserve promo stock, complete the promo credit in Firenze, and store the ANI/client_id in session.
     """
     data = request.get_json(silent=True) or {}
     ani = str(data.get("ani", "")).strip()
@@ -446,54 +493,28 @@ def api_promo_cobrar():
     if not ani.isdigit() or not 10 <= len(ani) <= 13:
         return jsonify({"error": "invalid_phone", "message": "Ingresa un número válido (solo dígitos, sin +)."}), 400
 
-    try:
-        firenze_headers = _firenze_auth_headers()
-    except RequestException as exc:
-        logger.error("Firenze auth header error: %s", exc, exc_info=True)
-        return jsonify({"error": "api_error", "message": "Error de conexión con el servicio. Inténtalo más tarde."}), 503
-
-    try:
-        status, _ = _firenze_get(f"/audiotex/fonotarot-cl/phone/{ani}", firenze_headers)
-    except RequestException as exc:
-        logger.error("Firenze check-phone error: %s", exc, exc_info=True)
-        return jsonify({"error": "api_error", "message": "Error al verificar el número. Inténtalo más tarde."}), 503
-
-    if status < 400:
+    if search_client(ani=ani) is not None:
         return jsonify({"error": "not_eligible", "message": "Este número ya recibió la promoción de bienvenida."}), 409
-
-    if status != 404:
-        logger.error("Unexpected Firenze phone-check status: %s", status)
-        return jsonify({"error": "api_error", "message": "Error inesperado. Inténtalo más tarde."}), 503
 
     # Check and atomically lock the promo stock counter.
     decremented, remaining = _promo_claim_remaining()
     if not decremented:
         return jsonify({"error": "exhausted", "message": "La promoción ya no está disponible. ¡Llegaste tarde!"}), 409
 
-    # Phone not found and stock available → create client with 5 minutes (300 s).
-    try:
-        create_status, create_body = _firenze_post(
-            "/audiotex/fonotarot-cl/client/",
-            firenze_headers,
-            {"telefonos": [ani], "correo": f"{ani}@fonotarot.com", "creditos": _PROMO_DURATION_SECONDS},
-        )
-    except RequestException as exc:
-        logger.error("Firenze create-client error: %s", exc, exc_info=True)
+    response_body, status = _complete_promo_claim(ani)
+    if status >= 400:
         db.session.rollback()
-        return jsonify({"error": "api_error", "message": "Error al activar la promoción. Inténtalo más tarde."}), 503
+        return jsonify(response_body), status
 
-    if create_status >= 400:
-        logger.error("Firenze create-client returned %s", create_status)
-        db.session.rollback()
-        return jsonify({"error": "api_error", "message": "No se pudo activar la promoción. Inténtalo más tarde."}), 503
-
-    # Commit the stock decrement only after Firenze confirms the client was created.
+    client_id = int(response_body["client_id"])
     db.session.commit()
 
     session["promo_ani"] = ani
     session["promo_remaining"] = remaining
-
-    _send_admin_promo_notification(ani, remaining, create_body.get("clientid", None))
+    session["promo_client_id"] = client_id
+    session.pop("promo_completed", None)
+    session.pop("promo_email", None)
+    _send_admin_promo_notification(ani, remaining, client_id)
 
     return jsonify({"success": True, "redirect": url_for("content.promo_exito")})
 
@@ -501,7 +522,7 @@ def api_promo_cobrar():
 @content_bp.route("/api/promo/actualizar-email", methods=["POST"])
 @limiter.limit("10 per hour")
 def api_promo_actualizar_email():
-    """Update the client's email address in the Firenze API."""
+    """Compatibility endpoint for completing the promo activation."""
     ani = session.get("promo_ani")
     if not ani:
         return jsonify({"error": "session_expired", "message": "Sesión expirada. Recarga la página."}), 401
@@ -511,30 +532,8 @@ def api_promo_actualizar_email():
     if not email or "@" not in email or "." not in email.split("@")[-1]:
         return jsonify({"error": "invalid_email", "message": "Ingresa un email válido."}), 400
 
-    try:
-        firenze_headers = _firenze_auth_headers()
-    except RequestException as exc:
-        logger.error("Firenze auth header error (email update): %s", exc, exc_info=True)
-        return jsonify({"error": "api_error", "message": "Error de conexión. Inténtalo más tarde."}), 503
-
-    try:
-        status, _ = _firenze_patch(
-            f"/audiotex/fonotarot-cl/client/{ani}",
-            firenze_headers,
-            {"correo": email},
-        )
-    except RequestException as exc:
-        logger.error("Firenze update-email error: %s", exc, exc_info=True)
-        # return jsonify({"error": "api_error", "message": "Error al actualizar el email."}), 503
-
-    if status >= 400:
-        logger.error("Firenze update-email returned %s", status)
-        # return jsonify({"error": "api_error", "message": "No se pudo actualizar el email."}), 503
-
-    remaining = session.get("promo_remaining", 0)
-    _send_user_promo_instructions(email, remaining)
-
-    return jsonify({"success": True})
+    response_body, status = _finalize_promo_email(email)
+    return jsonify(response_body), status
 
 
 # ---------------------------------------------------------------------------

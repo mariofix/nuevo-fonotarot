@@ -208,6 +208,34 @@
   var checkoutLabel = document.getElementById('checkout-submit-label');
   if (checkoutForm && checkoutBtn && checkoutLabel) {
     checkoutForm.addEventListener('submit', function() {
+      if (typeof window.fonotarotTrackEvent === 'function') {
+        var quantity = 1;
+        var items = [{
+          item_id: 'minute_pack-{{ pack.id }}',
+          item_name: {{ ("{} minutos de tarot".format(pack.minutes))|tojson }},
+          item_category: 'minute_pack',
+          price: {{ pack.price }},
+          quantity: quantity
+        }];
+        window.fonotarotTrackEvent('begin_checkout', {
+          currency: 'CLP',
+          value: {{ pack.price }},
+          items: items
+        });
+        var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
+        if (payMethod) {
+          window.fonotarotTrackEvent('add_payment_info', {
+            currency: 'CLP',
+            value: {{ pack.price }},
+            payment_type: payMethod.value,
+            items: items
+          });
+        }
+        var createAccount = checkoutForm.querySelector('#create_account');
+        if (createAccount && createAccount.checked) {
+          window.fonotarotTrackEvent('sign_up', { method: 'checkout' });
+        }
+      }
       if (checkoutBtn.disabled) {
         return false;
       }

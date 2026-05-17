@@ -3007,6 +3007,11 @@
         .then(function(r) { return r.json().then(function(body) { return { ok: r.ok, body: body }; }); })
         .then(function(res) {
           if (res.ok && res.body.success) {
+            if (typeof window.fonotarotTrackEvent === 'function') {
+              window.fonotarotTrackEvent('generate_lead', {
+                method: 'promo_phone'
+              });
+            }
             window.location.href = res.body.redirect;
           } else {
             showError(res.body.message || 'Error inesperado. Inténtalo más tarde.');

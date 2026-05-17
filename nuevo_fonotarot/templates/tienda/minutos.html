@@ -52,7 +52,15 @@
                   <i class="ti ti-check text-success me-1"></i>Sin suscripción
                 </div>
               </div>
-              <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto">
+              <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto"
+                    data-track-event="add_to_cart"
+                    data-track-value="{{ pack.price }}"
+                    data-track-currency="CLP"
+                    data-track-item-id="minute_pack-{{ pack.id }}"
+                    data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                    data-track-item-category="minute_pack"
+                    data-track-item-price="{{ pack.price }}"
+                    data-track-item-quantity="1">
                 <input type="hidden" name="item_type" value="minute_pack"/>
                 <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                 <input type="hidden" name="quantity" value="1"/>

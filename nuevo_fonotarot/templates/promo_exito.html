@@ -192,10 +192,10 @@
     <div class="container">
       <div class="email-card">
         <div class="email-card-icon"><i class="ti ti-mail"></i></div>
-        <h3>Recibe las instrucciones por email</h3>
+        <h3>Recibe las instrucciones y activa tu acceso</h3>
         <p>
-          Ingresa tu correo y te enviamos un resumen con todo lo que necesitas saber
-          para usar tus minutos ahora y en el futuro.
+          Ingresa tu correo para crear tu cuenta, actualizar tu cliente Firenze y recibir
+          por email el resumen con todo lo que necesitas saber para usar tus minutos.
         </p>
         <div class="email-input-wrap">
           <input
@@ -205,7 +205,7 @@
             autocomplete="email"
           >
           <button type="button" class="btn-send-email" id="promoEmailBtn">
-            <i class="ti ti-send btn-email-icon"></i><span class="btn-email-label">Enviar</span>
+            <i class="ti ti-send btn-email-icon"></i><span class="btn-email-label">Entrar</span>
           </button>
         </div>
         <div class="email-feedback" id="emailFeedback"></div>
@@ -237,7 +237,15 @@
                 <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
                   <i class="ti ti-bolt me-1"></i>Compra Ahora
                 </a>
-                <form action="{{ url_for('productos.agregar') }}" method="post">
+                <form action="{{ url_for('productos.agregar') }}" method="post"
+                      data-track-event="add_to_cart"
+                      data-track-value="{{ pack.price }}"
+                      data-track-currency="CLP"
+                      data-track-item-id="minute_pack-{{ pack.id }}"
+                      data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                      data-track-item-category="minute_pack"
+                      data-track-item-price="{{ pack.price }}"
+                      data-track-item-quantity="1">
                   <input type="hidden" name="item_type" value="minute_pack"/>
                   <input type="hidden" name="item_id" value="{{ pack.id }}"/>
                   <input type="hidden" name="quantity" value="1"/>
@@ -308,9 +316,9 @@
     }
     emailInput.classList.remove('is-invalid');
     emailBtn.disabled = true;
-    emailLabel.textContent = 'Enviando\u2026';
+    emailLabel.textContent = 'Entrando\u2026';
 
-    fetch('/api/promo/actualizar-email', {
+    fetch('{{ url_for("content.promo_exito") }}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
       body: JSON.stringify({ email: email }),
@@ -318,19 +326,32 @@
       .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
       .then(function (res) {
         if (res.ok && res.body.success) {
-          setFeedback('is-success', '\u00a1Listo! Las instrucciones han sido enviadas a ' + email);
-          emailLabel.textContent = 'Enviado';
+          if (typeof window.fonotarotTrackEvent === 'function') {
+            if (res.body.created) {
+              window.fonotarotTrackEvent('sign_up', { method: 'promo' });
+            }
+            window.fonotarotTrackEvent('login', { method: 'promo' });
+          }
+          if (res.body.email_sent === false) {
+            setFeedback('is-success', '\u00a1Listo! Tu cuenta ya quedó activa, pero no pudimos enviar el email.');
+          } else {
+            setFeedback('is-success', '\u00a1Listo! Te estamos llevando a tu cuenta.');
+          }
+          emailLabel.textContent = 'Listo';
           emailInput.disabled = true;
+          if (res.body.redirect) {
+            window.location.href = res.body.redirect;
+          }
         } else {
           setFeedback('is-error', res.body.message || 'Error al enviar. Int\u00e9ntalo de nuevo.');
           emailBtn.disabled = false;
-          emailLabel.textContent = 'Enviar';
+          emailLabel.textContent = 'Entrar';
         }
       })
       .catch(function () {
         setFeedback('is-error', 'Error de conexi\u00f3n. Int\u00e9ntalo de nuevo.');
         emailBtn.disabled = false;
-        emailLabel.textContent = 'Enviar';
+        emailLabel.textContent = 'Entrar';
       });
   });
 })();
