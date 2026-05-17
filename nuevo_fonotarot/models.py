@@ -464,9 +464,7 @@ class Order(db.Model, PaymentMixin):
                 },
                 **extra_args,
             )
-        except BaseException as exc:
-            # Some providers (e.g. pyflowcl) raise BaseException subclasses,
-            # bypassing `except Exception` guards higher up the stack.
+        except Exception as exc:
             # Extract the API response body before re-raising so the real
             # error is visible in the logs.
             if exc.args and isinstance(exc.args[0], dict):
