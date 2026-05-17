@@ -100,6 +100,7 @@ def comprar_minutos(pack_id: int):
 
         order = Order(
             amount=Decimal(str(pack.price)),
+            currency=pack.currency,
             provider=payment_method,
             email=email,
             shipping_phone=phone or None,
