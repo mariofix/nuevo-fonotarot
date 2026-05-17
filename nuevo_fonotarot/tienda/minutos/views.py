@@ -51,8 +51,7 @@ def comprar_minutos(pack_id: int):
             return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
 
         email = request.form.get("email", "").strip()
-        username_phone = request.form.get("phone", "").strip()
-        shipping_phone = request.form.get("shipping_phone", "").strip()
+        phone = request.form.get("phone", "").strip()
         create_account = request.form.get("create_account") == "on"
 
         if not email:
@@ -71,7 +70,7 @@ def comprar_minutos(pack_id: int):
             Order.query.filter(
                 Order.status == OrderStatus.PENDING,
                 Order.provider == payment_method,
-                Order.total == pack.price,
+                Order.amount == pack.price,
                 Order.shipping_email == email,
                 Order.created_at >= duplicate_cutoff,
                 Order.items.any(duplicate_filter),
@@ -99,10 +98,10 @@ def comprar_minutos(pack_id: int):
             return redirect(url_for("pagos.orden_estado", order_id=existing_order.id))
 
         order = Order(
-            total=pack.price,
+            amount=pack.price,
             provider=payment_method,
-            shipping_email=email,
-            shipping_phone=shipping_phone or None,
+            email=email,
+            shipping_phone=phone or None,
         )
         if is_authenticated_user:
             order.user_id = current_user.id
@@ -110,7 +109,7 @@ def comprar_minutos(pack_id: int):
             try:
                 checkout_user, created = register_checkout_account(
                     email=email,
-                    phone=username_phone,
+                    phone=phone,
                 )
             except ValueError as exc:
                 if str(exc) == "missing_phone":
@@ -157,7 +156,7 @@ def comprar_minutos(pack_id: int):
                 firenze_phone = (
                     (current_user.username or "").strip()
                     if is_authenticated_user
-                    else username_phone
+                    else phone
                 )
                 firenze_id = _firenze_search(email=email, phone=firenze_phone or None)
                 if firenze_id is not None:

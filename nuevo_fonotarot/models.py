@@ -336,9 +336,6 @@ class Order(db.Model, PaymentMixin):
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default=OrderStatus.PENDING
     )
-    total: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0
-    )  # CLP (no fractional units)
 
     # Shipping details (only required for physical products).
     # Anonymous shipping: unmarked boxes, pickup-point option.
@@ -355,27 +352,6 @@ class Order(db.Model, PaymentMixin):
         Boolean, default=True, nullable=False
     )
 
-    # Override timestamps from PaymentMixin to use Python-side UTC defaults.
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-
-    # Override PaymentMixin fields that must be nullable before payment is initiated.
-    merchants_id: Mapped[str | None] = mapped_column(
-        String(128), unique=True, index=True
-    )
-    transaction_id: Mapped[str | None] = mapped_column(
-        String(128), unique=True, index=True
-    )
-    provider: Mapped[str | None] = mapped_column(String(64), index=True)
-    amount: Mapped[Decimal | None] = mapped_column(Numeric(19, 4))
-    currency: Mapped[str | None] = mapped_column(String(3))
 
     # Firenze company-wide client identifier (linked after lookup or confirmed payment).
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
@@ -389,14 +365,10 @@ class Order(db.Model, PaymentMixin):
 
     @property
     def total_display(self) -> str:
-        return f"{self.total:,}".replace(",", ".")
+        return f"{self.amount:,}".replace(",", ".")
 
     def initiate_payment(self, payment_method: str, email: str) -> str:
-        """Call the payment provider and populate all payment fields on this order.
-
-        Sets ``merchants_id``, ``transaction_id``, ``provider``, ``amount``,
-        ``currency``, ``state``, ``email``, ``request_payload``, and
-        ``response_payload`` from the provider response, then commits.
+        """Prepare this order as a payment record and start checkout.
 
         Returns:
             The provider redirect URL to send the user to.
@@ -406,12 +378,11 @@ class Order(db.Model, PaymentMixin):
         """
         from flask import current_app, url_for
 
-        from .extensions import merchants_ext
+        from .extensions import db as _db
 
         currency = SiteSettings.get(
-            "default_currency", current_app.config.get("DEFAULT_CURRENCY", "CLP")
-        )
-        confirmation_url = url_for("pagos.pago_confirmacion", _external=True)
+            "default_currency", current_app.config.get("DEFAULT_CURRENCY")
+        ) or "CLP"
         cancel_url = url_for("content.index", _external=True, _anchor="planes")
 
         # Generate merchants_id before building URLs so it can be used in success_url.
@@ -435,34 +406,17 @@ class Order(db.Model, PaymentMixin):
             if flow_payment_method:
                 extra_args["paymentMethod"] = flow_payment_method
 
-        # Auto-inject notify_url via the public registry (not client._provider).
-        import merchants as _merchants_registry
-
+        self.merchants_id = merchants_id
+        self.provider = payment_method
+        self.amount = Decimal(str(self.amount))
+        self.currency = currency
+        self.state = OrderStatus.PENDING
+        self.email = email
         try:
-            provider_obj = _merchants_registry.get_provider(payment_method)
-            if getattr(provider_obj, "accepts_notify_url", False):
-                try:
-                    extra_args.setdefault(
-                        "notify_url", merchants_ext.get_webhook_url(payment_method)
-                    )
-                except RuntimeError:
-                    pass
-        except (KeyError, RuntimeError):
-            pass
-        client = merchants_ext.get_client(payment_method)
-
-        try:
-            checkout_session = client.payments.create_checkout(
-                amount=int(self.total),
-                currency=currency,
+            redirect_url = self.start_payment(
                 success_url=success_url,
                 cancel_url=cancel_url,
-                metadata={
-                    "order_id": merchants_id,
-                    "confirmation_url": confirmation_url,
-                    "email": email,
-                },
-                **extra_args,
+                extra_args=extra_args,
             )
         except Exception as exc:
             # Extract the API response body before re-raising so the real
@@ -481,34 +435,12 @@ class Order(db.Model, PaymentMixin):
                     )
             raise RuntimeError(f"Payment gateway error from {payment_method}") from exc
 
-        response_raw = (
-            checkout_session.raw if isinstance(checkout_session.raw, dict) else {}
-        )
-        if checkout_session.redirect_url:
-            response_raw.setdefault("redirect_url", checkout_session.redirect_url)
-
-        self.merchants_id = merchants_id
-        self.transaction_id = checkout_session.session_id
-        self.provider = payment_method
-        self.amount = Decimal(str(self.total))
-        self.currency = currency
-        self.state = OrderStatus.PENDING
-        self.email = email
-        self.extra_args = extra_args
-        self.request_payload = {
-            "order_id": self.id,
-            "amount": str(self.total),
-            "currency": currency,
-            "provider": payment_method,
-            "confirmation_url": confirmation_url,
-            **extra_args,
-        }
-        self.response_payload = response_raw
-
-        from .extensions import db as _db
-
+        # Keep historical audit keys that existing admin/debug tooling expects.
+        if not isinstance(self.request_payload, dict):
+            self.request_payload = {}
+        self.request_payload["order_id"] = self.id
         _db.session.commit()
-        return checkout_session.redirect_url
+        return redirect_url
 
     def to_dict(self) -> dict:
         """Return a dict representation including payment fields.

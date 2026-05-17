@@ -737,7 +737,7 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     column_list = (
         "id",
         "status",
-        "total",
+        "amount",
         "provider",
         "firenze_client_id",
         "anonymous_shipping",

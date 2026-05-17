@@ -287,64 +287,64 @@ def index():
 # Payment callbacks
 # ---------------------------------------------------------------------------
 
+# TO BE DEPRECATED; DO NOT DELETE
+# @pagos_bp.route("/pago/confirmacion", methods=["POST"])
+# def pago_confirmacion():
+#     """Server-to-server payment confirmation webhook (all providers).
 
-@pagos_bp.route("/pago/confirmacion", methods=["POST"])
-def pago_confirmacion():
-    """Server-to-server payment confirmation webhook (all providers).
+#     The providers call this URL after payment is processed.
+#     We look up the Order directly by ``transaction_id`` and update its
+#     fulfillment ``status`` based on the payment ``state``.
+#     """
+#     token = request.form.get("token") or request.form.get("payment_id") or ""
+#     if not token:
+#         logger.warning("pago_confirmacion: webhook received with no token — rejecting")
+#         abort(400)
 
-    The providers call this URL after payment is processed.
-    We look up the Order directly by ``transaction_id`` and update its
-    fulfillment ``status`` based on the payment ``state``.
-    """
-    token = request.form.get("token") or request.form.get("payment_id") or ""
-    if not token:
-        logger.warning("pago_confirmacion: webhook received with no token — rejecting")
-        abort(400)
-
-    logger.info("pago_confirmacion: webhook received with token=%r", token)
-    try:
-        order = Order.query.filter_by(transaction_id=token).first()
-        if order:
-            logger.debug(
-                "pago_confirmacion: found order=%s with status=%s",
-                order.id,
-                order.status,
-            )
-            if order.status == OrderStatus.PENDING:
-                logger.debug("pago_confirmacion: order=%s is PENDING, syncing from provider", order.id)
-                try:
-                    order.sync_from_provider()
-                    logger.info(
-                        "pago_confirmacion: synced order=%s new_state=%r", order.id, order.state
-                    )
-                except Exception as sync_exc:
-                    logger.warning(
-                        "pago_confirmacion: sync_from_provider failed for order=%s — %s",
-                        order.id,
-                        sync_exc,
-                    )
-                if order.state == "succeeded":
-                    _complete_succeeded_order(order, "webhook")
-                elif order.state in ("failed", "cancelled"):
-                    order.status = OrderStatus.FAILED
-                    logger.warning(
-                        "pago_confirmacion: payment failed/cancelled — order=%s state=%r token=%r",
-                        order.id,
-                        order.state,
-                        token,
-                    )
-                    db.session.commit()
-            else:
-                logger.debug(
-                    "pago_confirmacion: order=%s not in PENDING status (current=%s), skipping sync",
-                    order.id,
-                    order.status,
-                )
-        else:
-            logger.warning("pago_confirmacion: no order found for token=%r", token)
-    except Exception as exc:
-        logger.error("pago_confirmacion: error processing webhook — %s", exc, exc_info=True)
-    return "OK", 200
+#     logger.info("pago_confirmacion: webhook received with token=%r", token)
+#     try:
+#         order = Order.query.filter_by(transaction_id=token).first()
+#         if order:
+#             logger.debug(
+#                 "pago_confirmacion: found order=%s with status=%s",
+#                 order.id,
+#                 order.status,
+#             )
+#             if order.status == OrderStatus.PENDING:
+#                 logger.debug("pago_confirmacion: order=%s is PENDING, syncing from provider", order.id)
+#                 try:
+#                     order.sync_from_provider()
+#                     logger.info(
+#                         "pago_confirmacion: synced order=%s new_state=%r", order.id, order.state
+#                     )
+#                 except Exception as sync_exc:
+#                     logger.warning(
+#                         "pago_confirmacion: sync_from_provider failed for order=%s — %s",
+#                         order.id,
+#                         sync_exc,
+#                     )
+#                 if order.state == "succeeded":
+#                     _complete_succeeded_order(order, "webhook")
+#                 elif order.state in ("failed", "cancelled"):
+#                     order.status = OrderStatus.FAILED
+#                     logger.warning(
+#                         "pago_confirmacion: payment failed/cancelled — order=%s state=%r token=%r",
+#                         order.id,
+#                         order.state,
+#                         token,
+#                     )
+#                     db.session.commit()
+#             else:
+#                 logger.debug(
+#                     "pago_confirmacion: order=%s not in PENDING status (current=%s), skipping sync",
+#                     order.id,
+#                     order.status,
+#                 )
+#         else:
+#             logger.warning("pago_confirmacion: no order found for token=%r", token)
+#     except Exception as exc:
+#         logger.error("pago_confirmacion: error processing webhook — %s", exc, exc_info=True)
+#     return "OK", 200
 
 
 @pagos_bp.route("/pago/retorno/<order_id>")

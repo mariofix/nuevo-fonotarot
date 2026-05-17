@@ -64,7 +64,7 @@ def create_payment_and_redirect(
         "Initiating checkout via %s for order=%s amount=%s email=%r",
         payment_method,
         order.id,
-        order.total,
+        order.amount,
         email,
     )
     try:

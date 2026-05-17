@@ -106,7 +106,7 @@
         transaction_id: {{ order.transaction_id|tojson }},
         affiliation: 'Fonotarot',
         currency: 'CLP',
-        value: {{ order.total }},
+        value: {{ (order.amount|float)|tojson }},
         items: [
           {% for item in items %}
           {

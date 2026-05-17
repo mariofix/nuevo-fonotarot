@@ -24,8 +24,13 @@
   }
 
   @keyframes ck-btn-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>
 {% endblock %}
@@ -117,24 +122,13 @@
           <div class="row g-2">
             <div class="col-md-7">
               <label class="form-label" for="email">Email *</label>
-               <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif
-                 %} />
+              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated
+                %}readonly{% endif %} />
             </div>
             <div class="col-md-5">
               <label class="form-label" for="phone">Teléfono</label>
               <input type="tel" id="phone" name="phone" class="form-control" placeholder="+56 9 ..." value="{{ prefilled_phone }}" />
-              <div class="form-text">{{ _("Este número se usa como usuario y ANI.") }}</div>
-            </div>
-            <div class="col-md-12">
-              <label class="form-label" for="shipping_phone">Teléfono de Contacto</label>
-              <input
-                type="tel"
-                id="shipping_phone"
-                name="shipping_phone"
-                class="form-control"
-                placeholder="+56 9 ..."
-                value="{{ prefilled_shipping_phone }}"
-              />
+              <div class="form-text">{{ _("El teléfono desde donde llamarás.") }}</div>
             </div>
           </div>
         </div>
@@ -168,12 +162,7 @@
         </div>
 
         <!-- ── Submit ─────────────────────────────── -->
-        <button
-          type="submit"
-          class="ck-submit"
-          id="checkout-submit-btn"
-          data-loading-text="{{ _('Procesando pago...') }}"
-        >
+        <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
           <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
           <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">Pagar ahora - ${{ pack.price_display }}</span>
         </button>
@@ -212,37 +201,38 @@
         var quantity = 1;
         var items = [{
           item_id: 'minute_pack-{{ pack.id }}',
-          item_name: {{ ("{} minutos de tarot".format(pack.minutes))|tojson }},
-          item_category: 'minute_pack',
-          price: {{ pack.price }},
-          quantity: quantity
+          item_name: {{ ("{} minutos de tarot".format(pack.minutes)) | tojson }
+    },
+      item_category: 'minute_pack',
+      price: {{ pack.price }},
+  quantity: quantity
         }];
-        window.fonotarotTrackEvent('begin_checkout', {
-          currency: 'CLP',
-          value: {{ pack.price }},
-          items: items
+  window.fonotarotTrackEvent('begin_checkout', {
+    currency: 'CLP',
+    value: {{ pack.price }},
+    items: items
         });
-        var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
-        if (payMethod) {
-          window.fonotarotTrackEvent('add_payment_info', {
-            currency: 'CLP',
-            value: {{ pack.price }},
-            payment_type: payMethod.value,
-            items: items
+  var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
+  if (payMethod) {
+    window.fonotarotTrackEvent('add_payment_info', {
+      currency: 'CLP',
+      value: {{ pack.price }},
+  payment_type: payMethod.value,
+    items: items
           });
         }
-        var createAccount = checkoutForm.querySelector('#create_account');
-        if (createAccount && createAccount.checked) {
-          window.fonotarotTrackEvent('sign_up', { method: 'checkout' });
-        }
+  var createAccount = checkoutForm.querySelector('#create_account');
+  if (createAccount && createAccount.checked) {
+    window.fonotarotTrackEvent('sign_up', { method: 'checkout' });
+  }
       }
-      if (checkoutBtn.disabled) {
-        return false;
-      }
-      checkoutBtn.disabled = true;
-      checkoutBtn.classList.add('disabled', 'is-loading');
-      checkoutLabel.textContent = checkoutBtn.dataset.loadingText || '';
-      return true;
+  if (checkoutBtn.disabled) {
+    return false;
+  }
+  checkoutBtn.disabled = true;
+  checkoutBtn.classList.add('disabled', 'is-loading');
+  checkoutLabel.textContent = checkoutBtn.dataset.loadingText || '';
+  return true;
     });
   }
 </script>
