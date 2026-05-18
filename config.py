@@ -97,6 +97,18 @@ def _make_logging_config(log_level: str = "DEBUG") -> dict:
                 "level": log_level,
                 "propagate": False,
             },
+            # Third-party payment SDK logs are emitted outside the
+            # nuevo_fonotarot namespace, so they need explicit entries.
+            "merchants": {
+                "handlers": ["console", "file"],
+                "level": log_level,
+                "propagate": False,
+            },
+            "flask_merchants": {
+                "handlers": ["console", "file"],
+                "level": log_level,
+                "propagate": False,
+            },
         },
         # Keep third-party / stdlib root at WARNING to avoid noise.
         "root": {
