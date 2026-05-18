@@ -35,7 +35,7 @@ def test_init_merchants_registers_payment_webhook_listener(monkeypatch):
 
     assert captured == {
         "receiver": pagos_views._handle_payment_webhook_finished,
-        "sender": flask_app.merchants_ext,
+        "sender": app,
         "weak": False,
     }
 

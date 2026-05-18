@@ -437,6 +437,13 @@ def _handle_payment_webhook_event(event) -> None:
 
 def _handle_payment_webhook_finished(*, event, **kwargs) -> None:
     """Signal receiver that runs after flask-merchants finishes webhook dispatch."""
+    logger.debug(
+        "_handle_payment_webhook_finished: provider=%r event_type=%r payment_id=%r state=%r",
+        getattr(event, "provider", None),
+        getattr(event, "event_type", None),
+        getattr(event, "payment_id", None),
+        getattr(getattr(event, "state", None), "value", None),
+    )
     _handle_payment_webhook_event(event)
 
 

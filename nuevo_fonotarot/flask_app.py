@@ -272,7 +272,7 @@ def _init_merchants(app: Flask, admin: Any) -> None:
     )
     webhook_event_finished.connect(
         _handle_payment_webhook_finished,
-        sender=merchants_ext,
+        sender=app,
         weak=False,
     )
     return None
