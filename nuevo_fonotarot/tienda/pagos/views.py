@@ -254,6 +254,32 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
         _send_firenze_failure_email(order)
 
 
+def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
+    """Completion flow used by the admin action and webhook-finished events.
+
+    The order is marked PAID only when Firenze sync succeeds. If Firenze fails,
+    the order stays PENDING and admins are notified.
+    """
+    logger.info(
+        "_complete_succeeded_order_admin_flow: processing succeeded order=%s from %s",
+        order.id,
+        label,
+    )
+    firenze_ok = _sync_firenze_on_payment(order)
+    if firenze_ok:
+        order.status = OrderStatus.PAID
+        db.session.commit()
+        _send_order_confirmation_email(order)
+        return True
+
+    logger.warning(
+        "_complete_succeeded_order_admin_flow: Firenze sync failed for order=%s — order remains PENDING",
+        order.id,
+    )
+    _send_firenze_failure_email(order)
+    return False
+
+
 def _find_order_by_payment_id(payment_id: str) -> Order | None:
     """Return the order linked to a provider payment identifier."""
     return Order.query.filter_by(transaction_id=payment_id).first()
@@ -273,7 +299,7 @@ def _apply_payment_state_to_order(order: Order, *, payment_id: str, provider: st
         return
 
     if state == "succeeded":
-        _complete_succeeded_order(order, label)
+        _complete_succeeded_order_admin_flow(order, label)
         return
 
     if state in {"failed", "cancelled"}:

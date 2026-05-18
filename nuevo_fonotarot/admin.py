@@ -753,24 +753,20 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
         "¿Completar las órdenes seleccionadas? Solo se procesarán las que tengan estado de pago 'succeeded'.",
     )
     def action_completar_orden(self, ids):
-        """Complete selected orders: call Firenze, send emails, mark as PAID.
+        """Complete selected orders: call Firenze, then complete when sync succeeds.
 
         Only orders whose payment ``state`` is ``succeeded`` are processed.
-        The fulfillment ``status`` is always set to PAID regardless of whether
-        the Firenze call succeeds; when Firenze fails an admin notification email
-        is sent so the operator can follow up.
+        If Firenze sync fails, the order remains PENDING and admins are
+        notified so the operator can follow up.
         """
         from flask import flash
 
         from .extensions import db
-        from .models import Order, OrderStatus
-        from .tienda.pagos.views import (
-            _send_firenze_failure_email,
-            _send_order_confirmation_email,
-            _sync_firenze_on_payment,
-        )
+        from .models import Order
+        from .tienda.pagos.views import _complete_succeeded_order_admin_flow
 
         processed = 0
+        pending_firenze = 0
         skipped = 0
         for order_id in ids:
             order = db.session.get(Order, int(order_id))
@@ -780,24 +776,20 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
                 skipped += 1
                 continue
 
-            firenze_ok = _sync_firenze_on_payment(order)
-            order.status = OrderStatus.PAID
-            db.session.commit()
-            try:
-                _send_order_confirmation_email(order)
-            except Exception:
-                pass  # already logged inside _send_order_confirmation_email
-            if not firenze_ok:
-                try:
-                    _send_firenze_failure_email(order)
-                except Exception:
-                    pass  # already logged inside _send_firenze_failure_email
-            processed += 1
+            if _complete_succeeded_order_admin_flow(order, "admin-action"):
+                processed += 1
+            else:
+                pending_firenze += 1
 
         if processed:
             flash(
                 f"{processed} orden(es) completada(s) y marcada(s) como pagadas.",
                 "success",
+            )
+        if pending_firenze:
+            flash(
+                f"{pending_firenze} orden(es) siguen PENDING porque Firenze falló; se notificó a admins.",
+                "warning",
             )
         if skipped:
             flash(

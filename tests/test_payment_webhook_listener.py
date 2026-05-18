@@ -48,7 +48,7 @@ def test_handle_khipu_webhook_event_completes_succeeded_order(monkeypatch):
     monkeypatch.setattr(pagos_views.db.session, "commit", lambda: None)
     monkeypatch.setattr(
         pagos_views,
-        "_complete_succeeded_order",
+        "_complete_succeeded_order_admin_flow",
         lambda found_order, label: captured.update(order=found_order, label=label),
     )
 
@@ -96,7 +96,7 @@ def test_handle_flow_webhook_event_syncs_then_completes(monkeypatch):
     monkeypatch.setattr(order, "sync_from_provider", fake_sync_from_provider, raising=False)
     monkeypatch.setattr(
         pagos_views,
-        "_complete_succeeded_order",
+        "_complete_succeeded_order_admin_flow",
         lambda found_order, label: captured.update(order=found_order, label=label),
     )
 
@@ -120,7 +120,7 @@ def test_handle_stripe_webhook_event_completes_succeeded_order(monkeypatch):
     monkeypatch.setattr(pagos_views.db.session, "commit", lambda: None)
     monkeypatch.setattr(
         pagos_views,
-        "_complete_succeeded_order",
+        "_complete_succeeded_order_admin_flow",
         lambda found_order, label: captured.update(order=found_order, label=label),
     )
 
@@ -134,3 +134,31 @@ def test_handle_stripe_webhook_event_completes_succeeded_order(monkeypatch):
     pagos_views._handle_stripe_webhook_event(event)
 
     assert captured == {"order": order, "label": "webhook-stripe"}
+
+
+def test_complete_succeeded_order_admin_flow_keeps_pending_if_firenze_fails(monkeypatch):
+    order = SimpleNamespace(id=45, status=OrderStatus.PENDING, firenze_client_id=None)
+    captured: dict[str, int] = {"confirm": 0, "failure": 0, "commits": 0}
+
+    monkeypatch.setattr(pagos_views, "_sync_firenze_on_payment", lambda found_order: False)
+    monkeypatch.setattr(
+        pagos_views,
+        "_send_order_confirmation_email",
+        lambda found_order: captured.__setitem__("confirm", captured["confirm"] + 1),
+    )
+    monkeypatch.setattr(
+        pagos_views,
+        "_send_firenze_failure_email",
+        lambda found_order: captured.__setitem__("failure", captured["failure"] + 1),
+    )
+    monkeypatch.setattr(
+        pagos_views.db.session,
+        "commit",
+        lambda: captured.__setitem__("commits", captured["commits"] + 1),
+    )
+
+    completed = pagos_views._complete_succeeded_order_admin_flow(order, "webhook-khipu")
+
+    assert completed is False
+    assert order.status == OrderStatus.PENDING
+    assert captured == {"confirm": 0, "failure": 1, "commits": 0}
