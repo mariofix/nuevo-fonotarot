@@ -254,6 +254,192 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
         _send_firenze_failure_email(order)
 
 
+def _find_order_by_payment_id(payment_id: str) -> Order | None:
+    """Return the order linked to a provider payment identifier."""
+    return Order.query.filter_by(transaction_id=payment_id).first()
+
+
+def _apply_payment_state_to_order(order: Order, *, payment_id: str, provider: str | None, state: str | None, label: str) -> None:
+    """Apply a webhook-derived payment state to an order."""
+    if order.status != OrderStatus.PENDING:
+        logger.debug(
+            "_apply_payment_state_to_order: order=%s already handled with status=%s (payment_id=%r provider=%r state=%r)",
+            order.id,
+            order.status,
+            payment_id,
+            provider,
+            state,
+        )
+        return
+
+    if state == "succeeded":
+        _complete_succeeded_order(order, label)
+        return
+
+    if state in {"failed", "cancelled"}:
+        order.status = OrderStatus.FAILED
+        db.session.commit()
+        logger.warning(
+            "_apply_payment_state_to_order: order=%s marked FAILED from payment_id=%r provider=%r state=%r",
+            order.id,
+            payment_id,
+            provider,
+            state,
+        )
+        return
+
+    logger.debug(
+        "_apply_payment_state_to_order: ignoring non-final event for order=%s payment_id=%r provider=%r state=%r",
+        order.id,
+        payment_id,
+        provider,
+        state,
+    )
+
+
+def _handle_khipu_webhook_event(event) -> None:
+    """Handle Khipu webhook events emitted by flask-merchants."""
+    payment_id = getattr(event, "payment_id", None)
+    state = getattr(getattr(event, "state", None), "value", None)
+    provider = getattr(event, "provider", None)
+
+    if not payment_id:
+        logger.warning(
+            "_handle_khipu_webhook_event: missing payment_id for provider=%r event_type=%r",
+            provider,
+            getattr(event, "event_type", None),
+        )
+        return
+
+    order = _find_order_by_payment_id(payment_id)
+    if order is None:
+        logger.warning(
+            "_handle_khipu_webhook_event: no order found for payment_id=%r provider=%r state=%r",
+            payment_id,
+            provider,
+            state,
+        )
+        return
+
+    _apply_payment_state_to_order(
+        order,
+        payment_id=payment_id,
+        provider=provider,
+        state=state,
+        label="webhook-khipu",
+    )
+
+
+def _handle_flow_webhook_event(event) -> None:
+    """Handle Flow webhook events emitted by flask-merchants."""
+    payment_id = getattr(event, "payment_id", None)
+    provider = getattr(event, "provider", None)
+
+    if not payment_id:
+        logger.warning(
+            "_handle_flow_webhook_event: missing payment_id for provider=%r event_type=%r",
+            provider,
+            getattr(event, "event_type", None),
+        )
+        return
+
+    order = _find_order_by_payment_id(payment_id)
+    if order is None:
+        logger.warning(
+            "_handle_flow_webhook_event: no order found for payment_id=%r provider=%r",
+            payment_id,
+            provider,
+        )
+        return
+
+    if order.status != OrderStatus.PENDING:
+        logger.debug(
+            "_handle_flow_webhook_event: order=%s already handled with status=%s (payment_id=%r)",
+            order.id,
+            order.status,
+            payment_id,
+        )
+        return
+
+    try:
+        order.sync_from_provider()
+    except Exception:
+        logger.exception(
+            "_handle_flow_webhook_event: failed to sync order=%s from provider payment_id=%r",
+            order.id,
+            payment_id,
+        )
+        return
+
+    _apply_payment_state_to_order(
+        order,
+        payment_id=payment_id,
+        provider=provider,
+        state=order.state,
+        label="webhook-flow",
+    )
+
+
+def _handle_stripe_webhook_event(event) -> None:
+    """Handle Stripe webhook events emitted by flask-merchants."""
+    payment_id = getattr(event, "payment_id", None)
+    state = getattr(getattr(event, "state", None), "value", None)
+    provider = getattr(event, "provider", None)
+
+    if not payment_id:
+        logger.warning(
+            "_handle_stripe_webhook_event: missing payment_id for provider=%r event_type=%r",
+            provider,
+            getattr(event, "event_type", None),
+        )
+        return
+
+    order = _find_order_by_payment_id(payment_id)
+    if order is None:
+        logger.warning(
+            "_handle_stripe_webhook_event: no order found for payment_id=%r provider=%r state=%r",
+            payment_id,
+            provider,
+            state,
+        )
+        return
+
+    _apply_payment_state_to_order(
+        order,
+        payment_id=payment_id,
+        provider=provider,
+        state=state,
+        label="webhook-stripe",
+    )
+
+
+def _handle_payment_webhook_event(event) -> None:
+    """Dispatch payment webhook events by provider."""
+    provider = getattr(event, "provider", None)
+
+    if provider == "khipu":
+        _handle_khipu_webhook_event(event)
+        return
+    if provider == "flow":
+        _handle_flow_webhook_event(event)
+        return
+    if provider == "stripe":
+        _handle_stripe_webhook_event(event)
+        return
+
+    logger.debug(
+        "_handle_payment_webhook_event: unsupported provider=%r event_type=%r payment_id=%r",
+        provider,
+        getattr(event, "event_type", None),
+        getattr(event, "payment_id", None),
+    )
+
+
+def _handle_payment_webhook_finished(*, event, **kwargs) -> None:
+    """Signal receiver that runs after flask-merchants finishes webhook dispatch."""
+    _handle_payment_webhook_event(event)
+
+
 # ---------------------------------------------------------------------------
 # Store index
 # ---------------------------------------------------------------------------

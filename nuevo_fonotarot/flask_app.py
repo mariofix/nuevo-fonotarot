@@ -10,6 +10,8 @@ from flask_security.datastore import SQLAlchemyUserDatastore
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import config
+from flask_merchants.signals import webhook_event_finished
+
 from .admin import SecureAdminIndexView, init_admin
 from .extensions import (
     admin,
@@ -241,6 +243,8 @@ def _init_extensions(app: Flask) -> None:
 
 
 def _init_merchants(app: Flask, admin: Any) -> None:
+    from .tienda.pagos.views import _handle_payment_webhook_finished
+
     providers = []
     if app.config.get("KHIPU_API_KEY", None):
         from merchants.providers.khipu import KhipuProvider
@@ -265,6 +269,11 @@ def _init_merchants(app: Flask, admin: Any) -> None:
 
     merchants_ext.init_app(
         app=app, db=db, models=[Order], providers=providers, admin=admin
+    )
+    webhook_event_finished.connect(
+        _handle_payment_webhook_finished,
+        sender=merchants_ext,
+        weak=False,
     )
     return None
 

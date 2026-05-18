@@ -4,6 +4,19 @@ from flask_security.models import fsqla_v3 as fsqla
 
 from nuevo_fonotarot.extensions import db
 
+original_set_db_info = fsqla.FsModels.set_db_info
+
+
+def safe_set_db_info(*args, **kwargs):
+    try:
+        return original_set_db_info(*args, **kwargs)
+    except Exception as exc:
+        if "already defined for this MetaData instance" in str(exc):
+            return None
+        raise
+
+
+fsqla.FsModels.set_db_info = safe_set_db_info
 fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
 
 from nuevo_fonotarot import actions
