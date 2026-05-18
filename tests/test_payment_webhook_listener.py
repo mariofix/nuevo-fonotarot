@@ -64,6 +64,26 @@ def test_handle_khipu_webhook_event_completes_succeeded_order(monkeypatch):
     assert captured == {"order": order, "label": "webhook-khipu"}
 
 
+def test_handle_payment_webhook_finished_accepts_signal_sender(monkeypatch):
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        pagos_views,
+        "_handle_payment_webhook_event",
+        lambda event: captured.update(event=event),
+    )
+    event = SimpleNamespace(
+        payment_id="sig_1",
+        provider="khipu",
+        state=SimpleNamespace(value="succeeded"),
+        event_type="payment.conciliated",
+    )
+
+    pagos_views._handle_payment_webhook_finished(object(), event=event)
+
+    assert captured == {"event": event}
+
+
 def test_handle_flow_webhook_event_syncs_then_completes(monkeypatch):
     order = SimpleNamespace(id=43, status=OrderStatus.PENDING, state="pending")
     captured: dict[str, object] = {}

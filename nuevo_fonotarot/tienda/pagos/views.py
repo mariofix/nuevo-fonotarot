@@ -435,7 +435,7 @@ def _handle_payment_webhook_event(event) -> None:
     )
 
 
-def _handle_payment_webhook_finished(*, event, **kwargs) -> None:
+def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
     """Signal receiver that runs after flask-merchants finishes webhook dispatch."""
     logger.debug(
         "_handle_payment_webhook_finished: provider=%r event_type=%r payment_id=%r state=%r",
