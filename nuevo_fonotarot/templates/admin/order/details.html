@@ -196,12 +196,12 @@
       </div>
 
       <div class="card mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="card-header">
           <span class="card-title mb-0">{{ _gettext('Audit files') }}</span>
-          <span class="badge bg-warning text-dark">{{ _gettext('Highlighted') }}</span>
         </div>
         <div class="card-body">
           {% set audit_payloads = [
+            (_gettext('Extra arguments'), 'extra_args'),
             (_gettext('Provider request payload'), 'request_payload'),
             (_gettext('Provider response payload'), 'response_payload'),
             (_gettext('Payment object'), 'payment_object'),
@@ -210,10 +210,7 @@
           ] %}
           {% for label, field_name in audit_payloads %}
           <div class="audit-block p-3 mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="fw-semibold">{{ label }}</div>
-              <span class="badge bg-warning-lt text-warning">audit</span>
-            </div>
+            <div class="fw-semibold mb-2">{{ label }}</div>
             {% if model|attr(field_name) is not none and model|attr(field_name) != '' %}
             <div class="audit-rendered">{{ get_value(model, field_name) }}</div>
             {% else %}
