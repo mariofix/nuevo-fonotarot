@@ -245,7 +245,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-4">
           <div class="card-header">
             <span class="card-title mb-0">{{ _gettext('Administrative links') }}</span>
           </div>
@@ -263,7 +263,7 @@
         </div>
 
         {% if admin_view._actions %}
-        <div class="card">
+        <div class="card mb-4">
           <div class="card-header">
             <span class="card-title mb-0">{{ _gettext('Actions') }}</span>
           </div>
@@ -278,7 +278,7 @@
               <button type="submit" 
                       class="list-group-item list-group-item-action text-start"
                       {% if action_func.confirmation %}onclick="return confirm('{{ action_func.confirmation }}')"{% endif %}>
-                {{ action_func.name }}
+                {{ action_func.name or action_name|title }}
               </button>
             </form>
             {% endfor %}
@@ -287,7 +287,7 @@
         {% endif %}
 
         {% if admin_view.can_delete %}
-        <div class="card">
+        <div class="card mb-4">
           <div class="card-header">
             <span class="card-title mb-0">{{ _gettext('Danger zone') }}</span>
           </div>
