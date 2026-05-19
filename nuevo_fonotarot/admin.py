@@ -728,6 +728,7 @@ class SeoSettingsAdminView(BaseView):
 class OrderAdminView(JsonColumnsMixin, SecureModelView):
     """Admin view for customer orders."""
 
+    details_template = "admin/order/details.html"
     json_columns = [
         "extra_args",
         "request_payload",
