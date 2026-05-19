@@ -746,6 +746,20 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     column_filters = ("status", "provider", "anonymous_shipping")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
+    column_sortable_list = ("firenze_client_id, created_at", "provider")
+    page_size = 50
+    column_default_sort = ("id", True)
+
+    @action(
+        "post_purchase",
+        "Proceso post webhook"
+    )
+    def action_post_purchase(self, ids):
+        """This ejecutes the process after a webhook, no modifications """
+        from flask import flash
+        from .actions import post_purchase_process
+        for order_id in ids:
+            post_purchase_process(order_id=order_id)
 
     @action(
         "completar_orden",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from .extensions import db, user_datastore
 from .firenze import search_client
 from .log import get_logger
-from .models import User
+from .models import User, OrderStatus, OrderItemType, MinutePack, Order, OrderItem
 from .notifications import notify_new_user_registration
 
 logger = get_logger(__name__)
@@ -207,3 +207,37 @@ def _assign_clientes_role(user: User) -> None:
             "_assign_clientes_role: user=%s already has 'clientes' role",
             user.id,
         )
+
+def post_purchase_process(order_id: int) -> None:
+    """Processes that run after a paid purchase
+    
+    This process does the following:
+    - Find client_id in firenze if not in the order
+    - For MinutePacks, firenze endpoint complete payment is called
+    - User enail is sent if configured
+    - Admin email is sent
+    - Telegram/Whatsapp notification
+
+    Args:
+        order_id: order that is ready to be fulfilled, mostly digital goods.
+    """
+    
+
+    logger.debug(f"Trying to process order_id: {order_id}")
+
+    if not order_id:
+        logger.warning("post_purchase_process: an order_id is needed.")
+        return
+
+    order = Order.query.filter_by(id=order_id).first()
+
+    if not order:
+        logger.warning(f"post_purchase_process: order_id={order_id} is not found.")
+        return
+
+    if order.state != "succeeded":
+        logger.warning(f"post_purchase_process: {order_id=} is {order.state=}")
+        return
+
+    if not order.firenze_client_id:
+        client_id = search_client(ani=order.shipping_phone)
