@@ -735,18 +735,19 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
         "payment_object",
     ]
     column_list = (
-        "id",
         "status",
         "amount",
         "provider",
+        "email",
+        "shipping_phone",
         "firenze_client_id",
-        "anonymous_shipping",
         "created_at",
     )
-    column_filters = ("status", "provider", "anonymous_shipping")
+    column_filters = ("status", "provider", "firenze_client_id", "anonymous_shipping")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
     column_sortable_list = ("firenze_client_id", "created_at", "provider")
+    column_searchable_list = ("firenze_client_id", "email", "shipping_phone")
     page_size = 50
     column_default_sort = ("id", True)
 
