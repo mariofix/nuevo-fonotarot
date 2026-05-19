@@ -10,7 +10,7 @@
   {% set payment_labels = {
     'pending': _gettext('Pending'),
     'processing': _gettext('Processing'),
-    'created': _gettext('Created'),
+    'succeeded': _gettext('Succeeded'),
     'failed': _gettext('Failed'),
     'cancelled': _gettext('Cancelled'),
     'refunded': _gettext('Refunded'),
@@ -18,8 +18,8 @@
   } %}
   {% set order_flow = ['pending', 'paid'] %}
   {% set order_terminals = ('delivered', 'cancelled') %}
-  {% set payment_flow = ['pending', 'processing', 'created'] %}
-  {% set payment_terminals = ('failed', 'cancelled', 'refunded', 'unknown') %}
+  {% set payment_flow = ['pending', 'processing'] %}
+  {% set payment_terminals = ('succeeded', 'failed', 'cancelled', 'refunded', 'unknown') %}
   {% set order_base_index = order_flow.index(model.status) if model.status in order_flow else -1 %}
   {% set is_order_terminal = model.status in order_terminals %}
   {% set payment_base_index = payment_flow.index(model.payment_status) if model.payment_status in payment_flow else -1 %}
@@ -33,7 +33,7 @@
   {% set payment_badges = {
     'pending': 'bg-warning-lt text-warning',
     'processing': 'bg-info-lt text-info',
-    'created': 'bg-success-lt text-success',
+    'succeeded': 'bg-success-lt text-success',
     'failed': 'bg-danger-lt text-danger',
     'cancelled': 'bg-danger-lt text-danger',
     'refunded': 'bg-secondary-lt text-secondary',
@@ -259,7 +259,7 @@
             {% endfor %}
             {% if is_payment_terminal %}
             <div class="wf-step is-done">
-              <div class="fw-semibold {% if model.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
+              <div class="fw-semibold {% if model.payment_status == 'succeeded' %}text-success{% elif model.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
                 {{ payment_labels.get(model.payment_status, model.payment_status) }}
               </div>
             </div>
