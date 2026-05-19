@@ -108,6 +108,7 @@ def _send_firenze_failure_email(order: Order) -> None:
         return
 
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
     site_url = current_app.config.get("SITE_URL", "")
 
@@ -134,6 +135,7 @@ def _send_firenze_failure_email(order: Order) -> None:
                     to=[email],
                     subject=f"[Admin] Fallo Firenze — Orden #{order.id} pago confirmado",
                     html_body=html_body,
+                    smtp_account=daleks_smtp_account,
                 )
         logger.info("_send_firenze_failure_email: notification sent to admins for order=%s", order.id)
     except Exception:
@@ -156,6 +158,7 @@ def _send_order_confirmation_email(order: Order) -> None:
         return
 
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
     site_url = current_app.config.get("SITE_URL", "")
 
@@ -181,6 +184,7 @@ def _send_order_confirmation_email(order: Order) -> None:
                     to=[order.shipping_email],
                     subject=f"Orden #{order.id} confirmada — Fonotarot",
                     html_body=html_body,
+                    smtp_account=daleks_smtp_account,
                 )
             logger.info("Order confirmation email sent to customer %s for order=%s", order.shipping_email, order.id)
         except Exception:
@@ -211,6 +215,7 @@ def _send_order_confirmation_email(order: Order) -> None:
                             to=[email],
                             subject=f"[Admin] Nueva orden #{order.id} pagada — ${order.total_display}",
                             html_body=html_body,
+                            smtp_account=daleks_smtp_account,
                         )
                 logger.info("Admin notification sent for order=%s (sent to %d admin(s))", order.id, len(admin_emails))
             except Exception:

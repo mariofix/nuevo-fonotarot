@@ -102,6 +102,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
 
     redeemed_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     daleks_url = current_app.config["DALEKS_URL"]
+    daleks_smtp_account = current_app.config["DALEKS_SMTP_ACCOUNT"]
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
 
@@ -120,6 +121,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
                     to=[recipient],
                     subject="[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: %s" % client_id,
                     html_body=html_body,
+                    smtp_account=daleks_smtp_account,
                 )
     except Exception:
         logger.exception("Failed to send admin promo notification email")
@@ -132,6 +134,7 @@ def _send_user_promo_instructions(email: str, remaining: int) -> bool:
     daleks_url = current_app.config["DALEKS_URL"]
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
+    daleks_smtp_account = current_app.config["DALEKS_SMTP_ACCOUNT"]
 
     try:
         html_body = render_template(
@@ -144,6 +147,7 @@ def _send_user_promo_instructions(email: str, remaining: int) -> bool:
                 to=[email],
                 subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
                 html_body=html_body,
+                smtp_account=daleks_smtp_account,
             )
         return True
     except Exception:
