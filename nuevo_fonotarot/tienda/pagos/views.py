@@ -235,7 +235,7 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
     sent so operators can retry via the "Completar Orden" admin action.
 
     Args:
-        order: The Order to complete (must have ``state == "succeeded"``).
+        order: The Order to complete (must have ``payment_status == "succeeded"``).
         label: Short context string used in log messages (e.g. ``"webhook"``).
     """
     logger.info("_complete_succeeded_order: processing succeeded order=%s from %s", order.id, label)
@@ -406,7 +406,7 @@ def _handle_flow_webhook_event(event) -> None:
         order,
         payment_id=payment_id,
         provider=provider,
-        state=order.state,
+        state=order.payment_status,
         label="webhook-flow",
     )
 
@@ -539,7 +539,7 @@ def index():
 #                 try:
 #                     order.sync_from_provider()
 #                     logger.info(
-#                         "pago_confirmacion: synced order=%s new_state=%r", order.id, order.state
+#                         "pago_confirmacion: synced order=%s new_state=%r", order.id, order.payment_status
 #                     )
 #                 except Exception as sync_exc:
 #                     logger.warning(
@@ -547,14 +547,14 @@ def index():
 #                         order.id,
 #                         sync_exc,
 #                     )
-#                 if order.state == "succeeded":
+#                 if order.payment_status == "succeeded":
 #                     _complete_succeeded_order(order, "webhook")
-#                 elif order.state in ("failed", "cancelled"):
+#                 elif order.payment_status in ("failed", "cancelled"):
 #                     order.status = OrderStatus.FAILED
 #                     logger.warning(
 #                         "pago_confirmacion: payment failed/cancelled — order=%s state=%r token=%r",
 #                         order.id,
-#                         order.state,
+#                         order.payment_status,
 #                         token,
 #                     )
 #                     db.session.commit()
@@ -584,7 +584,7 @@ def pago_retorno(order_id: str):
     logger.debug(
         "pago_retorno: order details — transaction_id=%r state=%r",
         order.transaction_id,
-        order.state,
+        order.payment_status,
     )
 
     # Sync payment state from provider and update order fulfillment status.
@@ -592,15 +592,19 @@ def pago_retorno(order_id: str):
         logger.debug("pago_retorno: order=%s is PENDING, syncing from provider", order.id)
         try:
             order.sync_from_provider()
-            logger.info("pago_retorno: synced order=%s new_state=%r", order.id, order.state)
-            if order.state == "succeeded":
+            logger.info(
+                "pago_retorno: synced order=%s new_state=%r",
+                order.id,
+                order.payment_status,
+            )
+            if order.payment_status == "succeeded":
                 _complete_succeeded_order(order, "retorno")
-            elif order.state in ("failed", "cancelled"):
+            elif order.payment_status in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
                     "pago_retorno: payment failed/cancelled — order=%s status updated to FAILED (state=%r)",
                     order.id,
-                    order.state,
+                    order.payment_status,
                 )
                 db.session.commit()
         except Exception as exc:

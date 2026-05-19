@@ -85,11 +85,11 @@ def test_handle_payment_webhook_finished_accepts_signal_sender(monkeypatch):
 
 
 def test_handle_flow_webhook_event_syncs_then_completes(monkeypatch):
-    order = SimpleNamespace(id=43, status=OrderStatus.PENDING, state="pending")
+    order = SimpleNamespace(id=43, status=OrderStatus.PENDING, payment_status="pending")
     captured: dict[str, object] = {}
 
     def fake_sync_from_provider():
-        order.state = "succeeded"
+        order.payment_status = "succeeded"
 
     monkeypatch.setattr(pagos_views, "_find_order_by_payment_id", lambda payment_id: order)
     monkeypatch.setattr(pagos_views.db.session, "commit", lambda: None)

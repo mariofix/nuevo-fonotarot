@@ -322,12 +322,13 @@ class Order(db.Model, PaymentMixin):
     Extends :class:`~flask_merchants.models.PaymentMixin` so that every order
     also acts as a flask-merchants payment session.  Payment fields
     (``merchants_id``, ``transaction_id``, ``provider``, ``amount``,
-    ``currency``, ``state``, etc.) are populated when the checkout is
+    ``currency``, ``payment_status``, etc.) are populated when the checkout is
     initiated via the payment provider.
 
     ``status`` tracks order-fulfillment milestones (PENDING → PAID → SHIPPED
-    → DELIVERED / CANCELLED), while ``state`` (from PaymentMixin) tracks the
-    payment-processing lifecycle (pending → succeeded / failed / cancelled).
+    → DELIVERED / CANCELLED), while ``payment_status`` (from PaymentMixin)
+    tracks the payment-processing lifecycle (pending → succeeded / failed /
+    cancelled).
     """
 
     __tablename__ = "orders"
@@ -337,7 +338,7 @@ class Order(db.Model, PaymentMixin):
     user_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"))
     user = db.relationship("User", backref=db.backref("orders", lazy="dynamic"))
 
-    # Order fulfillment status (separate from PaymentMixin.state)
+    # Order fulfillment status (separate from PaymentMixin.payment_status)
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default=OrderStatus.PENDING
     )
@@ -368,7 +369,10 @@ class Order(db.Model, PaymentMixin):
     )
 
     def __repr__(self) -> str:
-        return f"<Order #{self.id} status={self.status!r} state={self.state!r}>"
+        return (
+            f"<Order #{self.id} status={self.status!r} "
+            f"payment_status={self.payment_status!r}>"
+        )
 
     @property
     def total_display(self) -> str:
@@ -422,7 +426,7 @@ class Order(db.Model, PaymentMixin):
         self.provider = payment_method
         self.amount = Decimal(str(self.amount))
         self.currency = currency
-        self.state = OrderStatus.PENDING
+        self.payment_status = OrderStatus.PENDING
         self.email = email
         try:
             redirect_url = self.start_payment(
@@ -468,7 +472,7 @@ class Order(db.Model, PaymentMixin):
                 f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None
             ),
             "currency": self.currency,
-            "state": self.state,
+            "payment_status": self.payment_status,
             "email": self.email,
             "extra_args": self.extra_args or {},
             "request_payload": self.request_payload or {},

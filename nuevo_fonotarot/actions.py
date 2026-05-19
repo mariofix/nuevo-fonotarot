@@ -235,8 +235,8 @@ def post_purchase_process(order_id: int) -> None:
         logger.warning(f"post_purchase_process: order_id={order_id} is not found.")
         return
 
-    if order.state != "succeeded":
-        logger.warning(f"post_purchase_process: {order_id=} is {order.state=}")
+    if order.payment_status != "succeeded":
+        logger.warning(f"post_purchase_process: {order_id=} is {order.payment_status=}")
         return
 
     if not order.firenze_client_id:

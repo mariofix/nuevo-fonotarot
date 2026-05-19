@@ -772,7 +772,7 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     def action_completar_orden(self, ids):
         """Complete selected orders: call Firenze, then complete when sync succeeds.
 
-        Only orders whose payment ``state`` is ``succeeded`` are processed.
+        Only orders whose payment ``payment_status`` is ``succeeded`` are processed.
         If Firenze sync fails, the order remains PENDING and admins are
         notified so the operator can follow up.
         """
@@ -789,7 +789,7 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
             order = db.session.get(Order, int(order_id))
             if order is None:
                 continue
-            if order.state != "succeeded":
+            if order.payment_status != "succeeded":
                 skipped += 1
                 continue
 
