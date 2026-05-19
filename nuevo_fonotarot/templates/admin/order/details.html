@@ -4,36 +4,40 @@
   {% set order_labels = {
     'pending': _gettext('Pending'),
     'paid': _gettext('Paid'),
-    'failed': _gettext('Failed'),
-    'shipped': _gettext('Shipped'),
     'delivered': _gettext('Delivered'),
     'cancelled': _gettext('Cancelled'),
   } %}
   {% set payment_labels = {
     'pending': _gettext('Pending'),
-    'succeeded': _gettext('Succeeded'),
+    'processing': _gettext('Processing'),
+    'created': _gettext('Created'),
     'failed': _gettext('Failed'),
     'cancelled': _gettext('Cancelled'),
+    'refunded': _gettext('Refunded'),
+    'unknown': _gettext('Unknown'),
   } %}
-  {% set order_flow = ['pending', 'paid', 'shipped', 'delivered'] %}
-  {% set payment_flow = ['pending', 'succeeded'] %}
-  {% set order_index = order_flow.index(model.status) if model.status in order_flow else -1 %}
-  {% set payment_index = payment_flow.index(model.payment_status) if model.payment_status in payment_flow else -1 %}
-  {% set show_order_issue = model.status in ('failed', 'cancelled') %}
-  {% set show_payment_issue = model.payment_status in ('failed', 'cancelled') %}
+  {% set order_flow = ['pending', 'paid'] %}
+  {% set order_terminals = ('delivered', 'cancelled') %}
+  {% set payment_flow = ['pending', 'processing', 'created'] %}
+  {% set payment_terminals = ('failed', 'cancelled', 'refunded', 'unknown') %}
+  {% set order_base_index = order_flow.index(model.status) if model.status in order_flow else -1 %}
+  {% set is_order_terminal = model.status in order_terminals %}
+  {% set payment_base_index = payment_flow.index(model.payment_status) if model.payment_status in payment_flow else -1 %}
+  {% set is_payment_terminal = model.payment_status in payment_terminals %}
   {% set order_badges = {
     'pending': 'bg-warning-lt text-warning',
     'paid': 'bg-success-lt text-success',
-    'failed': 'bg-danger-lt text-danger',
-    'shipped': 'bg-primary-lt text-primary',
     'delivered': 'bg-teal-lt text-teal',
     'cancelled': 'bg-danger-lt text-danger',
   } %}
   {% set payment_badges = {
     'pending': 'bg-warning-lt text-warning',
-    'succeeded': 'bg-success-lt text-success',
+    'processing': 'bg-info-lt text-info',
+    'created': 'bg-success-lt text-success',
     'failed': 'bg-danger-lt text-danger',
     'cancelled': 'bg-danger-lt text-danger',
+    'refunded': 'bg-secondary-lt text-secondary',
+    'unknown': 'bg-secondary-lt text-secondary',
   } %}
 
   <style>
@@ -229,13 +233,15 @@
           </div>
           <div class="card-body">
             {% for step in order_flow %}
-            <div class="wf-step {% if order_index >= loop.index0 %}is-done{% endif %}">
+            <div class="wf-step {% if order_base_index >= loop.index0 %}is-done{% endif %}">
               <div class="fw-semibold">{{ order_labels.get(step, step) }}</div>
             </div>
             {% endfor %}
-            {% if show_order_issue %}
-            <div class="alert alert-danger mt-3 mb-0">
-              {{ _gettext('Terminal order state:') }} {{ order_labels.get(model.status, model.status) }}
+            {% if is_order_terminal %}
+            <div class="wf-step is-done">
+              <div class="fw-semibold {% if model.status == 'cancelled' %}text-danger{% else %}text-teal{% endif %}">
+                {{ order_labels.get(model.status, model.status) }}
+              </div>
             </div>
             {% endif %}
           </div>
@@ -247,13 +253,15 @@
           </div>
           <div class="card-body">
             {% for step in payment_flow %}
-            <div class="wf-step {% if payment_index >= loop.index0 %}is-done{% endif %}">
+            <div class="wf-step {% if payment_base_index >= loop.index0 %}is-done{% endif %}">
               <div class="fw-semibold">{{ payment_labels.get(step, step) }}</div>
             </div>
             {% endfor %}
-            {% if show_payment_issue %}
+            {% if is_payment_terminal %}
             <div class="wf-step is-done">
-              <div class="fw-semibold text-danger">{{ payment_labels.get(model.payment_status, model.payment_status) }}</div>
+              <div class="fw-semibold {% if model.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
+                {{ payment_labels.get(model.payment_status, model.payment_status) }}
+              </div>
             </div>
             {% endif %}
           </div>

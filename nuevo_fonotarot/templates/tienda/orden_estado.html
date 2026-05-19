@@ -96,37 +96,41 @@
 {% set order_labels = {
   'pending': _("Pendiente"),
   'paid': _("Pagada"),
-  'failed': _("Fallida"),
-  'shipped': _("Despachada"),
   'delivered': _("Entregada"),
   'cancelled': _("Cancelada"),
 } %}
 {% set payment_labels = {
   'pending': _("Pendiente"),
-  'succeeded': _("Aprobado"),
+  'processing': _("Procesando"),
+  'created': _("Creado"),
   'failed': _("Fallido"),
   'cancelled': _("Cancelado"),
+  'refunded': _("Reembolsado"),
+  'unknown': _("Desconocido"),
 } %}
 {% set order_badges = {
   'pending': "bg-warning-lt text-warning",
   'paid': "bg-success-lt text-success",
-  'failed': "bg-danger-lt text-danger",
-  'shipped': "bg-primary-lt text-primary",
   'delivered': "bg-teal-lt text-teal",
   'cancelled': "bg-danger-lt text-danger",
 } %}
 {% set payment_badges = {
   'pending': "bg-warning-lt text-warning",
-  'succeeded': "bg-success-lt text-success",
+  'processing': "bg-info-lt text-info",
+  'created': "bg-success-lt text-success",
   'failed': "bg-danger-lt text-danger",
   'cancelled': "bg-danger-lt text-danger",
+  'refunded': "bg-secondary-lt text-secondary",
+  'unknown': "bg-secondary-lt text-secondary",
 } %}
-{% set order_flow = ['pending', 'paid', 'shipped', 'delivered'] %}
-{% set payment_flow = ['pending', 'succeeded'] %}
-{% set order_index = order_flow.index(order.status) if order.status in order_flow else -1 %}
-{% set payment_index = payment_flow.index(order.payment_status) if order.payment_status in payment_flow else -1 %}
-{% set show_payment_issue = order.payment_status in ('failed', 'cancelled') %}
-{% set show_order_issue = order.status in ('failed', 'cancelled') %}
+{% set order_flow = ['pending', 'paid'] %}
+{% set order_terminals = ('delivered', 'cancelled') %}
+{% set payment_flow = ['pending', 'processing', 'created'] %}
+{% set payment_terminals = ('failed', 'cancelled', 'refunded', 'unknown') %}
+{% set order_base_index = order_flow.index(order.status) if order.status in order_flow else -1 %}
+{% set is_order_terminal = order.status in order_terminals %}
+{% set payment_base_index = payment_flow.index(order.payment_status) if order.payment_status in payment_flow else -1 %}
+{% set is_payment_terminal = order.payment_status in payment_terminals %}
 {% set is_admin = current_user and current_user.is_authenticated and current_user.has_role('admin') %}
 {% set audit_payloads = [
   (_("Solicitud al proveedor"), order.request_payload),
@@ -246,14 +250,17 @@
         <div class="card-header">{{ _("Flujo de orden") }}</div>
         <div class="card-body">
           {% for step in order_flow %}
-          <div class="wf-step {% if order_index >= loop.index0 %}is-done{% endif %}">
+          <div class="wf-step {% if order_base_index >= loop.index0 %}is-done{% endif %}">
             <div class="fw-semibold">{{ order_labels.get(step, step|title) }}</div>
             <div class="text-secondary small">{{ _("Estado de ciclo de vida de la orden.") }}</div>
           </div>
           {% endfor %}
-          {% if show_order_issue %}
-          <div class="alert alert-danger mt-3 mb-0">
-            <i class="ti ti-alert-circle me-1"></i>{{ _("La orden terminó en estado") }}: {{ order_labels.get(order.status, order.status|title) }}
+          {% if is_order_terminal %}
+          <div class="wf-step is-done">
+            <div class="fw-semibold {% if order.status == 'cancelled' %}text-danger{% else %}text-teal{% endif %}">
+              {{ order_labels.get(order.status, order.status|title) }}
+            </div>
+            <div class="text-secondary small">{{ _("Estado terminal de la orden.") }}</div>
           </div>
           {% endif %}
         </div>
@@ -263,15 +270,17 @@
         <div class="card-header">{{ _("Flujo de pago") }}</div>
         <div class="card-body">
           {% for step in payment_flow %}
-          <div class="wf-step {% if payment_index >= loop.index0 %}is-done{% endif %}">
+          <div class="wf-step {% if payment_base_index >= loop.index0 %}is-done{% endif %}">
             <div class="fw-semibold">{{ payment_labels.get(step, step|title) }}</div>
             <div class="text-secondary small">{{ _("Estado de procesamiento del pago.") }}</div>
           </div>
           {% endfor %}
-          {% if show_payment_issue %}
+          {% if is_payment_terminal %}
           <div class="wf-step is-done">
-            <div class="fw-semibold text-danger">{{ payment_labels.get(order.payment_status, order.payment_status|title) }}</div>
-            <div class="text-secondary small">{{ _("Estado terminal de pago no exitoso.") }}</div>
+            <div class="fw-semibold {% if order.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
+              {{ payment_labels.get(order.payment_status, order.payment_status|title) }}
+            </div>
+            <div class="text-secondary small">{{ _("Estado terminal del pago.") }}</div>
           </div>
           {% endif %}
         </div>
