@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ingresar — Fonotarot</title>
+  <title>{{ _("Ingresar — Fonotarot") }}</title>
   <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
   <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
@@ -322,8 +322,8 @@
         <span>✦</span>Fonotarot
       </a>
 
-      <h1 class="auth-heading">Bienvenida de nuevo</h1>
-      <p class="auth-sub">Ingresa para consultar con tus tarotistas</p>
+      <h1 class="auth-heading">{{ _("Bienvenida de nuevo") }}</h1>
+      <p class="auth-sub">{{ _("Ingresa para consultar con tus tarotistas") }}</p>
 
       <!-- Alerts -->
       <div class="auth-alerts">
@@ -354,7 +354,7 @@
           <label class="auth-label" for="identity">
             Teléfono o Email
             {% if config.SECURITY_RECOVERABLE %}
-            <a href="{{ url_for_security('forgot_password') }}">¿Olvidaste tu contraseña?</a>
+            <a href="{{ url_for_security('forgot_password') }}">{{ _("¿Olvidaste tu contraseña?") }}</a>
             {% endif %}
           </label>
           <input
@@ -371,7 +371,7 @@
         </div>
 
         <div class="auth-field">
-          <label class="auth-label" for="password">Contraseña</label>
+          <label class="auth-label" for="password">{{ _("Contraseña") }}</label>
           <input
             class="auth-input{% if login_user_form.password.errors %} is-invalid{% endif %}"
             type="password"
@@ -382,7 +382,7 @@
           />
         </div>
 
-        <button type="submit" class="auth-btn">Ingresar</button>
+        <button type="submit" class="auth-btn">{{ _("Ingresar") }}</button>
       </form>
 
       <div class="auth-footer">
@@ -400,7 +400,7 @@
     <div class="auth-cover-img" style="background-image: url('{{ url_for('static', filename='login-cover.jpg') }}')"></div>
     <div class="auth-cover-overlay"></div>
     <div class="auth-cover-text">
-      <p class="auth-cover-quote">"El universo tiene un mensaje para ti.<br>Solo necesitas escuchar."</p>
+      <p class="auth-cover-quote">{{ _('"El universo tiene un mensaje para ti.<br>Solo necesitas escuchar."') | safe }}</p>
       <p class="auth-cover-credit">Fonotarot · Chile</p>
     </div>
   </div>

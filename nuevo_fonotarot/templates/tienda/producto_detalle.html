@@ -37,7 +37,7 @@
             <p class="text-secondary">{{ product.description }}</p>
             {% endif %}
             {% if product.stock > 0 %}
-            <p class="text-success"><i class="ti ti-check me-1"></i>En stock ({{ product.stock }} disponibles)</p>
+            <p class="text-success"><i class="ti ti-check me-1"></i>{{ _("En stock (%(stock)s disponibles)", stock=product.stock) }}</p>
             <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex gap-2 align-items-center mt-4"
                   data-track-event="add_to_cart"
                   data-track-value="{{ product.price }}"
@@ -49,19 +49,19 @@
                   data-track-item-quantity="1">
               <input type="hidden" name="item_type" value="product"/>
               <input type="hidden" name="item_id" value="{{ product.id }}"/>
-              <label class="text-secondary me-2" for="qty">Cantidad:</label>
+              <label class="text-secondary me-2" for="qty">{{ _("Cantidad:") }}</label>
               <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:80px"/>
-              <button type="submit" class="btn btn-primary"><i class="ti ti-shopping-cart-plus me-1"></i>Agregar al carrito</button>
+              <button type="submit" class="btn btn-primary"><i class="ti ti-shopping-cart-plus me-1"></i>{{ _("Agregar al carrito") }}</button>
             </form>
             {% else %}
-            <p class="text-danger"><i class="ti ti-x me-1"></i>Sin stock</p>
+            <p class="text-danger"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</p>
             {% endif %}
             <div class="card p-3 mt-4">
               <div class="d-flex align-items-start gap-2">
                 <i class="ti ti-eye-off text-success" style="font-size:1.4rem"></i>
                 <div>
-                  <strong>Envío anónimo garantizado</strong>
-                  <p class="text-secondary small mb-0">Caja sin marcas, sin etiquetas del remitente. Opción de retiro en punto seguro.</p>
+                  <strong>{{ _("Envío anónimo garantizado") }}</strong>
+                  <p class="text-secondary small mb-0">{{ _("Caja sin marcas, sin etiquetas del remitente. Opción de retiro en punto seguro.") }}</p>
                 </div>
               </div>
             </div>

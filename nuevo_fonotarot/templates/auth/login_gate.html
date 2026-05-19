@@ -203,22 +203,22 @@
   <div class="gate-backdrop">
     <div class="gate-card">
       <span class="gate-icon">🔮</span>
-      <h2>Contenido privado</h2>
-      <p class="gate-sub">Ingresa tus credenciales para continuar.</p>
+      <h2>{{ _("Contenido privado") }}</h2>
+      <p class="gate-sub">{{ _("Ingresa tus credenciales para continuar.") }}</p>
 
       <form id="gate-login-form" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="gate-form-group">
-          <label for="gate-email">Correo electrónico</label>
-          <input type="email" id="gate-email" name="email" autocomplete="email" required placeholder="tu@correo.com">
+          <label for="gate-email">{{ _("Correo electrónico") }}</label>
+          <input type="email" id="gate-email" name="email" autocomplete="email" required placeholder="{{ _('tu@correo.com') }}">
         </div>
         <div class="gate-form-group">
-          <label for="gate-password">Contraseña</label>
+          <label for="gate-password">{{ _("Contraseña") }}</label>
           <input type="password" id="gate-password" name="password" autocomplete="current-password" required placeholder="••••••••">
         </div>
-        <p class="gate-error" id="gate-error-msg">Correo o contraseña incorrectos.</p>
+        <p class="gate-error" id="gate-error-msg">{{ _("Correo o contraseña incorrectos.") }}</p>
         <button type="submit" class="btn-gate-login">
-          <i class="ti ti-login me-1" aria-hidden="true"></i><span id="gate-btn-label">Iniciar sesión</span>
+          <i class="ti ti-login me-1" aria-hidden="true"></i><span id="gate-btn-label">{{ _("Iniciar sesión") }}</span>
         </button>
       </form>
 
@@ -235,6 +235,12 @@
   const errMsg   = document.getElementById('gate-error-msg');
   const btnLabel = document.getElementById('gate-btn-label');
   const nextUrl  = {{ next_url | tojson }};
+  const i18n = {
+    verifying: {{ _("Verificando…") | tojson }},
+    invalidCreds: {{ _("Correo o contraseña incorrectos.") | tojson }},
+    login: {{ _("Iniciar sesión") | tojson }},
+    networkError: {{ _("Error de red, intenta de nuevo.") | tojson }},
+  };
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -242,7 +248,7 @@
 
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
-    btnLabel.textContent = 'Verificando…';
+    btnLabel.textContent = i18n.verifying;
 
     const payload = {
       email:    document.getElementById('gate-email').value,
@@ -267,16 +273,16 @@
       } else {
         const errors = data?.response?.errors;
         const first  = errors ? Object.values(errors).flat()[0] : null;
-        errMsg.textContent = first || 'Correo o contraseña incorrectos.';
+        errMsg.textContent = first || i18n.invalidCreds;
         errMsg.classList.add('visible');
         btn.disabled = false;
-        btnLabel.textContent = 'Iniciar sesión';
+        btnLabel.textContent = i18n.login;
       }
     } catch (_) {
-      errMsg.textContent = 'Error de red, intenta de nuevo.';
+      errMsg.textContent = i18n.networkError;
       errMsg.classList.add('visible');
       btn.disabled = false;
-      btnLabel.textContent = 'Iniciar sesión';
+      btnLabel.textContent = i18n.login;
     }
   });
 })();

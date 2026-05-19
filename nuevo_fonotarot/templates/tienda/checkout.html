@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Checkout - Fonotarot{% endblock %}
+{% block title %}{{ _("Checkout - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -23,7 +23,7 @@
           {% endfor %}
         {% endwith %}
 
-        <h1 class="fw-bold mb-4">Finalizar compra</h1>
+        <h1 class="fw-bold mb-4">{{ _("Finalizar compra") }}</h1>
 
         <form method="post" action="{{ url_for('productos.checkout') }}">
           <div class="row g-4">
@@ -34,17 +34,17 @@
               {% if has_physical %}
               <!-- Physical goods: shipping from profile -->
               <div class="card p-4 mb-4">
-                <h5 class="mb-3"><i class="ti ti-truck me-2"></i>Datos de envío</h5>
+                <h5 class="mb-3"><i class="ti ti-truck me-2"></i>{{ _("Datos de envío") }}</h5>
                 <div class="anonymous-note mb-3">
                   <i class="ti ti-eye-off me-1"></i>
-                  <strong>Envío anónimo:</strong> La caja llega sin marcas ni etiquetas que identifiquen el contenido.
+                  <strong>{{ _("Envío anónimo:") }}</strong> {{ _("La caja llega sin marcas ni etiquetas que identifiquen el contenido.") }}
                 </div>
                 <div class="text-secondary small">
                   <div><i class="ti ti-user me-1"></i>{{ current_user.full_name }}</div>
                   <div><i class="ti ti-map-pin me-1"></i>{{ current_user.address }}, {{ current_user.commune }} {{ current_user.postal_code }}</div>
                   <div class="mt-1">
                     <a href="{{ url_for('account.settings') }}" class="text-secondary">
-                      <i class="ti ti-pencil me-1"></i>Cambiar datos de envío
+                      <i class="ti ti-pencil me-1"></i>{{ _("Cambiar datos de envío") }}
                     </a>
                   </div>
                 </div>
@@ -52,9 +52,9 @@
               {% else %}
               <!-- Digital products: only need email -->
               <div class="card p-4 mb-4">
-                <h5 class="mb-3"><i class="ti ti-mail me-2"></i>Datos de contacto</h5>
+                <h5 class="mb-3"><i class="ti ti-mail me-2"></i>{{ _("Datos de contacto") }}</h5>
                 <div class="mb-3">
-                  <label class="form-label" for="shipping_email">Email *</label>
+                  <label class="form-label" for="shipping_email">{{ _("Email *") }}</label>
                   <input type="email" id="shipping_email" name="shipping_email" class="form-control" required
                          value="{{ prefilled_email }}"
                          placeholder="Para enviarte el comprobante"/>
@@ -64,14 +64,14 @@
 
               <!-- Payment method -->
               <div class="card p-4">
-                <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago</h5>
+                <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>{{ _("Método de pago") }}</h5>
                 <div class="row g-3">
                   <div class="col-6">
                     <label class="d-block">
                       <input type="radio" name="payment_method" value="flow" class="d-none payment-radio" id="pay_flow" required/>
                       <div class="payment-option text-center" id="flow_box">
                         <div class="fw-bold mb-1">Flow</div>
-                        <div class="small text-secondary">Tarjeta débito / crédito / transferencia</div>
+                        <div class="small text-secondary">{{ _("Tarjeta débito / crédito / transferencia") }}</div>
                       </div>
                     </label>
                   </div>
@@ -80,7 +80,7 @@
                       <input type="radio" name="payment_method" value="khipu" class="d-none payment-radio" id="pay_khipu"/>
                       <div class="payment-option text-center" id="khipu_box">
                         <div class="fw-bold mb-1">Khipu</div>
-                        <div class="small text-secondary">Transferencia bancaria simplificada</div>
+                        <div class="small text-secondary">{{ _("Transferencia bancaria simplificada") }}</div>
                       </div>
                     </label>
                   </div>
@@ -91,7 +91,7 @@
             <!-- Right: order summary -->
             <div class="col-md-5">
               <div class="card p-4 sticky-top" style="top:80px">
-                <h5 class="mb-3">Resumen del pedido</h5>
+                <h5 class="mb-3">{{ _("Resumen del pedido") }}</h5>
                 {% for item in cart %}
                 <div class="d-flex justify-content-between text-secondary small mb-2">
                   <span>{{ item.name }} x{{ item.quantity }}</span>
@@ -100,14 +100,14 @@
                 {% endfor %}
                 <hr style="border-color:var(--border)"/>
                 <div class="d-flex justify-content-between total-display mb-4">
-                  <span>Total</span>
+                  <span>{{ _("Total") }}</span>
                   <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 btn-lg">
-                  <i class="ti ti-lock me-2"></i>Pagar ahora
+                  <i class="ti ti-lock me-2"></i>{{ _("Pagar ahora") }}
                 </button>
                 <p class="text-secondary small text-center mt-3 mb-0">
-                  <i class="ti ti-shield-check me-1"></i>Pago seguro via Flow o Khipu
+                  <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro via Flow o Khipu") }}
                 </p>
               </div>
             </div>

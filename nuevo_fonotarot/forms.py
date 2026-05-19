@@ -10,6 +10,7 @@ def customize_unified_signin_form(form):
     Skips passcode validation when user is sending a code (not verifying).
     """
     from flask import current_app, request
+    from flask_babel import _
     from wtforms import ValidationError
 
     # Filter the chosen_method RadioField choices to only show enabled methods
@@ -41,13 +42,12 @@ def customize_unified_signin_form(form):
         
         # Only validate passcode if NOT sending code
         if not is_sending_code and not field.data:
-            raise ValidationError("Passcode is required for verification")
+            raise ValidationError(_("Passcode is required for verification"))
     
     # Keep original validators but add our conditional check at the start
     form.passcode.validators = [conditional_passcode_validator]
     
     return form
-
 
 
 

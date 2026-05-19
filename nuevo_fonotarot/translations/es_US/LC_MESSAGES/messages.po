@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-05 04:14+0000\n"
+"POT-Creation-Date: 2026-05-19 15:07-0400\n"
 "PO-Revision-Date: 2026-03-24 20:27-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es_US\n"
@@ -18,234 +18,659 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: nuevo_fonotarot/admin.py:795
+#: nuevo_fonotarot/admin.py:312
+msgid "Reprocesar registro"
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:313
+msgid ""
+"Ejecuta nuevamente el flujo posterior al registro para los usuarios "
+"seleccionados."
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:334
+#, python-format
+msgid "%(count)s usuario(s) reprocesado(s)."
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:339
+#, python-format
+msgid "%(count)s usuario(s) no se encontraron."
+msgstr ""
+
+#: nuevo_fonotarot/admin.py:838
 msgid "Users"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:796 nuevo_fonotarot/admin.py:806
+#: nuevo_fonotarot/admin.py:839 nuevo_fonotarot/admin.py:849
 msgid "Auth"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:805
+#: nuevo_fonotarot/admin.py:848
 msgid "Roles"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:815
+#: nuevo_fonotarot/admin.py:858
 msgid "Pages"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:816 nuevo_fonotarot/admin.py:826
-#: nuevo_fonotarot/admin.py:934 nuevo_fonotarot/admin.py:945
+#: nuevo_fonotarot/admin.py:859 nuevo_fonotarot/admin.py:869
+#: nuevo_fonotarot/admin.py:977 nuevo_fonotarot/admin.py:988
 msgid "Content"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:825
+#: nuevo_fonotarot/admin.py:868
 msgid "Blog Posts"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:835
+#: nuevo_fonotarot/admin.py:878
 msgid "Packs de Minutos"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:836 nuevo_fonotarot/admin.py:846
-#: nuevo_fonotarot/admin.py:856 nuevo_fonotarot/admin.py:866
-#: nuevo_fonotarot/admin.py:876 nuevo_fonotarot/templates/base.html:489
+#: nuevo_fonotarot/admin.py:879 nuevo_fonotarot/admin.py:889
+#: nuevo_fonotarot/admin.py:899 nuevo_fonotarot/admin.py:909
+#: nuevo_fonotarot/admin.py:919 nuevo_fonotarot/templates/base.html:1255
 #: nuevo_fonotarot/templates/tienda/index.html:127
 msgid "Tienda"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:845
+#: nuevo_fonotarot/admin.py:888
 msgid "Suscripciones"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:855
+#: nuevo_fonotarot/admin.py:898
 msgid "Categorías"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:865
+#: nuevo_fonotarot/admin.py:908
 msgid "Productos"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:875
+#: nuevo_fonotarot/admin.py:918
 msgid "Órdenes"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:885
+#: nuevo_fonotarot/admin.py:928
 msgid "Configuración"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:886 nuevo_fonotarot/admin.py:895
-#: nuevo_fonotarot/admin.py:904
+#: nuevo_fonotarot/admin.py:929 nuevo_fonotarot/admin.py:938
+#: nuevo_fonotarot/admin.py:947
 msgid "Sitio"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:893
+#: nuevo_fonotarot/admin.py:936
 msgid "SEO"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:902
+#: nuevo_fonotarot/admin.py:945
 msgid "Analytics"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:911
+#: nuevo_fonotarot/admin.py:954
 msgid "Reporte Mensual"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:913 nuevo_fonotarot/admin.py:922
+#: nuevo_fonotarot/admin.py:956 nuevo_fonotarot/admin.py:965
 msgid "Reportes"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:920
+#: nuevo_fonotarot/admin.py:963
 msgid "Reporte Agentes"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:933
+#: nuevo_fonotarot/admin.py:976
 msgid "Media Library"
 msgstr ""
 
-#: nuevo_fonotarot/admin.py:944
+#: nuevo_fonotarot/admin.py:987
 msgid "Static Files"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:12
-#: nuevo_fonotarot/templates/base.html:37
-msgid "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
+#: nuevo_fonotarot/forms.py:45
+msgid "Passcode is required for verification"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:55
+#: nuevo_fonotarot/templates/auth/login_gate.html:212
+#: nuevo_fonotarot/templates/base.html:1290
+#: nuevo_fonotarot/templates/security/login_user.html:426
+msgid "Correo electrónico"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:57
+msgid "Ingresa tu correo electrónico"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:58
+msgid "Ingresa un correo válido"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:65 nuevo_fonotarot/templates/base.html:1305
+#: nuevo_fonotarot/templates/security/login_user.html:441
+#: nuevo_fonotarot/templates/security/us_signin.html:429
+msgid "Enviar código"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:76
+msgid "Correo no encontrado"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:80 nuevo_fonotarot/passwordless.py:141
+msgid "Cuenta desactivada"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:87
+msgid "Método no disponible"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:94
+msgid "Primero debes configurar el acceso por correo"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:104
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:30
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:31
+#: nuevo_fonotarot/templates/security/us_signin.html:409
+msgid "Código de acceso"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:106
+msgid "Ingresa el código que recibiste"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:107
+msgid "El código debe tener 6 dígitos"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:116
+#: nuevo_fonotarot/templates/security/us_signin.html:422
+msgid "Recuérdame por 31 días"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:118
+#: nuevo_fonotarot/templates/security/passwordless/verify_code.html:6
+#: nuevo_fonotarot/templates/security/us_signin.html:432
+msgid "Verificar código"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:129
+msgid "Sesión expirada. Intenta de nuevo."
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:137
+msgid "Usuario no encontrado"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:150
+msgid "Método no válido"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:162
+msgid "Código inválido o expirado"
+msgstr ""
+
+#: nuevo_fonotarot/passwordless.py:224
+msgid "Error enviando el código. Intenta de nuevo."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:18
+#: nuevo_fonotarot/templates/account/profile.html:55
+#: nuevo_fonotarot/templates/account/settings.html:84
+#: nuevo_fonotarot/templates/auth/claim_account.html:335
+#: nuevo_fonotarot/templates/security/forgot_password.html:282
+#: nuevo_fonotarot/templates/security/register_user.html:320
+#: nuevo_fonotarot/templates/security/send_confirmation.html:274
+#: nuevo_fonotarot/templates/security/us_signin.html:384
+msgid "Email"
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:20
+#: nuevo_fonotarot/tienda/minutos/views.py:60
+msgid "El email es obligatorio."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:21
+msgid "Ingresa un email válido."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:27
+#: nuevo_fonotarot/templates/auth/claim_account.html:354
+#: nuevo_fonotarot/templates/security/register_user.html:300
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:129
+msgid "Teléfono"
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:29
+msgid "El teléfono es obligatorio."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:32
+msgid "Ingresa el teléfono en formato E.164 sin el signo + (ej: 56912345678)."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:41
+#: nuevo_fonotarot/templates/auth/claim_account.html:374
+#: nuevo_fonotarot/templates/auth/login_gate.html:216
+#: nuevo_fonotarot/templates/security/login_user.html:374
+#: nuevo_fonotarot/templates/security/register_user.html:338
+msgid "Contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:43
+msgid "La contraseña es obligatoria."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:49
+#: nuevo_fonotarot/templates/auth/claim_account.html:391
+#: nuevo_fonotarot/templates/security/register_user.html:355
+#: nuevo_fonotarot/templates/security/reset_password.html:279
+msgid "Confirmar contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:51
+msgid "Confirma tu contraseña."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:52
+msgid "Las contraseñas no coinciden."
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:57
+#: nuevo_fonotarot/templates/auth/claim_account.html:407
+msgid "Activar mi cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/account/forms.py:66
+#, python-format
+msgid "La contraseña debe tener al menos %(n)d caracteres."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:92
+msgid "El acceso es sin contraseña. La gestión de contraseña está deshabilitada."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:99 nuevo_fonotarot/account/views.py:123
+msgid "Tu cuenta no tiene un cliente Firenze asociado."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:110
+msgid "Teléfono adicional agregado."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:112
+msgid "Ese teléfono adicional ya existe."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:115
+msgid ""
+"No se pudo agregar el teléfono adicional. Verifica el formato e inténtalo"
+" de nuevo."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:134
+msgid "Teléfono adicional eliminado."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:136
+msgid "Ese teléfono no existe en tu lista."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:138
+msgid "No se pudo eliminar el teléfono adicional."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:175
+msgid "Perfil actualizado correctamente."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:183
+msgid "No fue posible cargar los teléfonos adicionales desde Firenze."
+msgstr ""
+
+#: nuevo_fonotarot/account/views.py:231
+msgid "La creación de cuenta está disponible durante el checkout."
 msgstr ""
 
 #: nuevo_fonotarot/templates/base.html:13
-#: nuevo_fonotarot/templates/base.html:38
-msgid ""
-"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
-"min. Disponible 24/7. Amor, trabajo, salud y más."
+msgid "Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
 msgstr ""
 
 #: nuevo_fonotarot/templates/base.html:14
 msgid ""
-"tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, "
+" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7. Amor, trabajo,\n"
+"    salud y más."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:16
+msgid ""
+" tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, "
 "consulta tarot"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:47
-msgid "Fonotarot - Tarot por Teléfono con Personas Reales"
+#: nuevo_fonotarot/templates/base.html:41
+msgid " Fonotarot - Tarot por Teléfono con Personas Reales | Chile"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:48
+#: nuevo_fonotarot/templates/base.html:42
 msgid ""
-"Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
+"min. Disponible 24/7. Amor,\n"
+"    trabajo, salud y más."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:52
+msgid " Fonotarot - Tarot por Teléfono con Personas Reales"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:53
+msgid ""
+" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 "
 "min. Disponible 24/7."
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:421
-#: nuevo_fonotarot/templates/base.html:453
-#: nuevo_fonotarot/templates/base.html:485
+#: nuevo_fonotarot/templates/base.html:1044
+#: nuevo_fonotarot/templates/base.html:1172
+#: nuevo_fonotarot/templates/base.html:1251
 msgid "Tarotistas"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:422
-#: nuevo_fonotarot/templates/base.html:454
+#: nuevo_fonotarot/templates/base.html:1045
+#: nuevo_fonotarot/templates/base.html:1173
 msgid "Planes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:423
-#: nuevo_fonotarot/templates/base.html:455
-#: nuevo_fonotarot/templates/base.html:488
+#: nuevo_fonotarot/templates/base.html:1046
+#: nuevo_fonotarot/templates/base.html:1174
+#: nuevo_fonotarot/templates/base.html:1254
 msgid "Blog"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:424
-#: nuevo_fonotarot/templates/base.html:456
+#: nuevo_fonotarot/templates/base.html:1047
+#: nuevo_fonotarot/templates/base.html:1175
 msgid "Ayuda"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:427
-#: nuevo_fonotarot/templates/base.html:459
+#: nuevo_fonotarot/templates/base.html:1050
+#: nuevo_fonotarot/templates/base.html:1178
 #: nuevo_fonotarot/templates/home.html:430
-#: nuevo_fonotarot/templates/home.html:692
+#: nuevo_fonotarot/templates/home.html:700
 msgid "Carga Minutos"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:430
+#: nuevo_fonotarot/templates/base.html:1053
+#: nuevo_fonotarot/templates/base.html:1204
+msgid "Especialistas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1057
+msgid "Menú de usuario"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1064
+msgid "Panel de Administración"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:42
+#: nuevo_fonotarot/templates/base.html:1071
+#: nuevo_fonotarot/templates/base.html:1184
+msgid "Perfil"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:45
+#: nuevo_fonotarot/templates/base.html:1076
+#: nuevo_fonotarot/templates/base.html:1187
+msgid "Editar perfil"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1085
+msgid "Selecciona tu País"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1089
+#: nuevo_fonotarot/templates/macros/lang_switcher.html:24
+msgid "Seleccionar idioma"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1105
 msgid "Cambiar tema"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:437
+#: nuevo_fonotarot/templates/base.html:1107
+#: nuevo_fonotarot/templates/base.html:1646
+msgid "Tema oscuro"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1116
+#: nuevo_fonotarot/templates/base.html:1190
+msgid "Cerrar sesión"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:221
+#: nuevo_fonotarot/templates/auth/login_gate.html:241
+#: nuevo_fonotarot/templates/base.html:1122
+#: nuevo_fonotarot/templates/base.html:1194
+msgid "Iniciar sesión"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1129
 msgid "Abrir menú"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:449
+#: nuevo_fonotarot/templates/base.html:1137
+msgid "Estado de créditos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1141
+msgid "Créditos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1142
+msgid "Ve a tu perfil para ver el detalle de tus créditos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1145
+msgid "Consultando saldo..."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1150
+#: nuevo_fonotarot/templates/base.html:1151
+msgid "Actualizar saldo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1153
+msgid "Actualizar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1156
+msgid "Ir a mi perfil"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1168
+#: nuevo_fonotarot/templates/base.html:1206
+#: nuevo_fonotarot/templates/base.html:1281
+#: nuevo_fonotarot/templates/security/login_user.html:415
 msgid "Cerrar"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:479
-msgid "Servicio de orientación espiritual telefónica · Chile · Desde 2010"
+#: nuevo_fonotarot/templates/base.html:1210
+msgid "Todas"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:480
+#: nuevo_fonotarot/templates/base.html:1211
+msgid "Disponibles"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1212
+#: nuevo_fonotarot/templates/base.html:1499
+msgid "En consulta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1216
+#: nuevo_fonotarot/templates/base.html:1219
+#: nuevo_fonotarot/templates/base.html:1222
+msgid "Consultando especialistas..."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1226
+#: nuevo_fonotarot/templates/base.html:1246
+#: nuevo_fonotarot/templates/base.html:1495
 #: nuevo_fonotarot/templates/home.html:426
 #: nuevo_fonotarot/templates/home.html:511
-#: nuevo_fonotarot/templates/index.html:2035
-#: nuevo_fonotarot/templates/index.html:2078
-#: nuevo_fonotarot/templates/index.html:2095
-#: nuevo_fonotarot/templates/index.html:2122
-#: nuevo_fonotarot/templates/index.html:2148
-#: nuevo_fonotarot/templates/index.html:2204
-#: nuevo_fonotarot/templates/index.html:2430
-#: nuevo_fonotarot/templates/index.html:2620
-#: nuevo_fonotarot/templates/index.html:2748
+#: nuevo_fonotarot/templates/index.html:2056
+#: nuevo_fonotarot/templates/index.html:2083
+#: nuevo_fonotarot/templates/index.html:2139
+#: nuevo_fonotarot/templates/index.html:2377
+#: nuevo_fonotarot/templates/index.html:2567
+#: nuevo_fonotarot/templates/index.html:2697
 msgid "56222301515"
 msgstr "17862091999"
 
-#: nuevo_fonotarot/templates/base.html:480
+#: nuevo_fonotarot/templates/base.html:1227
+#: nuevo_fonotarot/templates/home.html:427
 #: nuevo_fonotarot/templates/home.html:512
-#: nuevo_fonotarot/templates/index.html:2036
-#: nuevo_fonotarot/templates/index.html:2123
-#: nuevo_fonotarot/templates/index.html:2205
-#: nuevo_fonotarot/templates/index.html:2307
-#: nuevo_fonotarot/templates/index.html:2431
-#: nuevo_fonotarot/templates/index.html:2540
-#: nuevo_fonotarot/templates/index.html:2595
-#: nuevo_fonotarot/templates/index.html:2661
+#: nuevo_fonotarot/templates/home.html:697
+msgid "Llama Ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1227
+#: nuevo_fonotarot/templates/base.html:1246
+#: nuevo_fonotarot/templates/home.html:512
+#: nuevo_fonotarot/templates/index.html:2057
+#: nuevo_fonotarot/templates/index.html:2140
+#: nuevo_fonotarot/templates/index.html:2244
+#: nuevo_fonotarot/templates/index.html:2378
+#: nuevo_fonotarot/templates/index.html:2487
+#: nuevo_fonotarot/templates/index.html:2542
+#: nuevo_fonotarot/templates/index.html:2609
 msgid "+56 2 2230 1515"
 msgstr "+1 786 2091999"
 
-#: nuevo_fonotarot/templates/base.html:483
+#: nuevo_fonotarot/templates/base.html:1245
+msgid "Servicio de orientación espiritual telefónica · Chile · Desde 2010"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1249
 msgid "Navegación"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:486
+#: nuevo_fonotarot/templates/base.html:1252
 msgid "Planes y Precios"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:487
+#: nuevo_fonotarot/templates/base.html:1253
 msgid "Preguntas Frecuentes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:493
+#: nuevo_fonotarot/templates/base.html:1259
 msgid "Áreas de consulta"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:495
+#: nuevo_fonotarot/templates/base.html:1261
 msgid "Amor y Relaciones"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:496
+#: nuevo_fonotarot/templates/base.html:1262
 msgid "Trabajo y Finanzas"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:497
+#: nuevo_fonotarot/templates/base.html:1263
 msgid "Salud y Bienestar"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:498
+#: nuevo_fonotarot/templates/base.html:1264
 msgid "Familia"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:499
+#: nuevo_fonotarot/templates/base.html:1265
 msgid "Crecimiento Personal"
 msgstr ""
 
-#: nuevo_fonotarot/templates/base.html:504
+#: nuevo_fonotarot/templates/base.html:1270
 msgid "Todos los derechos reservados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1280
+#: nuevo_fonotarot/templates/security/login_user.html:390
+#: nuevo_fonotarot/templates/security/login_user.html:414
+msgid "Ingresa sin contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1285
+#: nuevo_fonotarot/templates/security/login_user.html:419
+msgid ""
+"Te enviaremos un código de 6 dígitos a tu correo para que ingreses rápido"
+" y seguro."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1304
+#: nuevo_fonotarot/templates/security/login_user.html:440
+msgid "Cancelar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1350
+msgid "Éxito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1351
+msgid "Error"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1352
+msgid "Advertencia"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1353
+msgid "Información"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1498
+msgid "Disponible"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:296
+#: nuevo_fonotarot/templates/account/profile.html:316
+#: nuevo_fonotarot/templates/base.html:1500
+msgid "No disponible"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1505
+msgid "Llamar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1507
+msgid "Ocupada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1527
+msgid "Opción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1580
+msgid "Listado de agentes no disponible por ahora."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1589
+msgid "No hay especialistas disponibles ahora."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1590
+msgid "Todas las especialistas están ocupadas. Inténtalo pronto."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1591
+msgid "No hay especialistas en consulta ahora."
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1646
+msgid "Tema claro"
+msgstr ""
+
+#: nuevo_fonotarot/templates/base.html:1697
+#: nuevo_fonotarot/templates/base.html:1708
+#: nuevo_fonotarot/templates/base.html:1718
+msgid "Saldo no disponible"
 msgstr ""
 
 #: nuevo_fonotarot/templates/home.html:417
@@ -264,12 +689,6 @@ msgstr ""
 msgid ""
 "Conecta en segundos con nuestras especialistas en tarot. Consulta sobre "
 "amor, trabajo, salud y caminos de vida."
-msgstr ""
-
-#: nuevo_fonotarot/templates/home.html:427
-#: nuevo_fonotarot/templates/home.html:512
-#: nuevo_fonotarot/templates/home.html:689
-msgid "Llama Ahora"
 msgstr ""
 
 #: nuevo_fonotarot/templates/home.html:452
@@ -313,7 +732,7 @@ msgid "Carga los minutos que necesitas y consulta cuando quieras"
 msgstr ""
 
 #: nuevo_fonotarot/templates/home.html:530
-#: nuevo_fonotarot/templates/home.html:593
+#: nuevo_fonotarot/templates/home.html:601
 msgid "Anterior"
 msgstr ""
 
@@ -329,182 +748,447 @@ msgstr ""
 msgid "Compra Ahora"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:554
+#: nuevo_fonotarot/templates/home.html:562
 msgid "Agregar al Carro"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:562
-#: nuevo_fonotarot/templates/home.html:597
+#: nuevo_fonotarot/templates/home.html:570
+#: nuevo_fonotarot/templates/home.html:605
 msgid "Siguiente"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:574
+#: nuevo_fonotarot/templates/home.html:582
 msgid "Testimonios"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:575
+#: nuevo_fonotarot/templates/home.html:583
 msgid "Lo que dicen nuestras consultantes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:615
+#: nuevo_fonotarot/templates/home.html:623
 msgid "Preguntas frecuentes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:616
+#: nuevo_fonotarot/templates/home.html:624
 msgid "¿Tienes dudas?"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:652
+#: nuevo_fonotarot/templates/home.html:660
 msgid "Cómo Funciona"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:653
+#: nuevo_fonotarot/templates/home.html:661
 msgid "Comenzar es muy fácil"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:660
+#: nuevo_fonotarot/templates/home.html:668
 msgid "Elige tu plan"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:661
+#: nuevo_fonotarot/templates/home.html:669
 msgid ""
 "Selecciona la cantidad de minutos que mejor se adapte a tu consulta y "
 "carga tu saldo de forma rápida y segura."
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:667
+#: nuevo_fonotarot/templates/home.html:675
 msgid "Elige tu especialista"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:668
+#: nuevo_fonotarot/templates/home.html:676
 msgid ""
 "Revisa quiénes están disponibles en este momento y elige la especialista "
 "con quien sientas más afinidad."
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:674
+#: nuevo_fonotarot/templates/home.html:682
 msgid "Llama y consulta"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:675
+#: nuevo_fonotarot/templates/home.html:683
 msgid ""
 "Marca el número y conéctate. Tu consulta es privada, personalizada y sin "
 "compromisos adicionales."
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:685
+#: nuevo_fonotarot/templates/home.html:693
 msgid "¿Lista/o para dar el primer paso?"
 msgstr ""
 
-#: nuevo_fonotarot/templates/home.html:686
+#: nuevo_fonotarot/templates/home.html:694
 msgid "Nuestras especialistas están esperando tu llamada ahora mismo."
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:3
-#: nuevo_fonotarot/templates/account/settings.html:24
-msgid "Mi cuenta"
+#: nuevo_fonotarot/templates/account/profile.html:3
+#: nuevo_fonotarot/templates/account/profile.html:41
+msgid "Mi perfil"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:28
-msgid "Información de la cuenta"
+#: nuevo_fonotarot/templates/account/profile.html:42
+msgid "Solo lectura con tu información más relevante y actividad reciente."
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:30
-msgid "Email"
+#: nuevo_fonotarot/templates/account/profile.html:53
+#: nuevo_fonotarot/templates/account/settings.html:81
+msgid "Datos de la cuenta"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:32
-msgid "Usuario"
+#: nuevo_fonotarot/templates/account/profile.html:59
+msgid "Nombre"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:44
-msgid "Seguridad"
+#: nuevo_fonotarot/templates/account/profile.html:60
+#: nuevo_fonotarot/templates/account/profile.html:64
+#: nuevo_fonotarot/templates/account/profile.html:68
+#: nuevo_fonotarot/templates/account/profile.html:75
+#: nuevo_fonotarot/templates/account/profile.html:87
+msgid "No informado"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:47
-msgid "Cambiar contraseña"
+#: nuevo_fonotarot/templates/account/profile.html:63
+msgid "Usuario (teléfono)"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:56
-msgid "Perfil completo"
+#: nuevo_fonotarot/templates/account/profile.html:67
+msgid "Teléfono (referencia para compras físicas)"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:56
-msgid "puedes comprar productos físicos, paquetes y suscripciones."
+#: nuevo_fonotarot/templates/account/profile.html:70
+msgid "Idealmente teléfono y usuario deben ser el mismo número."
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:61
-msgid "Perfil incompleto"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:61
-msgid "completa todos los campos para poder comprar productos físicos."
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:70
-msgid "Datos básicos"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:73
-msgid "Nombre completo"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:78
-msgid "Teléfono"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:87
-msgid "Datos para productos físicos"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:88
-msgid "Requeridos para recibir envíos."
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:91
+#: nuevo_fonotarot/templates/account/profile.html:74
+#: nuevo_fonotarot/templates/account/settings.html:109
 msgid "RUT"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:97
+#: nuevo_fonotarot/templates/account/profile.html:78
+#: nuevo_fonotarot/templates/account/settings.html:113
 msgid "Dirección"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:99
-msgid "Calle, número, depto."
+#: nuevo_fonotarot/templates/account/profile.html:79
+#: nuevo_fonotarot/templates/account/profile.html:83
+#: nuevo_fonotarot/templates/account/profile.html:164
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:158
+msgid "No informada"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:103
+#: nuevo_fonotarot/templates/account/profile.html:82
+#: nuevo_fonotarot/templates/account/settings.html:117
 msgid "Comuna"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:108
+#: nuevo_fonotarot/templates/account/profile.html:86
+#: nuevo_fonotarot/templates/account/settings.html:121
 msgid "Código postal"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:117
+#: nuevo_fonotarot/templates/account/profile.html:90
+#: nuevo_fonotarot/templates/account/settings.html:126
 msgid "Pago preferido"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:119
+#: nuevo_fonotarot/templates/account/profile.html:97
+#: nuevo_fonotarot/templates/account/settings.html:134
+msgid "Sin preferencia"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:102
+msgid "Minutos disponibles"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:104
+#: nuevo_fonotarot/templates/account/profile.html:112
+msgid "Consultar Saldo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:109
+#: nuevo_fonotarot/templates/account/profile.html:110
+msgid "Actualizar minutos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:121
+msgid "Faltan datos de cuenta para sincronización o perfil."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:122
+msgid "Completar datos en Configuración"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:133
+msgid "Perfil físico"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:136
+msgid "Tu perfil está completo para compras físicas."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:140
+msgid "Tu perfil todavía no tiene todos los datos para compras físicas."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:148
+msgid "5 últimas órdenes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:154
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:148
+msgid "Orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:155
+msgid "Fecha"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:156
+msgid "Estado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:157
+#: nuevo_fonotarot/templates/tienda/carrito.html:88
+#: nuevo_fonotarot/templates/tienda/checkout.html:103
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:162
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:194
+msgid "Total"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:176
+msgid "Todavía no hay órdenes registradas."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:187
+msgid "5 últimos posts"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:204
+msgid "Aún no hay posts publicados."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:215
+msgid "Suscripciones añadidas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:216
+#: nuevo_fonotarot/templates/account/profile.html:233
+msgid "Próximamente"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:223
+msgid "Esta sección todavía no está habilitada."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:232
+msgid "Productos comprados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/profile.html:240
+msgid "Cuando se active, verás aquí tus productos adquiridos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:3
+#: nuevo_fonotarot/templates/account/settings.html:11
+msgid "Configuración de cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:32
+#: nuevo_fonotarot/templates/account/settings.html:79
+msgid "Mi cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:52
+#: nuevo_fonotarot/templates/account/settings.html:162
+msgid "Teléfonos adicionales"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:62
+#: nuevo_fonotarot/templates/account/settings.html:221
+msgid "Notificaciones"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:88
+msgid "Usuario"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:93
+msgid "Datos básicos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:96
+msgid "Nombre completo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:100
+msgid "Teléfono principal"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:105
+msgid "Datos para productos físicos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:106
+msgid "Requeridos para recibir envíos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:114
+msgid "Calle, número, depto."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:128
 msgid ""
 "Si seleccionas un método preferido, el botón Comprar ahora te llevará "
 "directamente al formulario de pago sin pasos intermedios."
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:127
-msgid "Sin preferencia"
-msgstr ""
-
-#: nuevo_fonotarot/templates/account/settings.html:135
+#: nuevo_fonotarot/templates/account/settings.html:140
 msgid "tarjeta"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:141
+#: nuevo_fonotarot/templates/account/settings.html:144
 msgid "transferencia"
 msgstr ""
 
-#: nuevo_fonotarot/templates/account/settings.html:148
+#: nuevo_fonotarot/templates/account/settings.html:151
 msgid "Guardar cambios"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:164
+msgid "Administra aquí los números autorizados para consultas telefónicas."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:177
+msgid "Eliminar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:184
+msgid "No tienes teléfonos adicionales registrados."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:192
+msgid "Nuevo teléfono adicional"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:198
+msgid "Ej: +56912345678"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:201
+msgid "Formato permitido: 8 a 15 dígitos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:205
+msgid "Agregar teléfono"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:211
+msgid ""
+"Tu cuenta aún no tiene un cliente Firenze asociado. Completa tu perfil y "
+"vuelve a intentar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:222
+msgid "Sección preparada para elegir cómo deseas recibir avisos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:227
+msgid "Avisos por email"
+msgstr ""
+
+#: nuevo_fonotarot/templates/account/settings.html:233
+msgid "Avisos por WhatsApp"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:6
+msgid "Activar cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:297
+msgid "Activa tu acceso"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:298
+msgid "Para clientes que ya consultan por teléfono"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:303
+msgid ""
+"Si ya eres cliente de Fonotarot por teléfono, ingresa el email y el "
+"número que usas habitualmente. Verificaremos tus datos y crearemos tu "
+"cuenta web al instante."
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:355
+#: nuevo_fonotarot/templates/security/register_user.html:301
+msgid "solo dígitos, sin +"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:412
+msgid "¿Eres cliente nuevo?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:412
+msgid "Regístrate aquí"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:415
+msgid "¿Ya tienes cuenta web?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:415
+#: nuevo_fonotarot/templates/security/register_user.html:376
+msgid "Ingresa aquí"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:417
+#: nuevo_fonotarot/templates/security/login_user.html:392
+#: nuevo_fonotarot/templates/security/register_user.html:381
+msgid "← Volver al inicio"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/claim_account.html:428
+msgid "Tu historia con el tarot<br>continúa aquí."
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/forbidden_gate.html:143
+msgid "Acceso restringido"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/forbidden_gate.html:145
+msgid "Tu cuenta no tiene los permisos necesarios para ver esta sección."
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/forbidden_gate.html:148
+msgid "Se requiere uno de los roles:"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/forbidden_gate.html:156
+#: nuevo_fonotarot/templates/security/us_signin.html:473
+msgid "Volver al inicio"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:206
+msgid "Contenido privado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:207
+msgid "Ingresa tus credenciales para continuar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:213
+msgid "tu@correo.com"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:219
+#: nuevo_fonotarot/templates/auth/login_gate.html:240
+msgid "Correo o contraseña incorrectos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:239
+msgid "Verificando…"
+msgstr ""
+
+#: nuevo_fonotarot/templates/auth/login_gate.html:242
+msgid "Error de red, intenta de nuevo."
 msgstr ""
 
 #: nuevo_fonotarot/templates/blog/index.html:264
@@ -524,8 +1208,447 @@ msgstr ""
 msgid "¡Vuelve pronto!"
 msgstr ""
 
-#: nuevo_fonotarot/templates/macros/lang_switcher.html:24
-msgid "Seleccionar idioma"
+#: nuevo_fonotarot/templates/security/forgot_password.html:6
+msgid "Recuperar contraseña — Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:247
+msgid "Recupera tu acceso"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:248
+msgid "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:294
+msgid "Enviar enlace"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:298
+#: nuevo_fonotarot/templates/security/reset_password.html:299
+#: nuevo_fonotarot/templates/security/send_confirmation.html:290
+msgid "← Volver a"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:298
+#: nuevo_fonotarot/templates/security/login_user.html:385
+#: nuevo_fonotarot/templates/security/reset_password.html:299
+#: nuevo_fonotarot/templates/security/send_confirmation.html:290
+#: nuevo_fonotarot/templates/security/us_signin.html:6
+msgid "Ingresar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/forgot_password.html:308
+msgid "\"Los caminos perdidos<br>siempre encuentran la luz.\""
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:6
+msgid "Ingresar — Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:325
+#: nuevo_fonotarot/templates/security/us_signin.html:337
+msgid "Bienvenida de nuevo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:326
+#: nuevo_fonotarot/templates/security/us_signin.html:338
+msgid "Ingresa para consultar con tus tarotistas"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:357
+msgid "¿Olvidaste tu contraseña?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:390
+msgid "¿Prefieres no usar contraseña?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/login_user.html:403
+msgid "\"El universo tiene un mensaje para ti.<br>Solo necesitas escuchar.\""
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:6
+msgid "Crear cuenta — Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:269
+msgid "Comienza tu viaje"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:270
+msgid "Crea tu cuenta y accede a tu primera consulta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:371
+msgid "Crear cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:376
+msgid "¿Ya tienes cuenta?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:379
+msgid "¿Ya eres cliente por teléfono?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:379
+msgid "Activa tu acceso aquí"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/register_user.html:392
+msgid "\"Cada consulta es un primer paso<br>hacia tu propio camino.\""
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/reset_password.html:6
+msgid "Nueva contraseña — Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/reset_password.html:232
+#: nuevo_fonotarot/templates/security/reset_password.html:262
+msgid "Nueva contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/reset_password.html:233
+msgid "Elige una contraseña segura para proteger tu cuenta."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/reset_password.html:295
+msgid "Guardar contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/reset_password.html:309
+msgid "\"Renovar es comenzar<br>con más sabiduría.\""
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/send_confirmation.html:6
+msgid "Verificar cuenta — Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/passwordless/verify_code.html:65
+#: nuevo_fonotarot/templates/security/send_confirmation.html:239
+msgid "Verifica tu cuenta"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/send_confirmation.html:240
+msgid ""
+"Si no recibiste el correo de confirmación, ingresa tu email y te lo "
+"reenviamos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/send_confirmation.html:286
+msgid "Reenviar confirmación"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/send_confirmation.html:300
+msgid "\"La confirmación es el primer<br>paso hacia el destino.\""
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:388
+msgid "tu@email.com"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:395
+msgid "Método de envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:413
+msgid "000000"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:471
+msgid "¿Prefieres el flujo simplificado?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:471
+msgid "Usar acceso sin contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/us_signin.html:484
+msgid "El universo tiene un mensaje para ti.<br>Solo necesitas escuchar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:6
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:6
+msgid "Tu código de acceso a Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:7
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:7
+msgid "Tu código de acceso de un solo uso. Válido por 5 minutos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:12
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:12
+msgid "Tu código de acceso"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:19
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:19
+msgid ""
+"Bienvenido de nuevo a Fonotarot. Usa el código de un solo uso que aparece"
+" más abajo para acceder a tu cuenta. Este código expira en <strong>5 "
+"minutos</strong>."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:49
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:51
+msgid "Acceder ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:57
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:59
+msgid "o ingresa manualmente el código anterior"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:69
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:72
+msgid "Seguridad:"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:69
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:72
+msgid ""
+"Nunca compartiremos tu código por teléfono o redes sociales. Si no "
+"solicitaste acceso, ignora este correo y tu cuenta estará protegida."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_instructions.html:77
+msgid "Este código expira automáticamente después de 30 minutos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/email/us_signin_instructions.html:80
+msgid "Este código expira automáticamente después de 5 minutos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/passwordless/verify_code.html:67
+msgid "Te enviamos un código de 6 dígitos a tu correo. Ingrésalo para continuar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/passwordless/verify_code.html:125
+msgid "¿No te llegó el código?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/security/passwordless/verify_code.html:126
+msgid "Solicitar uno nuevo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:3
+msgid "Mi Carrito - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:23
+msgid "Mi Carrito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:33
+msgid "Producto"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:34
+msgid "Cantidad"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:35
+msgid "Precio"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:36
+#: nuevo_fonotarot/templates/tienda/carrito.html:83
+msgid "Subtotal"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:46
+msgid "Minutos prepagados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:47
+msgid "Suscripción mensual"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:48
+msgid "Producto físico"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:69
+msgid "Seguir comprando"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:72
+msgid "¿Vaciar el carrito?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:73
+msgid "Vaciar carrito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:81
+#: nuevo_fonotarot/templates/tienda/checkout.html:94
+msgid "Resumen del pedido"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:92
+msgid "Proceder al pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:95
+msgid "Métodos de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:108
+msgid "Tu carrito está vacío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:109
+msgid "Agrega minutos, suscripciones o productos esotéricos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/carrito.html:110
+msgid "Ir a la tienda"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:3
+msgid "Checkout - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:26
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:90
+msgid "Finalizar compra"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:37
+msgid "Datos de envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:40
+msgid "Envío anónimo:"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:40
+msgid "La caja llega sin marcas ni etiquetas que identifiquen el contenido."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:47
+msgid "Cambiar datos de envío"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:55
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:95
+msgid "Datos de contacto"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:57
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:124
+msgid "Email *"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:67
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:138
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:178
+msgid "Método de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:74
+msgid "Tarjeta débito / crédito / transferencia"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:83
+msgid "Transferencia bancaria simplificada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:107
+msgid "Pagar ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/checkout.html:110
+msgid "Pago seguro via Flow o Khipu"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:3
+#, python-format
+msgid "Comprar %(minutes)s minutos - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:49
+msgid "Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:52
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:204
+#, python-format
+msgid "%(minutes)s minutos de tarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:58
+#, python-format
+msgid "%(minutes)s minutos de tarot × 1"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:63
+msgid "Total a pagar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:68
+msgid "Pago seguro · Datos encriptados · Acreditación inmediata"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:91
+msgid "Completa tus datos y elige cómo pagar."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:100
+msgid "Compra anónima."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:100
+msgid "Solo necesitamos tu email para enviarte el comprobante."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:102
+msgid "¿Ya tienes cuenta? Ingresa sin contraseña"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:108
+msgid ""
+"Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima "
+"compra."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:111
+msgid "Te enviaremos un correo de bienvenida y confirmación."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:117
+msgid "Hola"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:118
+msgid "El comprobante se enviará a"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:131
+msgid "El teléfono usarás para llamar a tu tarotista."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:147
+msgid "Débito / Crédito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:157
+msgid "Transferencia"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:165
+msgid "Procesando pago..."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:167
+#, python-format
+msgid "Pagar ahora - $%(price)s"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/comprar_minutos.html:170
+msgid "Transacción encriptada · Acreditación inmediata"
 msgstr ""
 
 #: nuevo_fonotarot/templates/tienda/index.html:3
@@ -545,6 +1668,7 @@ msgid "Envíos 100% anónimos — cajas sin marcas"
 msgstr ""
 
 #: nuevo_fonotarot/templates/tienda/index.html:154
+#: nuevo_fonotarot/templates/tienda/minutos.html:26
 msgid "Minutos de Tarot Prepagados"
 msgstr ""
 
@@ -557,101 +1681,515 @@ msgid "Los minutos nunca vencen. Úsalos cuando quieras."
 msgstr ""
 
 #: nuevo_fonotarot/templates/tienda/index.html:163
+#: nuevo_fonotarot/templates/tienda/minutos.html:36
 msgid "Más popular"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:174
+#: nuevo_fonotarot/templates/tienda/index.html:182
 msgid "Comprar"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:182
+#: nuevo_fonotarot/templates/tienda/index.html:190
+#: nuevo_fonotarot/templates/tienda/minutos.html:81
 msgid "No hay packs disponibles por el momento."
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:188
+#: nuevo_fonotarot/templates/tienda/index.html:196
 msgid "Ver todos los packs"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:198
+#: nuevo_fonotarot/templates/tienda/index.html:206
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:27
 msgid "Planes de Suscripción"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:199
+#: nuevo_fonotarot/templates/tienda/index.html:207
 msgid "Ahorra cada mes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:201
+#: nuevo_fonotarot/templates/tienda/index.html:209
 msgid "Minutos renovados cada mes — ahorra y prioriza tu bienestar."
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:207
+#: nuevo_fonotarot/templates/tienda/index.html:215
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:36
 msgid "Recomendado"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:209
+#: nuevo_fonotarot/templates/tienda/index.html:217
 msgid "mes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:212
+#: nuevo_fonotarot/templates/tienda/index.html:220
+#: nuevo_fonotarot/templates/tienda/minutos.html:42
 msgid "minutos"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:212
+#: nuevo_fonotarot/templates/tienda/index.html:220
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:42
 msgid "por mes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:228
+#: nuevo_fonotarot/templates/tienda/index.html:244
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:58
 msgid "Suscribirme"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:236
+#: nuevo_fonotarot/templates/tienda/index.html:252
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:71
 msgid "No hay planes disponibles por el momento."
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:242
+#: nuevo_fonotarot/templates/tienda/index.html:258
 msgid "Ver todos los planes"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:253
+#: nuevo_fonotarot/templates/tienda/index.html:269
 msgid "Productos Destacados"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:254
+#: nuevo_fonotarot/templates/tienda/index.html:270
 msgid "Nuestra Tienda Esotérica"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:256
+#: nuevo_fonotarot/templates/tienda/index.html:272
 msgid "Mazos, velas, inciensos y más. Envíos anónimos a todo Chile."
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:274
+#: nuevo_fonotarot/templates/tienda/index.html:290
+#: nuevo_fonotarot/templates/tienda/productos.html:76
 msgid "Ver"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:283
+#: nuevo_fonotarot/templates/tienda/index.html:299
 msgid "Ver todos los productos"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:299
+#: nuevo_fonotarot/templates/tienda/index.html:315
 msgid "Privacidad garantizada en cada envío"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:301
+#: nuevo_fonotarot/templates/tienda/index.html:317
 msgid ""
 "Todos los productos físicos se envían en cajas sin marcas ni etiquetas "
 "que identifiquen el contenido. Puedes elegir entrega en un"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:302
+#: nuevo_fonotarot/templates/tienda/index.html:318
 msgid "punto de retiro"
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:303
+#: nuevo_fonotarot/templates/tienda/index.html:319
 msgid "en vez de tu domicilio para mayor discreción."
 msgstr ""
 
-#: nuevo_fonotarot/templates/tienda/index.html:312
+#: nuevo_fonotarot/templates/tienda/index.html:328
 msgid "Métodos de pago aceptados"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:3
+msgid "Minutos de Tarot Prepagados - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:27
+msgid "Recarga tu cuenta y consulta cuando quieras"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:28
+msgid "Los minutos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:28
+msgid "nunca vencen"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:28
+msgid "úsalos a tu ritmo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:44
+msgid "CLP · pago único"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:50
+msgid "Nunca vencen"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:51
+msgid "Se acumulan"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:52
+msgid "Sin suscripción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:70
+msgid "Comprar ahora"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:73
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:54
+msgid "Agregar al carrito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:91
+msgid "Sin vencimiento"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:92
+msgid "Los minutos que compras quedan en tu cuenta para siempre."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:98
+msgid "Acumulables"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:99
+msgid "Puedes comprar varias veces y los minutos se suman."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:105
+msgid "100% anónimo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/minutos.html:106
+msgid "Pagos discretos. Sin suscripciones ni cargos automáticos."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:3
+msgid "Estado de tu orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:97
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:103
+msgid "Pendiente"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:98
+msgid "Pagada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:99
+msgid "Entregada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:100
+msgid "Cancelada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:104
+msgid "Procesando"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:105
+msgid "Aprobado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:106
+msgid "Fallido"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:107
+msgid "Cancelado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:108
+msgid "Reembolsado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:109
+msgid "Desconocido"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:136
+msgid "Solicitud al proveedor"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:137
+msgid "Respuesta del proveedor"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:138
+msgid "Objeto de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:139
+msgid "Payload Firenze"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:140
+msgid "Respuesta Firenze"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:147
+msgid "Seguimiento de orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:151
+msgid "Estado de orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:154
+msgid "Estado de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:158
+msgid "Creada"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:171
+msgid "Resumen de compra"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:174
+msgid "Número de orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:182
+msgid "Transacción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:207
+msgid "Punto de retiro"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:207
+msgid "Envío a domicilio"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:214
+msgid "Envío anónimo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:226
+msgid "Archivos de auditoría"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:227
+msgid "Destacado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:234
+msgid "Audit"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:239
+msgid "Sin datos en este archivo de auditoría."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:250
+msgid "Flujo de orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:255
+msgid "Estado de ciclo de vida de la orden."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:263
+msgid "Estado terminal de la orden."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:270
+msgid "Flujo de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:275
+msgid "Estado de procesamiento del pago."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:283
+msgid "Estado terminal del pago."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:291
+msgid "Enlaces administrativos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:294
+msgid "Panel de administración"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:297
+msgid "Listado de órdenes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:300
+msgid "Detalle de esta orden"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/orden_estado.html:307
+msgid "Volver a la tienda"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:40
+#, python-format
+msgid "En stock (%(stock)s disponibles)"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:52
+msgid "Cantidad:"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:57
+#: nuevo_fonotarot/templates/tienda/productos.html:73
+msgid "Sin stock"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:63
+msgid "Envío anónimo garantizado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/producto_detalle.html:64
+msgid ""
+"Caja sin marcas, sin etiquetas del remitente. Opción de retiro en punto "
+"seguro."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:3
+msgid "Productos Esotéricos - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:33
+msgid "Productos Esotéricos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:34
+msgid "Mazos, velas, inciensos, cristales y más"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:35
+msgid "Cajas sin marcas · Envíos discretos · Punto de retiro disponible"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:42
+msgid "Todos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:71
+msgid "En stock"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/productos.html:100
+msgid "No hay productos en esta categoría por el momento."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:3
+#, python-format
+msgid "Enlace de Pago - %(plan_name)s - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:27
+msgid "Renovar suscripción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:34
+#, python-format
+msgid "%(minutes)s minutos / mes"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:41
+msgid "Cobro manual:"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:41
+msgid ""
+"Las suscripciones no tienen cargo automático. Recibirás un enlace de pago"
+" por email cada período para renovar cuando quieras."
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:47
+msgid "Método de pago para esta renovación"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:55
+msgid "Tarjeta débito / crédito"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:65
+msgid "Transferencia bancaria"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripcion_link_pago.html:73
+msgid "Generar enlace de pago"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:3
+msgid "Planes de Suscripción - Fonotarot"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:28
+msgid "Minutos renovados cada mes — ahorra y prioriza tu bienestar"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:42
+#, python-format
+msgid "%(minutes)s minutos"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:62
+msgid "Inicia sesión para suscribirte"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:78
+msgid "¿Suscripción o minutos prepagados?"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:84
+msgid "Prepagado"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:85
+msgid "Suscripción"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:90
+msgid "Minutos nunca vencen"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:95
+msgid "Renovación automática"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:100
+msgid "Precio por minuto más bajo"
+msgstr ""
+
+#: nuevo_fonotarot/templates/tienda/suscripciones.html:105
+msgid "Sin compromiso"
+msgstr ""
+
+#: nuevo_fonotarot/tienda/utils.py:79
+msgid "Error al conectar con el proveedor de pago. Intenta más tarde."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:51
+msgid "Método de pago no válido."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:96
+msgid ""
+"Ya estamos procesando tu compra. Evita hacer clic repetido en el botón de"
+" pago."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:119
+msgid "Para crear tu cuenta debes ingresar un teléfono."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:124
+msgid "Ingresa un teléfono válido (solo dígitos, sin +, entre 10 y 13 dígitos)."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:134
+msgid ""
+"Cuenta creada. Te enviamos un correo de bienvenida y confirmación. Cuando"
+" confirmes tu email, ingresa desde el acceso sin contraseña."
+msgstr ""
+
+#: nuevo_fonotarot/tienda/minutos/views.py:142
+msgid ""
+"Ya existe una cuenta con ese email. Puedes ingresar con acceso sin "
+"contraseña."
 msgstr ""
 
 #~ msgid "Debes iniciar sesión para ver la configuración de tu cuenta."
@@ -667,5 +2205,48 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Editar perfil de envío"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Consulta con tarotistas reales por "
+#~ "teléfono en Chile. Planes desde 15 "
+#~ "min. Disponible 24/7. Amor, trabajo, "
+#~ "salud y más."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "tarot telefónico, tarot por teléfono, "
+#~ "tarot Chile, tarotistas Chile, consulta "
+#~ "tarot"
+#~ msgstr ""
+
+#~ msgid "Fonotarot - Tarot por Teléfono con Personas Reales"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Consulta con tarotistas reales por "
+#~ "teléfono en Chile. Planes desde 15 "
+#~ "min. Disponible 24/7."
+#~ msgstr ""
+
+#~ msgid "Información de la cuenta"
+#~ msgstr ""
+
+#~ msgid "Seguridad"
+#~ msgstr ""
+
+#~ msgid "Cambiar contraseña"
+#~ msgstr ""
+
+#~ msgid "Perfil completo"
+#~ msgstr ""
+
+#~ msgid "puedes comprar productos físicos, paquetes y suscripciones."
+#~ msgstr ""
+
+#~ msgid "Perfil incompleto"
+#~ msgstr ""
+
+#~ msgid "completa todos los campos para poder comprar productos físicos."
 #~ msgstr ""
 

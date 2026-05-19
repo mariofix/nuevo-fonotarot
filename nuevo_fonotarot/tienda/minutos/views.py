@@ -48,7 +48,7 @@ def comprar_minutos(pack_id: int):
 
         if payment_method not in ("flow", "khipu"):
             logger.warning("Invalid payment method %r for pack_id=%s", payment_method, pack_id)
-            flash("Método de pago no válido.", "danger")
+            flash(_("Método de pago no válido."), "danger")
             return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
 
         email = request.form.get("email", "").strip()

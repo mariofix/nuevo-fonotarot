@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Comprar {{ pack.minutes }} Minutos - Fonotarot{% endblock %}
+{% block title %}{{ _("Comprar %(minutes)s minutos - Fonotarot", minutes=pack.minutes) }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
@@ -46,26 +46,26 @@
 
     <!-- ── LEFT: Pack summary ─────────────────────────── -->
     <div class="ck-left">
-      <a href="/" class="ck-left-brand">🌙 Fonotarot</a>
+      <a href="/" class="ck-left-brand">🌙 {{ _("Fonotarot") }}</a>
 
       <div class="ck-pack-icon"><i class="ti ti-clock"></i></div>
-      <div class="ck-pack-name">{{ pack.minutes }} minutos de tarot</div>
+      <div class="ck-pack-name">{{ _("%(minutes)s minutos de tarot", minutes=pack.minutes) }}</div>
       {% if pack.description %}
       <div class="ck-pack-desc">{{ pack.description }}</div>
       {% endif %}
 
       <div class="ck-left-item">
-        <span class="item-name"><i class="ti ti-clock me-2"></i>{{ pack.minutes }} minutos de tarot × 1</span>
+        <span class="item-name"><i class="ti ti-clock me-2"></i>{{ _("%(minutes)s minutos de tarot × 1", minutes=pack.minutes) }}</span>
         <span class="item-price">${{ pack.price_display }}</span>
       </div>
 
       <div class="ck-left-total">
-        <span class="total-label">Total a pagar</span>
+        <span class="total-label">{{ _("Total a pagar") }}</span>
         <span class="total-value">${{ pack.price_display }}</span>
       </div>
 
       <div class="ck-left-secure">
-        <i class="ti ti-shield-check me-1"></i>Pago seguro · Datos encriptados · Acreditación inmediata
+        <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro · Datos encriptados · Acreditación inmediata") }}
       </div>
     </div>
 
@@ -87,17 +87,17 @@
         {% endif %}
         {% endwith %}
 
-        <h2>Finalizar compra</h2>
-        <p class="subtitle">Completa tus datos y elige cómo pagar.</p>
+        <h2>{{ _("Finalizar compra") }}</h2>
+        <p class="subtitle">{{ _("Completa tus datos y elige cómo pagar.") }}</p>
 
         <!-- ── Customer data ─────────────────────── -->
         <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-user"></i> Datos de contacto</div>
+          <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de contacto") }}</div>
 
           {% if not current_user %}
           <div class="ck-info anon">
             <i class="ti ti-ghost me-1"></i>
-            <strong>Compra anónima.</strong> Solo necesitamos tu email para enviarte el comprobante.
+            <strong>{{ _("Compra anónima.") }}</strong> {{ _("Solo necesitamos tu email para enviarte el comprobante.") }}
             <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
               {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
             </a>
@@ -114,19 +114,19 @@
           {% else %}
           <div class="ck-info known">
             <i class="ti ti-user-check me-1"></i>
-            <strong>Hola{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
-            El comprobante se enviará a <strong>{{ current_user.email }}</strong>.
+            <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
+            {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
           </div>
           {% endif %}
 
           <div class="row g-2">
             <div class="col-md-7">
-              <label class="form-label" for="email">Email *</label>
+              <label class="form-label" for="email">{{ _("Email *") }}</label>
               <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated
                 %}readonly{% endif %} />
             </div>
             <div class="col-md-5">
-              <label class="form-label" for="phone">Teléfono</label>
+              <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
               <input type="tel" id="phone" name="phone" class="form-control" placeholder="+56 9 ..." value="{{ prefilled_phone }}" />
               <div class="form-text">{{ _("El teléfono usarás para llamar a tu tarotista.") }}</div>
             </div>
@@ -135,7 +135,7 @@
 
         <!-- ── Payment method ─────────────────────── -->
         <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-credit-card"></i> Método de pago</div>
+          <div class="section-label"><i class="ti ti-credit-card"></i> {{ _("Método de pago") }}</div>
           <div class="ck-pay-pills">
 
             <label class="ck-pill-label">
@@ -144,7 +144,7 @@
                 <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
                 <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
                 <div class="ck-pill-name">Flow</div>
-                <div class="ck-pill-desc">Débito / Crédito</div>
+                <div class="ck-pill-desc">{{ _("Débito / Crédito") }}</div>
               </div>
             </label>
 
@@ -154,7 +154,7 @@
                 <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
                 <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
                 <div class="ck-pill-name">Khipu</div>
-                <div class="ck-pill-desc">Transferencia</div>
+                <div class="ck-pill-desc">{{ _("Transferencia") }}</div>
               </div>
             </label>
 
@@ -164,10 +164,10 @@
         <!-- ── Submit ─────────────────────────────── -->
         <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
           <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
-          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">Pagar ahora - ${{ pack.price_display }}</span>
+          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - $%(price)s", price=pack.price_display) }}</span>
         </button>
         <p class="ck-note">
-          <i class="ti ti-shield-check me-1"></i>Transacción encriptada · Acreditación inmediata
+          <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}
         </p>
 
       </div>
@@ -201,7 +201,7 @@
         var quantity = 1;
         var items = [{
           item_id: 'minute_pack-{{ pack.id }}',
-          item_name: {{ ("{} minutos de tarot".format(pack.minutes)) | tojson }},
+          item_name: {{ (_("%(minutes)s minutos de tarot", minutes=pack.minutes)) | tojson }},
           item_category: 'minute_pack',
           price: {{ pack.price }},
           quantity: quantity

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Enlace de Pago - {{ plan.name }} - Fonotarot{% endblock %}
+{% block title %}{{ _("Enlace de Pago - %(plan_name)s - Fonotarot", plan_name=plan.name) }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -24,28 +24,27 @@
           {% endfor %}
         {% endwith %}
 
-        <h1 class="fw-bold mb-4">Renovar suscripción</h1>
+        <h1 class="fw-bold mb-4">{{ _("Renovar suscripción") }}</h1>
 
         <!-- Plan details -->
         <div class="plan-info p-4 mb-4 d-flex align-items-center gap-4">
           <i class="ti ti-refresh" style="font-size:2.5rem;color:#a78bfa"></i>
           <div>
             <h4 class="fw-bold mb-0">{{ plan.name }}</h4>
-            <p class="text-secondary small mb-1">{{ plan.minutes_per_month }} minutos / mes</p>
+            <p class="text-secondary small mb-1">{{ _("%(minutes)s minutos / mes", minutes=plan.minutes_per_month) }}</p>
             <div class="price-tag">${{ plan.price_display }} <small class="text-secondary fs-6 fw-normal">CLP / mes</small></div>
           </div>
         </div>
 
         <div class="manual-note mb-4">
           <i class="ti ti-info-circle me-1"></i>
-          <strong>Cobro manual:</strong> Las suscripciones no tienen cargo automático. Recibirás un enlace
-          de pago por email cada período para renovar cuando quieras.
+          <strong>{{ _("Cobro manual:") }}</strong> {{ _("Las suscripciones no tienen cargo automático. Recibirás un enlace de pago por email cada período para renovar cuando quieras.") }}
         </div>
 
         <form method="post" action="{{ url_for('suscripciones.link_pago', plan_id=plan.id) }}">
 
           <div class="card p-4 mb-4">
-            <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>Método de pago para esta renovación</h5>
+            <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>{{ _("Método de pago para esta renovación") }}</h5>
             <div class="row g-3">
               <div class="col-6">
                 <label class="d-block">
@@ -53,7 +52,7 @@
                          id="pay_flow" required/>
                   <div class="payment-option text-center" id="flow_box">
                     <div class="fw-bold mb-1">Flow</div>
-                    <div class="small text-secondary">Tarjeta débito / crédito</div>
+                    <div class="small text-secondary">{{ _("Tarjeta débito / crédito") }}</div>
                   </div>
                 </label>
               </div>
@@ -63,7 +62,7 @@
                          id="pay_khipu"/>
                   <div class="payment-option text-center" id="khipu_box">
                     <div class="fw-bold mb-1">Khipu</div>
-                    <div class="small text-secondary">Transferencia bancaria</div>
+                    <div class="small text-secondary">{{ _("Transferencia bancaria") }}</div>
                   </div>
                 </label>
               </div>
@@ -71,7 +70,7 @@
           </div>
 
           <button type="submit" class="btn btn-primary w-100 btn-lg">
-            <i class="ti ti-link me-2"></i>Generar enlace de pago
+            <i class="ti ti-link me-2"></i>{{ _("Generar enlace de pago") }}
           </button>
 
         </form>

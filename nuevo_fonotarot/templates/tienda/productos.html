@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Productos Esotéricos - Fonotarot{% endblock %}
+{% block title %}{{ _("Productos Esotéricos - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -30,16 +30,16 @@
         {% endwith %}
 
         <div class="text-center mb-4">
-          <h1 class="fw-bold text-white">Productos Esotéricos</h1>
-          <p class="text-secondary fs-5 mt-2">Mazos, velas, inciensos, cristales y más</p>
-          <span class="anonymous-note"><i class="ti ti-eye-off me-1"></i>Cajas sin marcas · Envíos discretos · Punto de retiro disponible</span>
+          <h1 class="fw-bold text-white">{{ _("Productos Esotéricos") }}</h1>
+          <p class="text-secondary fs-5 mt-2">{{ _("Mazos, velas, inciensos, cristales y más") }}</p>
+          <span class="anonymous-note"><i class="ti ti-eye-off me-1"></i>{{ _("Cajas sin marcas · Envíos discretos · Punto de retiro disponible") }}</span>
         </div>
 
         <!-- Category filter -->
         <div class="d-flex flex-wrap gap-2 mb-4">
           <a href="{{ url_for('productos.index') }}"
              class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
-            Todos
+            {{ _("Todos") }}
           </a>
           {% for cat in categories %}
           <a href="{{ url_for('productos.index', categoria=cat.slug) }}"
@@ -68,12 +68,12 @@
                 <h6 class="text-white mb-1">{{ product.name }}</h6>
                 <div class="price">${{ product.price_display }}</div>
                 {% if product.stock > 0 %}
-                <div class="small text-success mt-1"><i class="ti ti-check me-1"></i>En stock</div>
+                <div class="small text-success mt-1"><i class="ti ti-check me-1"></i>{{ _("En stock") }}</div>
                 {% else %}
-                <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>Sin stock</div>
+                <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</div>
                 {% endif %}
                 <div class="d-flex gap-2 mt-3">
-                  <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">Ver</a>
+                  <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">{{ _("Ver") }}</a>
                   {% if product.stock > 0 %}
                    <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex"
                          data-track-event="add_to_cart"
@@ -97,7 +97,7 @@
           {% else %}
           <div class="col-12 text-center text-secondary py-5">
             <i class="ti ti-package-off" style="font-size:3rem"></i>
-            <p class="mt-2">No hay productos en esta categoría por el momento.</p>
+            <p class="mt-2">{{ _("No hay productos en esta categoría por el momento.") }}</p>
           </div>
           {% endfor %}
         </div>

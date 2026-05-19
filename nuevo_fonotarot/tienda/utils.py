@@ -3,6 +3,7 @@
 from urllib.parse import urlparse
 
 from flask import flash, redirect, request, session
+from flask_babel import _
 
 from ..log import get_logger
 from ..models import Order
@@ -75,7 +76,7 @@ def create_payment_and_redirect(
         redirect_url = order.initiate_payment(payment_method, email)
     except Exception as exc:
         logger.error("Payment creation error (%s): %s", payment_method, exc, exc_info=True)
-        flash("Error al conectar con el proveedor de pago. Intenta más tarde.", "danger")
+        flash(_("Error al conectar con el proveedor de pago. Intenta más tarde."), "danger")
         return redirect(error_redirect)
 
     logger.info(
