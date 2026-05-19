@@ -360,6 +360,8 @@ class Order(db.Model, PaymentMixin):
 
     # Firenze company-wide client identifier (linked after lookup or confirmed payment).
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    firenze_payload: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
+    firenze_response: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
 
     items = db.relationship(
         "OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan"

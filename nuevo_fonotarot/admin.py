@@ -733,6 +733,8 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
         "request_payload",
         "response_payload",
         "payment_object",
+        "firenze_payload",
+        "firenze_response",
     ]
     column_list = (
         "status",
