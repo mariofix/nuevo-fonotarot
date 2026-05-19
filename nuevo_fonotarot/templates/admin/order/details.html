@@ -84,16 +84,8 @@
       border-radius: var(--tblr-border-radius);
     }
 
-    .audit-json {
+    .audit-rendered .json-viewer {
       max-height: 260px;
-      overflow: auto;
-      border-radius: var(--tblr-border-radius);
-      margin: 0;
-      font-size: .8rem;
-      line-height: 1.4;
-      border: 1px solid var(--tblr-border-color);
-      background: rgba(0, 0, 0, .03);
-      padding: .75rem;
     }
   </style>
 
@@ -206,20 +198,20 @@
         </div>
         <div class="card-body">
           {% set audit_payloads = [
-            (_gettext('Provider request payload'), model.request_payload),
-            (_gettext('Provider response payload'), model.response_payload),
-            (_gettext('Payment object'), model.payment_object),
-            (_gettext('Firenze payload'), model.firenze_payload),
-            (_gettext('Firenze response'), model.firenze_response),
+            (_gettext('Provider request payload'), 'request_payload'),
+            (_gettext('Provider response payload'), 'response_payload'),
+            (_gettext('Payment object'), 'payment_object'),
+            (_gettext('Firenze payload'), 'firenze_payload'),
+            (_gettext('Firenze response'), 'firenze_response'),
           ] %}
-          {% for label, payload in audit_payloads %}
+          {% for label, field_name in audit_payloads %}
           <div class="audit-block p-3 mb-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <div class="fw-semibold">{{ label }}</div>
               <span class="badge bg-warning-lt text-warning">audit</span>
             </div>
-            {% if payload %}
-            <pre class="audit-json"><code>{{ payload|tojson(indent=2) }}</code></pre>
+            {% if model|attr(field_name) is not none and model|attr(field_name) != '' %}
+            <div class="audit-rendered">{{ get_value(model, field_name) }}</div>
             {% else %}
             <div class="text-muted small">{{ _gettext('No data available.') }}</div>
             {% endif %}
