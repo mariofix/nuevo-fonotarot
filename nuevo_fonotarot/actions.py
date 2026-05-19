@@ -5,7 +5,7 @@ from __future__ import annotations
 from .extensions import db, user_datastore
 from .firenze import search_client
 from .log import get_logger
-from .models import User, OrderStatus, OrderItemType, MinutePack, Order, OrderItem
+from .models import User
 from .notifications import notify_new_user_registration
 
 logger = get_logger(__name__)
@@ -101,7 +101,9 @@ def process_user_registration(user: User) -> bool:
 
     # Send Telegram notification about new registration
     try:
-        notify_new_user_registration(email=user.email, phone=user.phone or user.username)
+        notify_new_user_registration(
+            email=user.email, phone=user.phone or user.username
+        )
         logger.debug(
             "process_user_registration: Telegram notification sent for user=%s",
             user.id,
@@ -111,7 +113,7 @@ def process_user_registration(user: User) -> bool:
             "process_user_registration: failed to send Telegram notification for user=%s",
             user.id,
         )
-    
+
     # Copy username → phone if phone is blank (non-enforced convenience sync).
     if user.username and not user.phone:
         user.phone = user.username
@@ -130,7 +132,7 @@ def process_user_registration(user: User) -> bool:
             user.username or user.phone,
         )
         client_id = search_client(email=user.email, phone=user.username or user.phone)
-        
+
         if client_id is not None:
             user.firenze_client_id = client_id
             changed = True
@@ -139,7 +141,7 @@ def process_user_registration(user: User) -> bool:
                 client_id,
                 user.id,
             )
-            
+
             _assign_clientes_role(user)
             db.session.commit()
             logger.info(
@@ -182,7 +184,7 @@ def _assign_clientes_role(user: User) -> None:
         "_assign_clientes_role: looking up 'clientes' role for user=%s",
         user.id,
     )
-    
+
     clientes_role = user_datastore.find_role("clientes")
     if not clientes_role:
         logger.error(
@@ -190,7 +192,7 @@ def _assign_clientes_role(user: User) -> None:
             user.id,
         )
         return
-    
+
     if clientes_role not in user.roles:
         user_datastore.add_role_to_user(user, clientes_role)
         logger.info(
@@ -208,36 +210,9 @@ def _assign_clientes_role(user: User) -> None:
             user.id,
         )
 
+
 def post_purchase_process(order_id: int) -> None:
-    """Processes that run after a paid purchase
-    
-    This process does the following:
-    - Find client_id in firenze if not in the order
-    - For MinutePacks, firenze endpoint complete payment is called
-    - User enail is sent if configured
-    - Admin email is sent
-    - Telegram/Whatsapp notification
+    """Backward-compatible alias for ``nuevo_fonotarot.signals.post_purchase_process``."""
+    from .signals import post_purchase_process as _post_purchase_process
 
-    Args:
-        order_id: order that is ready to be fulfilled, mostly digital goods.
-    """
-    
-
-    logger.debug(f"Trying to process order_id: {order_id}")
-
-    if not order_id:
-        logger.warning("post_purchase_process: an order_id is needed.")
-        return
-
-    order = Order.query.filter_by(id=order_id).first()
-
-    if not order:
-        logger.warning(f"post_purchase_process: order_id={order_id} is not found.")
-        return
-
-    if order.payment_status != "succeeded":
-        logger.warning(f"post_purchase_process: {order_id=} is {order.payment_status=}")
-        return
-
-    if not order.firenze_client_id:
-        client_id = search_client(ani=order.shipping_phone)
+    _post_purchase_process(order_id)

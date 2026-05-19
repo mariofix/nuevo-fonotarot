@@ -34,6 +34,7 @@ Configuration (via ``app.config`` / environment variables)
 """
 
 from urllib.parse import urljoin
+from typing import Any
 
 import requests
 from flask import current_app
@@ -284,6 +285,102 @@ def create_client(
         )
         return None
 
+def post_purchase(
+    name: str | None,
+    email: str | None,
+    ani: str | None,
+    transaction_id: str | None,
+    client_id: int | None,
+    segundos: int | None,
+) -> dict[str, Any] | None:
+    """Post a Purchase after a succeful payment.
+
+    Calls ``POST /api/v1/payments/complete`` with a JSON body containing profile
+    information and payment transaction identifier.
+
+    Args:
+        name: Customer full name (may be ``None``).
+        email: Customer e-mail address (may be ``None``).
+        ani: Customer phone number (may be ``None``).
+        transaction_id: Payment transaction identifier for audit purposes  (may be ``None``).
+        client_id: if found (may be ``None``).
+        segundos: seconds to add (may be ``None``).
+
+    Returns:
+        The JSON response body from Firenze, or ``None`` if the request
+        failed for any reason.
+    """
+
+    # {
+    #   "service": "string",
+    #   "credits": 1,
+    #   "client_id": 0,
+    #   "email": "user@example.com",
+    #   "full_name": "string",
+    #   "phone_number": "string",
+    #   "ani": "string",
+    #   "transaction_id": "string"
+    # }
+
+    headers = _auth_headers()
+    if not headers:
+        logger.warning("post_purchase: missing Firenze API credentials")
+        return None
+
+    payload = {
+        "service": "fonotarot-cl",
+        "client_id": client_id or "",
+        "credits": segundos or 0,
+        "transaction_id": transaction_id or "",
+    }
+    
+    url = urljoin(_base_url(), "/api/v1/payments/complete")
+    logger.debug(f"post_purchase: sending payment ({payload=}) to {url}")
+    
+    try:
+        resp = requests.post(url, json=payload, headers=headers, timeout=_timeout())
+        logger.info(
+            "post_purchase: request completed status=%s transaction_id=%r client_id=%r credits=%r",
+            resp.status_code,
+            transaction_id,
+            client_id,
+            segundos,
+        )
+        if resp.status_code not in (200, 201):
+            logger.warning(
+                "post_purchase: unexpected status %s for client_id=%r transaction_id=%r body=%r",
+                resp.status_code,
+                client_id,
+                transaction_id,
+                resp.text[:300],
+            )
+            return None
+        
+        data = resp.json()
+        if not isinstance(data, dict):
+            logger.warning(
+                "post_purchase: unexpected response payload type %s for client_id=%r",
+                type(data).__name__,
+                client_id,
+            )
+            return None
+        logger.info("post_purchase: response=%r", data)
+        return data
+    except requests.RequestException as exc:
+        logger.warning(
+            "post_purchase: network error for email=%r ani=%r — %s",
+            email,
+            ani,
+            exc,
+        )
+        return None
+    except Exception:
+        logger.exception(
+            "post_purchase: unexpected error for email=%r ani=%r",
+            email,
+            ani,
+        )
+        return None
 
 def complete_promo_credit(ani: str | None, credits: int) -> int | None:
     """Complete a free-trial promo in Firenze and return the new client id."""

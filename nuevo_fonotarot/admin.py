@@ -761,7 +761,7 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     def action_post_purchase(self, ids):
         """This ejecutes the process after a webhook, no modifications """
         from flask import flash
-        from .actions import post_purchase_process
+        from .signals import post_purchase_process
         for order_id in ids:
             post_purchase_process(order_id=order_id)
 
