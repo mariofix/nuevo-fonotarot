@@ -617,7 +617,7 @@ def pago_retorno(order_id: str):
             order.status,
         )
 
-    return redirect(url_for("pagos.orden_estado", order_id=order.id))
+    return redirect(url_for("pagos.orden_estado", order_id=order.merchants_id))
 
 
 # ---------------------------------------------------------------------------
@@ -625,11 +625,11 @@ def pago_retorno(order_id: str):
 # ---------------------------------------------------------------------------
 
 
-@pagos_bp.route("/orden/<int:order_id>/")
-def orden_estado(order_id: int):
+@pagos_bp.route("/orden/<order_id>/")
+def orden_estado(order_id: str):
     """Show the status of a specific order."""
     logger.debug("pagos.orden_estado: user checking order=%s status", order_id)
-    order = Order.query.get_or_404(order_id)
+    order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     items = list(order.items)
     logger.debug(
         "pagos.orden_estado: order=%s status=%s has %d item(s)",
