@@ -5,6 +5,7 @@ from flask import abort, current_app, redirect, render_template, request, url_fo
 from ...extensions import db
 from ...log import get_logger
 from ...models import MinutePack, Order, OrderStatus, Product, SubscriptionPlan
+from ...signals import post_purchase_process
 from ..utils import _get_cart
 from . import pagos_bp
 
@@ -352,13 +353,9 @@ def _handle_khipu_webhook_event(event) -> None:
         )
         return
 
-    _apply_payment_state_to_order(
-        order,
-        payment_id=payment_id,
-        provider=provider,
-        state=state,
-        label="webhook-khipu",
-    )
+    
+    post_purchase_process(order_id=order.id)
+    
 
 
 def _handle_flow_webhook_event(event) -> None:
@@ -475,6 +472,8 @@ def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
         getattr(event, "payment_id", None),
         getattr(getattr(event, "state", None), "value", None),
     )
+    
+
     _handle_payment_webhook_event(event)
 
 
