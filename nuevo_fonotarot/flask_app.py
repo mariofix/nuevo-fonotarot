@@ -263,6 +263,7 @@ def _init_merchants(app: Flask, admin: Any) -> None:
             FlowProvider(
                 api_key=app.config.get("FLOW_API_KEY", ""),
                 api_secret=app.config.get("FLOW_SECRET_KEY", ""),
+                api_url=app.config.get("FLOW_API_URL", ""),
             )
         )
     from .models import Order
