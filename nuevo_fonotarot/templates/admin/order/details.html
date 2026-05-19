@@ -91,6 +91,23 @@
     .audit-rendered .json-viewer {
       max-height: 260px;
     }
+
+    .dropdown-menu .dropdown-item {
+      padding: 0.5rem 1rem;
+      min-width: 200px;
+      white-space: nowrap;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    .dropdown-menu form {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
   </style>
 
   <div class="d-flex align-items-center mb-4 gap-2 flex-wrap">
@@ -112,7 +129,7 @@
         <ul class="dropdown-menu dropdown-menu-end">
           {% for action_name, action_func in admin_view._actions %}
           <li>
-            <form method="POST" action="{{ url_for('order.action_view') }}" style="display:inline;">
+            <form method="POST" action="{{ url_for('order.action_view') }}">
               <input type="hidden" name="id" value="{{ model.id }}" />
               <input type="hidden" name="action" value="{{ action_name }}" />
               {% if csrf_token is defined and csrf_token %}
