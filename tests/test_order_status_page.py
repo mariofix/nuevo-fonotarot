@@ -130,3 +130,4 @@ def test_orden_estado_shows_paid_purchase_summary_and_offers(monkeypatch):
     assert "Comprar de nuevo" in body
     assert "En tu próxima compra" in body
     assert "Iniciar sesión" in body
+    assert "js-passwordless-trigger" in body

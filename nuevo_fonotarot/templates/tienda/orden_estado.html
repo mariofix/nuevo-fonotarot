@@ -84,8 +84,7 @@
 {% block content %}
 {% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'delivered') %}
 {% set support_phone = '+56 2 2230 1515' %}
-{% set register_url = url_for_security('login') %}
-{% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else register_url %}
+{% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else none %}
 
 <div class="container py-5 status-shell">
   <div class="status-hero p-4 p-md-5 mb-4">
@@ -202,7 +201,7 @@
             <div class="flex-grow-1">
               <div class="fw-semibold mb-2">{{ _("Regístrate y desbloquea más beneficios") }}</div>
               <p class="status-summary mb-3">
-                {{ _("En tu próxima compra marca la casilla para crear una cuenta. Si ya lo hiciste, abre el menú de usuario y elige Login.") }}
+                {{ _("En tu próxima compra marca la casilla para crear una cuenta. Si ya lo hiciste, abre el menú de usuario y elige Login para entrar con tu correo.") }}
               </p>
               <ul class="benefit-list mb-3">
                 <li>{{ _("Compra con un clic.") }}</li>
@@ -210,13 +209,15 @@
                 <li>{{ _("Saldo en línea.") }}</li>
                 <li>{{ _("Y más beneficios para clientes registrados.") }}</li>
               </ul>
+              {% if current_user and current_user.is_authenticated %}
               <a href="{{ account_url }}" class="btn btn-outline-primary">
-                {% if current_user and current_user.is_authenticated %}
-                  <i class="ti ti-user-circle me-1"></i>{{ _("Ir a mi perfil") }}
-                {% else %}
-                  <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
-                {% endif %}
+                <i class="ti ti-user-circle me-1"></i>{{ _("Ir a mi perfil") }}
               </a>
+              {% else %}
+              <button type="button" class="btn btn-outline-primary js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}">
+                <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
+              </button>
+              {% endif %}
             </div>
           </div>
         </div>
