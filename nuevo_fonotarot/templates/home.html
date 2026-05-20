@@ -545,6 +545,35 @@
                      class="btn btn-plan btn-plan-primary">
                     <i class="ti ti-bolt me-1"></i>{{ _("Compra Ahora") }}
                   </a>
+                  {% if current_user.is_authenticated and current_user.preferred_payment in ['flow', 'khipu'] and current_user.email %}
+                  <form action="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}"
+                        method="post"
+                        class="d-grid"
+                        data-track-event="one_click_purchase"
+                        data-track-value="{{ pack.price }}"
+                        data-track-currency="CLP"
+                        data-track-method="{{ current_user.preferred_payment }}"
+                        data-track-item-id="minute_pack-{{ pack.id }}"
+                        data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                        data-track-item-category="minute_pack"
+                        data-track-item-price="{{ pack.price }}"
+                        data-track-item-variant="{{ current_user.preferred_payment }}"
+                        data-track-item-quantity="1">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <input type="hidden" name="email" value="{{ current_user.email }}" />
+                    <input type="hidden" name="phone" value="{{ current_user.phone or '' }}" />
+                    <input type="hidden" name="payment_method" value="{{ current_user.preferred_payment }}" />
+                    <button type="submit" class="btn btn-plan btn-plan-outline">
+                      <i class="ti ti-bolt me-1"></i>{{ _("Compra en un click") }}
+                    </button>
+                  </form>
+                  {% elif current_user.is_authenticated %}
+                  <a href="{{ url_for('account.settings', tab='profile') }}"
+                     class="btn btn-plan btn-plan-outline">
+                    <i class="ti ti-click me-1"></i>{{ _("Activa compra en un click") }}
+                  </a>
+                  <p class="plan-desc small mb-0">{{ _("¿Quieres comprar en un click? Guarda un método de pago preferido en tu cuenta para activarlo.") }}</p>
+                  {% endif %}
               <form action="{{ url_for('productos.agregar') }}" method="post"
                     data-track-event="add_to_cart"
                     data-track-value="{{ pack.price }}"
