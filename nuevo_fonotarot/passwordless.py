@@ -216,7 +216,7 @@ def create_passwordless_blueprint() -> Blueprint:
                 method,
                 totp_secret=totp_secrets[method],
                 phone_number=getattr(user, "us_phone_number", None),
-                send_magic_link=False,
+                send_magic_link=True,
             )
 
             if msg:

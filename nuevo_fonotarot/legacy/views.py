@@ -51,7 +51,7 @@ def _fetch_monthly_3carrier(
 
     with portal_conn() as conn:
         with conn.cursor() as cur:
-            for key, userfield in carriers.items():
+            for key, accountcode in carriers.items():
                 cur.execute(
                     """
                     SELECT DAY(calldate) AS dia,
@@ -59,12 +59,12 @@ def _fetch_monthly_3carrier(
                     FROM cdr
                     WHERE disposition = 'ANSWERED'
                       AND zvn_clientid > 1
-                      AND userfield = %s
+                      AND accountcode = %s
                       AND calldate >= %s
                       AND calldate < %s
                     GROUP BY DAY(calldate)
                     """,
-                    (userfield, start, end),
+                    (accountcode, start, end),
                 )
                 for row in cur.fetchall():
                     d = int(row["dia"])
