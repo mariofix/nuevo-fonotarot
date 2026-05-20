@@ -85,7 +85,7 @@ def test_orden_estado_shows_refresh_message_when_payment_is_pending(monkeypatch)
     body = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "Estamos esperando la confirmación del pago" in body
-    assert "window.location.reload" in body
+    assert "window.location.reload" not in body
     assert "Pago en proceso" in body
 
 

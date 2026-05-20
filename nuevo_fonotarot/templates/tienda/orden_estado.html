@@ -228,7 +228,7 @@
           <div>
             <h2 class="h3 mb-2">{{ _("Estamos esperando la confirmación del pago") }}</h2>
             <p class="status-summary mb-0">
-              {{ _("Espera unos momentos y esta página se actualizará sola apenas el pago quede confirmado.") }}
+              {{ _("Espera unos momentos y vuelve a revisar esta página en breve.") }}
             </p>
           </div>
         </div>
@@ -236,7 +236,7 @@
         <div class="refresh-hint p-3 mb-4">
           <div class="fw-semibold mb-1">{{ _("No cierres esta ventana") }}</div>
           <div class="text-secondary small">
-            {{ _("Si ya pagaste, no necesitas repetir la compra. Seguiremos revisando la orden y refrescaremos la página en unos segundos.") }}
+            {{ _("Si ya pagaste, no necesitas repetir la compra.") }}
           </div>
         </div>
 
@@ -291,15 +291,6 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if not is_paid %}
-<script>
-  (function () {
-    window.setTimeout(function () {
-      window.location.reload();
-    }, 8000);
-  })();
-</script>
-{% endif %}
 {% if is_paid %}
 <script>
   (function () {
