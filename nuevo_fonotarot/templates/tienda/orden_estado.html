@@ -4,315 +4,303 @@
 
 {% block extra_css %}
 <style>
-  .order-hero {
-    border: 1px solid var(--tblr-border-color, var(--border));
-    background: linear-gradient(140deg, rgba(109, 40, 217, .08), rgba(59, 130, 246, .06));
-    border-radius: 14px;
+  .status-shell {
+    max-width: 1120px;
   }
 
-  .order-total {
+  .status-hero {
+    border: 1px solid var(--tblr-border-color, var(--border));
+    border-radius: 18px;
+    background: linear-gradient(140deg, rgba(109, 40, 217, .09), rgba(59, 130, 246, .06));
+  }
+
+  .status-card,
+  .offer-card,
+  .benefit-card {
+    border: 1px solid var(--tblr-border-color, var(--border));
+    border-radius: 16px;
+    background: rgba(0, 0, 0, .015);
+  }
+
+  [data-theme="dark"] .status-card,
+  [data-theme="dark"] .offer-card,
+  [data-theme="dark"] .benefit-card {
+    background: rgba(255, 255, 255, .02);
+  }
+
+  .status-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(109, 40, 217, .12);
+    color: var(--plum);
+  }
+
+  .status-icon.is-waiting {
+    background: rgba(245, 158, 11, .14);
+    color: #b45309;
+  }
+
+  .status-icon.is-success {
+    background: rgba(34, 197, 94, .14);
+    color: #15803d;
+  }
+
+  .support-phone {
     font-family: 'Playfair Display', serif;
-    font-size: 1.55rem;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--plum);
+    letter-spacing: -.02em;
+  }
+
+  .benefit-list li {
+    margin-bottom: .55rem;
+  }
+
+  .offer-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.45rem;
     font-weight: 800;
     color: var(--plum);
   }
 
-  .status-spot {
-    border: 1px solid var(--tblr-border-color, var(--border));
-    border-radius: 12px;
-    background: rgba(0, 0, 0, .015);
+  .status-summary {
+    color: var(--muted);
+    font-size: .92rem;
   }
 
-  [data-theme="dark"] .status-spot {
-    background: rgba(255, 255, 255, .02);
-  }
-
-  .wf-step {
-    position: relative;
-    padding-left: 2rem;
-    margin-bottom: .9rem;
-  }
-
-  .wf-step:last-child {
-    margin-bottom: 0;
-  }
-
-  .wf-step::before {
-    content: "";
-    position: absolute;
-    left: .45rem;
-    top: .1rem;
-    width: .85rem;
-    height: .85rem;
-    border-radius: 999px;
-    border: 2px solid var(--tblr-border-color, var(--border));
-    background: transparent;
-  }
-
-  .wf-step::after {
-    content: "";
-    position: absolute;
-    left: .83rem;
-    top: 1rem;
-    width: 1px;
-    height: calc(100% + .3rem);
-    background: var(--tblr-border-color, var(--border));
-  }
-
-  .wf-step:last-child::after {
-    display: none;
-  }
-
-  .wf-step.is-done::before {
-    background: var(--tblr-success, #2fb344);
-    border-color: var(--tblr-success, #2fb344);
-  }
-
-  .audit-block {
-    border: 1px solid rgba(245, 158, 11, .35);
+  .refresh-hint {
+    border-left: 3px solid rgba(245, 158, 11, .45);
     background: rgba(245, 158, 11, .08);
-    border-radius: 12px;
-  }
-
-  .audit-json {
-    max-height: 250px;
-    overflow: auto;
-    border-radius: 8px;
-    margin: 0;
-    font-size: .8rem;
-    line-height: 1.4;
-    border: 1px solid var(--tblr-border-color, var(--border));
-    background: rgba(0, 0, 0, .03);
-    padding: .75rem;
-  }
-
-  [data-theme="dark"] .audit-json {
-    background: rgba(255, 255, 255, .03);
+    border-radius: 10px;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-{% set order_labels = {
-  'pending': _("Pendiente"),
-  'paid': _("Pagada"),
-  'delivered': _("Entregada"),
-  'cancelled': _("Cancelada"),
-} %}
-{% set payment_labels = {
-  'pending': _("Pendiente"),
-  'processing': _("Procesando"),
-  'succeeded': _("Aprobado"),
-  'failed': _("Fallido"),
-  'cancelled': _("Cancelado"),
-  'refunded': _("Reembolsado"),
-  'unknown': _("Desconocido"),
-} %}
-{% set order_badges = {
-  'pending': "bg-warning-lt text-warning",
-  'paid': "bg-success-lt text-success",
-  'delivered': "bg-teal-lt text-teal",
-  'cancelled': "bg-danger-lt text-danger",
-} %}
-{% set payment_badges = {
-  'pending': "bg-warning-lt text-warning",
-  'processing': "bg-info-lt text-info",
-  'succeeded': "bg-success-lt text-success",
-  'failed': "bg-danger-lt text-danger",
-  'cancelled': "bg-danger-lt text-danger",
-  'refunded': "bg-secondary-lt text-secondary",
-  'unknown': "bg-secondary-lt text-secondary",
-} %}
-{% set order_flow = ['pending', 'paid'] %}
-{% set order_terminals = ('delivered', 'cancelled') %}
-{% set payment_flow = ['pending', 'processing'] %}
-{% set payment_terminals = ('succeeded', 'failed', 'cancelled', 'refunded', 'unknown') %}
-{% set order_base_index = order_flow.index(order.status) if order.status in order_flow else -1 %}
-{% set is_order_terminal = order.status in order_terminals %}
-{% set payment_base_index = payment_flow.index(order.payment_status) if order.payment_status in payment_flow else -1 %}
-{% set is_payment_terminal = order.payment_status in payment_terminals %}
-{% set is_admin = current_user and current_user.is_authenticated and current_user.has_role('admin') %}
-{% set audit_payloads = [
-  (_("Solicitud al proveedor"), order.request_payload),
-  (_("Respuesta del proveedor"), order.response_payload),
-  (_("Objeto de pago"), order.payment_object),
-  (_("Payload Firenze"), order.firenze_payload),
-  (_("Respuesta Firenze"), order.firenze_response),
-] %}
+{% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'delivered') %}
+{% set support_phone = '+56 2 2230 1515' %}
+{% set register_url = '/register' %}
+{% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else register_url %}
 
-<div class="container py-5" style="max-width:1040px">
-  <div class="order-hero p-4 p-md-5 mb-4">
+<div class="container py-5 status-shell">
+  <div class="status-hero p-4 p-md-5 mb-4">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
       <div>
-        <div class="text-secondary small mb-1">{{ _("Seguimiento de orden") }}</div>
+        <div class="text-secondary small mb-1">{{ _("Estado de tu compra") }}</div>
         <h1 class="h2 mb-2">{{ _("Orden") }} #{{ order.id }}</h1>
         <div class="d-flex flex-wrap gap-2">
-          <span class="badge {{ order_badges.get(order.status, 'bg-secondary-lt text-secondary') }}">
-            <i class="ti ti-package me-1"></i>{{ _("Estado de orden") }}: {{ order_labels.get(order.status, order.status|title) }}
+          <span class="badge {% if is_paid %}bg-success-lt text-success{% else %}bg-warning-lt text-warning{% endif %}">
+            <i class="ti ti-credit-card me-1"></i>
+            {% if is_paid %}
+              {{ _("Pago confirmado") }}
+            {% else %}
+              {{ _("Pago en proceso") }}
+            {% endif %}
           </span>
-          <span class="badge {{ payment_badges.get(order.payment_status, 'bg-secondary-lt text-secondary') }}">
-            <i class="ti ti-credit-card me-1"></i>{{ _("Estado de pago") }}: {{ payment_labels.get(order.payment_status, order.payment_status|title) }}
+          <span class="badge bg-secondary-lt text-secondary">
+            <i class="ti ti-receipt me-1"></i>{{ _("Transacción") }}: {{ order.transaction_id or _("Pendiente") }}
           </span>
-        </div>
-        <div class="text-secondary small mt-2">
-          {{ _("Creada") }}: {{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else _("No informada") }}
         </div>
       </div>
       <div class="text-end">
-        <div class="text-secondary small">{{ _("Total") }}</div>
-        <div class="order-total">{{ order.total_display }}</div>
+        <div class="text-secondary small">{{ _("Total pagado") }}</div>
+        <div class="h3 mb-0">{{ order.total_display }}</div>
       </div>
     </div>
   </div>
 
   <div class="row g-4">
     <div class="col-lg-8">
-      <div class="card mb-4">
-        <div class="card-header">{{ _("Resumen de compra") }}</div>
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-3">
-            <span class="text-secondary">{{ _("Número de orden") }}</span>
-            <span class="fw-semibold">#{{ order.id }}</span>
+      <div class="status-card p-4 p-md-5 h-100">
+        {% if is_paid %}
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="status-icon is-success">
+            <i class="ti ti-circle-check"></i>
           </div>
-          <div class="d-flex justify-content-between mb-3">
-            <span class="text-secondary">{{ _("Método de pago") }}</span>
-            <span>{{ order.provider|upper if order.provider else "—" }}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-3">
-            <span class="text-secondary">{{ _("Transacción") }}</span>
-            <span class="text-break">{{ order.transaction_id or "—" }}</span>
-          </div>
-          <hr>
-          {% for item in items %}
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-secondary">{{ item.name }} × {{ item.quantity }}</span>
-            <span>{{ item.subtotal_display }}</span>
-          </div>
-          {% endfor %}
-          <hr>
-          <div class="d-flex justify-content-between order-total">
-            <span>{{ _("Total") }}</span>
-            <span>{{ order.total_display }}</span>
+          <div>
+            <h2 class="h3 mb-2">{{ _("Tu compra ya está lista") }}</h2>
+            <p class="status-summary mb-0">
+              {{ _("Ahora puedes llamar al %(phone)s y elegir la tarotista que más te guste.", phone=support_phone) }}
+            </p>
           </div>
         </div>
-      </div>
 
-      {% if order.shipping_uses_pickup or order.shipping_address %}
-      <div class="card mb-4">
-        <div class="card-body">
-          <div class="d-flex gap-2 align-items-start">
-            <i class="ti {{ 'ti-map-pin' if order.shipping_uses_pickup else 'ti-truck' }} mt-1"></i>
+        <div class="row g-3 mb-4">
+          <div class="col-md-5">
+            <div class="card border-0 bg-success-lt h-100">
+              <div class="card-body">
+                <div class="text-secondary small mb-1">{{ _("Minutos acreditados") }}</div>
+                <div class="display-6 fw-bold mb-2">{{ purchased_minutes }}</div>
+                <div class="small text-secondary">{{ _("Tus minutos quedan listos para usarlos cuando quieras.") }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="card border-0 h-100">
+              <div class="card-body">
+                <div class="fw-semibold mb-2">{{ _("Cómo empezar") }}</div>
+                <ol class="mb-0 ps-3">
+                  <li>{{ _("Llama al número de atención.") }}</li>
+                  <li>{{ _("Escucha el menú y elige tu tarotista favorita.") }}</li>
+                  <li>{{ _("Habla con calma mientras tus minutos se descuentan.") }}</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-card p-4 mb-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
-              <div class="fw-semibold mb-1">
-                {{ _("Punto de retiro") if order.shipping_uses_pickup else _("Envío a domicilio") }}
-              </div>
-              <div class="text-secondary small">
-                {{ order.shipping_pickup_point if order.shipping_uses_pickup else order.shipping_address }}
-              </div>
-              {% if order.anonymous_shipping %}
-              <span class="badge bg-success-lt text-success mt-2">
-                <i class="ti ti-eye-off me-1"></i>{{ _("Envío anónimo") }}
-              </span>
-              {% endif %}
+              <div class="fw-semibold">{{ _("Puedes comprar minutos otra vez cuando quieras") }}</div>
+              <div class="text-secondary small">{{ _("Estas son las opciones disponibles ahora mismo.") }}</div>
             </div>
+            <a href="{{ url_for('minutos.index') }}" class="btn btn-outline-primary btn-sm">
+              <i class="ti ti-clock me-1"></i>{{ _("Ver todos los packs") }}
+            </a>
           </div>
-        </div>
-      </div>
-      {% endif %}
 
-      {% if is_admin %}
-      <div class="card mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span>{{ _("Archivos de auditoría") }}</span>
-          <span class="badge bg-warning text-dark">{{ _("Destacado") }}</span>
-        </div>
-        <div class="card-body">
-          {% for label, payload in audit_payloads %}
-          <div class="audit-block p-3 mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="fw-semibold">{{ label }}</div>
-              <span class="badge bg-warning-lt text-warning">{{ _("Audit") }}</span>
+          <div class="row g-3">
+            {% for pack in packs %}
+            <div class="col-md-6 col-xl-4">
+              <div class="offer-card h-100 p-3">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                  <div>
+                    <div class="fw-semibold">{{ pack.minutes }} {{ _("minutos") }}</div>
+                    {% if pack.description %}
+                    <div class="text-secondary small">{{ pack.description }}</div>
+                    {% endif %}
+                  </div>
+                  {% if pack.is_featured %}
+                  <span class="badge bg-warning-lt text-warning">{{ _("Más popular") }}</span>
+                  {% endif %}
+                </div>
+                <div class="offer-price mb-3">${{ pack.price_display }}</div>
+                <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn btn-primary w-100">
+                  <i class="ti ti-bolt me-1"></i>{{ _("Comprar de nuevo") }}
+                </a>
+              </div>
             </div>
-            {% if payload %}
-            <pre class="audit-json"><code>{{ payload|tojson(indent=2) }}</code></pre>
             {% else %}
-            <div class="text-secondary small">{{ _("Sin datos en este archivo de auditoría.") }}</div>
-            {% endif %}
+            <div class="col-12">
+              <div class="text-secondary">{{ _("No hay packs disponibles por el momento.") }}</div>
+            </div>
+            {% endfor %}
           </div>
-          {% endfor %}
         </div>
+
+        <div class="benefit-card p-4">
+          <div class="d-flex align-items-start gap-3">
+            <div class="status-icon">
+              <i class="ti ti-user-plus"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold mb-2">{{ _("Regístrate y desbloquea más beneficios") }}</div>
+              <p class="status-summary mb-3">
+                {{ _("Con una cuenta puedes comprar con un clic, revisar tu historial de compras, ver tu saldo en línea y acceder a más ventajas.") }}
+              </p>
+              <ul class="benefit-list mb-3">
+                <li>{{ _("Compra con un clic.") }}</li>
+                <li>{{ _("Historial de compras.") }}</li>
+                <li>{{ _("Saldo en línea.") }}</li>
+                <li>{{ _("Y más beneficios para clientes registrados.") }}</li>
+              </ul>
+              <a href="{{ account_url }}" class="btn btn-outline-primary">
+                {% if current_user and current_user.is_authenticated %}
+                  <i class="ti ti-user-circle me-1"></i>{{ _("Ir a mi perfil") }}
+                {% else %}
+                  <i class="ti ti-user-plus me-1"></i>{{ _("Crear cuenta") }}
+                {% endif %}
+              </a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="d-flex align-items-start gap-3 mb-4">
+          <div class="status-icon is-waiting">
+            <i class="ti ti-loader-2"></i>
+          </div>
+          <div>
+            <h2 class="h3 mb-2">{{ _("Estamos esperando la confirmación del pago") }}</h2>
+            <p class="status-summary mb-0">
+              {{ _("Espera unos momentos y esta página se actualizará sola apenas el pago quede confirmado.") }}
+            </p>
+          </div>
+        </div>
+
+        <div class="refresh-hint p-3 mb-4">
+          <div class="fw-semibold mb-1">{{ _("No cierres esta ventana") }}</div>
+          <div class="text-secondary small">
+            {{ _("Si ya pagaste, no necesitas repetir la compra. Seguiremos revisando la orden y refrescaremos la página en unos segundos.") }}
+          </div>
+        </div>
+
+        <div class="card border-0 bg-warning-lt">
+          <div class="card-body">
+            <div class="fw-semibold mb-2">{{ _("Mientras tanto") }}</div>
+            <ul class="mb-0 ps-3">
+              <li>{{ _("Mantén esta pestaña abierta.") }}</li>
+              <li>{{ _("Si el pago ya fue aprobado, la información aparecerá automáticamente.") }}</li>
+              <li>{{ _("Cuando se confirme, verás tus minutos listos para llamar.") }}</li>
+            </ul>
+          </div>
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
     </div>
 
     <div class="col-lg-4">
-      <div class="card status-spot mb-4">
-        <div class="card-header">{{ _("Flujo de orden") }}</div>
-        <div class="card-body">
-          {% for step in order_flow %}
-          <div class="wf-step {% if order_base_index >= loop.index0 %}is-done{% endif %}">
-            <div class="fw-semibold">{{ order_labels.get(step, step|title) }}</div>
-            <div class="text-secondary small">{{ _("Estado de ciclo de vida de la orden.") }}</div>
-          </div>
-          {% endfor %}
-          {% if is_order_terminal %}
-          <div class="wf-step is-done">
-            <div class="fw-semibold {% if order.status == 'cancelled' %}text-danger{% else %}text-teal{% endif %}">
-              {{ order_labels.get(order.status, order.status|title) }}
-            </div>
-            <div class="text-secondary small">{{ _("Estado terminal de la orden.") }}</div>
-          </div>
-          {% endif %}
+      <div class="status-card p-4 mb-4">
+        <div class="fw-semibold mb-3">{{ _("Resumen breve") }}</div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">{{ _("Orden") }}</span>
+          <span class="fw-semibold">#{{ order.id }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">{{ _("Estado") }}</span>
+          <span class="fw-semibold">{{ _("Confirmada") if is_paid else _("En espera") }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">{{ _("Método") }}</span>
+          <span class="fw-semibold">{{ order.provider|upper if order.provider else "—" }}</span>
         </div>
       </div>
 
-      <div class="card status-spot mb-4">
-        <div class="card-header">{{ _("Flujo de pago") }}</div>
-        <div class="card-body">
-          {% for step in payment_flow %}
-          <div class="wf-step {% if payment_base_index >= loop.index0 %}is-done{% endif %}">
-            <div class="fw-semibold">{{ payment_labels.get(step, step|title) }}</div>
-            <div class="text-secondary small">{{ _("Estado de procesamiento del pago.") }}</div>
-          </div>
-          {% endfor %}
-          {% if is_payment_terminal %}
-          <div class="wf-step is-done">
-            <div class="fw-semibold {% if order.payment_status == 'succeeded' %}text-success{% elif order.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
-              {{ payment_labels.get(order.payment_status, order.payment_status|title) }}
-            </div>
-            <div class="text-secondary small">{{ _("Estado terminal del pago.") }}</div>
-          </div>
-          {% endif %}
-        </div>
+      <div class="status-card p-4 mb-4">
+        <div class="fw-semibold mb-2">{{ _("Llamar ahora") }}</div>
+        <div class="support-phone">{{ support_phone }}</div>
+        <p class="status-summary mt-2 mb-0">
+          {{ _("Escucha el menú y selecciona tu tarotista favorita cuando quieras hablar.") }}
+        </p>
       </div>
 
-      {% if is_admin %}
-      <div class="card mb-4">
-        <div class="card-header">{{ _("Enlaces administrativos") }}</div>
-        <div class="list-group list-group-flush">
-          <a class="list-group-item list-group-item-action" href="{{ url_for('admin.index') }}">
-            <i class="ti ti-settings me-2"></i>{{ _("Panel de administración") }}
-          </a>
-          <a class="list-group-item list-group-item-action" href="/admin/order/">
-            <i class="ti ti-list-details me-2"></i>{{ _("Listado de órdenes") }}
-          </a>
-          <a class="list-group-item list-group-item-action" href="/admin/order/details/?id={{ order.id }}">
-            <i class="ti ti-file-info me-2"></i>{{ _("Detalle de esta orden") }}
-          </a>
-        </div>
+      <div class="status-card p-4">
+        <div class="fw-semibold mb-2">{{ _("Ayuda rápida") }}</div>
+        <p class="status-summary mb-0">
+          {{ _("Si la página sigue en espera por mucho tiempo, revisa tu comprobante o vuelve a abrir este enlace desde el correo de confirmación.") }}
+        </p>
       </div>
-      {% endif %}
-
-      <a href="{{ url_for('pagos.index') }}" class="btn btn-primary w-100">
-        <i class="ti ti-arrow-left me-1"></i>{{ _("Volver a la tienda") }}
-      </a>
     </div>
   </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-{% if order.status == 'paid' %}
+{% if not is_paid %}
+<script>
+  (function () {
+    window.setTimeout(function () {
+      window.location.reload();
+    }, 8000);
+  })();
+</script>
+{% endif %}
+{% if is_paid %}
 <script>
   (function () {
     var storageKey = 'fonotarot_purchase_{{ order.id }}';

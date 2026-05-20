@@ -1,15 +1,44 @@
 """Payment callbacks, order status, and store index."""
 
+import re
+
 from flask import abort, current_app, redirect, render_template, request, url_for
 
 from ...extensions import db
 from ...log import get_logger
-from ...models import MinutePack, Order, OrderStatus, Product, SubscriptionPlan
-from ...signals import post_purchase_process
+from ...models import MinutePack, Order, OrderItemType, OrderStatus, Product, SubscriptionPlan
+from ...signals import sync_firenze_topup
 from ..utils import _get_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
+
+
+def _summarize_order_minutes(items: list) -> int:
+    """Return the total tarot minutes included in an order."""
+
+    total_minutes = 0
+    pack_ids = {
+        item.item_id
+        for item in items
+        if item.item_type == OrderItemType.MINUTE_PACK.value
+    }
+    packs_by_id = {
+        pack.id: pack.minutes for pack in MinutePack.query.filter(MinutePack.id.in_(pack_ids)).all()
+    }
+
+    for item in items:
+        if item.item_type != OrderItemType.MINUTE_PACK.value:
+            continue
+
+        pack_minutes = packs_by_id.get(item.item_id)
+        if pack_minutes is None:
+            match = re.match(r"^(\d+)", item.name or "")
+            pack_minutes = int(match.group(1)) if match else 0
+
+        total_minutes += pack_minutes * int(item.quantity or 0)
+
+    return total_minutes
 
 
 # ---------------------------------------------------------------------------
@@ -25,8 +54,6 @@ def _sync_firenze_on_payment(order: Order) -> bool:
     contact details.  For orders tied to a registered user that has no
     ``firenze_client_id`` the value is propagated to the user record as well.
 
-    All errors are swallowed and logged — this must never block payment processing.
-
     Returns:
         ``True`` if Firenze already had a ``client_id`` or the call succeeded,
         ``False`` if the Firenze call returned no ``client_id`` or failed.
@@ -35,9 +62,7 @@ def _sync_firenze_on_payment(order: Order) -> bool:
 
     if order.firenze_client_id:
         logger.debug(
-            "_sync_firenze_on_payment: order=%s already has firenze_client_id=%s",
-            order.id,
-            order.firenze_client_id,
+            f"_sync_firenze_on_payment: order={order.id} already has firenze_client_id={order.firenze_client_id}"
         )
         return True
 
@@ -48,10 +73,8 @@ def _sync_firenze_on_payment(order: Order) -> bool:
             else (order.shipping_phone or "").strip()
         )
         logger.debug(
-            "_sync_firenze_on_payment: creating Firenze client for order=%s (email=%r phone=%r)",
-            order.id,
-            order.shipping_email,
-            firenze_phone,
+            f"_sync_firenze_on_payment: creating Firenze client for order={order.id} "
+            f"(email={order.shipping_email!r} phone={firenze_phone!r})"
         )
         client_id = _firenze_create(
             name=order.shipping_name,
@@ -62,11 +85,9 @@ def _sync_firenze_on_payment(order: Order) -> bool:
         if client_id is not None:
             order.firenze_client_id = client_id
             logger.info(
-                "_sync_firenze_on_payment: created Firenze client_id=%s for order=%s",
-                client_id,
-                order.id,
+                f"_sync_firenze_on_payment: created Firenze client_id={client_id} for order={order.id}"
             )
-            
+
             if order.user_id:
                 from ...models import User as _User
 
@@ -74,75 +95,23 @@ def _sync_firenze_on_payment(order: Order) -> bool:
                 if linked_user and not linked_user.firenze_client_id:
                     linked_user.firenze_client_id = client_id
                     logger.debug(
-                        "_sync_firenze_on_payment: assigned firenze_client_id=%s to user=%s",
-                        client_id,
-                        linked_user.id,
+                        f"_sync_firenze_on_payment: assigned firenze_client_id={client_id} to user={linked_user.id}"
                     )
             return True
-        logger.warning(
-            "_sync_firenze_on_payment: no client_id returned for order=%s", order.id
-        )
+        logger.warning(f"_sync_firenze_on_payment: no client_id returned for order={order.id}")
         return False
     except Exception:
         logger.exception(
-            "_sync_firenze_on_payment: failed to create Firenze client for order=%s", order.id
+            f"_sync_firenze_on_payment: failed to create Firenze client for order={order.id}"
         )
         return False
 
 
 def _send_firenze_failure_email(order: Order) -> None:
-    """Notify admin users that Firenze registration failed for a confirmed payment.
+    """Backward-compatible alias for signals.send_firenze_failure_email."""
+    from ...signals import send_firenze_failure_email as _send_failure
 
-    The order payment was confirmed but the Firenze ``create_client`` call did
-    not return a ``client_id``.  Admins are asked to use the admin panel action
-    "Completar Orden" to retry manually.
-    """
-    from daleks.contrib.client import DaleksClient
-
-    from ...models import Role
-
-    logger.info("_send_firenze_failure_email: notifying admins about Firenze failure for order=%s", order.id)
-
-    daleks_url = current_app.config.get("DALEKS_URL")
-    if not daleks_url:
-        logger.warning("_send_firenze_failure_email: DALEKS_URL not configured — skipping email for order=%s", order.id)
-        return
-
-    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
-    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
-    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
-    site_url = current_app.config.get("SITE_URL", "")
-
-    admin_role = Role.query.filter_by(name="admin").first()
-    if not admin_role:
-        logger.debug("_send_firenze_failure_email: no admin role found in database")
-        return
-    admin_emails = [u.email for u in admin_role.users.all() if u.active and u.email]
-    if not admin_emails:
-        logger.debug("_send_firenze_failure_email: no active admin users with email found")
-        return
-
-    logger.debug("_send_firenze_failure_email: sending to %d admin(s) for order=%s", len(admin_emails), order.id)
-    try:
-        html_body = render_template(
-            "tienda/email/firenze_fallo.html",
-            order=order,
-            site_url=site_url,
-        )
-        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
-            for email in admin_emails:
-                client.send_email(
-                    from_address=from_address,
-                    to=[email],
-                    subject=f"[Admin] Fallo Firenze — Orden #{order.id} pago confirmado",
-                    html_body=html_body,
-                    smtp_account=daleks_smtp_account,
-                )
-        logger.info("_send_firenze_failure_email: notification sent to admins for order=%s", order.id)
-    except Exception:
-        logger.exception(
-            "_send_firenze_failure_email: failed to send notification for order=%s", order.id
-        )
+    _send_failure(order)
 
 
 def _send_order_confirmation_email(order: Order) -> None:
@@ -151,11 +120,11 @@ def _send_order_confirmation_email(order: Order) -> None:
 
     from ...models import Role
 
-    logger.info("_send_order_confirmation_email: sending confirmation emails for order=%s", order.id)
+    logger.info(f"_send_order_confirmation_email: sending confirmation emails for order={order.id}")
 
     daleks_url = current_app.config.get("DALEKS_URL")
     if not daleks_url:
-        logger.warning("_send_order_confirmation_email: DALEKS_URL not configured — skipping for order=%s", order.id)
+        logger.warning(f"_send_order_confirmation_email: DALEKS_URL not configured — skipping for order={order.id}")
         return
 
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
@@ -169,9 +138,7 @@ def _send_order_confirmation_email(order: Order) -> None:
     if order.shipping_email:
         try:
             logger.debug(
-                "_send_order_confirmation_email: sending customer confirmation to %s for order=%s",
-                order.shipping_email,
-                order.id,
+                f"_send_order_confirmation_email: sending customer confirmation to {order.shipping_email} for order={order.id}"
             )
             html_body = render_template(
                 "tienda/email/orden_confirmada.html",
@@ -187,20 +154,18 @@ def _send_order_confirmation_email(order: Order) -> None:
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
-            logger.info("Order confirmation email sent to customer %s for order=%s", order.shipping_email, order.id)
+            logger.info(f"Order confirmation email sent to customer {order.shipping_email} for order={order.id}")
         except Exception:
-            logger.exception("Failed to send order confirmation email to %s for order=%s", order.shipping_email, order.id)
+            logger.exception(f"Failed to send order confirmation email to {order.shipping_email} for order={order.id}")
 
     # --- Admin notification ---
-    logger.debug("_send_order_confirmation_email: looking up admin role for order=%s", order.id)
+    logger.debug(f"_send_order_confirmation_email: looking up admin role for order={order.id}")
     admin_role = Role.query.filter_by(name="admin").first()
     if admin_role:
         admin_emails = [u.email for u in admin_role.users.all() if u.active and u.email]
         if admin_emails:
             logger.debug(
-                "_send_order_confirmation_email: sending admin notification to %d admin(s) for order=%s",
-                len(admin_emails),
-                order.id,
+                f"_send_order_confirmation_email: sending admin notification to {len(admin_emails)} admin(s) for order={order.id}"
             )
             try:
                 html_body = render_template(
@@ -218,13 +183,13 @@ def _send_order_confirmation_email(order: Order) -> None:
                             html_body=html_body,
                             smtp_account=daleks_smtp_account,
                         )
-                logger.info("Admin notification sent for order=%s (sent to %d admin(s))", order.id, len(admin_emails))
+                logger.info(f"Admin notification sent for order={order.id} (sent to {len(admin_emails)} admin(s))")
             except Exception:
-                logger.exception("Failed to send admin notification for order=%s", order.id)
+                logger.exception(f"Failed to send admin notification for order={order.id}")
         else:
-            logger.debug("_send_order_confirmation_email: no active admin users with email for order=%s", order.id)
+            logger.debug(f"_send_order_confirmation_email: no active admin users with email for order={order.id}")
     else:
-        logger.debug("_send_order_confirmation_email: no admin role found in database for order=%s", order.id)
+        logger.debug(f"_send_order_confirmation_email: no admin role found in database for order={order.id}")
 
 
 def _complete_succeeded_order(order: Order, label: str) -> None:
@@ -239,22 +204,18 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
         order: The Order to complete (must have ``payment_status == "succeeded"``).
         label: Short context string used in log messages (e.g. ``"webhook"``).
     """
-    logger.info("_complete_succeeded_order: processing succeeded order=%s from %s", order.id, label)
+    logger.info(f"_complete_succeeded_order: processing succeeded order={order.id} from {label}")
     
-    firenze_ok = _sync_firenze_on_payment(order)
-    if firenze_ok:
+    if _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False):
         order.status = OrderStatus.PAID
         logger.info(
-            "_complete_succeeded_order: order=%s marked PAID (firenze_client_id=%s)",
-            order.id,
-            order.firenze_client_id,
+            f"_complete_succeeded_order: order={order.id} marked PAID (firenze_client_id={order.firenze_client_id})"
         )
         db.session.commit()
         _send_order_confirmation_email(order)
     else:
         logger.warning(
-            "_complete_succeeded_order: Firenze sync failed for order=%s — order remains PENDING, notifying admins",
-            order.id,
+            f"_complete_succeeded_order: Firenze sync failed for order={order.id} — order remains PENDING, notifying admins"
         )
         db.session.commit()
         _send_firenze_failure_email(order)
@@ -267,20 +228,16 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
     the order stays PENDING and admins are notified.
     """
     logger.info(
-        "_complete_succeeded_order_admin_flow: processing succeeded order=%s from %s",
-        order.id,
-        label,
+        f"_complete_succeeded_order_admin_flow: processing succeeded order={order.id} from {label}"
     )
-    firenze_ok = _sync_firenze_on_payment(order)
-    if firenze_ok:
+    if _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False):
         order.status = OrderStatus.PAID
         db.session.commit()
         _send_order_confirmation_email(order)
         return True
 
     logger.warning(
-        "_complete_succeeded_order_admin_flow: Firenze sync failed for order=%s — order remains PENDING",
-        order.id,
+        f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order remains PENDING"
     )
     _send_firenze_failure_email(order)
     return False
@@ -295,12 +252,8 @@ def _apply_payment_state_to_order(order: Order, *, payment_id: str, provider: st
     """Apply a webhook-derived payment state to an order."""
     if order.status != OrderStatus.PENDING:
         logger.debug(
-            "_apply_payment_state_to_order: order=%s already handled with status=%s (payment_id=%r provider=%r state=%r)",
-            order.id,
-            order.status,
-            payment_id,
-            provider,
-            state,
+            f"_apply_payment_state_to_order: order={order.id} already handled with status={order.status} "
+            f"(payment_id={payment_id!r} provider={provider!r} state={state!r})"
         )
         return
 
@@ -312,20 +265,14 @@ def _apply_payment_state_to_order(order: Order, *, payment_id: str, provider: st
         order.status = OrderStatus.FAILED
         db.session.commit()
         logger.warning(
-            "_apply_payment_state_to_order: order=%s marked FAILED from payment_id=%r provider=%r state=%r",
-            order.id,
-            payment_id,
-            provider,
-            state,
+            f"_apply_payment_state_to_order: order={order.id} marked FAILED from payment_id={payment_id!r} "
+            f"provider={provider!r} state={state!r}"
         )
         return
 
     logger.debug(
-        "_apply_payment_state_to_order: ignoring non-final event for order=%s payment_id=%r provider=%r state=%r",
-        order.id,
-        payment_id,
-        provider,
-        state,
+        f"_apply_payment_state_to_order: ignoring non-final event for order={order.id} "
+        f"payment_id={payment_id!r} provider={provider!r} state={state!r}"
     )
 
 
@@ -337,25 +284,26 @@ def _handle_khipu_webhook_event(event) -> None:
 
     if not payment_id:
         logger.warning(
-            "_handle_khipu_webhook_event: missing payment_id for provider=%r event_type=%r",
-            provider,
-            getattr(event, "event_type", None),
+            f"_handle_khipu_webhook_event: missing payment_id for provider={provider!r} "
+            f"event_type={getattr(event, 'event_type', None)!r}"
         )
         return
 
     order = _find_order_by_payment_id(payment_id)
     if order is None:
         logger.warning(
-            "_handle_khipu_webhook_event: no order found for payment_id=%r provider=%r state=%r",
-            payment_id,
-            provider,
-            state,
+            f"_handle_khipu_webhook_event: no order found for payment_id={payment_id!r} "
+            f"provider={provider!r} state={state!r}"
         )
         return
 
-    
-    post_purchase_process(order_id=order.id)
-    
+    _apply_payment_state_to_order(
+        order,
+        payment_id=payment_id,
+        provider=provider,
+        state=state,
+        label="webhook-khipu",
+    )
 
 
 def _handle_flow_webhook_event(event) -> None:
@@ -365,27 +313,22 @@ def _handle_flow_webhook_event(event) -> None:
 
     if not payment_id:
         logger.warning(
-            "_handle_flow_webhook_event: missing payment_id for provider=%r event_type=%r",
-            provider,
-            getattr(event, "event_type", None),
+            f"_handle_flow_webhook_event: missing payment_id for provider={provider!r} "
+            f"event_type={getattr(event, 'event_type', None)!r}"
         )
         return
 
     order = _find_order_by_payment_id(payment_id)
     if order is None:
         logger.warning(
-            "_handle_flow_webhook_event: no order found for payment_id=%r provider=%r",
-            payment_id,
-            provider,
+            f"_handle_flow_webhook_event: no order found for payment_id={payment_id!r} provider={provider!r}"
         )
         return
 
     if order.status != OrderStatus.PENDING:
         logger.debug(
-            "_handle_flow_webhook_event: order=%s already handled with status=%s (payment_id=%r)",
-            order.id,
-            order.status,
-            payment_id,
+            f"_handle_flow_webhook_event: order={order.id} already handled with status={order.status} "
+            f"(payment_id={payment_id!r})"
         )
         return
 
@@ -393,9 +336,7 @@ def _handle_flow_webhook_event(event) -> None:
         order.sync_from_provider()
     except Exception:
         logger.exception(
-            "_handle_flow_webhook_event: failed to sync order=%s from provider payment_id=%r",
-            order.id,
-            payment_id,
+            f"_handle_flow_webhook_event: failed to sync order={order.id} from provider payment_id={payment_id!r}"
         )
         return
 
@@ -416,19 +357,16 @@ def _handle_stripe_webhook_event(event) -> None:
 
     if not payment_id:
         logger.warning(
-            "_handle_stripe_webhook_event: missing payment_id for provider=%r event_type=%r",
-            provider,
-            getattr(event, "event_type", None),
+            f"_handle_stripe_webhook_event: missing payment_id for provider={provider!r} "
+            f"event_type={getattr(event, 'event_type', None)!r}"
         )
         return
 
     order = _find_order_by_payment_id(payment_id)
     if order is None:
         logger.warning(
-            "_handle_stripe_webhook_event: no order found for payment_id=%r provider=%r state=%r",
-            payment_id,
-            provider,
-            state,
+            f"_handle_stripe_webhook_event: no order found for payment_id={payment_id!r} "
+            f"provider={provider!r} state={state!r}"
         )
         return
 
@@ -456,21 +394,18 @@ def _handle_payment_webhook_event(event) -> None:
         return
 
     logger.debug(
-        "_handle_payment_webhook_event: unsupported provider=%r event_type=%r payment_id=%r",
-        provider,
-        getattr(event, "event_type", None),
-        getattr(event, "payment_id", None),
+        f"_handle_payment_webhook_event: unsupported provider={provider!r} "
+        f"event_type={getattr(event, 'event_type', None)!r} payment_id={getattr(event, 'payment_id', None)!r}"
     )
 
 
 def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
     """Signal receiver that runs after flask-merchants finishes webhook dispatch."""
     logger.debug(
-        "_handle_payment_webhook_finished: provider=%r event_type=%r payment_id=%r state=%r",
-        getattr(event, "provider", None),
-        getattr(event, "event_type", None),
-        getattr(event, "payment_id", None),
-        getattr(getattr(event, "state", None), "value", None),
+        f"_handle_payment_webhook_finished: provider={getattr(event, 'provider', None)!r} "
+        f"event_type={getattr(event, 'event_type', None)!r} "
+        f"payment_id={getattr(event, 'payment_id', None)!r} "
+        f"state={getattr(getattr(event, 'state', None), 'value', None)!r}"
     )
     
 
@@ -491,11 +426,8 @@ def index():
     featured_products = Product.query.filter_by(is_active=True, is_featured=True).limit(6).all()
     cart = _get_cart()
     logger.debug(
-        "pagos.index: loaded %d minute packs, %d subscription plans, %d featured products, cart_count=%d",
-        len(minute_packs),
-        len(subscription_plans),
-        len(featured_products),
-        len(cart),
+        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
+        f"{len(featured_products)} featured products, cart_count={len(cart)}"
     )
     return render_template(
         "tienda/index.html",
@@ -575,45 +507,35 @@ def pago_retorno(order_id: str):
     """User-facing return page after payment (success or cancel)."""
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     logger.info(
-        "pago_retorno: user returned from payment (merchants_id=%s order=%s status=%s)",
-        order_id,
-        order.id,
-        order.status,
+        f"pago_retorno: user returned from payment (merchants_id={order_id} order={order.id} status={order.status})"
     )
     logger.debug(
-        "pago_retorno: order details — transaction_id=%r state=%r",
-        order.transaction_id,
-        order.payment_status,
+        f"pago_retorno: order details — transaction_id={order.transaction_id!r} state={order.payment_status!r}"
     )
 
     # Sync payment state from provider and update order fulfillment status.
     if order.transaction_id and order.status == OrderStatus.PENDING:
-        logger.debug("pago_retorno: order=%s is PENDING, syncing from provider", order.id)
+        logger.debug(f"pago_retorno: order={order.id} is PENDING, syncing from provider")
         try:
             order.sync_from_provider()
             logger.info(
-                "pago_retorno: synced order=%s new_state=%r",
-                order.id,
-                order.payment_status,
+                f"pago_retorno: synced order={order.id} new_state={order.payment_status!r}"
             )
             if order.payment_status == "succeeded":
                 _complete_succeeded_order(order, "retorno")
             elif order.payment_status in ("failed", "cancelled"):
                 order.status = OrderStatus.FAILED
                 logger.warning(
-                    "pago_retorno: payment failed/cancelled — order=%s status updated to FAILED (state=%r)",
-                    order.id,
-                    order.payment_status,
+                    f"pago_retorno: payment failed/cancelled — order={order.id} "
+                    f"status updated to FAILED (state={order.payment_status!r})"
                 )
                 db.session.commit()
         except Exception as exc:
-            logger.error("pago_retorno: sync error for order=%s — %s", order.id, exc, exc_info=True)
+            logger.error(f"pago_retorno: sync error for order={order.id} — {exc}", exc_info=True)
     else:
         logger.debug(
-            "pago_retorno: order=%s not syncing (has_transaction_id=%s status=%s)",
-            order.id,
-            bool(order.transaction_id),
-            order.status,
+            f"pago_retorno: order={order.id} not syncing "
+            f"(has_transaction_id={bool(order.transaction_id)} status={order.status})"
         )
 
     return redirect(url_for("pagos.orden_estado", order_id=order.merchants_id))
@@ -627,13 +549,18 @@ def pago_retorno(order_id: str):
 @pagos_bp.route("/orden/<order_id>/")
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
-    logger.debug("pagos.orden_estado: user checking order=%s status", order_id)
+    logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     items = list(order.items)
+    packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    purchased_minutes = _summarize_order_minutes(items)
     logger.debug(
-        "pagos.orden_estado: order=%s status=%s has %d item(s)",
-        order_id,
-        order.status,
-        len(items),
+        f"pagos.orden_estado: order={order_id} status={order.status} has {len(items)} item(s)"
     )
-    return render_template("tienda/orden_estado.html", order=order, items=items)
+    return render_template(
+        "tienda/orden_estado.html",
+        order=order,
+        items=items,
+        packs=packs,
+        purchased_minutes=purchased_minutes,
+    )
