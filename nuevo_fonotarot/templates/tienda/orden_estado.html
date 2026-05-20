@@ -84,7 +84,7 @@
 {% block content %}
 {% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'delivered') %}
 {% set support_phone = '+56 2 2230 1515' %}
-{% set register_url = '/register' %}
+{% set register_url = url_for_security('login') %}
 {% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else register_url %}
 
 <div class="container py-5 status-shell">
@@ -202,7 +202,7 @@
             <div class="flex-grow-1">
               <div class="fw-semibold mb-2">{{ _("Regístrate y desbloquea más beneficios") }}</div>
               <p class="status-summary mb-3">
-                {{ _("Con una cuenta puedes comprar con un clic, revisar tu historial de compras, ver tu saldo en línea y acceder a más ventajas.") }}
+                {{ _("En tu próxima compra marca la casilla para crear una cuenta. Si ya lo hiciste, abre el menú de usuario y elige Login.") }}
               </p>
               <ul class="benefit-list mb-3">
                 <li>{{ _("Compra con un clic.") }}</li>
@@ -214,7 +214,7 @@
                 {% if current_user and current_user.is_authenticated %}
                   <i class="ti ti-user-circle me-1"></i>{{ _("Ir a mi perfil") }}
                 {% else %}
-                  <i class="ti ti-user-plus me-1"></i>{{ _("Crear cuenta") }}
+                  <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
                 {% endif %}
               </a>
             </div>
