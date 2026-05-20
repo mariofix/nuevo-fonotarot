@@ -56,12 +56,12 @@
 
       <div class="ck-left-item">
         <span class="item-name"><i class="ti ti-clock me-2"></i>{{ _("%(minutes)s minutos de tarot × 1", minutes=pack.minutes) }}</span>
-        <span class="item-price">${{ pack.price_display }}</span>
+        <span class="item-price">{{ pack.price_display }}</span>
       </div>
 
       <div class="ck-left-total">
         <span class="total-label">{{ _("Total a pagar") }}</span>
-        <span class="total-value">${{ pack.price_display }}</span>
+        <span class="total-value">{{ pack.price_display }}</span>
       </div>
 
       <div class="ck-left-secure">
@@ -164,7 +164,7 @@
         <!-- ── Submit ─────────────────────────────── -->
         <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
           <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
-          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - $%(price)s", price=pack.price_display) }}</span>
+          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}</span>
         </button>
         <p class="ck-note">
           <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}

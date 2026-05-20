@@ -2,6 +2,49 @@
 
 {% block title %}{{ _("Configuración de cuenta") }} - Fonotarot{% endblock %}
 
+{% block extra_css %}
+<style>
+  .notification-hero {
+    background: linear-gradient(135deg, rgba(107, 63, 160, .12), rgba(40, 167, 69, .08));
+    border: 1px solid rgba(107, 63, 160, .18);
+    border-radius: 1rem;
+  }
+
+  .notification-card {
+    border: 1px solid var(--border-color-translucent);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+
+  .notification-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .06);
+    border-color: rgba(107, 63, 160, .28);
+  }
+
+  .notification-card .form-check {
+    padding-left: 2.1rem;
+    margin-bottom: 0;
+  }
+
+  .notification-card .form-check-input {
+    margin-top: .2rem;
+  }
+
+  .notification-badge {
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: .72rem;
+  }
+
+  .notification-meta {
+    color: var(--bs-secondary-color);
+    font-size: .9rem;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-wrapper">
   <div class="page-header d-print-none">
@@ -146,6 +189,29 @@
                     </div>
                   </div>
 
+                  <h3 class="card-title mt-4">{{ _("Tarotista favorita") }}</h3>
+                  <p class="card-subtitle">{{ _("Se usará para personalizar tu experiencia en el sitio.") }}</p>
+                  {% if ejecutivos %}
+                  <div class="row g-3 mt-1">
+                    <div class="col-md-8">
+                      <label class="form-label" for="favorite_tarotista_option">{{ _("Tarotista favorita") }}</label>
+                      <select class="form-select" id="favorite_tarotista_option" name="favorite_tarotista_option">
+                        <option value="">{{ _("Sin preferencia") }}</option>
+                        {% for ejecutivo in ejecutivos %}
+                        <option value="{{ ejecutivo.option }}" {% if user.favorite_tarotista_option == ejecutivo.option %}selected{% endif %}>
+                          {{ ejecutivo.name }}{% if ejecutivo.specialty %} — {{ ejecutivo.specialty }}{% endif %}
+                        </option>
+                        {% endfor %}
+                      </select>
+                      <div class="form-hint">{{ _("Puedes cambiarla cuando quieras.") }}</div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="alert alert-info mb-0">
+                    {{ _("No hay tarotistas disponibles para elegir en este momento.") }}
+                  </div>
+                  {% endif %}
+
                   <div class="mt-4">
                     <button type="submit" class="btn btn-primary">
                       <i class="ti ti-device-floppy me-1"></i>{{ _("Guardar cambios") }}
@@ -218,22 +284,73 @@
                 id="tab-notifications"
                 role="tabpanel"
               >
-                <h3 class="card-title">{{ _("Notificaciones") }}</h3>
-                <p class="card-subtitle">{{ _("Sección preparada para elegir cómo deseas recibir avisos.") }}</p>
-                <div class="row g-3 mt-1">
-                  <div class="col-md-6">
-                    <label class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" disabled />
-                      <span class="form-check-label">{{ _("Avisos por email") }}</span>
-                    </label>
+                <form method="post" action="{{ url_for('account.settings', tab='notifications') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="hidden" name="form_type" value="notifications" />
+
+                  <div class="notification-hero p-4 mb-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
+                      <div>
+                        <div class="badge text-bg-primary-subtle text-primary notification-badge mb-2">{{ _("Preferencias de correo") }}</div>
+                        <h3 class="card-title mb-2">{{ _("Configura tus avisos por email") }}</h3>
+                        <p class="notification-meta mb-0">
+                          {{ _("Selecciona qué correos quieres recibir y mantén tu experiencia limpia y a tu medida.") }}
+                        </p>
+                      </div>
+                      <div class="text-md-end">
+                        <div class="fw-semibold">{{ _("Puedes cambiarlo cuando quieras") }}</div>
+                        <div class="notification-meta">{{ _("Los cambios se guardan al instante.") }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" disabled />
-                      <span class="form-check-label">{{ _("Avisos por WhatsApp") }}</span>
-                    </label>
+
+                  <div class="row g-3">
+                    {% for option in notification_options %}
+                    <div class="col-12 col-lg-6">
+                      <label class="notification-card d-flex gap-3 p-3 h-100">
+                        <input
+                          class="form-check-input mt-1"
+                          type="checkbox"
+                          name="notification_preferences"
+                          value="{{ option.key }}"
+                          {% if option.key in selected_notification_preferences %}checked{% endif %}
+                        />
+                        <div class="flex-grow-1">
+                          <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <span class="fw-semibold">{{ option.label }}</span>
+                            {% if option.key == 'purchase' %}
+                              <span class="badge text-bg-success-subtle text-success">{{ _("Compra") }}</span>
+                            {% elif option.key == 'tarotista_online' %}
+                              <span class="badge text-bg-info-subtle text-info">{{ _("Diario") }}</span>
+                            {% elif option.key == 'low_balance' %}
+                              <span class="badge text-bg-warning-subtle text-warning">{{ _("Saldo") }}</span>
+                            {% elif option.key == 'commercial' %}
+                              <span class="badge text-bg-secondary-subtle text-secondary">{{ _("Promos") }}</span>
+                            {% endif %}
+                          </div>
+                          <div class="notification-meta">
+                            {% if option.key == 'purchase' %}
+                              {{ _("Recibe un correo cada vez que completes una compra.") }}
+                            {% elif option.key == 'tarotista_online' %}
+                              {{ _("Recibe un aviso una vez al día, la primera vez que tu tarotista favorita entra al sistema.") }}
+                            {% elif option.key == 'low_balance' %}
+                              {{ _("Te avisaremos cuando tu saldo baje de 10 minutos.") }}
+                            {% elif option.key == 'commercial' %}
+                              {{ _("Recibe ofertas, campañas y promociones especiales.") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                    {% endfor %}
                   </div>
-                </div>
+
+                  <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="ti ti-device-floppy me-1"></i>{{ _("Guardar cambios") }}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

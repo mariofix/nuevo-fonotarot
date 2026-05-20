@@ -99,6 +99,29 @@
             </div>
           </div>
           <div class="mb-3">
+            <div class="info-label">{{ _("Tarotista favorita") }}</div>
+            <div>
+              {% if favorite_tarotista %}
+              <div class="fw-semibold">{{ favorite_tarotista.name }}</div>
+              {% if favorite_tarotista.specialty %}
+              <div class="text-secondary small mt-1">{{ favorite_tarotista.specialty }}</div>
+              {% endif %}
+              {% else %}
+              {{ _("Sin preferencia") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="info-label">{{ _("Notificaciones") }}</div>
+            <div>
+              {% if notification_preferences_labels %}
+              {{ notification_preferences_labels | join(", ") }}
+              {% else %}
+              {{ _("Sin preferencias") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-3">
             <div class="info-label">{{ _("Minutos disponibles") }}</div>
             <div class="d-flex align-items-center gap-2">
               <div id="profile-credits-value" class="fw-semibold">{{ _("Consultar Saldo") }}</div>
@@ -168,7 +191,7 @@
                   <span class="badge bg-info-lt text-info ms-1">{{ order.state }}</span>
                   {% endif %}
                 </td>
-                <td class="text-end">${{ order.total_display }}</td>
+                <td class="text-end">{{ order.total_display }}</td>
               </tr>
               {% else %}
               <tr>

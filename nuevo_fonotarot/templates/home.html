@@ -538,7 +538,7 @@
                 <div><span class="plan-badge">{{ _("Más Popular") }}</span></div>
                 {% endif %}
                 <div class="plan-mins">{{ pack.minutes }}<small> min</small></div>
-                <div class="plan-price">${{ pack.price_display }} CLP<span> {{ _("/ sesión") }}</span></div>
+                <div class="plan-price">{{ pack.price_display }} CLP<span> {{ _("/ sesión") }}</span></div>
                 <p class="plan-desc">{{ pack.description or '' }}</p>
                 <div class="mt-auto d-flex flex-column gap-2">
                   <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}"

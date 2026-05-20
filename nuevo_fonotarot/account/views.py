@@ -1,5 +1,7 @@
 """Views for the account profile and settings blueprint."""
 
+import json
+
 from flask import current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import _
 from flask_security import current_user
@@ -15,11 +17,60 @@ from ..firenze import (
     update_client_profile,
 )
 from ..log import get_logger
-from ..models import BlogPost, Order
+from ..models import BlogPost, Order, SiteSettings
 
 logger = get_logger(__name__)
 
 _SETTINGS_TABS = {"profile", "additional-phones", "notifications"}
+_NOTIFICATION_OPTIONS = (
+    ("purchase", "Notificación de compra"),
+    ("tarotista_online", "Notificación de tarotista en línea"),
+    ("low_balance", "Notificación de saldo bajo"),
+    ("commercial", "Notificación comercial o promocional"),
+)
+
+
+def _load_ejecutivos() -> list[dict[str, str]]:
+    """Return tarotista options from SiteSettings."""
+    try:
+        raw = SiteSettings.get("ejecutivos") or "[]"
+        payload = json.loads(raw)
+    except (TypeError, ValueError):
+        logger.warning("SiteSettings 'ejecutivos' is not valid JSON")
+        return []
+
+    ejecutivos: list[dict[str, str]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        option = str(item.get("option", "")).strip()
+        name = str(item.get("name", "")).strip()
+        if not option or not name:
+            continue
+        ejecutivos.append(
+            {
+                "name": name,
+                "avatar": str(item.get("avatar", "")).strip(),
+                "option": option,
+                "specialty": str(item.get("specialty", "")).strip(),
+            }
+        )
+    return ejecutivos
+
+
+def _notification_options() -> list[dict[str, str]]:
+    """Return translated notification options for the settings form."""
+    return [{"key": key, "label": _(label)} for key, label in _NOTIFICATION_OPTIONS]
+
+
+def _tarotista_by_option(ejecutivos: list[dict[str, str]], option: str | None) -> dict[str, str] | None:
+    """Return the matching tarotista row for *option*."""
+    if not option:
+        return None
+    for ejecutivo in ejecutivos:
+        if ejecutivo["option"] == option:
+            return ejecutivo
+    return None
 
 
 def _settings_tab_from_request(default: str = "profile") -> str:
@@ -35,6 +86,18 @@ def _settings_tab_from_request(default: str = "profile") -> str:
 @login_required_modal
 def profile():
     """Read-only profile page with recent activity."""
+    ejecutivos = _load_ejecutivos()
+    favorite_tarotista = _tarotista_by_option(
+        ejecutivos, current_user.favorite_tarotista_option
+    )
+    notification_options = _notification_options()
+    selected_notifications = set(current_user.notification_preferences or [])
+    notification_preferences_labels = [
+        option["label"]
+        for option in notification_options
+        if option["key"] in selected_notifications
+    ]
+
     recent_orders = (
         current_user.orders.order_by(Order.created_at.desc()).limit(5).all()
     )
@@ -52,6 +115,9 @@ def profile():
         profile_credits_url=url_for("account.profile_credits"),
         subscriptions_enabled=False,
         products_purchased_enabled=False,
+        ejecutivos=ejecutivos,
+        favorite_tarotista=favorite_tarotista,
+        notification_preferences_labels=notification_preferences_labels,
     )
 
 
@@ -83,6 +149,10 @@ def profile_credits():
 def settings():
     """User account settings and profile management."""
     active_tab = _settings_tab_from_request()
+    ejecutivos = _load_ejecutivos()
+    ejecutivos_by_option = {item["option"]: item for item in ejecutivos}
+    notification_options = _notification_options()
+    notification_option_keys = {item["key"] for item in notification_options}
 
     if request.method == "POST":
         form_type = request.form.get("form_type", "profile")
@@ -138,6 +208,16 @@ def settings():
                 flash(_("No se pudo eliminar el teléfono adicional."), "danger")
             return redirect(url_for("account.settings", tab="additional-phones"))
 
+        if form_type == "notifications":
+            current_user.notification_preferences = [
+                value
+                for value in request.form.getlist("notification_preferences")
+                if value in notification_option_keys
+            ]
+            db.session.commit()
+            flash(_("Preferencias de notificación actualizadas."), "success")
+            return redirect(url_for("account.settings", tab="notifications"))
+
         previous_full_name = current_user.full_name
         previous_phone = current_user.phone
 
@@ -147,6 +227,10 @@ def settings():
         current_user.address = request.form.get("address", "").strip() or None
         current_user.commune = request.form.get("commune", "").strip() or None
         current_user.postal_code = request.form.get("postal_code", "").strip() or None
+        requested_tarotista = request.form.get("favorite_tarotista_option", "").strip()
+        current_user.favorite_tarotista_option = (
+            requested_tarotista if requested_tarotista in ejecutivos_by_option else None
+        )
         pref = request.form.get("preferred_payment", "").strip()
         current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
         db.session.commit()
@@ -191,6 +275,9 @@ def settings():
         user=current_user,
         active_tab=active_tab,
         additional_phones=additional_phones,
+        ejecutivos=ejecutivos,
+        notification_options=notification_options,
+        selected_notification_preferences=set(current_user.notification_preferences or []),
     )
 
 

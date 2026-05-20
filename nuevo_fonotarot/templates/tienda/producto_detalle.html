@@ -32,7 +32,7 @@
           <div class="col-md-7">
             <div class="text-secondary small mb-1">{% if product.category %}{{ product.category.name }}{% endif %}</div>
             <h1 class="fw-bold">{{ product.name }}</h1>
-            <div class="price my-3">${{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
+            <div class="price my-3">{{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
             {% if product.description %}
             <p class="text-secondary">{{ product.description }}</p>
             {% endif %}

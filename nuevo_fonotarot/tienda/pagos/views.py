@@ -114,8 +114,18 @@ def _send_firenze_failure_email(order: Order) -> None:
     _send_failure(order)
 
 
+def _customer_wants_purchase_notification(order: Order) -> bool:
+    """Return True when the customer opted into purchase notification emails."""
+    user = getattr(order, "user", None)
+    if user is None:
+        return True
+
+    preferences = getattr(user, "notification_preferences", None) or []
+    return "purchase" in preferences
+
+
 def _send_order_confirmation_email(order: Order) -> None:
-    """Send order confirmation email to customer and admin users via Daleks."""
+    """Send order confirmation email to the customer and admin users via Daleks."""
     from daleks.contrib.client import DaleksClient
 
     from ...models import Role
@@ -135,7 +145,7 @@ def _send_order_confirmation_email(order: Order) -> None:
     recipient_name = order.shipping_name or order.shipping_email or ""
 
     # --- Customer email ---
-    if order.shipping_email:
+    if order.shipping_email and _customer_wants_purchase_notification(order):
         try:
             logger.debug(
                 f"_send_order_confirmation_email: sending customer confirmation to {order.shipping_email} for order={order.id}"
@@ -157,6 +167,11 @@ def _send_order_confirmation_email(order: Order) -> None:
             logger.info(f"Order confirmation email sent to customer {order.shipping_email} for order={order.id}")
         except Exception:
             logger.exception(f"Failed to send order confirmation email to {order.shipping_email} for order={order.id}")
+    elif order.shipping_email:
+        logger.info(
+            "_send_order_confirmation_email: customer opted out of purchase notifications for order=%s",
+            order.id,
+        )
 
     # --- Admin notification ---
     logger.debug(f"_send_order_confirmation_email: looking up admin role for order={order.id}")

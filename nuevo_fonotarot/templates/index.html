@@ -2305,7 +2305,7 @@
           <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
             {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
             <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-            <div class="plan-clp">${{ pack.price_display }} CLP<span> / sesión</span></div>
+            <div class="plan-clp">{{ pack.price_display }} CLP<span> / sesión</span></div>
             <p class="plan-desc">{{ pack.description or '' }}</p>
             <div class="mt-auto d-flex flex-column gap-2">
               <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">

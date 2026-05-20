@@ -59,6 +59,10 @@ class User(db.Model, fsqla.FsUserMixin):
     postal_code: Mapped[str | None] = mapped_column(String(20))
     # Preferred payment provider key ('flow' or 'khipu')
     preferred_payment: Mapped[str | None] = mapped_column(String(30))
+    favorite_tarotista_option: Mapped[str | None] = mapped_column(String(20))
+    notification_preferences: Mapped[list[str]] = mapped_column(
+        JSON, default=list, server_default=text("'[]'")
+    )
 
     # Firenze company-wide client identifier (populated at registration or first purchase).
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)

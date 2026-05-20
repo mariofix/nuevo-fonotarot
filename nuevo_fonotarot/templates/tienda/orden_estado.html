@@ -179,7 +179,7 @@
                   <span class="badge bg-warning-lt text-warning">{{ _("Más popular") }}</span>
                   {% endif %}
                 </div>
-                <div class="offer-price mb-3">${{ pack.price_display }}</div>
+                <div class="offer-price mb-3">{{ pack.price_display }}</div>
                 <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn btn-primary w-100">
                   <i class="ti ti-bolt me-1"></i>{{ _("Comprar de nuevo") }}
                 </a>

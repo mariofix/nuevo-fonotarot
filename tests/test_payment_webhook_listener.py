@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+from flask import Flask
 from flask_security.models import fsqla_v3 as fsqla
 
 from nuevo_fonotarot.extensions import db
@@ -162,3 +163,57 @@ def test_complete_succeeded_order_admin_flow_keeps_pending_if_firenze_fails(monk
     assert completed is False
     assert order.status == OrderStatus.PENDING
     assert captured == {"confirm": 0, "failure": 1, "commits": 0}
+
+
+def test_send_order_confirmation_email_respects_purchase_notifications(monkeypatch):
+    app = Flask(__name__)
+    app.config.update(
+        TESTING=True,
+        DALEKS_URL="https://daleks.example",
+        DALEKS_TIMEOUT=10,
+        DALEKS_SMTP_ACCOUNT="smtp-account",
+        SECURITY_EMAIL_SENDER="hola@fonotarot.cl",
+        SITE_URL="https://fonotarot.example",
+    )
+    sent_to: list[str] = []
+
+    class FakeDaleksClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def send_email(self, *, to, **kwargs):
+            sent_to.extend(to)
+
+    admin_role = SimpleNamespace(
+        users=SimpleNamespace(
+            all=lambda: [SimpleNamespace(active=True, email="admin@example.com")]
+        )
+    )
+    order = SimpleNamespace(
+        id=46,
+        shipping_email="client@example.com",
+        shipping_name="Clienta",
+        provider="khipu",
+        total_display="$9.990",
+        items=[],
+        user=SimpleNamespace(notification_preferences=[]),
+    )
+
+    monkeypatch.setattr(pagos_views, "render_template", lambda *args, **kwargs: "html")
+    monkeypatch.setattr(
+        "nuevo_fonotarot.models.Role",
+        SimpleNamespace(query=SimpleNamespace(filter_by=lambda **kwargs: SimpleNamespace(first=lambda: admin_role))),
+        raising=False,
+    )
+    monkeypatch.setattr("daleks.contrib.client.DaleksClient", FakeDaleksClient, raising=False)
+
+    with app.app_context():
+        pagos_views._send_order_confirmation_email(order)
+
+    assert sent_to == ["admin@example.com"]
