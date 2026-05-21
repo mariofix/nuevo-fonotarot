@@ -81,6 +81,24 @@ def _settings_tab_from_request(default: str = "profile") -> str:
     return default
 
 
+def _firenze_profile_update_payload(
+    user: object,
+    *,
+    full_name_changed: bool,
+    phone_changed: bool,
+) -> dict[str, str | None]:
+    """Build the Firenze payload for a profile update."""
+    payload: dict[str, str | None] = {}
+    if full_name_changed:
+        payload["full_name"] = getattr(user, "full_name", None)
+    email = getattr(user, "email", None)
+    if email:
+        payload["email"] = email
+    if phone_changed:
+        payload["phone"] = getattr(user, "phone", None)
+    return payload
+
+
 @account_bp.route("/", methods=["GET"])
 @account_bp.route("/profile", methods=["GET"])
 @login_required_modal
@@ -238,11 +256,11 @@ def settings():
         full_name_changed = previous_full_name != current_user.full_name
         phone_changed = previous_phone != current_user.phone
         if current_user.firenze_client_id and (full_name_changed or phone_changed):
-            update_payload: dict[str, str | None] = {}
-            if full_name_changed:
-                update_payload["full_name"] = current_user.full_name
-            if phone_changed:
-                update_payload["phone"] = current_user.phone
+            update_payload = _firenze_profile_update_payload(
+                current_user,
+                full_name_changed=full_name_changed,
+                phone_changed=phone_changed,
+            )
 
             if not update_client_profile(
                 int(current_user.firenze_client_id),

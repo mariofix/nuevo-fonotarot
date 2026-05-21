@@ -227,7 +227,7 @@
               >
                 <h3 class="card-title">{{ _("Teléfonos adicionales") }}</h3>
                 {% if user.firenze_client_id %}
-                <p class="card-subtitle">{{ _("Administra aquí los números autorizados para consultas telefónicas.") }}</p>
+                  <p class="card-subtitle">{{ _("Administra aquí los ANIs autorizados para consultas telefónicas.") }}</p>
 
                 <div class="mt-3">
                   {% if additional_phones %}
@@ -255,7 +255,7 @@
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <input type="hidden" name="form_type" value="add_ani" />
                   <div class="col-md-8">
-                    <label class="form-label" for="additional_phone_1">{{ _("Nuevo teléfono adicional") }}</label>
+                    <label class="form-label" for="additional_phone_1">{{ _("Nuevo ANI adicional") }}</label>
                     <input
                       type="tel"
                       id="additional_phone_1"
@@ -268,7 +268,7 @@
                   </div>
                   <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-outline-primary w-100">
-                      <i class="ti ti-plus me-1"></i>{{ _("Agregar teléfono") }}
+                      <i class="ti ti-plus me-1"></i>{{ _("Agregar ANI") }}
                     </button>
                   </div>
                 </form>

@@ -670,7 +670,7 @@ def list_client_anis(client_id: int, *, service: str = "fonotarot-cl") -> list[s
         logger.warning("list_client_anis: missing Firenze API credentials for client_id=%s", client_id)
         return None
 
-    url = urljoin(_base_url(), f"/api/v1/client-ani/{service}/{client_id}")
+    url = urljoin(_base_url(), f"/api/v1/clients/{service}/{client_id}/ani")
 
     try:
         resp = requests.get(url, headers=headers, timeout=_timeout())
@@ -719,12 +719,8 @@ def add_client_ani(
         logger.warning("add_client_ani: missing Firenze API credentials for client_id=%s", client_id)
         return False, False
 
-    url = urljoin(_base_url(), "/api/v1/client-ani/create")
-    payload = {
-        "service": service,
-        "client_id": int(client_id),
-        "ani": normalized_ani,
-    }
+    url = urljoin(_base_url(), f"/api/v1/clients/{service}/{client_id}/ani")
+    payload = {"ani": normalized_ani}
 
     try:
         resp = requests.post(url, json=payload, headers=headers, timeout=_timeout())
@@ -768,7 +764,7 @@ def delete_client_ani(
         logger.warning("delete_client_ani: missing Firenze API credentials for client_id=%s", client_id)
         return False, False
 
-    url = urljoin(_base_url(), f"/api/v1/client-ani/{service}/{client_id}/{normalized_ani}")
+    url = urljoin(_base_url(), f"/api/v1/clients/{service}/{client_id}/ani/{normalized_ani}")
 
     try:
         resp = requests.delete(url, headers=headers, timeout=_timeout())
