@@ -1,7 +1,6 @@
 from types import SimpleNamespace
 
-from nuevo_fonotarot import create_flask
-from nuevo_fonotarot import firenze
+from nuevo_fonotarot import create_flask, firenze
 
 _TEST_APP = None
 
@@ -70,7 +69,9 @@ def test_api_promo_cobrar_completes_claim_and_stores_session(monkeypatch):
     app = _make_testing_app(monkeypatch)
 
     search_calls: list[str] = []
-    monkeypatch.setattr("nuevo_fonotarot.content.views.search_client", lambda **kwargs: search_calls.append(kwargs["ani"]) or None)
+    monkeypatch.setattr(
+        "nuevo_fonotarot.content.views.search_client", lambda **kwargs: search_calls.append(kwargs["ani"]) or None
+    )
     monkeypatch.setattr("nuevo_fonotarot.content.views._promo_claim_remaining", lambda: (True, 35))
     monkeypatch.setattr("nuevo_fonotarot.content.views.complete_promo_credit", lambda ani, credits: 987)
     monkeypatch.setattr("nuevo_fonotarot.content.views._send_admin_promo_notification", lambda *args, **kwargs: None)

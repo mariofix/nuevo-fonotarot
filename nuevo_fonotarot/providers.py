@@ -15,12 +15,11 @@ from typing import Any
 from merchants.models import CheckoutSession, PaymentState, PaymentStatus, WebhookEvent
 from merchants.providers import Provider, UserError
 
+# Re-export KhipuProvider from merchants (it works with the installed version).
+from merchants.providers.khipu import KhipuProvider  # noqa: F401
 from pyflowcl.Clients import ApiClient
 from pyflowcl.Payment import create as flow_create
 from pyflowcl.Payment import getStatus as flow_get_status
-
-# Re-export KhipuProvider from merchants (it works with the installed version).
-from merchants.providers.khipu import KhipuProvider  # noqa: F401
 
 # Flow status codes: 1=Paid, 2=Rejected, 3=Pending, 4=Cancelled
 _FLOW_STATE_MAP: dict[int, PaymentState] = {
@@ -91,11 +90,7 @@ class FlowProvider(Provider):
         except Exception as exc:
             raise UserError(str(exc)) from exc
 
-        redirect_url = (
-            f"{response.url}?token={response.token}"
-            if response.url and response.token
-            else ""
-        )
+        redirect_url = f"{response.url}?token={response.token}" if response.url and response.token else ""
         return CheckoutSession(
             session_id=str(response.token or ""),
             redirect_url=redirect_url,
@@ -133,6 +128,7 @@ class FlowProvider(Provider):
             token = data.get("token", "")
         except ValueError:
             from urllib.parse import parse_qs
+
             qs = parse_qs(payload.decode(errors="replace"))
             token = (qs.get("token") or [""])[0]
             data = {"token": token}

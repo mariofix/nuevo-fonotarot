@@ -6,7 +6,6 @@ from flask import current_app, flash, jsonify, redirect, render_template, reques
 from flask_babel import _
 from flask_security import current_user
 
-from . import account_bp
 from ..decorators import login_required_modal
 from ..extensions import db
 from ..firenze import (
@@ -18,6 +17,7 @@ from ..firenze import (
 )
 from ..log import get_logger
 from ..models import BlogPost, Order, SiteSettings
+from . import account_bp
 
 logger = get_logger(__name__)
 
@@ -35,7 +35,7 @@ def _load_ejecutivos() -> list[dict[str, str]]:
     try:
         raw = SiteSettings.get("ejecutivos") or "[]"
         payload = json.loads(raw)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON")
         return []
 
@@ -105,20 +105,14 @@ def _firenze_profile_update_payload(
 def profile():
     """Read-only profile page with recent activity."""
     ejecutivos = _load_ejecutivos()
-    favorite_tarotista = _tarotista_by_option(
-        ejecutivos, current_user.favorite_tarotista_option
-    )
+    favorite_tarotista = _tarotista_by_option(ejecutivos, current_user.favorite_tarotista_option)
     notification_options = _notification_options()
     selected_notifications = set(current_user.notification_preferences or [])
     notification_preferences_labels = [
-        option["label"]
-        for option in notification_options
-        if option["key"] in selected_notifications
+        option["label"] for option in notification_options if option["key"] in selected_notifications
     ]
 
-    recent_orders = (
-        current_user.orders.order_by(Order.created_at.desc()).limit(5).all()
-    )
+    recent_orders = current_user.orders.order_by(Order.created_at.desc()).limit(5).all()
     recent_posts = (
         BlogPost.query.filter_by(published=True)
         .order_by(BlogPost.published_at.desc(), BlogPost.created_at.desc())
@@ -161,6 +155,7 @@ def profile_credits():
 
     seconds = max(0, int((minutes or 0) * 60))
     return jsonify({"ok": True, "found": minutes is not None, "seconds": seconds}), 200
+
 
 @account_bp.route("/settings", methods=["GET", "POST"])
 @login_required_modal
@@ -307,10 +302,7 @@ def set_language(lang: str):
     it is a safe same-site relative path (starts with ``/`` but not ``//``).
     Falls back to the site index when ``next`` is absent or unsafe.
     """
-    active = [
-        item[1]
-        for item in current_app.config.get("AVAILABLE_LANGUAGES", [])
-    ]
+    active = [item[1] for item in current_app.config.get("AVAILABLE_LANGUAGES", [])]
 
     if lang in active:
         session["lang"] = lang
@@ -321,9 +313,15 @@ def set_language(lang: str):
     next_param = request.args.get("next", "").strip()
     if next_param:
         from urllib.parse import urlsplit as _urlsplit
+
         parsed_next = _urlsplit(next_param)
         # Accept only relative paths (no scheme, no netloc, must start with / but not //)
-        if not parsed_next.scheme and not parsed_next.netloc and parsed_next.path.startswith("/") and not parsed_next.path.startswith("//"):
+        if (
+            not parsed_next.scheme
+            and not parsed_next.netloc
+            and parsed_next.path.startswith("/")
+            and not parsed_next.path.startswith("//")
+        ):
             return redirect(next_param)
 
     return redirect(url_for("content.index"))

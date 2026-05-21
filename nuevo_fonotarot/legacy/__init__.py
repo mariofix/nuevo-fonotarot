@@ -15,4 +15,3 @@ legacy_bp = Blueprint(
 logger.debug("legacy_bp: blueprint created with url_prefix=%r", legacy_bp.url_prefix)
 
 from . import views  # noqa: E402, F401  (registers routes)
-

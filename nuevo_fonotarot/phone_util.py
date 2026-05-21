@@ -28,10 +28,7 @@ class PhoneUsernameUtil(UsernameUtil):
         :meth:`normalize`).  Returns ``None`` when valid.
         """
         if not username.isdigit() or not (10 <= len(username) <= 13):
-            return (
-                "Ingresa un número de teléfono válido "
-                "(solo dígitos, sin +, entre 10 y 13 dígitos)."
-            )
+            return "Ingresa un número de teléfono válido (solo dígitos, sin +, entre 10 y 13 dígitos)."
         return None
 
     def validate(self, username: str) -> tuple[str | None, str | None]:

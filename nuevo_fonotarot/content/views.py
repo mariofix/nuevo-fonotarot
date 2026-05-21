@@ -1,9 +1,8 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
+import json as _json
+from datetime import UTC
 from typing import Any
-
-import requests
-from requests.exceptions import RequestException
 
 from flask import (
     Blueprint,
@@ -18,16 +17,15 @@ from flask import (
     url_for,
 )
 from flask_security.utils import login_user
+from requests.exceptions import RequestException
 
 from ..actions import process_user_registration, register_checkout_account
 from ..extensions import db, limiter, user_datastore
-from ..log import get_logger
 from ..firenze import complete_promo_credit, search_client, update_client_profile
+from ..log import get_logger
 from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..utils import get_agents, get_moon_phase_index  # get_agents used by /api/agents endpoint
-
-import json as _json
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
@@ -39,13 +37,9 @@ logger = get_logger(__name__)
 
 def _firenze_auth_headers() -> dict[str, str]:
     """Build Firenze auth headers using API key/secret credentials."""
-    api_key = (
-        current_app.config.get("FIRENZE_API_KEY", "")
-        or current_app.config.get("FIRENZE_API_USER", "")
-    ).strip()
+    api_key = (current_app.config.get("FIRENZE_API_KEY", "") or current_app.config.get("FIRENZE_API_USER", "")).strip()
     api_secret = (
-        current_app.config.get("FIRENZE_API_SECRET", "")
-        or current_app.config.get("FIRENZE_API_PASSWORD", "")
+        current_app.config.get("FIRENZE_API_SECRET", "") or current_app.config.get("FIRENZE_API_PASSWORD", "")
     ).strip()
     if not api_key or not api_secret:
         raise RequestException("FIRENZE_API_KEY/FIRENZE_API_SECRET not configured")
@@ -74,11 +68,7 @@ def _promo_claim_remaining() -> tuple[bool, int]:
             # Another request created the row concurrently — safe to ignore.
             db.session.rollback()
 
-    setting = (
-        SiteSettings.query.filter_by(key=_PROMO_REMAINING_KEY)
-        .with_for_update()
-        .first()
-    )
+    setting = SiteSettings.query.filter_by(key=_PROMO_REMAINING_KEY).with_for_update().first()
     current = int(setting.value or 0) if setting else 0
     if current <= 0:
         return False, 0
@@ -89,7 +79,7 @@ def _promo_claim_remaining() -> tuple[bool, int]:
 
 def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> None:
     """E-mail every active admin user when a free trial is redeemed."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from daleks.contrib.client import DaleksClient
 
@@ -100,7 +90,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
     if not recipients:
         return
 
-    redeemed_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    redeemed_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
     daleks_url = current_app.config["DALEKS_URL"]
     daleks_smtp_account = current_app.config["DALEKS_SMTP_ACCOUNT"]
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
@@ -119,7 +109,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
                 client.send_email(
                     from_address=from_address,
                     to=[recipient],
-                    subject="[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: %s" % client_id,
+                    subject=f"[Fonotarot] Nueva promoción de 5 minutos canjeada - client_id: {client_id}",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
@@ -248,22 +238,16 @@ def _homepage_ctx() -> dict:
     """
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
 
-    
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     firenze_ejecutivos_url = f"{api_url}/api/v1/public/ejecutivos" if api_url else ""
 
     try:
         ejecutivos = _json.loads(SiteSettings.get("ejecutivos") or "[]")
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
         ejecutivos = []
 
-    latest_posts = (
-        BlogPost.query.filter_by(published=True)
-        .order_by(BlogPost.published_at.desc())
-        .limit(3)
-        .all()
-    )
+    latest_posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).limit(3).all()
 
     return {
         "firenze_ejecutivos_url": firenze_ejecutivos_url,
@@ -274,6 +258,7 @@ def _homepage_ctx() -> dict:
         "current_moon_phase": get_moon_phase_index(),
         "latest_posts": latest_posts,
     }
+
 
 blog_bp = Blueprint("blog", __name__)
 logger.debug("blog_bp: blueprint created")
@@ -311,7 +296,6 @@ def robots_txt():
 @content_bp.route("/sitemap.xml")
 def sitemap_xml():
     """Generate a dynamic XML sitemap with homepage, blog posts, and static pages."""
-    from datetime import datetime, timezone
 
     site_url = f"https://{current_app.config.get('TRUSTED_HOSTS', ['localhost'])[0]}"
     blog_prefix = current_app.config.get("BLOG_URL_PREFIX", "/blog")
@@ -319,25 +303,25 @@ def sitemap_xml():
     urls = []
 
     # Homepage
-    urls.append({
-        "loc": f"{site_url}/",
-        "changefreq": "daily",
-        "priority": "1.0",
-    })
+    urls.append(
+        {
+            "loc": f"{site_url}/",
+            "changefreq": "daily",
+            "priority": "1.0",
+        }
+    )
 
     # Blog listing
-    urls.append({
-        "loc": f"{site_url}{blog_prefix}/",
-        "changefreq": "daily",
-        "priority": "0.8",
-    })
+    urls.append(
+        {
+            "loc": f"{site_url}{blog_prefix}/",
+            "changefreq": "daily",
+            "priority": "0.8",
+        }
+    )
 
     # Published blog posts
-    posts = (
-        BlogPost.query.filter_by(published=True)
-        .order_by(BlogPost.published_at.desc())
-        .all()
-    )
+    posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
     for post in posts:
         entry = {
             "loc": f"{site_url}{blog_prefix}/{post.slug}",
@@ -397,11 +381,7 @@ def index():
     3. Default → the hardcoded ``index.html`` template.
     """
     if SiteSettings.get("homepage_type") == "blog":
-        posts = (
-            BlogPost.query.filter_by(published=True)
-            .order_by(BlogPost.published_at.desc())
-            .all()
-        )
+        posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
         return render_template("blog/index.html", posts=posts)
 
     page = StaticPage.query.filter_by(is_homepage=True, is_active=True).first()
@@ -439,11 +419,7 @@ def api_agents():
 @blog_bp.route("/")
 def listing():
     """List all published blog posts, newest first."""
-    posts = (
-        BlogPost.query.filter_by(published=True)
-        .order_by(BlogPost.published_at.desc())
-        .all()
-    )
+    posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
     return render_template("blog/index.html", posts=posts)
 
 

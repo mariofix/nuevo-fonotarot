@@ -45,8 +45,7 @@ def accepted_roles(*roles):
     Usage::
 
         @accepted_roles("admin", "staff")
-        def my_view():
-            ...
+        def my_view(): ...
     """
 
     def decorator(f):

@@ -3,8 +3,7 @@
 from flask import current_app
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, StringField, SubmitField
-from wtforms import validators
+from wtforms import EmailField, PasswordField, StringField, SubmitField, validators
 
 
 class ClaimAccountForm(FlaskForm):
@@ -29,9 +28,7 @@ class ClaimAccountForm(FlaskForm):
             validators.DataRequired(message=_l("El teléfono es obligatorio.")),
             validators.Regexp(
                 r"^\d{7,15}$",
-                message=_l(
-                    "Ingresa el teléfono en formato E.164 sin el signo + (ej: 56912345678)."
-                ),
+                message=_l("Ingresa el teléfono en formato E.164 sin el signo + (ej: 56912345678)."),
             ),
         ],
         render_kw={"placeholder": "56912345678", "autocomplete": "tel", "type": "tel"},
@@ -62,6 +59,4 @@ class ClaimAccountForm(FlaskForm):
 
         min_length: int = current_app.config.get("SECURITY_PASSWORD_LENGTH_MIN", 8)
         if field.data and len(field.data) < min_length:
-            raise validators.ValidationError(
-                _("La contraseña debe tener al menos %(n)d caracteres.", n=min_length)
-            )
+            raise validators.ValidationError(_("La contraseña debe tener al menos %(n)d caracteres.", n=min_length))

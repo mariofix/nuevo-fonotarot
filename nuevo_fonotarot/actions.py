@@ -101,9 +101,7 @@ def process_user_registration(user: User) -> bool:
 
     # Send Telegram notification about new registration
     try:
-        notify_new_user_registration(
-            email=user.email, phone=user.phone or user.username
-        )
+        notify_new_user_registration(email=user.email, phone=user.phone or user.username)
         logger.debug(
             "process_user_registration: Telegram notification sent for user=%s",
             user.id,
@@ -145,7 +143,8 @@ def process_user_registration(user: User) -> bool:
             _assign_clientes_role(user)
             db.session.commit()
             logger.info(
-                "process_user_registration: saved Firenze client_id=%s and assigned 'clientes' role for user=%s (email=%r phone=%r)",
+                "process_user_registration: saved Firenze client_id=%s and assigned 'clientes' role "
+                "for user=%s (email=%r phone=%r)",
                 client_id,
                 user.id,
                 user.email,

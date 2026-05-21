@@ -2,13 +2,13 @@
 
 import enum
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
 from flask_babel import get_locale
-from flask_security.models import fsqla_v3 as fsqla
 from flask_merchants.models import PaymentMixin
+from flask_security.models import fsqla_v3 as fsqla
 from slugify import slugify
 from sqlalchemy import (
     JSON,
@@ -21,15 +21,15 @@ from sqlalchemy import (
     Text,
     text,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from .extensions import db
+
 
 class Role(db.Model, fsqla.FsRoleMixin):
     """Application role (e.g. 'admin')."""
 
     __tablename__ = "roles"
-
 
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
@@ -40,13 +40,10 @@ class User(db.Model, fsqla.FsUserMixin):
 
     __tablename__ = "users"
 
-    
     # Trust window for passwordless signin: if set and current time < trusted_until,
     # user is automatically logged in without requiring email verification.
     trusted_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
 
     # Customer profile fields ---------------------------------------------------
     # Minimal profile (Known Customer)
@@ -60,9 +57,7 @@ class User(db.Model, fsqla.FsUserMixin):
     # Preferred payment provider key ('flow' or 'khipu')
     preferred_payment: Mapped[str | None] = mapped_column(String(30))
     favorite_tarotista_option: Mapped[str | None] = mapped_column(String(20))
-    notification_preferences: Mapped[list[str]] = mapped_column(
-        JSON, default=list, server_default=text("'[]'")
-    )
+    notification_preferences: Mapped[list[str]] = mapped_column(JSON, default=list, server_default=text("'[]'"))
 
     # Firenze company-wide client identifier (populated at registration or first purchase).
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
@@ -73,9 +68,7 @@ class User(db.Model, fsqla.FsUserMixin):
     @property
     def has_physical_profile(self) -> bool:
         """Return True when the user has all fields required for physical goods."""
-        return all(
-            (self.full_name, self.rut, self.address, self.commune, self.postal_code)
-        )
+        return all((self.full_name, self.rut, self.address, self.commune, self.postal_code))
 
 
 class WebAuthn(db.Model, fsqla.FsWebAuthnMixin):
@@ -97,21 +90,17 @@ class StaticPage(db.Model):
     __tablename__ = "static_pages"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    path: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False, index=True
-    )
+    path: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     featured_image_url: Mapped[str | None] = mapped_column(String(500))
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     is_homepage: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -136,22 +125,18 @@ class BlogPost(db.Model):
     __tablename__ = "blog_posts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    slug: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False, index=True
-    )
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     featured_image_url: Mapped[str | None] = mapped_column(String(500))
     excerpt: Mapped[str | None] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     published_at: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -162,6 +147,7 @@ class BlogPost(db.Model):
     def reading_time(self) -> int:
         """Estimated reading time in minutes (200 wpm)."""
         import re
+
         words = len(re.findall(r"\w+", self.content or ""))
         return max(1, round(words / 200))
 
@@ -176,7 +162,7 @@ class BlogPost(db.Model):
 # ---------------------------------------------------------------------------
 
 
-class OrderStatus(str, enum.Enum):
+class OrderStatus(enum.StrEnum):
     """Status values for a customer Order."""
 
     PENDING = "pending"
@@ -187,7 +173,7 @@ class OrderStatus(str, enum.Enum):
     CANCELLED = "cancelled"
 
 
-class OrderItemType(str, enum.Enum):
+class OrderItemType(enum.StrEnum):
     """Item-type discriminator for an OrderItem line."""
 
     MINUTE_PACK = "minute_pack"
@@ -210,9 +196,7 @@ class MinutePack(db.Model):
     description: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
 
     def __repr__(self) -> str:
         return f"<MinutePack {self.minutes}min ${self.price}>"
@@ -237,9 +221,7 @@ class SubscriptionPlan(db.Model):
     features: Mapped[str | None] = mapped_column(Text)  # newline-separated feature list
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
 
     def __repr__(self) -> str:
         return f"<SubscriptionPlan {self.name}>"
@@ -265,9 +247,7 @@ class ProductCategory(db.Model):
     __tablename__ = "product_categories"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    slug: Mapped[str] = mapped_column(
-        String(50), unique=True, nullable=False, index=True
-    )
+    slug: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
 
     def __repr__(self) -> str:
@@ -281,15 +261,9 @@ class Product(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    slug: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False, index=True
-    )
-    category_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("product_categories.id")
-    )
-    category = db.relationship(
-        "ProductCategory", backref=db.backref("products", lazy="dynamic")
-    )
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    category_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("product_categories.id"))
+    category = db.relationship("ProductCategory", backref=db.backref("products", lazy="dynamic"))
     description: Mapped[str | None] = mapped_column(Text)
     price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
@@ -297,13 +271,11 @@ class Product(db.Model):
     image_url: Mapped[str | None] = mapped_column(String(500))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -343,9 +315,7 @@ class Order(db.Model, PaymentMixin):
     user = db.relationship("User", backref=db.backref("orders", lazy="dynamic"))
 
     # Order fulfillment status (separate from PaymentMixin.payment_status)
-    status: Mapped[str] = mapped_column(
-        String(30), nullable=False, default=OrderStatus.PENDING
-    )
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default=OrderStatus.PENDING)
 
     # Shipping details (only required for physical products).
     # Anonymous shipping: unmarked boxes, pickup-point option.
@@ -353,39 +323,27 @@ class Order(db.Model, PaymentMixin):
     shipping_email: Mapped[str | None] = mapped_column(String(255))
     shipping_phone: Mapped[str | None] = mapped_column(String(30))
     shipping_address: Mapped[str | None] = mapped_column(Text)
-    shipping_uses_pickup: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False
-    )
+    shipping_uses_pickup: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     shipping_pickup_point: Mapped[str | None] = mapped_column(String(255))
     # Anonymous packaging: boxes are sent without branding/markings.
-    anonymous_shipping: Mapped[bool] = mapped_column(
-        Boolean, default=True, nullable=False
-    )
-
+    anonymous_shipping: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # Firenze company-wide client identifier (linked after lookup or confirmed payment).
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
     firenze_payload: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
     firenze_response: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
 
-    items = db.relationship(
-        "OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan"
-    )
+    items = db.relationship("OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
-        return (
-            f"<Order #{self.id} status={self.status!r} "
-            f"payment_status={self.payment_status!r}>"
-        )
+        return f"<Order #{self.id} status={self.status!r} payment_status={self.payment_status!r}>"
 
     @property
     def total_display(self) -> str:
         """Format order total using locale-aware currency formatting."""
         if self.amount is None:
             return ""
-        return babel_format_currency(
-            Decimal(str(self.amount)), self.currency or "CLP", locale=get_locale()
-        )
+        return babel_format_currency(Decimal(str(self.amount)), self.currency or "CLP", locale=get_locale())
 
     def initiate_payment(self, payment_method: str, email: str) -> str:
         """Prepare this order as a payment record and start checkout.
@@ -400,17 +358,13 @@ class Order(db.Model, PaymentMixin):
 
         from .extensions import db as _db
 
-        currency = SiteSettings.get(
-            "default_currency", current_app.config.get("DEFAULT_CURRENCY")
-        ) or "CLP"
+        currency = SiteSettings.get("default_currency", current_app.config.get("DEFAULT_CURRENCY")) or "CLP"
         cancel_url = url_for("content.index", _external=True, _anchor="planes")
 
         # Generate merchants_id before building URLs so it can be used in success_url.
         merchants_id = str(uuid.uuid4())
 
-        success_url = url_for(
-            "pagos.pago_retorno", order_id=merchants_id, _external=True
-        )
+        success_url = url_for("pagos.pago_retorno", order_id=merchants_id, _external=True)
 
         # Build extra_args (provider-specific kwargs) mirroring PaymentMixin.create().
         # Stored in self.extra_args for audit and unpacked into create_checkout(**kwargs).
@@ -472,9 +426,7 @@ class Order(db.Model, PaymentMixin):
             "merchants_id": self.merchants_id,
             "transaction_id": self.transaction_id,
             "provider": self.provider,
-            "amount": (
-                f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None
-            ),
+            "amount": (f"{Decimal(str(self.amount)):.2f}" if self.amount is not None else None),
             "currency": self.currency,
             "payment_status": self.payment_status,
             "email": self.email,
@@ -494,13 +446,9 @@ class OrderItem(db.Model):
     __tablename__ = "order_items"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    order_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("orders.id"), nullable=False
-    )
+    order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False)
     item_type: Mapped[str] = mapped_column(String(20), nullable=False)
-    item_id: Mapped[int] = mapped_column(
-        Integer, nullable=False
-    )  # FK to the relevant table
+    item_id: Mapped[int] = mapped_column(Integer, nullable=False)  # FK to the relevant table
     name: Mapped[str] = mapped_column(String(255), nullable=False)  # denormalised name
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
@@ -643,9 +591,7 @@ class SiteSettings(db.Model):
     __tablename__ = "site_settings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    key: Mapped[str] = mapped_column(
-        String(80), unique=True, nullable=False, index=True
-    )
+    key: Mapped[str] = mapped_column(String(80), unique=True, nullable=False, index=True)
     value: Mapped[str | None] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(String(255))
     module: Mapped[str] = mapped_column(String(50), nullable=False, default="general")
@@ -660,9 +606,7 @@ class SiteSettings(db.Model):
         return row.value if row else default
 
     @classmethod
-    def bulk_get(
-        cls, keys: list[str], defaults: dict[str, str] | None = None
-    ) -> dict[str, str | None]:
+    def bulk_get(cls, keys: list[str], defaults: dict[str, str] | None = None) -> dict[str, str | None]:
         """Return values for all *keys* in a single query.
 
         Missing keys resolve to the value in *defaults* (if provided)

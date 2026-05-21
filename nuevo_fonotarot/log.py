@@ -57,10 +57,10 @@ def get_logger(name: str | None = None) -> logging.Logger:
     Examples::
 
         # In a view file:
-        logger = get_logger(__name__)   # 'nuevo_fonotarot.content.views'
+        logger = get_logger(__name__)  # 'nuevo_fonotarot.content.views'
 
         # Root app logger:
-        logger = get_logger()           # 'nuevo_fonotarot'
+        logger = get_logger()  # 'nuevo_fonotarot'
 
         # Named sub-logger (add to LOGGING dict to customise):
         logger = get_logger("nuevo_fonotarot.payments")

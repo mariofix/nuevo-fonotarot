@@ -1,5 +1,6 @@
 """Shared helpers for tienda sub-blueprints."""
 
+from decimal import Decimal
 from urllib.parse import urlparse
 
 from flask import flash, redirect, request, session
@@ -39,7 +40,6 @@ def _save_cart(cart: list) -> None:
 
 
 def _cart_total(cart: list) -> Decimal:
-    from decimal import Decimal
     return sum(
         (Decimal(str(item["unit_price"])) * item["quantity"] for item in cart),
         Decimal(0),

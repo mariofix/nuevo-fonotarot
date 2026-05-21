@@ -1,3 +1,4 @@
+import importlib
 from types import SimpleNamespace
 
 from flask import Flask
@@ -20,16 +21,20 @@ def safe_set_db_info(*args, **kwargs):
 fsqla.FsModels.set_db_info = safe_set_db_info
 fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
 
-from nuevo_fonotarot import flask_app
-from nuevo_fonotarot.models import OrderStatus
-from nuevo_fonotarot.tienda.pagos import views as pagos_views
+flask_app = importlib.import_module("nuevo_fonotarot.flask_app")
+OrderStatus = importlib.import_module("nuevo_fonotarot.models").OrderStatus
+pagos_views = importlib.import_module("nuevo_fonotarot.tienda.pagos.views")
 
 
 def test_init_merchants_registers_payment_webhook_listener(monkeypatch):
     captured: dict[str, object] = {}
 
     monkeypatch.setattr(flask_app.merchants_ext, "init_app", lambda *args, **kwargs: None)
-    monkeypatch.setattr(flask_app.webhook_event_finished, "connect", lambda receiver, sender=None, weak=True: captured.update(receiver=receiver, sender=sender, weak=weak))
+    monkeypatch.setattr(
+        flask_app.webhook_event_finished,
+        "connect",
+        lambda receiver, sender=None, weak=True: captured.update(receiver=receiver, sender=sender, weak=weak),
+    )
 
     app = SimpleNamespace(config={"KHIPU_API_KEY": "", "FLOW_API_KEY": ""})
     flask_app._init_merchants(app, admin=None)
@@ -191,9 +196,7 @@ def test_send_order_confirmation_email_respects_purchase_notifications(monkeypat
             sent_to.extend(to)
 
     admin_role = SimpleNamespace(
-        users=SimpleNamespace(
-            all=lambda: [SimpleNamespace(active=True, email="admin@example.com")]
-        )
+        users=SimpleNamespace(all=lambda: [SimpleNamespace(active=True, email="admin@example.com")])
     )
     order = SimpleNamespace(
         id=46,

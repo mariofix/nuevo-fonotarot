@@ -4,7 +4,9 @@
   {% set order_labels = {
     'pending': _gettext('Pending'),
     'paid': _gettext('Paid'),
+    'shipped': _gettext('Shipped'),
     'delivered': _gettext('Delivered'),
+    'failed': _gettext('Failed'),
     'cancelled': _gettext('Cancelled'),
   } %}
   {% set payment_labels = {
@@ -16,18 +18,12 @@
     'refunded': _gettext('Refunded'),
     'unknown': _gettext('Unknown'),
   } %}
-  {% set order_flow = ['pending', 'paid'] %}
-  {% set order_terminals = ('delivered', 'cancelled') %}
-  {% set payment_flow = ['pending', 'processing'] %}
-  {% set payment_terminals = ('succeeded', 'failed', 'cancelled', 'refunded', 'unknown') %}
-  {% set order_base_index = order_flow.index(model.status) if model.status in order_flow else -1 %}
-  {% set is_order_terminal = model.status in order_terminals %}
-  {% set payment_base_index = payment_flow.index(model.payment_status) if model.payment_status in payment_flow else -1 %}
-  {% set is_payment_terminal = model.payment_status in payment_terminals %}
   {% set order_badges = {
     'pending': 'bg-warning-lt text-warning',
     'paid': 'bg-success-lt text-success',
+    'shipped': 'bg-primary-lt text-primary',
     'delivered': 'bg-teal-lt text-teal',
+    'failed': 'bg-danger-lt text-danger',
     'cancelled': 'bg-danger-lt text-danger',
   } %}
   {% set payment_badges = {
@@ -41,47 +37,6 @@
   } %}
 
   <style>
-    .wf-step {
-      position: relative;
-      padding-left: 2rem;
-      margin-bottom: .9rem;
-    }
-
-    .wf-step:last-child {
-      margin-bottom: 0;
-    }
-
-    .wf-step::before {
-      content: "";
-      position: absolute;
-      left: .45rem;
-      top: .1rem;
-      width: .85rem;
-      height: .85rem;
-      border-radius: 999px;
-      border: 2px solid var(--tblr-border-color);
-      background: transparent;
-    }
-
-    .wf-step::after {
-      content: "";
-      position: absolute;
-      left: .83rem;
-      top: 1rem;
-      width: 1px;
-      height: calc(100% + .3rem);
-      background: var(--tblr-border-color);
-    }
-
-    .wf-step:last-child::after {
-      display: none;
-    }
-
-    .wf-step.is-done::before {
-      background: var(--tblr-success);
-      border-color: var(--tblr-success);
-    }
-
     .audit-block {
       border: 1px solid rgba(245, 158, 11, .35);
       background: rgba(245, 158, 11, .08);
@@ -210,18 +165,32 @@
             <span class="card-title mb-0">{{ _gettext('Order lifecycle') }}</span>
           </div>
           <div class="card-body">
-            {% for step in order_flow %}
-            <div class="wf-step {% if order_base_index >= loop.index0 %}is-done{% endif %}">
-              <div class="fw-semibold">{{ order_labels.get(step, step) }}</div>
-            </div>
-            {% endfor %}
-            {% if is_order_terminal %}
-            <div class="wf-step is-done">
-              <div class="fw-semibold {% if model.status == 'cancelled' %}text-danger{% else %}text-teal{% endif %}">
-                {{ order_labels.get(model.status, model.status) }}
-              </div>
-            </div>
+            {% if model.status == 'failed' %}
+              {% set order_steps = ['pending', 'failed'] %}
+            {% elif model.status == 'cancelled' %}
+              {% set order_steps = ['pending', 'paid', 'cancelled'] %}
+            {% elif model.status == 'delivered' %}
+              {% set order_steps = ['pending', 'paid', 'shipped', 'delivered'] %}
+            {% elif model.status == 'shipped' %}
+              {% set order_steps = ['pending', 'paid', 'shipped'] %}
+            {% elif model.status == 'paid' %}
+              {% set order_steps = ['pending', 'paid'] %}
+            {% else %}
+              {% set order_steps = ['pending'] %}
             {% endif %}
+            {% set order_current_index = order_steps.index(model.status) %}
+            {% set order_terminal_colors = {
+              'delivered': 'text-teal',
+              'cancelled': 'text-danger',
+              'failed': 'text-danger'
+            } %}
+            <ul class="steps steps-green steps-vertical mb-0">
+              {% for step in order_steps %}
+              <li class="step-item {% if loop.index0 == order_current_index %}active {{ order_terminal_colors.get(step, '') }}{% elif loop.index0 < order_current_index %}text-success{% endif %}">
+                {{ order_labels.get(step, step) }}
+              </li>
+              {% endfor %}
+            </ul>
           </div>
         </div>
 
@@ -230,18 +199,36 @@
             <span class="card-title mb-0">{{ _gettext('Payment workflow') }}</span>
           </div>
           <div class="card-body">
-            {% for step in payment_flow %}
-            <div class="wf-step {% if payment_base_index >= loop.index0 %}is-done{% endif %}">
-              <div class="fw-semibold">{{ payment_labels.get(step, step) }}</div>
-            </div>
-            {% endfor %}
-            {% if is_payment_terminal %}
-            <div class="wf-step is-done">
-              <div class="fw-semibold {% if model.payment_status == 'succeeded' %}text-success{% elif model.payment_status in ('failed', 'cancelled', 'refunded') %}text-danger{% else %}text-secondary{% endif %}">
-                {{ payment_labels.get(model.payment_status, model.payment_status) }}
-              </div>
-            </div>
+            {% if model.payment_status == 'succeeded' %}
+              {% set payment_steps = ['pending', 'processing', 'succeeded'] %}
+            {% elif model.payment_status == 'failed' %}
+              {% set payment_steps = ['pending', 'processing', 'failed'] %}
+            {% elif model.payment_status == 'cancelled' %}
+              {% set payment_steps = ['pending', 'processing', 'cancelled'] %}
+            {% elif model.payment_status == 'refunded' %}
+              {% set payment_steps = ['pending', 'processing', 'succeeded', 'refunded'] %}
+            {% elif model.payment_status == 'unknown' %}
+              {% set payment_steps = ['pending', 'processing', 'unknown'] %}
+            {% elif model.payment_status == 'processing' %}
+              {% set payment_steps = ['pending', 'processing'] %}
+            {% else %}
+              {% set payment_steps = ['pending'] %}
             {% endif %}
+            {% set payment_current_index = payment_steps.index(model.payment_status) %}
+            {% set payment_terminal_colors = {
+              'succeeded': 'text-success',
+              'failed': 'text-danger',
+              'cancelled': 'text-danger',
+              'refunded': 'text-secondary',
+              'unknown': 'text-secondary'
+            } %}
+            <ul class="steps steps-green steps-vertical mb-0">
+              {% for step in payment_steps %}
+              <li class="step-item {% if loop.index0 == payment_current_index %}active {{ payment_terminal_colors.get(step, '') }}{% elif loop.index0 < payment_current_index %}text-success{% endif %}">
+                {{ payment_labels.get(step, step) }}
+              </li>
+              {% endfor %}
+            </ul>
           </div>
         </div>
 

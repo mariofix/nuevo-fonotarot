@@ -1,3 +1,4 @@
+import importlib
 from types import SimpleNamespace
 
 from flask_security.models import fsqla_v3 as fsqla
@@ -19,8 +20,8 @@ def safe_set_db_info(*args, **kwargs):
 fsqla.FsModels.set_db_info = safe_set_db_info
 fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
 
-from nuevo_fonotarot import actions
-from nuevo_fonotarot.tienda.pagos import views as pagos_views
+actions = importlib.import_module("nuevo_fonotarot.actions")
+pagos_views = importlib.import_module("nuevo_fonotarot.tienda.pagos.views")
 
 
 def test_process_user_registration_prefers_username_phone(monkeypatch):

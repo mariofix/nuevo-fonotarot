@@ -5,13 +5,13 @@ Revises: 7b79db108ac7
 Create Date: 2026-03-13 18:00:00.000000
 
 """
-from alembic import op
-import sqlalchemy as sa
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = 'e1f2a3b4c5d6'
-down_revision = '7b79db108ac7'
+revision = "e1f2a3b4c5d6"
+down_revision = "7b79db108ac7"
 branch_labels = None
 depends_on = None
 
@@ -28,31 +28,31 @@ _INITIAL_CATEGORIES = [
 def upgrade():
     # 1. Create product_categories table
     op.create_table(
-        'product_categories',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('slug', sa.String(length=50), nullable=False),
-        sa.Column('name', sa.String(length=100), nullable=False),
-        sa.PrimaryKeyConstraint('id'),
+        "product_categories",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("slug", sa.String(length=50), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
     )
-    with op.batch_alter_table('product_categories', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_product_categories_slug'), ['slug'], unique=True)
+    with op.batch_alter_table("product_categories", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_product_categories_slug"), ["slug"], unique=True)
 
     # 2. Seed the initial categories
     product_categories = sa.table(
-        'product_categories',
-        sa.column('slug', sa.String),
-        sa.column('name', sa.String),
+        "product_categories",
+        sa.column("slug", sa.String),
+        sa.column("name", sa.String),
     )
     op.bulk_insert(product_categories, _INITIAL_CATEGORIES)
 
     # 3. Add category_id FK column to products (nullable to allow data migration)
-    with op.batch_alter_table('products', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('category_id', sa.Integer(), nullable=True))
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.add_column(sa.Column("category_id", sa.Integer(), nullable=True))
         batch_op.create_foreign_key(
-            'fk_products_category_id',
-            'product_categories',
-            ['category_id'],
-            ['id'],
+            "fk_products_category_id",
+            "product_categories",
+            ["category_id"],
+            ["id"],
         )
 
     # 4. Migrate existing category string values to FK references
@@ -70,14 +70,14 @@ def upgrade():
             )
 
     # 5. Drop the old category string column
-    with op.batch_alter_table('products', schema=None) as batch_op:
-        batch_op.drop_column('category')
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.drop_column("category")
 
 
 def downgrade():
     # 1. Re-add the old category string column
-    with op.batch_alter_table('products', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('category', sa.String(length=50), nullable=True))
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.add_column(sa.Column("category", sa.String(length=50), nullable=True))
 
     # 2. Populate category string from FK reference
     connection = op.get_bind()
@@ -90,16 +90,14 @@ def downgrade():
     )
 
     # 3. Set default 'otros' for any NULL values
-    connection.execute(
-        sa.text("UPDATE products SET category = 'otros' WHERE category IS NULL")
-    )
+    connection.execute(sa.text("UPDATE products SET category = 'otros' WHERE category IS NULL"))
 
     # 4. Remove FK column
-    with op.batch_alter_table('products', schema=None) as batch_op:
-        batch_op.drop_constraint('fk_products_category_id', type_='foreignkey')
-        batch_op.drop_column('category_id')
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.drop_constraint("fk_products_category_id", type_="foreignkey")
+        batch_op.drop_column("category_id")
 
     # 5. Drop product_categories table
-    with op.batch_alter_table('product_categories', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_product_categories_slug'))
-    op.drop_table('product_categories')
+    with op.batch_alter_table("product_categories", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_product_categories_slug"))
+    op.drop_table("product_categories")

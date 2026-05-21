@@ -8,4 +8,3 @@ suscripciones_bp = Blueprint("suscripciones", __name__, url_prefix="/tienda/susc
 logger.debug("suscripciones_bp: blueprint created with url_prefix=%r", suscripciones_bp.url_prefix)
 
 from . import views  # noqa: E402, F401
-

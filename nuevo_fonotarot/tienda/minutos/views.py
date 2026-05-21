@@ -1,6 +1,6 @@
 """Minute-pack store views."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from flask import flash, redirect, render_template, request, url_for
@@ -38,9 +38,7 @@ def comprar_minutos(pack_id: int):
     - Physical (authenticated, full profile): all data pre-filled.
     """
     pack = MinutePack.query.filter_by(id=pack_id, is_active=True).first_or_404()
-    is_authenticated_user = bool(
-        current_user and getattr(current_user, "is_authenticated", False)
-    )
+    is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
@@ -60,24 +58,19 @@ def comprar_minutos(pack_id: int):
             flash(_("El email es obligatorio."), "danger")
             return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
 
-        duplicate_cutoff = datetime.now(timezone.utc) - timedelta(minutes=2)
-        duplicate_filter = (
-            and_(
-                OrderItem.item_type == OrderItemType.MINUTE_PACK,
-                OrderItem.item_id == pack.id,
-            )
+        duplicate_cutoff = datetime.now(UTC) - timedelta(minutes=2)
+        duplicate_filter = and_(
+            OrderItem.item_type == OrderItemType.MINUTE_PACK,
+            OrderItem.item_id == pack.id,
         )
-        duplicate_query = (
-            Order.query.filter(
-                Order.status == OrderStatus.PENDING,
-                Order.provider == payment_method,
-                Order.amount == pack.price,
-                Order.shipping_email == email,
-                Order.created_at >= duplicate_cutoff,
-                Order.items.any(duplicate_filter),
-            )
-            .order_by(Order.created_at.desc())
-        )
+        duplicate_query = Order.query.filter(
+            Order.status == OrderStatus.PENDING,
+            Order.provider == payment_method,
+            Order.amount == pack.price,
+            Order.shipping_email == email,
+            Order.created_at >= duplicate_cutoff,
+            Order.items.any(duplicate_filter),
+        ).order_by(Order.created_at.desc())
         if is_authenticated_user:
             duplicate_query = duplicate_query.filter(Order.user_id == current_user.id)
         else:
@@ -86,7 +79,8 @@ def comprar_minutos(pack_id: int):
         existing_order = duplicate_query.first()
         if existing_order:
             logger.info(
-                "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s user=%s email=%r",
+                "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s "
+                "user=%s email=%r",
                 pack.id,
                 existing_order.id,
                 existing_order.user_id,
@@ -121,9 +115,7 @@ def comprar_minutos(pack_id: int):
                     )
                 else:
                     flash(
-                        _(
-                            "Ingresa un teléfono válido (solo dígitos, sin +, entre 10 y 13 dígitos)."
-                        ),
+                        _("Ingresa un teléfono válido (solo dígitos, sin +, entre 10 y 13 dígitos)."),
                         "danger",
                     )
                 return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
@@ -139,9 +131,7 @@ def comprar_minutos(pack_id: int):
                 )
             else:
                 flash(
-                    _(
-                        "Ya existe una cuenta con ese email. Puedes ingresar con acceso sin contraseña."
-                    ),
+                    _("Ya existe una cuenta con ese email. Puedes ingresar con acceso sin contraseña."),
                     "info",
                 )
 
@@ -155,11 +145,7 @@ def comprar_minutos(pack_id: int):
             order.firenze_client_id = current_user.firenze_client_id
         else:
             try:
-                firenze_phone = (
-                    (current_user.username or "").strip()
-                    if is_authenticated_user
-                    else phone
-                )
+                firenze_phone = (current_user.username or "").strip() if is_authenticated_user else phone
                 firenze_id = _firenze_search(email=email, phone=firenze_phone or None)
                 if firenze_id is not None:
                     order.firenze_client_id = firenze_id

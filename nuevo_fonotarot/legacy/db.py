@@ -22,10 +22,7 @@ def _connect(env_var: str) -> pymysql.Connection:
     """Open a new pymysql DictCursor connection for the given env var URL."""
     url = os.environ.get(env_var, "")
     if not url:
-        raise RuntimeError(
-            f"Environment variable {env_var!r} is not set. "
-            "Cannot connect to the legacy database."
-        )
+        raise RuntimeError(f"Environment variable {env_var!r} is not set. Cannot connect to the legacy database.")
     parsed = urlparse(url)
     return pymysql.connect(
         host=parsed.hostname,

@@ -12,10 +12,10 @@ import calendar
 
 from flask import render_template
 
-from . import legacy_bp
-from .db import audiotex_conn, firenze_conn, portal_conn
 from ..decorators import login_required_modal
 from ..log import get_logger
+from . import legacy_bp
+from .db import audiotex_conn, firenze_conn, portal_conn
 
 logger = get_logger(__name__)
 
@@ -25,9 +25,7 @@ logger = get_logger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _fetch_monthly_3carrier(
-    year: int, month: int, entel_field: str = "fonotarot-cl"
-) -> dict:
+def _fetch_monthly_3carrier(year: int, month: int, entel_field: str = "fonotarot-cl") -> dict:
     """Return per-day minute totals for 3 carriers from the CDR table.
 
     Replaces 93 individual daily SELECT queries with 3 GROUP BY queries.
@@ -238,11 +236,7 @@ def _fetch_all_agents_monthly_cdr(
     next_year = year + (1 if month == 12 else 0)
     end = f"{next_year}-{next_month:02d}-01"
 
-    selected = {
-        ext: info
-        for ext, info in AGENT_REGISTRY.items()
-        if agent_ids is None or ext in agent_ids
-    }
+    selected = {ext: info for ext, info in AGENT_REGISTRY.items() if agent_ids is None or ext in agent_ids}
 
     by_day: dict[int, dict] = {}
 
@@ -273,9 +267,7 @@ def _fetch_all_agents_monthly_cdr(
                     by_day.setdefault(d, {e: 0 for e in selected})
                     by_day[d][ext] = int(row["minutos"] or 0)
 
-    agents = [
-        {"ext": ext, "name": info["name"]} for ext, info in sorted(selected.items())
-    ]
+    agents = [{"ext": ext, "name": info["name"]} for ext, info in sorted(selected.items())]
     totals: dict[int, int] = {ext: 0 for ext in selected}
     days = []
     for d in range(1, days_in_month + 1):
@@ -762,9 +754,7 @@ def marilina():
     """Marilina — March 2026, dst 56332541220 / 56990238293 / 56999679182."""
     logger.debug("legacy: marilina requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56332541220, 56990238293, 56999679182)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56332541220, 56990238293, 56999679182))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Marilina", **data)
@@ -776,9 +766,7 @@ def paola6():
     """Paola — March 2026, dst 56652893541 / 56994871981 / 56952379063."""
     logger.debug("legacy: paola6 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56652893541, 56994871981, 56952379063)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56652893541, 56994871981, 56952379063))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Paola", **data)
@@ -829,9 +817,7 @@ def pedro12():
     """
     logger.debug("legacy: pedro12 requested")
     try:
-        data = _fetch_agent_monthly_cdr(
-            2026, 3, (56233134177, 56959516081, 56999047069)
-        )
+        data = _fetch_agent_monthly_cdr(2026, 3, (56233134177, 56959516081, 56999047069))
     except Exception as exc:
         return _db_error(exc)
     return render_template("legacy/agent_monthly.html", title="Pedro", **data)

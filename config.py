@@ -17,8 +17,9 @@ To control verbosity, set the ``LOG_LEVEL`` environment variable
 To use a logger in application code::
 
     from nuevo_fonotarot.log import get_logger
-    logger = get_logger(__name__)          # module-scoped (recommended)
-    logger = get_logger()                  # root 'nuevo_fonotarot' logger
+
+    logger = get_logger(__name__)  # module-scoped (recommended)
+    logger = get_logger()  # root 'nuevo_fonotarot' logger
     logger = get_logger("nuevo_fonotarot.payments")  # any named logger
 
 The ``nuevo_fonotarot`` logger hierarchy is the single entry point
@@ -60,9 +61,9 @@ def _make_logging_config(log_level: str = "DEBUG") -> dict:
     # Ensure logs directory exists
     logs_dir = Path(__file__).resolve().parent / "logs"
     logs_dir.mkdir(exist_ok=True)
-    
+
     log_file = logs_dir / "nuevo-fonotarot.log"
-    
+
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -168,7 +169,7 @@ class Config:
     SECURITY_US_EMAIL_VALIDITY: int = 300  # One-time code valid for 5 minutes
     SECURITY_US_TOKEN_VALIDITY: int = 300  # One-time link valid for 5 minutes
     SECURITY_REMEMBER_ME_DAYS: int = 31  # Trust window for remember_me checkbox
-    
+
     # TOTP settings (required for unified signin)
     SECURITY_TOTP_SECRETS: dict = {"1": "JBSWY3DPEBLW64TMMQQ"}
     SECURITY_TOTP_ISSUER: str = "Fonotarot"

@@ -1,20 +1,19 @@
 """Flask-Admin configuration using Flask-Security for authentication."""
 
 import os
-from datetime import date
+from datetime import UTC, date
 
 from flask import jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.actions import action
-from flask_admin.menu import MenuLink
-from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
+from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
-from flask_admin_tabler import tabler_bool_formatter, JsonColumnsMixin
 from .extensions import db
-
 
 # Spanish month names used in legacy CDR report views
 _MONTHS_ES = {
@@ -97,7 +96,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -145,7 +144,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -253,11 +252,13 @@ class MediaBrowserView(BaseView):
                     continue
                 ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
                 if ext in _IMAGE_EXTENSIONS:
-                    files.append({
-                        "name": name,
-                        "url": url_for("static", filename=f"media-library/{name}"),
-                        "thumb_url": url_for("media_browser.thumb", f=name),
-                    })
+                    files.append(
+                        {
+                            "name": name,
+                            "url": url_for("static", filename=f"media-library/{name}"),
+                            "thumb_url": url_for("media_browser.thumb", f=name),
+                        }
+                    )
         return jsonify(files)
 
     @expose("/thumb")
@@ -268,8 +269,8 @@ class MediaBrowserView(BaseView):
         Path traversal is rejected — only bare filenames with known image
         extensions are accepted.
         """
-        from PIL import Image
         from flask import abort, send_file
+        from PIL import Image
 
         filename = request.args.get("f", "")
         # Reject anything that looks like a path traversal.
@@ -376,9 +377,9 @@ class StaticPageAdminView(SecureModelView):
         model.path = StaticPage.normalize_path(model.path)
         if model.is_homepage:
             # Ensure only one page is the homepage at a time.
-            self.session.query(StaticPage).filter(
-                StaticPage.id != model.id
-            ).update({"is_homepage": False}, synchronize_session="fetch")
+            self.session.query(StaticPage).filter(StaticPage.id != model.id).update(
+                {"is_homepage": False}, synchronize_session="fetch"
+            )
 
 
 class BlogPostAdminView(SecureModelView):
@@ -412,9 +413,9 @@ class BlogPostAdminView(SecureModelView):
         elif model.slug:
             model.slug = BlogPost.make_slug(model.slug)
         if model.published and model.published_at is None:
-            from datetime import datetime, timezone
+            from datetime import datetime
 
-            model.published_at = datetime.now(timezone.utc)
+            model.published_at = datetime.now(UTC)
 
 
 class MinutePackAdminView(SecureModelView):
@@ -528,7 +529,6 @@ class AnalyticsSettingsAdminView(BaseView):
 
     def is_accessible(self):
         return current_user and current_user.is_authenticated and current_user.has_role("admin")
-        
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
@@ -564,7 +564,10 @@ _SEO_KEYS = [
         "Sitio",
         "Descripción",
         "Meta descripción por defecto (aprox. 155 caracteres).",
-        "Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.",
+        (
+            "Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. "
+            "Disponible 24/7. Amor, trabajo, salud y más."
+        ),
     ),
     (
         "seo_site_keywords",
@@ -693,7 +696,6 @@ class SeoSettingsAdminView(BaseView):
 
     def is_accessible(self):
         return current_user and current_user.is_authenticated and current_user.has_role("admin")
-        
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
@@ -754,14 +756,11 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
     page_size = 50
     column_default_sort = ("id", True)
 
-    @action(
-        "post_purchase",
-        "Proceso post webhook"
-    )
+    @action("post_purchase", "Proceso post webhook")
     def action_post_purchase(self, ids):
-        """This ejecutes the process after a webhook, no modifications """
-        from flask import flash
+        """This ejecutes the process after a webhook, no modifications"""
         from .signals import post_purchase_process
+
         for order_id in ids:
             post_purchase_process(order_id=order_id)
 
@@ -998,6 +997,4 @@ def init_admin(app, admin_ext):
             url="/media",
         )
     )
-    admin_ext.add_link(
-        MenuLink(name="Home Page", url="/", icon_type="tabler", icon_value="home")
-    )
+    admin_ext.add_link(MenuLink(name="Home Page", url="/", icon_type="tabler", icon_value="home"))

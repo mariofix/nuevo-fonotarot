@@ -5,11 +5,10 @@ Revises: b54236434b59
 Create Date: 2026-05-06 20:51:22.247064
 """
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from flask_security.datastore import AsaList
 from sqlalchemy.ext.mutable import MutableList
-
 
 # revision identifiers, used by Alembic.
 revision = "c19e884a175c"
@@ -20,9 +19,7 @@ depends_on = None
 
 def upgrade():
     with op.batch_alter_table("users", schema=None) as batch_op:
-        batch_op.add_column(
-            sa.Column("fs_webauthn_user_handle", sa.String(length=64), nullable=True)
-        )
+        batch_op.add_column(sa.Column("fs_webauthn_user_handle", sa.String(length=64), nullable=True))
         batch_op.add_column(
             sa.Column(
                 "mf_recovery_codes",
@@ -46,9 +43,7 @@ def upgrade():
                 nullable=False,
             )
         )
-        batch_op.create_unique_constraint(
-            "uq_users_fs_webauthn_user_handle", ["fs_webauthn_user_handle"]
-        )
+        batch_op.create_unique_constraint("uq_users_fs_webauthn_user_handle", ["fs_webauthn_user_handle"])
 
     op.create_table(
         "webauthn",

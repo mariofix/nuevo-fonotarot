@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# copy-vendor.sh — copies dist files from node_modules into static vendor dirs.
-# Run after `npm install` when upgrading any library listed in package.json.
+# copy-vendor.sh — copies dist files into static vendor dirs.
+# Run after updating the local vendor sources for any library listed in package.json.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -11,10 +11,44 @@ cp_v() { echo "  $1 → $2"; cp "$1" "$2"; }
 
 # ── 1. Tabler core  →  nuevo_fonotarot/static/vendor/tabler/ ──────────────
 TABLER="$ROOT/nuevo_fonotarot/static/vendor/tabler"
-mkdir -p "$TABLER/css" "$TABLER/js"
-cp_v "$NM/@tabler/core/dist/css/tabler.min.css"       "$TABLER/css/tabler.min.css"
-cp_v "$NM/@tabler/core/dist/css/tabler-flags.min.css" "$TABLER/css/tabler-flags.min.css"
-cp_v "$NM/@tabler/core/dist/js/tabler.min.js"         "$TABLER/js/tabler.min.js"
+
+find_tabler_source() {
+  local candidate
+  for candidate in \
+    "${TABLER_DASHBOARD_DIR:-}" \
+    "$ROOT/tabler/packages-zip/dashboard" \
+    "$ROOT/../tabler/packages-zip/dashboard" \
+    "$ROOT/../tabler/packages-zip/dashboard/dist"
+  do
+    [ -n "$candidate" ] || continue
+
+    if [ -f "$candidate/dist/css/tabler.min.css" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+
+    if [ -f "$candidate/css/tabler.min.css" ]; then
+      printf '%s\n' "$candidate/.."
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+TABLER_SOURCE="$(find_tabler_source)" || {
+  echo "Unable to find Tabler dashboard release files." >&2
+  echo "Set TABLER_DASHBOARD_DIR or place the checkout at ../tabler/packages-zip/dashboard." >&2
+  exit 1
+}
+
+mkdir -p "$TABLER/css" "$TABLER/js" "$TABLER/img"
+cp_v "$TABLER_SOURCE/dist/css/tabler.min.css"       "$TABLER/css/tabler.min.css"
+cp_v "$TABLER_SOURCE/dist/css/tabler-flags.min.css" "$TABLER/css/tabler-flags.min.css"
+cp_v "$TABLER_SOURCE/dist/js/tabler.min.js"         "$TABLER/js/tabler.min.js"
+rm -rf "$TABLER/img/flags"
+cp -R "$TABLER_SOURCE/dist/img/flags" "$TABLER/img/"
+echo "  tabler → $TABLER (+ css/ js/ img/flags/)"
 
 # ── 2. Tabler icons  →  nuevo_fonotarot/static/vendor/tabler-icons/ ───────
 ICONS="$ROOT/nuevo_fonotarot/static/vendor/tabler-icons"
@@ -62,11 +96,12 @@ copy_font_files "$FONTS/source-sans-3.css"   "source-sans-3"
 HUGERTE="$ROOT/nuevo_fonotarot/static/vendor/hugerte"
 mkdir -p "$HUGERTE"
 cp_v "$NM/hugerte/hugerte.min.js" "$HUGERTE/hugerte.min.js"
-cp -r "$NM/hugerte/icons"   "$HUGERTE/icons"
-cp -r "$NM/hugerte/models"  "$HUGERTE/models"
-cp -r "$NM/hugerte/plugins" "$HUGERTE/plugins"
-cp -r "$NM/hugerte/skins"   "$HUGERTE/skins"
-cp -r "$NM/hugerte/themes"  "$HUGERTE/themes"
+rm -rf "$HUGERTE/icons" "$HUGERTE/models" "$HUGERTE/plugins" "$HUGERTE/skins" "$HUGERTE/themes"
+cp -R "$NM/hugerte/icons"   "$HUGERTE/"
+cp -R "$NM/hugerte/models"  "$HUGERTE/"
+cp -R "$NM/hugerte/plugins" "$HUGERTE/"
+cp -R "$NM/hugerte/skins"   "$HUGERTE/"
+cp -R "$NM/hugerte/themes"  "$HUGERTE/"
 echo "  hugerte → $HUGERTE (+ icons/ models/ plugins/ skins/ themes/)"
 
 # ── 5. GrapeJS  →  nuevo_fonotarot/static/vendor/grapesjs/ ───────────────

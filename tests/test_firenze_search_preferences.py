@@ -57,7 +57,9 @@ def test_list_client_anis_uses_new_nested_endpoint(monkeypatch):
         captured["url"] = url
         captured["headers"] = headers
         captured["timeout"] = timeout
-        return _FakeResponse({"ok": True, "service": "fonotarot-cl", "client_id": 123, "anis": ["56912345678", "56987654321"]})
+        return _FakeResponse(
+            {"ok": True, "service": "fonotarot-cl", "client_id": 123, "anis": ["56912345678", "56987654321"]}
+        )
 
     monkeypatch.setattr(firenze, "_auth_headers", lambda: {"x-api-key": "k", "x-api-secret": "s"})
     monkeypatch.setattr(firenze, "_base_url", lambda: "http://firenze.local")
@@ -80,7 +82,9 @@ def test_add_client_ani_posts_minimal_body_to_nested_endpoint(monkeypatch):
         captured["json"] = json
         captured["headers"] = headers
         captured["timeout"] = timeout
-        return _FakeResponse({"ok": True, "service": "fonotarot-cl", "client_id": 123, "ani": "56912345678", "created": True})
+        return _FakeResponse(
+            {"ok": True, "service": "fonotarot-cl", "client_id": 123, "ani": "56912345678", "created": True}
+        )
 
     monkeypatch.setattr(firenze, "_auth_headers", lambda: {"x-api-key": "k", "x-api-secret": "s"})
     monkeypatch.setattr(firenze, "_base_url", lambda: "http://firenze.local")
@@ -104,7 +108,9 @@ def test_delete_client_ani_uses_new_nested_endpoint(monkeypatch):
         captured["url"] = url
         captured["headers"] = headers
         captured["timeout"] = timeout
-        return _FakeResponse({"ok": True, "service": "fonotarot-cl", "client_id": 123, "ani": "56912345678", "deleted": True})
+        return _FakeResponse(
+            {"ok": True, "service": "fonotarot-cl", "client_id": 123, "ani": "56912345678", "deleted": True}
+        )
 
     monkeypatch.setattr(firenze, "_auth_headers", lambda: {"x-api-key": "k", "x-api-secret": "s"})
     monkeypatch.setattr(firenze, "_base_url", lambda: "http://firenze.local")

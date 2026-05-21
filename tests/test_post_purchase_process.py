@@ -1,3 +1,4 @@
+import importlib
 from types import SimpleNamespace
 
 from flask_security.models import fsqla_v3 as fsqla
@@ -19,7 +20,7 @@ def safe_set_db_info(*args, **kwargs):
 fsqla.FsModels.set_db_info = safe_set_db_info
 fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
 
-from nuevo_fonotarot import signals
+signals = importlib.import_module("nuevo_fonotarot.signals")
 
 
 def test_post_purchase_process_posts_seconds_using_quantity(monkeypatch):

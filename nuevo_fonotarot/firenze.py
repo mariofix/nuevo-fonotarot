@@ -33,8 +33,8 @@ Configuration (via ``app.config`` / environment variables)
     Request timeout in seconds.  Defaults to ``5``.
 """
 
-from urllib.parse import urljoin
 from typing import Any
+from urllib.parse import urljoin
 
 import requests
 from flask import current_app
@@ -42,6 +42,7 @@ from flask import current_app
 from .log import get_logger
 
 logger = get_logger(__name__)
+
 
 def _base_url() -> str:
     """Return the configured Firenze base URL."""
@@ -55,13 +56,9 @@ def _timeout() -> int:
 
 def _get_credentials() -> tuple[str, str] | None:
     """Return Firenze API credentials from config, or None if not configured."""
-    api_key = (
-        current_app.config.get("FIRENZE_API_KEY", "")
-        or current_app.config.get("FIRENZE_API_USER", "")
-    ).strip()
+    api_key = (current_app.config.get("FIRENZE_API_KEY", "") or current_app.config.get("FIRENZE_API_USER", "")).strip()
     api_secret = (
-        current_app.config.get("FIRENZE_API_SECRET", "")
-        or current_app.config.get("FIRENZE_API_PASSWORD", "")
+        current_app.config.get("FIRENZE_API_SECRET", "") or current_app.config.get("FIRENZE_API_PASSWORD", "")
     ).strip()
     if not api_key or not api_secret:
         logger.warning("_get_credentials: FIRENZE_API_KEY or FIRENZE_API_SECRET not configured")
@@ -229,7 +226,7 @@ def create_client(
         "ani": ani or "",
         "transaction_id": transaction_id or "",
     }
-    
+
     url = urljoin(_base_url(), "/api/v1/payments/complete")
     logger.debug(
         "create_client: creating client (name=%r email=%r ani=%r transaction_id=%r)",
@@ -249,7 +246,7 @@ def create_client(
                 transaction_id,
             )
             return None
-        
+
         data = resp.json()
         client_id = data.get("client_id")
         if client_id is not None:
@@ -261,7 +258,7 @@ def create_client(
                 transaction_id,
             )
             return int(client_id)
-        
+
         logger.warning(
             "create_client: no client_id in response for email=%r ani=%r transaction_id=%r",
             email,
@@ -284,6 +281,7 @@ def create_client(
             ani,
         )
         return None
+
 
 def post_purchase(
     name: str | None,
@@ -333,10 +331,10 @@ def post_purchase(
         "credits": segundos or 0,
         "transaction_id": transaction_id or "",
     }
-    
+
     url = urljoin(_base_url(), "/api/v1/payments/complete")
     logger.debug(f"post_purchase: sending payment ({payload=}) to {url}")
-    
+
     try:
         resp = requests.post(url, json=payload, headers=headers, timeout=_timeout())
         logger.info(
@@ -355,7 +353,7 @@ def post_purchase(
                 resp.text[:300],
             )
             return None
-        
+
         data = resp.json()
         if not isinstance(data, dict):
             logger.warning(
@@ -382,6 +380,7 @@ def post_purchase(
         )
         return None
 
+
 def complete_promo_credit(ani: str | None, credits: int) -> int | None:
     """Complete a free-trial promo in Firenze and return the new client id."""
     headers = _auth_headers()
@@ -398,7 +397,7 @@ def complete_promo_credit(ani: str | None, credits: int) -> int | None:
         "service": "fonotarot-cl",
         "credits": credits,
         "ani": normalized_ani,
-        "transaction_id": f"pr_{normalized_ani}"
+        "transaction_id": f"pr_{normalized_ani}",
     }
 
     url = urljoin(_base_url(), "/api/v1/payments/complete")
@@ -461,7 +460,7 @@ def _int_from(value: object) -> int | None:
         if isinstance(value, bool):
             return None
         return int(value)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return None
 
 

@@ -1,7 +1,7 @@
 """Notification utilities for sending alerts via various channels."""
 
 import os
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import requests
 
@@ -81,8 +81,7 @@ def send_telegram_notification(message: str) -> bool:
 
                 if response.status_code != 200:
                     logger.warning(
-                        "send_telegram_notification: failed to send to chat_id=%s "
-                        "(status=%d, response=%r)",
+                        "send_telegram_notification: failed to send to chat_id=%s (status=%d, response=%r)",
                         chat_id,
                         response.status_code,
                         response.text,

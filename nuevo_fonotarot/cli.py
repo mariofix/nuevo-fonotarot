@@ -45,10 +45,14 @@ def _extract_pot() -> None:
     os.makedirs(_translations_dir(), exist_ok=True)
     _run(
         "extract",
-        "-F", _babel_cfg(),
-        "-k", "_l",
-        "-k", "lazy_gettext",
-        "-o", _pot_file(),
+        "-F",
+        _babel_cfg(),
+        "-k",
+        "_l",
+        "-k",
+        "lazy_gettext",
+        "-o",
+        _pot_file(),
         ".",
     )
 
@@ -57,8 +61,10 @@ def _compile(locale: str) -> None:
     """Compile a single locale's .po → .mo."""
     _run(
         "compile",
-        "-d", _translations_dir(),
-        "-l", locale,
+        "-d",
+        _translations_dir(),
+        "-l",
+        locale,
     )
 
 
@@ -71,6 +77,7 @@ def _load_available_langs() -> list[list[str]]:
 # CLI group
 # ---------------------------------------------------------------------------
 
+
 @click.group("lang")
 def lang_cli() -> None:
     """Manage i18n translation catalogues and available languages."""
@@ -79,8 +86,11 @@ def lang_cli() -> None:
 @lang_cli.command("new")
 @click.argument("locale")
 @click.argument("label")
-@click.option("--short", default=None,
-              help="Short code for the language switcher (defaults to the language part of the locale, e.g. 'fr' for 'fr_FR').")
+@click.option(
+    "--short",
+    default=None,
+    help="Short code for the language switcher (defaults to the language part of the locale, e.g. 'fr' for 'fr_FR').",
+)
 @with_appcontext
 def lang_new(locale: str, label: str, short: str | None) -> None:
     """Create a NEW language catalogue.
@@ -110,8 +120,7 @@ def lang_new(locale: str, label: str, short: str | None) -> None:
     if os.path.exists(po):
         click.echo(
             click.style(
-                f"✗ PO file already exists at {po}. "
-                "Remove it manually or use 'flask lang update' to refresh it.",
+                f"✗ PO file already exists at {po}. Remove it manually or use 'flask lang update' to refresh it.",
                 fg="red",
             )
         )
@@ -130,7 +139,7 @@ def lang_new(locale: str, label: str, short: str | None) -> None:
         click.style(
             f"✓ Language '{locale}' ({label}) catalogue created.\n"
             f"  Next steps:\n"
-            f"    1. Add [\"{short}\", \"{locale}\", \"{label}\"] to AVAILABLE_LANGUAGES in config.py\n"
+            f'    1. Add ["{short}", "{locale}", "{label}"] to AVAILABLE_LANGUAGES in config.py\n'
             f"    2. Translate {po}\n"
             f"    3. Run 'flask lang update {locale}'",
             fg="green",
@@ -172,8 +181,7 @@ def lang_update(locale: str | None) -> None:
         if not os.path.exists(po):
             click.echo(
                 click.style(
-                    f"  ⚠ PO file not found for '{loc}' ({po}). "
-                    "Run 'flask lang new' to initialise it.",
+                    f"  ⚠ PO file not found for '{loc}' ({po}). Run 'flask lang new' to initialise it.",
                     fg="yellow",
                 )
             )
@@ -197,10 +205,9 @@ def lang_update(locale: str | None) -> None:
 
 
 @click.command("seed-promo")
-@click.option("--stock", default=36, show_default=True,
-              help="Number of free-trial promotions to make available.")
+@click.option("--stock", default=36, show_default=True, help="Number of free-trial promotions to make available.")
 @with_appcontext
-def seed_promo_cli() -> None:
+def seed_promo_cli(stock: int = 36) -> None:
     """Create or reset the free-trial promotion stock counter.
 
     Sets SiteSettings key ``promo_free_minutes_remaining`` to STOCK (default 36).
@@ -228,10 +235,12 @@ def seed_promo_cli() -> None:
         action = "updated"
 
     db.session.commit()
-    click.echo(click.style(
-        f"✓ promo_free_minutes_remaining {action} → {stock}",
-        fg="green",
-    ))
+    click.echo(
+        click.style(
+            f"✓ promo_free_minutes_remaining {action} → {stock}",
+            fg="green",
+        )
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -2,10 +2,10 @@
 
 from flask import render_template
 
-from . import lab_bp
 from ..log import get_logger
 from ..models import BlogPost
 from ..placeholder import PLANS, TESTIMONIALS
+from . import lab_bp
 
 logger = get_logger(__name__)
 
@@ -92,11 +92,7 @@ def home8():
 
 def _blog_posts():
     """Return published posts for blog lab views, newest first."""
-    return (
-        BlogPost.query.filter_by(published=True)
-        .order_by(BlogPost.published_at.desc())
-        .all()
-    )
+    return BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
 
 
 # ---------------------------------------------------------------------------

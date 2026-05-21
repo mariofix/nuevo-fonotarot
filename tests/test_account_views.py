@@ -1,3 +1,4 @@
+import importlib
 from types import SimpleNamespace
 
 from flask_security.models import fsqla_v3 as fsqla
@@ -19,7 +20,7 @@ def safe_set_db_info(*args, **kwargs):
 fsqla.FsModels.set_db_info = safe_set_db_info
 fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
 
-from nuevo_fonotarot.account import views as account_views
+account_views = importlib.import_module("nuevo_fonotarot.account.views")
 
 
 def test_firenze_profile_update_payload_includes_editable_profile_fields():

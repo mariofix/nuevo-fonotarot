@@ -1,5 +1,5 @@
-from decimal import Decimal
 import importlib
+from decimal import Decimal
 from types import SimpleNamespace
 
 from flask_security.models import fsqla_v3 as fsqla

@@ -67,8 +67,6 @@ class _LangEntry:
         return f"<_LangEntry {self.locale}>"
 
 
-
-
 def _normalize_agent(raw: dict) -> dict:
     """Map a firenze API agent record to the dict shape templates expect.
 
@@ -125,7 +123,7 @@ def get_agents() -> tuple[list[dict], str | None]:
             data = json.loads(resp.read().decode())
         agents = [_normalize_agent(row) for row in data]
         return sorted(agents, key=lambda a: _STATUS_ORDER.get(a["status"], 99)), None
-    except (TimeoutError, socket.timeout):
+    except TimeoutError:
         return [], "timeout"
     except URLError as e:
         if isinstance(e.reason, (TimeoutError, socket.timeout)):
@@ -145,7 +143,10 @@ def get_agent_profiles() -> tuple[list[dict], str | None]:
 
 
 __all__ = [
-    "_flag_class", "_LangEntry",
-    "get_agents", "get_agent_profiles",
-    "get_moon_phase_index", "MOON_PHASE_NAMES",
+    "_flag_class",
+    "_LangEntry",
+    "get_agents",
+    "get_agent_profiles",
+    "get_moon_phase_index",
+    "MOON_PHASE_NAMES",
 ]

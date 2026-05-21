@@ -19,18 +19,18 @@ from __future__ import annotations
 
 import json
 import typing as t
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from flask import Blueprint, request, session, redirect, flash, url_for
+from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext as _l
-from flask_security.utils import login_user
-from wtforms import StringField, HiddenField, PasswordField, BooleanField, SubmitField, validators
 from flask_security.forms import Form
 from flask_security.utils import config_value as cv
+from flask_security.utils import login_user
+from wtforms import BooleanField, HiddenField, PasswordField, StringField, SubmitField, validators
 
 from .extensions import db, security
-from .models import User
 from .log import get_logger
+from .models import User
 
 if t.TYPE_CHECKING:
     from flask.typing import ResponseValue
@@ -44,8 +44,6 @@ def _get_totp_secrets(user: User) -> dict:
     if isinstance(secrets, str):
         return json.loads(secrets) if secrets else {}
     return secrets or {}
-
-
 
 
 class RequestCodeForm(Form):
@@ -222,9 +220,7 @@ def create_passwordless_blueprint() -> Blueprint:
             if msg:
                 # Error sending code
                 form.identity.errors.append(_l("Error enviando el código. Intenta de nuevo."))
-                logger.warning(
-                    f"Failed to send {method} code to user {user.id}: {msg}"
-                )
+                logger.warning(f"Failed to send {method} code to user {user.id}: {msg}")
                 for error in form.identity.errors:
                     flash(str(error), "error")
                 return _modal_redirect(form.identity.data or "")
@@ -232,11 +228,9 @@ def create_passwordless_blueprint() -> Blueprint:
             # Success: Store identity/method in session and redirect
             session["_pwl_identity"] = form.identity.data
             session["_pwl_method"] = method
-            session["_pwl_timestamp"] = datetime.now(timezone.utc).isoformat()
+            session["_pwl_timestamp"] = datetime.now(UTC).isoformat()
 
-            logger.info(
-                f"Passwordless code sent via {method} to user {user.id} ({user.email})"
-            )
+            logger.info(f"Passwordless code sent via {method} to user {user.id} ({user.email})")
 
             verify_url = url_for(
                 "passwordless.verify_code",
@@ -268,12 +262,12 @@ def create_passwordless_blueprint() -> Blueprint:
         # Check if code request is stale (e.g., older than 10 minutes)
         try:
             req_time = datetime.fromisoformat(timestamp)
-            if datetime.now(timezone.utc) - req_time > timedelta(minutes=10):
+            if datetime.now(UTC) - req_time > timedelta(minutes=10):
                 session.pop("_pwl_identity", None)
                 session.pop("_pwl_method", None)
                 session.pop("_pwl_timestamp", None)
                 return redirect("/passwordless/request-code")
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return redirect("/passwordless/request-code")
 
         form = VerifyCodeForm()
@@ -285,7 +279,7 @@ def create_passwordless_blueprint() -> Blueprint:
             # Successful authentication
             # Set trusted_until for remember-me functionality
             if remember_me:
-                user.trusted_until = datetime.now(timezone.utc) + timedelta(days=31)
+                user.trusted_until = datetime.now(UTC) + timedelta(days=31)
                 db.session.commit()
 
             # Clean session
@@ -297,10 +291,7 @@ def create_passwordless_blueprint() -> Blueprint:
             login_user(user, remember=remember_me, authn_via=[method])
             db.session.commit()
 
-            logger.info(
-                f"Passwordless authentication successful for user {user.id} "
-                f"({user.email}) via {method}"
-            )
+            logger.info(f"Passwordless authentication successful for user {user.id} ({user.email}) via {method}")
 
             # Redirect to next or dashboard
             next_url = request.args.get("next")
@@ -310,6 +301,7 @@ def create_passwordless_blueprint() -> Blueprint:
             return redirect("/")
 
         from flask import render_template
+
         return render_template(
             "security/passwordless/verify_code.html",
             form=form,

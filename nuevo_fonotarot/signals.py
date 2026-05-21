@@ -51,7 +51,9 @@ def _resolve_or_lookup_client_id(order: Order) -> int | None:
         order.firenze_client_id = client_id
         logger.info(f"post_purchase_process: resolved firenze_client_id={client_id} for order={order.id}")
     else:
-        logger.info(f"post_purchase_process: no existing Firenze client found for order={order.id} — will create new client")
+        logger.info(
+            f"post_purchase_process: no existing Firenze client found for order={order.id} — will create new client"
+        )
     return client_id
 
 
@@ -66,8 +68,7 @@ def _active_admin_emails() -> list[str]:
 def _send_post_purchase_success_notification(order: Order) -> None:
     """Send Telegram notification for successful post_purchase completion."""
     send_telegram_notification(
-        f"post_purchase_process: Success order_id={order.id} "
-        f"firenze_client_id={order.firenze_client_id}"
+        f"post_purchase_process: Success order_id={order.id} firenze_client_id={order.firenze_client_id}"
     )
 
 
@@ -95,7 +96,9 @@ def _send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, 
     site_url = current_app.config.get("SITE_URL", "")
 
     try:
-        logger.info(f"_send_post_purchase_admin_email: preparing admin email for order={order.id} rows={len(audit_rows)}")
+        logger.info(
+            f"_send_post_purchase_admin_email: preparing admin email for order={order.id} rows={len(audit_rows)}"
+        )
         html_body = render_template(
             "tienda/email/post_purchase_admin.html",
             order=order,
@@ -184,9 +187,7 @@ def _associate_order_user_by_email(order: Order) -> None:
 
     linked_user = User.query.filter_by(email=normalized_email).first()
     if linked_user is None:
-        logger.debug(
-            f"_associate_order_user_by_email: no user found for order={order.id} email={normalized_email!r}"
-        )
+        logger.debug(f"_associate_order_user_by_email: no user found for order={order.id} email={normalized_email!r}")
         return
 
     order.user_id = linked_user.id
@@ -198,7 +199,10 @@ def _associate_order_user_by_email(order: Order) -> None:
             f"_associate_order_user_by_email: propagated firenze_client_id={order_client_id} to user={linked_user.id}"
         )
     logger.info(
-        f"_associate_order_user_by_email: linked order={order.id} to user={linked_user.id} via email={normalized_email!r}"
+        "_associate_order_user_by_email: linked order=%s to user=%s via email=%r",
+        order.id,
+        linked_user.id,
+        normalized_email,
     )
 
 
@@ -266,11 +270,17 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
             "ani": order.shipping_phone,
         }
         logger.info(
-            f"post_purchase_process: post_purchase request order={order.id} item_id={item.item_id} payload={request_payload!r}"
+            "post_purchase_process: post_purchase request order=%s item_id=%s payload=%r",
+            order.id,
+            item.item_id,
+            request_payload,
         )
         post_purchase_response = post_purchase(**request_payload)
         logger.info(
-            f"post_purchase_process: post_purchase response order={order.id} item_id={item.item_id} response={post_purchase_response!r}"
+            "post_purchase_process: post_purchase response order=%s item_id=%s response=%r",
+            order.id,
+            item.item_id,
+            post_purchase_response,
         )
         firenze_payloads.append(request_payload)
         firenze_responses.append(post_purchase_response)
@@ -280,7 +290,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
             if response_client_id is not None:
                 try:
                     posted_client_id = int(response_client_id)
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     logger.warning(
                         f"post_purchase_process: invalid client_id in Firenze response for order={order.id} "
                         f"item_id={item.item_id}: {response_client_id!r}"
@@ -304,8 +314,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
                 f"item_id={item.item_id} payload={request_payload!r}"
             )
             send_telegram_notification(
-                f"post_purchase_process: ERROR order_id={order.id} item_id={item.item_id} "
-                "post_purchase returned None"
+                f"post_purchase_process: ERROR order_id={order.id} item_id={item.item_id} post_purchase returned None"
             )
             if automated:
                 send_firenze_failure_email(order)
@@ -320,7 +329,9 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
             client_id = posted_client_id
             is_new_client = False
             _propagate_client_id_to_order_and_user(order, client_id)
-            logger.info(f"post_purchase_process: new Firenze client created order={order.id} new_client_id={client_id}")
+            logger.info(
+                f"post_purchase_process: new Firenze client created order={order.id} new_client_id={client_id}"
+            )
         elif not is_new_client and posted_client_id != client_id:
             logger.error(
                 f"post_purchase_process: client mismatch order={order.id} item_id={item.item_id} "
@@ -343,9 +354,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
         db.session.commit()
         logger.info(f"post_purchase_process: order={order.id} marked DELIVERED")
 
-    logger.info(
-        f"post_purchase_process: associating user by email order={order.id} email={order.email!r}"
-    )
+    logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
     db.session.commit()
 

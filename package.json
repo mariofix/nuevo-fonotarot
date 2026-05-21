@@ -4,7 +4,8 @@
   "private": true,
   "description": "Vendor asset management — tracks frontend library versions for Dependabot",
   "scripts": {
-    "copy-vendor": "bash scripts/copy-vendor.sh"
+    "copy-vendor": "bash scripts/copy-vendor.sh",
+    "copy-tabler-source-examples": "bash scripts/copy-tabler-source-examples.sh"
   },
   "dependencies": {
     "@fontsource/montserrat": "^5.0.0",

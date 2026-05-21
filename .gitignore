@@ -6,7 +6,8 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 .env
-tabler-source-examples/
+tabler-example-source
+tabler-source-examples
 .vscode/
 .mcp.json
 

@@ -5,12 +5,12 @@ import os
 from typing import Any
 
 from flask import Flask, request, session
-from flask_babel import get_locale, _
+from flask_babel import get_locale
+from flask_merchants.signals import webhook_event_finished
 from flask_security.datastore import SQLAlchemyUserDatastore
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import config
-from flask_merchants.signals import webhook_event_finished
 
 from .admin import SecureAdminIndexView, init_admin
 from .extensions import (
@@ -62,19 +62,14 @@ def _init_extensions(app: Flask) -> None:
     csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    
+
     # Initialize Flask-Security models before importing User/Role
     from flask_security.models import fsqla_v3 as fsqla
-    fsqla.FsModels.set_db_info(
-        db, 
-        user_table_name="users", 
-        role_table_name="roles"
-    )
+
+    fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
     limiter.init_app(app)
     toolbar.init_app(app)
-    available_langs: list = app.config.get(
-        "AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]]
-    )
+    available_langs: list = app.config.get("AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]])
 
     def _parse_available_langs() -> list[_LangEntry]:
         """Return language entries from app config."""
@@ -100,42 +95,50 @@ def _init_extensions(app: Flask) -> None:
     babel.init_app(app, locale_selector=_locale_selector)
     app.jinja_env.globals["get_locale"] = get_locale
 
-    from .models import Role, User
-    import nuevo_fonotarot.extensions as _ext
-
     # Rename the "username" field label to "Teléfono" across all
     # Flask-Security forms before init_app builds the field.
     import flask_security.forms as _fs_forms
+
+    import nuevo_fonotarot.extensions as _ext
+
+    from .models import Role, User
+
     _fs_forms._default_field_labels["username"] = "Teléfono"
 
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, _ext.user_datastore)
-    
+
     # Hook into Flask-Security to customize the unified signin form
     from flask_security import UnifiedSigninForm
+
     from .forms import customize_unified_signin_form
-    
+
     # Override the form's __init__ to customize it after creation
     original_init = UnifiedSigninForm.__init__
+
     def custom_init(self, *args, **kwargs):
         original_init(self, *args, **kwargs)
         customize_unified_signin_form(self)
+
     UnifiedSigninForm.__init__ = custom_init
-    
+
     # Register custom authentication handlers for remember-me functionality
-    from .auth_handlers import register_auth_handlers, ensure_user_email_signin
+    from .auth_handlers import ensure_user_email_signin, register_auth_handlers
+
     register_auth_handlers(app)
-    
+
     # Hook into Flask-Security's lookup_identity to auto-setup email signin
     from flask_security.utils import lookup_identity as _original_lookup_identity
+
     def _patched_lookup_identity(identity):
         user = _original_lookup_identity(identity)
         if user:
             ensure_user_email_signin(user)
         return user
-    
+
     # Monkey-patch the lookup_identity function
     import flask_security.unified_signin
+
     flask_security.unified_signin.lookup_identity = _patched_lookup_identity
 
     # After a new user registers, look them up in Firenze and persist client_id.
@@ -150,9 +153,8 @@ def _init_extensions(app: Flask) -> None:
             process_user_registration(user)
         except Exception:
             from .log import get_logger as _get_logger
-            _get_logger(__name__).exception(
-                "_on_user_registered: failed to process user=%s", user.id
-            )
+
+            _get_logger(__name__).exception("_on_user_registered: failed to process user=%s", user.id)
 
     # TablerTheme blueprint must be registered before Admin registers its own
     # blueprint — Flask resolves templates in blueprint registration order.
@@ -216,6 +218,7 @@ def _init_extensions(app: Flask) -> None:
             settings = SiteSettings.bulk_get(all_keys, defaults=defaults)
         except Exception:
             from .log import get_logger
+
             get_logger(__name__).exception(
                 "inject_site_settings: failed to fetch SiteSettings — "
                 "analytics/SEO values will be empty for this request"
@@ -229,7 +232,7 @@ def _init_extensions(app: Flask) -> None:
         try:
             start = int(settings.get("dark_hours_start") or "20")
             end = int(settings.get("dark_hours_end") or "8")
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             start, end = 20, 8
 
         hour = datetime.now().hour
@@ -253,7 +256,6 @@ def _init_merchants(app: Flask, admin: Any) -> None:
             KhipuProvider(
                 api_key=app.config.get("KHIPU_API_KEY", ""),
                 subject="Compra Fonotarot",
-                
             )
         )
     if app.config.get("FLOW_API_KEY", None):
@@ -268,9 +270,7 @@ def _init_merchants(app: Flask, admin: Any) -> None:
         )
     from .models import Order
 
-    merchants_ext.init_app(
-        app=app, db=db, models=[Order], providers=providers, admin=admin
-    )
+    merchants_ext.init_app(app=app, db=db, models=[Order], providers=providers, admin=admin)
     webhook_event_finished.connect(
         _handle_payment_webhook_finished,
         sender=app,
