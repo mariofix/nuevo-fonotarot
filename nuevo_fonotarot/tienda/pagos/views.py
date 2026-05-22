@@ -1,17 +1,38 @@
 """Payment callbacks, order status, and store index."""
 
+import random
 import re
 
 from flask import current_app, redirect, render_template, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from ...extensions import db
 from ...log import get_logger
-from ...models import MinutePack, Order, OrderItemType, OrderStatus, Product, SubscriptionPlan
+from ...models import (
+    GiftCard,
+    GiftCardProduct,
+    MinutePack,
+    Order,
+    OrderItemType,
+    OrderStatus,
+    Product,
+    SubscriptionPlan,
+)
 from ...signals import sync_firenze_topup
+from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
+
+
+def _materialize_order_items(order: Order) -> list:
+    """Return order items as a safe list for ORM and test doubles."""
+    raw_items = getattr(order, "items", [])
+    try:
+        return list(raw_items)
+    except TypeError:
+        return []
 
 
 def _summarize_order_minutes(items: list) -> int:
@@ -215,20 +236,38 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
     """
     logger.info(f"_complete_succeeded_order: processing succeeded order={order.id} from {label}")
 
-    if _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False):
-        order.status = OrderStatus.PAID
-        logger.info(
-            f"_complete_succeeded_order: order={order.id} marked PAID (firenze_client_id={order.firenze_client_id})"
-        )
-        db.session.commit()
-        _send_order_confirmation_email(order)
-    else:
-        logger.warning(
-            "_complete_succeeded_order: Firenze sync failed for order=%s — order remains PENDING, notifying admins",
-            order.id,
-        )
-        db.session.commit()
-        _send_firenze_failure_email(order)
+    items = _materialize_order_items(order)
+    requires_firenze = (not items) or any(item.item_type == OrderItemType.MINUTE_PACK.value for item in items)
+    has_gift_cards = any(item.item_type == OrderItemType.GIFT_CARD.value for item in items)
+    has_physical_products = any(item.item_type == OrderItemType.PRODUCT.value for item in items)
+
+    if requires_firenze:
+        sync_ok = _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False)
+        if not sync_ok:
+            logger.warning(
+                "_complete_succeeded_order: Firenze sync failed for order=%s "
+                "— order remains PENDING, notifying admins",
+                order.id,
+            )
+            db.session.commit()
+            _send_firenze_failure_email(order)
+            return
+
+    order.status = OrderStatus.PAID
+    db.session.commit()
+
+    if has_gift_cards:
+        issued = issue_gift_cards_for_order(order)
+        logger.info("_complete_succeeded_order: issued %s gift card(s) for order=%s", issued, order.id)
+        if not requires_firenze and not has_physical_products:
+            order.status = OrderStatus.DELIVERED
+            db.session.commit()
+
+    logger.info(
+        f"_complete_succeeded_order: order={order.id} marked {order.status.upper()} "
+        f"(firenze_client_id={order.firenze_client_id})"
+    )
+    _send_order_confirmation_email(order)
 
 
 def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
@@ -238,17 +277,28 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
     the order stays PENDING and admins are notified.
     """
     logger.info(f"_complete_succeeded_order_admin_flow: processing succeeded order={order.id} from {label}")
-    if _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False):
-        order.status = OrderStatus.PAID
-        db.session.commit()
-        _send_order_confirmation_email(order)
-        return True
+    items = _materialize_order_items(order)
+    requires_firenze = (not items) or any(item.item_type == OrderItemType.MINUTE_PACK.value for item in items)
+    has_gift_cards = any(item.item_type == OrderItemType.GIFT_CARD.value for item in items)
+    has_physical_products = any(item.item_type == OrderItemType.PRODUCT.value for item in items)
 
-    logger.warning(
-        f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order remains PENDING"
-    )
-    _send_firenze_failure_email(order)
-    return False
+    if requires_firenze and not (_sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False)):
+        logger.warning(
+            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order remains PENDING"
+        )
+        _send_firenze_failure_email(order)
+        return False
+
+    order.status = OrderStatus.PAID
+    db.session.commit()
+    if has_gift_cards:
+        issued = issue_gift_cards_for_order(order)
+        logger.info("_complete_succeeded_order_admin_flow: issued %s gift card(s) for order=%s", issued, order.id)
+        if not requires_firenze and not has_physical_products:
+            order.status = OrderStatus.DELIVERED
+            db.session.commit()
+    _send_order_confirmation_email(order)
+    return True
 
 
 def _find_order_by_payment_id(payment_id: str) -> Order | None:
@@ -428,21 +478,27 @@ def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
 
 @pagos_bp.route("/")
 def index():
-    """Main store page: featured products across all categories."""
+    """Main store page: minute packs, subscriptions, and random products."""
     logger.debug("pagos.index: loading store page")
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
     subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
-    featured_products = Product.query.filter_by(is_active=True, is_featured=True).limit(6).all()
+    active_products = Product.query.filter_by(is_active=True).all()
+    featured_products = random.sample(active_products, k=min(5, len(active_products)))
+    try:
+        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
+    except SQLAlchemyError:
+        gift_cards = []
     cart = _get_cart()
     logger.debug(
         f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
-        f"{len(featured_products)} featured products, cart_count={len(cart)}"
+        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
     )
     return render_template(
         "tienda/index.html",
         minute_packs=minute_packs,
         subscription_plans=subscription_plans,
         featured_products=featured_products,
+        gift_cards=gift_cards,
         cart_count=len(cart),
     )
 
@@ -558,8 +614,12 @@ def orden_estado(order_id: str):
     """Show the status of a specific order."""
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
-    items = list(order.items)
+    items = _materialize_order_items(order)
     packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    try:
+        issued_gift_cards = GiftCard.query.filter_by(order_id=order.id).order_by(GiftCard.id.asc()).all()
+    except SQLAlchemyError:
+        issued_gift_cards = []
     purchased_minutes = _summarize_order_minutes(items)
     logger.debug(f"pagos.orden_estado: order={order_id} status={order.status} has {len(items)} item(s)")
     return render_template(
@@ -567,5 +627,6 @@ def orden_estado(order_id: str):
         order=order,
         items=items,
         packs=packs,
+        issued_gift_cards=issued_gift_cards,
         purchased_minutes=purchased_minutes,
     )

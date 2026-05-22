@@ -1,0 +1,463 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% set is_edit = model is defined and model and model.id %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <style>
+    .gc-editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      grid-template-rows: auto 1fr;
+      gap: 0 1.5rem;
+      min-height: calc(100vh - 180px);
+    }
+    .gc-editor-main { grid-column: 1; grid-row: 1 / 3; min-width: 0; }
+    .gc-editor-aside { grid-column: 2; grid-row: 1 / 3; }
+    .gc-sidebar-sticky { position: sticky; top: 1.5rem; }
+
+    .gc-name-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--tblr-body-color);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .gc-name-input::placeholder { color: var(--tblr-muted); opacity: 0.5; }
+    .gc-name-input:focus { border-bottom-color: var(--tblr-primary); }
+
+    .gc-slug-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+    }
+    .gc-slug-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.125rem 0;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .gc-slug-input:focus {
+      border-bottom-color: var(--tblr-primary);
+      color: var(--tblr-body-color);
+    }
+
+    .description-card,
+    .status-card,
+    .meta-card,
+    .image-card,
+    .save-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .description-card-header,
+    .status-card-header,
+    .meta-card-header,
+    .image-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tblr-muted);
+    }
+    .description-field {
+      width: 100%;
+      min-height: 420px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      padding: 1rem;
+      background: transparent;
+      color: var(--tblr-body-color);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .description-field::placeholder { color: var(--tblr-muted); opacity: 0.7; }
+    .status-card-body, .meta-card-body, .save-card-body { padding: 1rem; }
+    .meta-form-group { margin-bottom: 0.75rem; }
+    .meta-form-group:last-child { margin-bottom: 0; }
+
+    .image-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--tblr-bg-surface-secondary);
+      margin-bottom: 0.75rem;
+    }
+    .image-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .image-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      gap: 0.5rem;
+      color: var(--tblr-muted);
+      font-size: 0.8125rem;
+    }
+    .image-empty i { font-size: 1.75rem; opacity: 0.4; }
+
+    .media-browser-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 0.25rem;
+    }
+    .media-browser-item {
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+      aspect-ratio: 1 / 1;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .media-browser-item:hover { border-color: var(--tblr-primary); transform: scale(1.02); }
+    .media-browser-item.selected {
+      border-color: var(--tblr-primary);
+      box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb), 0.2);
+    }
+    .media-browser-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .media-browser-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--tblr-muted);
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 900px) {
+      .gc-editor-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .gc-editor-main { grid-column: 1; grid-row: 1; }
+      .gc-editor-aside { grid-column: 1; grid-row: 2; }
+      .gc-sidebar-sticky { position: static; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="d-flex align-items-center mb-3 gap-3">
+    <a href="{{ return_url }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Gift Cards') }}
+    </a>
+    <span class="text-muted small">{{ _gettext('Edit Gift Card') if is_edit else _gettext('New Gift Card') }}</span>
+  </div>
+
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data" id="giftcard-form">
+    {% if form.hidden_tag is defined %}
+      {{ form.hidden_tag() }}
+    {% elif csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% endif %}
+
+    <div class="gc-editor-layout">
+      <div class="gc-editor-main">
+        {{ form.name(class="gc-name-input", id="name-field", placeholder=_gettext('Gift card name...'), autocomplete="off") }}
+        {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        <div class="gc-slug-row">
+          <span>/tienda/tarjetas/</span>
+          {{ form.slug(class="gc-slug-input", id="slug-field", placeholder=_gettext('auto-generated-slug')) }}
+        </div>
+        {% for error in form.slug.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        <div class="description-card">
+          <div class="description-card-header">{{ _gettext('Description') }}</div>
+          {{ form.description(class="description-field", id="description-field", placeholder=_gettext('Describe this digital prepaid card and who it is for.')) }}
+        </div>
+        {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="gc-editor-aside">
+        <div class="gc-sidebar-sticky">
+          <div class="status-card">
+            <div class="status-card-header">{{ _gettext('Status') }}</div>
+            <div class="status-card-body d-flex flex-column gap-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge bg-success-lt d-none" id="active-badge">
+                    <i class="ti ti-circle-check me-1"></i>{{ _gettext('Active') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="inactive-badge">
+                    <i class="ti ti-eye-off me-1"></i>{{ _gettext('Inactive') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_active(class="form-check-input", role="switch", id="is-active-field") }}
+                </label>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge bg-warning-lt d-none" id="featured-badge">
+                    <i class="ti ti-star me-1"></i>{{ _gettext('Featured') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="regular-badge">
+                    <i class="ti ti-ticket me-1"></i>{{ _gettext('Regular') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_featured(class="form-check-input", role="switch", id="is-featured-field") }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="meta-card">
+            <div class="meta-card-header">{{ _gettext('Pricing') }}</div>
+            <div class="meta-card-body">
+              <div class="meta-form-group">
+                <label class="form-label" for="{{ form.minutes.id }}">{{ _gettext('Minutes') }}</label>
+                {{ form.minutes(class="form-control", id="minutes-field", min="1", placeholder="15") }}
+                {% for error in form.minutes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+              <div class="row g-2">
+                <div class="col-7">
+                  <div class="meta-form-group">
+                    <label class="form-label" for="{{ form.price.id }}">{{ _gettext('Price') }}</label>
+                    {{ form.price(class="form-control", id="price-field", placeholder="0") }}
+                    {% for error in form.price.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                  </div>
+                </div>
+                <div class="col-5">
+                  <div class="meta-form-group">
+                    <label class="form-label" for="{{ form.currency.id }}">{{ _gettext('Currency') }}</label>
+                    {{ form.currency(class="form-control", id="currency-field", maxlength="3", placeholder="CLP") }}
+                    {% for error in form.currency.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="image-card">
+            <div class="image-card-header">{{ _gettext('Card Image') }}</div>
+            <div class="p-2">
+              {{ form.image_url(id="image-url-field", type="hidden") }}
+              <div id="image-preview" class="image-preview" style="display:none;">
+                <img id="image-thumb" src="" alt="Gift card image" />
+              </div>
+              <div id="image-empty" class="image-empty">
+                <i class="ti ti-photo"></i>
+                <span>{{ _gettext('No image selected') }}</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="openMediaBrowser()">
+                  <i class="ti ti-photo-search me-1"></i>{{ _gettext('Browse Media') }}
+                </button>
+                <button type="button" class="btn btn-sm btn-ghost-secondary" id="clear-image-btn" style="display:none!important;" onclick="clearImage()">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+            </div>
+            {% for error in form.image_url.errors %}<div class="invalid-feedback d-block px-2 pb-2">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="save-card">
+            <div class="save-card-body d-flex flex-column gap-2">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="ti ti-device-floppy me-1"></i>{{ _gettext('Save Gift Card') }}
+              </button>
+              <a href="{{ return_url }}" class="btn btn-ghost-secondary w-100">
+                <i class="ti ti-x me-1"></i>{{ _gettext('Discard') }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <button type="button" id="mediaBrowserTrigger" data-bs-toggle="modal" data-bs-target="#mediaBrowserModal" style="display:none;" aria-hidden="true"></button>
+  <div class="modal modal-blur fade" id="mediaBrowserModal" tabindex="-1" role="dialog" aria-labelledby="mediaBrowserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mediaBrowserLabel">
+            <i class="ti ti-photo me-2"></i>{{ _gettext('Media Library') }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _gettext('Close') }}"></button>
+        </div>
+        <div class="modal-body">
+          <div id="media-browser-loading" class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            {{ _gettext('Loading...') }}
+          </div>
+          <div class="media-browser-grid" id="media-browser-grid" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <span class="text-muted me-auto" id="media-browser-selected-name" style="font-size:.8125rem;"></span>
+          <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">{{ _gettext('Cancel') }}</button>
+          <button type="button" class="btn btn-primary" id="media-browser-confirm" disabled onclick="confirmImage()">
+            <i class="ti ti-check me-1"></i>{{ _gettext('Select') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+  <script>
+    (function () {
+      var nameField = document.getElementById('name-field');
+      var slugField = document.getElementById('slug-field');
+      var activeField = document.getElementById('is-active-field');
+      var featuredField = document.getElementById('is-featured-field');
+      var activeBadge = document.getElementById('active-badge');
+      var inactiveBadge = document.getElementById('inactive-badge');
+      var featuredBadge = document.getElementById('featured-badge');
+      var regularBadge = document.getElementById('regular-badge');
+      var imageField = document.getElementById('image-url-field');
+      var imagePreview = document.getElementById('image-preview');
+      var imageEmpty = document.getElementById('image-empty');
+      var imageThumb = document.getElementById('image-thumb');
+      var clearImageBtn = document.getElementById('clear-image-btn');
+      var selectedImageUrl = null;
+
+      function makeSlug(text) {
+        return text.toLowerCase()
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .substring(0, 200);
+      }
+
+      var slugUserEdited = false;
+      slugField.addEventListener('input', function () { slugUserEdited = true; });
+      nameField.addEventListener('input', function () {
+        if (!slugUserEdited) slugField.value = makeSlug(this.value);
+      });
+
+      function syncActive() {
+        if (activeField.checked) {
+          activeBadge.classList.remove('d-none');
+          inactiveBadge.classList.add('d-none');
+        } else {
+          activeBadge.classList.add('d-none');
+          inactiveBadge.classList.remove('d-none');
+        }
+      }
+
+      function syncFeatured() {
+        if (featuredField.checked) {
+          featuredBadge.classList.remove('d-none');
+          regularBadge.classList.add('d-none');
+        } else {
+          featuredBadge.classList.add('d-none');
+          regularBadge.classList.remove('d-none');
+        }
+      }
+
+      function selectImage(url) {
+        imageField.value = url || '';
+        if (url) {
+          imageThumb.src = url;
+          imagePreview.style.display = '';
+          imageEmpty.style.display = 'none';
+          clearImageBtn.style.removeProperty('display');
+        } else {
+          imageThumb.src = '';
+          imagePreview.style.display = 'none';
+          imageEmpty.style.display = '';
+          clearImageBtn.style.setProperty('display', 'none', 'important');
+        }
+      }
+
+      function buildMediaGrid(files, grid, loading, confirmBtn, selName) {
+        loading.style.display = 'none';
+        while (grid.firstChild) grid.removeChild(grid.firstChild);
+        if (!files.length) {
+          var emptyDiv = document.createElement('div');
+          emptyDiv.className = 'media-browser-empty';
+          emptyDiv.textContent = '{{ _gettext("No images found. Upload images to the Media Library first.") }}';
+          grid.appendChild(emptyDiv);
+        } else {
+          files.forEach(function (f) {
+            var item = document.createElement('div');
+            item.className = 'media-browser-item';
+            item.dataset.url = f.url;
+            item.dataset.name = f.name;
+            var img = document.createElement('img');
+            img.src = f.thumb_url;
+            img.alt = f.name;
+            img.loading = 'lazy';
+            item.appendChild(img);
+            item.addEventListener('click', function () {
+              grid.querySelectorAll('.media-browser-item').forEach(function (el) {
+                el.classList.remove('selected');
+              });
+              item.classList.add('selected');
+              selectedImageUrl = f.url;
+              selName.textContent = f.name;
+              confirmBtn.disabled = false;
+            });
+            grid.appendChild(item);
+          });
+        }
+        grid.style.display = '';
+      }
+
+      window.openMediaBrowser = function () {
+        var grid = document.getElementById('media-browser-grid');
+        var loading = document.getElementById('media-browser-loading');
+        var confirmBtn = document.getElementById('media-browser-confirm');
+        var selName = document.getElementById('media-browser-selected-name');
+        selectedImageUrl = null;
+        grid.style.display = 'none';
+        loading.style.display = '';
+        confirmBtn.disabled = true;
+        selName.textContent = '';
+        fetch('{{ url_for("media_browser.images") }}')
+          .then(function (r) { return r.json(); })
+          .then(function (files) { buildMediaGrid(files, grid, loading, confirmBtn, selName); })
+          .catch(function () { loading.textContent = '{{ _gettext("Failed to load images.") }}'; });
+        document.getElementById('mediaBrowserTrigger').click();
+      };
+
+      window.confirmImage = function () {
+        if (selectedImageUrl) selectImage(selectedImageUrl);
+        document.querySelector('#mediaBrowserModal [data-bs-dismiss="modal"]').click();
+      };
+
+      window.clearImage = function () {
+        selectImage('');
+      };
+
+      syncActive();
+      syncFeatured();
+      activeField.addEventListener('change', syncActive);
+      featuredField.addEventListener('change', syncFeatured);
+      selectImage((imageField.value || '').trim());
+    })();
+  </script>
+{% endblock %}

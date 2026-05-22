@@ -1,7 +1,10 @@
-"""Physical product and cart views — to be implemented."""
+"""Physical product and cart views."""
 
-from flask import redirect, url_for
+import random
 
+from flask import redirect, render_template, url_for
+
+from ...models import MinutePack, Product
 from . import productos_bp
 
 
@@ -13,8 +16,16 @@ def index():
 
 @productos_bp.route("/<slug>")
 def detalle(slug: str):
-    # TODO: product detail page
-    return redirect(url_for("pagos.index"))
+    product = Product.query.filter_by(slug=slug, is_active=True).first_or_404()
+    active_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    other_active_products = Product.query.filter(Product.is_active.is_(True), Product.id != product.id).all()
+    other_products = random.sample(other_active_products, k=min(5, len(other_active_products)))
+    return render_template(
+        "tienda/producto_detalle.html",
+        product=product,
+        other_products=other_products,
+        minute_packs=active_packs,
+    )
 
 
 @productos_bp.route("/carrito/")

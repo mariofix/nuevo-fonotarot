@@ -27,6 +27,23 @@ from .extensions import (
 from .utils import _LangEntry
 
 
+def _reset_admin_for_factory_reuse() -> None:
+    """Reset Flask-Admin singleton state before binding a new app.
+
+    The ``admin`` extension is a module-level singleton. When multiple app
+    instances are created in the same process (for example, during tests),
+    previously added model views remain in ``admin._views`` and are
+    re-registered on the next app, causing duplicate blueprint names.
+    """
+    admin.app = None
+    # Preserve index view slot so ``Admin.init_app`` doesn't add + register it
+    # twice in the same call path.
+    admin._views = admin._views[:1]  # type: ignore[attr-defined]
+    admin._menu = admin._menu[:1]  # type: ignore[attr-defined]
+    admin._menu_categories = {}  # type: ignore[attr-defined]
+    admin._menu_links = []  # type: ignore[attr-defined]
+
+
 def create_flask(config_name: str | None = None) -> Flask:
     """Create and configure the Flask application.
 
@@ -168,6 +185,9 @@ def _init_extensions(app: Flask) -> None:
     )
     theme.init_app(app)
 
+    if app.config.get("TESTING") and admin.app is not None and admin.app is not app:
+        _reset_admin_for_factory_reuse()
+
     admin.name = app.config.get("ADMIN_NAME", "Fonotarot Admin")
     admin.theme = theme
     admin.init_app(app, index_view=SecureAdminIndexView(url="/ft-admin"))
@@ -285,7 +305,7 @@ def _register_blueprints(app: Flask) -> None:
     from .lab import lab_bp
     from .legacy import legacy_bp
     from .passwordless import create_passwordless_blueprint
-    from .tienda import minutos_bp, pagos_bp, productos_bp, suscripciones_bp
+    from .tienda import minutos_bp, pagos_bp, productos_bp, suscripciones_bp, tarjetas_bp
 
     app.register_blueprint(content_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
@@ -293,6 +313,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(minutos_bp)
     app.register_blueprint(suscripciones_bp)
     app.register_blueprint(productos_bp)
+    app.register_blueprint(tarjetas_bp)
     app.register_blueprint(account_bp, url_prefix="/ft-settings")
     app.register_blueprint(lab_bp)
     app.register_blueprint(legacy_bp)

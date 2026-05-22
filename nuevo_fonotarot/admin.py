@@ -1,5 +1,6 @@
 """Flask-Admin configuration using Flask-Security for authentication."""
 
+import json
 import os
 from datetime import UTC, date
 
@@ -9,9 +10,10 @@ from flask_admin.actions import action
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
-from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
+
+from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 
 from .extensions import db
 
@@ -450,15 +452,84 @@ class ProductAdminView(SecureModelView):
     column_list = ("name", "category", "price", "stock", "is_active", "is_featured")
     column_searchable_list = ("name", "slug")
     column_filters = ("is_active", "is_featured", "category.name")
-    form_excluded_columns = ("created_at", "updated_at")
+    form_excluded_columns = ("created_at", "updated_at", "images")
+    create_template = "admin/product/create.html"
+    edit_template = "admin/product/create.html"
 
     def on_model_change(self, form, model, is_created):
         from .models import Product
+
+        gallery_raw = request.form.get("gallery_images", "").strip()
+        gallery_urls: list[str] = []
+        if gallery_raw:
+            try:
+                parsed = json.loads(gallery_raw)
+            except json.JSONDecodeError:
+                parsed = []
+            if isinstance(parsed, list):
+                gallery_urls = [u.strip() for u in parsed if isinstance(u, str) and u.strip()]
+                gallery_urls = list(dict.fromkeys(gallery_urls))
+
+        if model.image_url:
+            featured = model.image_url.strip()
+            if featured and featured not in gallery_urls:
+                gallery_urls.insert(0, featured)
+        elif gallery_urls:
+            model.image_url = gallery_urls[0]
+
+        model.images = gallery_urls or None
 
         if not model.slug and model.name:
             model.slug = Product.make_slug(model.name)
         elif model.slug:
             model.slug = Product.make_slug(model.slug)
+
+
+class GiftCardProductAdminView(SecureModelView):
+    """Admin view for digital prepaid gift-card products."""
+
+    column_list = ("name", "minutes", "price", "is_active", "is_featured", "updated_at")
+    column_searchable_list = ("name", "slug")
+    column_filters = ("is_active", "is_featured")
+    form_excluded_columns = ("created_at", "updated_at")
+    form_widget_args = {
+        "image_url": {
+            "placeholder": "https://ejemplo.com/tarjeta.jpg",
+        },
+    }
+    column_descriptions = {
+        "image_url": "URL de imagen principal para la tarjeta digital.",
+    }
+    create_template = "admin/giftcard_product/create.html"
+    edit_template = "admin/giftcard_product/create.html"
+
+    def on_model_change(self, form, model, is_created):
+        from .models import GiftCardProduct
+
+        if not model.slug and model.name:
+            model.slug = GiftCardProduct.make_slug(model.name)
+        elif model.slug:
+            model.slug = GiftCardProduct.make_slug(model.slug)
+
+
+class GiftCardAdminView(SecureModelView):
+    """Admin view for issued/redeemed gift-card codes."""
+
+    can_create = False
+    can_delete = False
+    can_edit = False
+    column_list = (
+        "code",
+        "gift_card_product",
+        "order_id",
+        "status",
+        "purchaser_email",
+        "recipient_email",
+        "redeemed_at",
+        "created_at",
+    )
+    column_searchable_list = ("code", "purchaser_email", "recipient_email")
+    column_filters = ("status", "gift_card_product.name", "created_at", "redeemed_at")
 
 
 class SiteSettingsAdminView(JsonColumnsMixin, SecureModelView):
@@ -819,6 +890,8 @@ def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
     from .models import (
         BlogPost,
+        GiftCard,
+        GiftCardProduct,
         MinutePack,
         Order,
         Product,
@@ -908,6 +981,26 @@ def init_admin(app, admin_ext):
             category=_l("Tienda"),
             menu_icon_type="tabler",
             menu_icon_value="package",
+        )
+    )
+    admin_ext.add_view(
+        GiftCardProductAdminView(
+            GiftCardProduct,
+            db.session,
+            name=_l("Tarjetas Digitales"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="ticket",
+        )
+    )
+    admin_ext.add_view(
+        GiftCardAdminView(
+            GiftCard,
+            db.session,
+            name=_l("Códigos de Tarjetas"),
+            category=_l("Tienda"),
+            menu_icon_type="tabler",
+            menu_icon_value="ticket-off",
         )
     )
     admin_ext.add_view(

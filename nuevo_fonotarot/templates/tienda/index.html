@@ -126,7 +126,7 @@
     <div class="container">
       <div class="section-tag mb-2"><i class="ti ti-sparkles me-1"></i>{{ _("Tienda") }}</div>
       <h1>{{ _("Tienda Fonotarot") }}</h1>
-      <p class="section-subtitle mb-3">{{ _("Minutos prepagados, suscripciones y productos esotéricos") }}</p>
+      <p class="section-subtitle mb-3">{{ _("Minutos prepagados, suscripciones, tarjetas regalo y productos esotéricos") }}</p>
       <span class="badge bg-success-lt text-success border border-success-subtle px-3 py-2 fs-6">
         <i class="ti ti-eye-off me-1"></i>{{ _("Envíos 100% anónimos — cajas sin marcas") }}
       </span>
@@ -261,6 +261,44 @@
     </div>
   </section>
 
+  <!-- ── TARJETAS DIGITALES ──────────────────────────── -->
+  {% if gift_cards %}
+  <section class="tienda-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-tag"><i class="ti ti-ticket me-1"></i>{{ _("Tarjetas Digitales") }}</div>
+        <h2 class="section-title">{{ _("Regala Minutos de Tarot") }}</h2>
+        <div class="divider-gold"></div>
+        <p class="section-subtitle">{{ _("Compra una tarjeta prepago y comparte su código para que otra persona lo canjee.") }}</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        {% for card in gift_cards %}
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="pack-card {% if card.is_featured %}featured{% endif %}">
+            {% if card.is_featured %}<span class="pack-badge">{{ _("Recomendada") }}</span>{% endif %}
+            <i class="ti ti-gift mb-2" style="font-size:2rem;color:var(--plum)"></i>
+            <div class="pack-mins">{{ card.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
+            <div class="pack-price">{{ card.price_display }}<small> CLP</small></div>
+            {% if card.description %}<p class="section-subtitle small mt-2 mb-0">{{ card.description }}</p>{% endif %}
+            <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-pack {% if card.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %} mt-3">
+              <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }}
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
+        <a href="{{ url_for('tarjetas.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
+          <i class="ti ti-ticket me-1"></i>{{ _("Ver todas las tarjetas") }}
+        </a>
+        <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
+          <i class="ti ti-ticket-off me-1"></i>{{ _("Canjear código") }}
+        </a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- ── PRODUCTOS DESTACADOS ───────────────────────── -->
   {% if featured_products %}
   <section class="tienda-section">
@@ -275,8 +313,8 @@
         {% for product in featured_products %}
         <div class="col-6 col-md-4 col-lg-2">
           <div class="product-card">
-            {% if product.image_url %}
-            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img"/>
+            {% if product.cover_image_url %}
+            <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-img"/>
             {% else %}
             <div class="product-img-ph">
               <i class="ti ti-package" style="font-size:2.5rem;color:var(--violet)"></i>

@@ -1,0 +1,658 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% set is_edit = model is defined and model and model.id %}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+  <style>
+    .product-editor-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      grid-template-rows: auto 1fr;
+      gap: 0 1.5rem;
+      min-height: calc(100vh - 180px);
+    }
+    .product-editor-main { grid-column: 1; grid-row: 1 / 3; min-width: 0; }
+    .product-editor-aside { grid-column: 2; grid-row: 1 / 3; }
+    .product-sidebar-sticky { position: sticky; top: 1.5rem; }
+
+    .product-name-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--tblr-body-color);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .product-name-input::placeholder { color: var(--tblr-muted); opacity: 0.5; }
+    .product-name-input:focus { border-bottom-color: var(--tblr-primary); }
+
+    .product-slug-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+    }
+    .product-slug-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--tblr-border-color);
+      border-radius: 0;
+      padding: 0.125rem 0;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .product-slug-input:focus {
+      border-bottom-color: var(--tblr-primary);
+      color: var(--tblr-body-color);
+    }
+
+    .description-card,
+    .status-card,
+    .meta-card,
+    .gallery-card,
+    .save-card {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: var(--tblr-border-radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .description-card-header,
+    .status-card-header,
+    .meta-card-header,
+    .gallery-card-header {
+      padding: 0.75rem 1rem;
+      background: var(--tblr-bg-surface-secondary);
+      border-bottom: 1px solid var(--tblr-border-color);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tblr-muted);
+    }
+    .description-field {
+      width: 100%;
+      min-height: 420px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      padding: 1rem;
+      background: transparent;
+      color: var(--tblr-body-color);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .description-field::placeholder { color: var(--tblr-muted); opacity: 0.7; }
+    .status-card-body,
+    .meta-card-body,
+    .save-card-body {
+      padding: 1rem;
+    }
+    .meta-form-group { margin-bottom: 0.75rem; }
+    .meta-form-group:last-child { margin-bottom: 0; }
+
+    .featured-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--tblr-bg-surface-secondary);
+      margin-bottom: 0.75rem;
+    }
+    .featured-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .featured-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      padding: 1.25rem;
+    }
+    .featured-empty i { font-size: 1.75rem; opacity: 0.4; }
+
+    .gallery-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .gallery-item {
+      border: 1px solid var(--tblr-border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--tblr-bg-surface-secondary);
+    }
+    .gallery-item-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+    }
+    .gallery-item-actions {
+      padding: 0.35rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+    .gallery-empty-note {
+      font-size: 0.8125rem;
+      color: var(--tblr-muted);
+      margin-top: 0.75rem;
+    }
+
+    .media-browser-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 0.25rem;
+    }
+    .media-browser-item {
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+      aspect-ratio: 1 / 1;
+      background: var(--tblr-bg-surface-secondary);
+      position: relative;
+    }
+    .media-browser-item:hover {
+      border-color: var(--tblr-primary);
+      transform: scale(1.02);
+    }
+    .media-browser-item.selected {
+      border-color: var(--tblr-primary);
+      box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb), 0.2);
+    }
+    .media-browser-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-browser-check {
+      position: absolute;
+      top: 0.35rem;
+      right: 0.35rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .media-browser-item.selected .media-browser-check { opacity: 1; }
+    .media-browser-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--tblr-muted);
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 900px) {
+      .product-editor-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .product-editor-main { grid-column: 1; grid-row: 1; }
+      .product-editor-aside { grid-column: 1; grid-row: 2; }
+      .product-sidebar-sticky { position: static; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="d-flex align-items-center mb-3 gap-3">
+    <a href="{{ return_url }}" class="btn btn-sm btn-ghost-secondary">
+      <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Products') }}
+    </a>
+    <span class="text-muted small">
+      {{ _gettext('Edit Product') if is_edit else _gettext('New Product') }}
+    </span>
+  </div>
+
+  <form method="POST" role="form" class="admin-form" enctype="multipart/form-data" id="product-form">
+    {% if form.hidden_tag is defined %}
+      {{ form.hidden_tag() }}
+    {% elif csrf_token is defined and csrf_token %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    {% endif %}
+    <input type="hidden" name="gallery_images" id="gallery-images-json" value="[]" />
+    {{ form.image_url(id="featured-image-url", type="hidden") }}
+
+    <div class="product-editor-layout">
+      <div class="product-editor-main">
+        {{ form.name(class="product-name-input", id="name-field",
+                     placeholder=_gettext('Product name...'),
+                     autocomplete="off") }}
+        {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        <div class="product-slug-row">
+          <span>/tienda/</span>
+          {{ form.slug(class="product-slug-input", id="slug-field",
+                       placeholder=_gettext('auto-generated-slug')) }}
+        </div>
+        {% for error in form.slug.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+        <div class="description-card">
+          <div class="description-card-header">{{ _gettext('Description') }}</div>
+          {{ form.description(class="description-field", id="description-field",
+                              placeholder=_gettext('Describe the product, materials, usage, and details for customers.')) }}
+        </div>
+        {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="product-editor-aside">
+        <div class="product-sidebar-sticky">
+          <div class="status-card">
+            <div class="status-card-header">{{ _gettext('Status') }}</div>
+            <div class="status-card-body d-flex flex-column gap-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge bg-success-lt d-none" id="active-badge">
+                    <i class="ti ti-circle-check me-1"></i>{{ _gettext('Active') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="inactive-badge">
+                    <i class="ti ti-eye-off me-1"></i>{{ _gettext('Inactive') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_active(class="form-check-input", role="switch", id="is-active-field") }}
+                </label>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <span class="badge bg-warning-lt d-none" id="featured-badge">
+                    <i class="ti ti-star me-1"></i>{{ _gettext('Featured') }}
+                  </span>
+                  <span class="badge bg-secondary-lt" id="regular-badge">
+                    <i class="ti ti-box me-1"></i>{{ _gettext('Regular') }}
+                  </span>
+                </div>
+                <label class="form-check form-switch mb-0">
+                  {{ form.is_featured(class="form-check-input", role="switch", id="is-featured-field") }}
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="meta-card">
+            <div class="meta-card-header">{{ _gettext('Catalog') }}</div>
+            <div class="meta-card-body">
+              <div class="meta-form-group">
+                <label class="form-label">{{ _gettext('Category') }}</label>
+                {% if form.category is defined %}
+                  {{ form.category(class="form-select") }}
+                  {% for error in form.category.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                {% else %}
+                  {{ form.category_id(class="form-select") }}
+                  {% for error in form.category_id.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                {% endif %}
+              </div>
+              <div class="row g-2">
+                <div class="col-7">
+                  <div class="meta-form-group">
+                    <label class="form-label" for="{{ form.price.id }}">{{ _gettext('Price') }}</label>
+                    {{ form.price(class="form-control", id="price-field", placeholder="0") }}
+                    {% for error in form.price.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                  </div>
+                </div>
+                <div class="col-5">
+                  <div class="meta-form-group">
+                    <label class="form-label" for="{{ form.currency.id }}">{{ _gettext('Currency') }}</label>
+                    {{ form.currency(class="form-control", id="currency-field", maxlength="3", placeholder="CLP") }}
+                    {% for error in form.currency.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="meta-form-group">
+                <label class="form-label" for="{{ form.stock.id }}">{{ _gettext('Stock') }}</label>
+                {{ form.stock(class="form-control", id="stock-field", min="0", placeholder="0") }}
+                {% for error in form.stock.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-card">
+            <div class="gallery-card-header">{{ _gettext('Product Images') }}</div>
+            <div class="p-2">
+              <div id="featured-preview" class="featured-preview" style="display:none;">
+                <img id="featured-image-thumb" src="" alt="Featured product image" />
+              </div>
+              <div id="featured-empty" class="featured-empty">
+                <i class="ti ti-photo"></i>
+                <span>{{ _gettext('No featured image selected') }}</span>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100" onclick="openMediaBrowser()">
+                <i class="ti ti-photo-search me-1"></i>{{ _gettext('Browse Media (multi-select)') }}
+              </button>
+              <div id="gallery-list" class="gallery-list"></div>
+              <div id="gallery-empty-note" class="gallery-empty-note">{{ _gettext('No images selected yet.') }}</div>
+            </div>
+            {% for error in form.image_url.errors %}<div class="invalid-feedback d-block px-2 pb-2">{{ error }}</div>{% endfor %}
+          </div>
+
+          <div class="save-card">
+            <div class="save-card-body d-flex flex-column gap-2">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="ti ti-device-floppy me-1"></i>
+                {{ _gettext('Save Product') if is_edit else _gettext('Create Product') }}
+              </button>
+              <a href="{{ return_url }}" class="btn btn-ghost-secondary w-100">
+                <i class="ti ti-x me-1"></i>{{ _gettext('Discard') }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script id="initial-gallery-data" type="application/json">
+    {{ (model.images if is_edit and model and model.images else []) | tojson }}
+  </script>
+
+  <button type="button" id="mediaBrowserTrigger" data-bs-toggle="modal" data-bs-target="#mediaBrowserModal" style="display:none;" aria-hidden="true"></button>
+  <div class="modal modal-blur fade" id="mediaBrowserModal" tabindex="-1" role="dialog" aria-labelledby="mediaBrowserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mediaBrowserLabel">
+            <i class="ti ti-photo me-2"></i>{{ _gettext('Media Library') }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _gettext('Close') }}"></button>
+        </div>
+        <div class="modal-body">
+          <div id="media-browser-loading" class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+            {{ _gettext('Loading...') }}
+          </div>
+          <div class="media-browser-grid" id="media-browser-grid" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <span class="text-muted me-auto" id="media-browser-selected-name" style="font-size:.8125rem;"></span>
+          <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">
+            {{ _gettext('Cancel') }}
+          </button>
+          <button type="button" class="btn btn-primary" id="media-browser-confirm" disabled onclick="confirmGalleryImages()">
+            <i class="ti ti-check me-1"></i>{{ _gettext('Add selected') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+  <script>
+    (function () {
+      var nameField = document.getElementById('name-field');
+      var slugField = document.getElementById('slug-field');
+      var activeField = document.getElementById('is-active-field');
+      var featuredField = document.getElementById('is-featured-field');
+      var activeBadge = document.getElementById('active-badge');
+      var inactiveBadge = document.getElementById('inactive-badge');
+      var featuredBadge = document.getElementById('featured-badge');
+      var regularBadge = document.getElementById('regular-badge');
+
+      var featuredInput = document.getElementById('featured-image-url');
+      var featuredPreview = document.getElementById('featured-preview');
+      var featuredEmpty = document.getElementById('featured-empty');
+      var featuredThumb = document.getElementById('featured-image-thumb');
+      var galleryHidden = document.getElementById('gallery-images-json');
+      var galleryList = document.getElementById('gallery-list');
+      var galleryEmptyNote = document.getElementById('gallery-empty-note');
+      var initialDataScript = document.getElementById('initial-gallery-data');
+
+      var _galleryImages = [];
+      var _modalSelected = new Set();
+      var _modalFiles = [];
+
+      function uniqueUrls(urls) {
+        var seen = Object.create(null);
+        var out = [];
+        urls.forEach(function (u) {
+          if (typeof u !== 'string') return;
+          var v = u.trim();
+          if (!v || seen[v]) return;
+          seen[v] = true;
+          out.push(v);
+        });
+        return out;
+      }
+
+      function syncActive() {
+        if (activeField.checked) {
+          activeBadge.classList.remove('d-none');
+          inactiveBadge.classList.add('d-none');
+        } else {
+          activeBadge.classList.add('d-none');
+          inactiveBadge.classList.remove('d-none');
+        }
+      }
+
+      function syncFeaturedToggle() {
+        if (featuredField.checked) {
+          featuredBadge.classList.remove('d-none');
+          regularBadge.classList.add('d-none');
+        } else {
+          featuredBadge.classList.add('d-none');
+          regularBadge.classList.remove('d-none');
+        }
+      }
+
+      function syncFeaturedPreview() {
+        var featuredUrl = (featuredInput.value || '').trim();
+        if (featuredUrl) {
+          featuredThumb.src = featuredUrl;
+          featuredPreview.style.display = '';
+          featuredEmpty.style.display = 'none';
+        } else {
+          featuredThumb.src = '';
+          featuredPreview.style.display = 'none';
+          featuredEmpty.style.display = '';
+        }
+      }
+
+      function renderGallery() {
+        while (galleryList.firstChild) galleryList.removeChild(galleryList.firstChild);
+        var featuredUrl = (featuredInput.value || '').trim();
+        if (featuredUrl && _galleryImages.indexOf(featuredUrl) === -1) {
+          _galleryImages.unshift(featuredUrl);
+        }
+        _galleryImages = uniqueUrls(_galleryImages);
+        galleryHidden.value = JSON.stringify(_galleryImages);
+        galleryEmptyNote.style.display = _galleryImages.length ? 'none' : '';
+
+        _galleryImages.forEach(function (url) {
+          var card = document.createElement('div');
+          card.className = 'gallery-item';
+
+          var img = document.createElement('img');
+          img.className = 'gallery-item-thumb';
+          img.src = url;
+          img.alt = '{{ _gettext("Product image") }}';
+          card.appendChild(img);
+
+          var actions = document.createElement('div');
+          actions.className = 'gallery-item-actions';
+
+          var isFeatured = featuredUrl === url;
+          var featuredBtn = document.createElement('button');
+          featuredBtn.type = 'button';
+          featuredBtn.className = isFeatured ? 'btn btn-success btn-sm' : 'btn btn-outline-secondary btn-sm';
+          featuredBtn.textContent = isFeatured ? '{{ _gettext("Featured") }}' : '{{ _gettext("Set featured") }}';
+          featuredBtn.addEventListener('click', function () {
+            featuredInput.value = url;
+            syncFeaturedPreview();
+            renderGallery();
+          });
+
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'btn btn-ghost-danger btn-sm';
+          removeBtn.textContent = '{{ _gettext("Remove") }}';
+          removeBtn.addEventListener('click', function () {
+            _galleryImages = _galleryImages.filter(function (u) { return u !== url; });
+            if ((featuredInput.value || '').trim() === url) {
+              featuredInput.value = _galleryImages.length ? _galleryImages[0] : '';
+            }
+            syncFeaturedPreview();
+            renderGallery();
+          });
+
+          actions.appendChild(featuredBtn);
+          actions.appendChild(removeBtn);
+          card.appendChild(actions);
+          galleryList.appendChild(card);
+        });
+      }
+
+      function addGalleryImages(urls) {
+        _galleryImages = uniqueUrls(_galleryImages.concat(urls || []));
+        if (!(featuredInput.value || '').trim() && _galleryImages.length) {
+          featuredInput.value = _galleryImages[0];
+        }
+        syncFeaturedPreview();
+        renderGallery();
+      }
+
+      function makeSlug(text) {
+        return text.toLowerCase()
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .substring(0, 200);
+      }
+
+      var slugUserEdited = false;
+      slugField.addEventListener('input', function () { slugUserEdited = true; });
+      nameField.addEventListener('input', function () {
+        if (!slugUserEdited) slugField.value = makeSlug(this.value);
+      });
+
+      function buildMediaGrid(files, grid, loading, confirmBtn, selName) {
+        loading.style.display = 'none';
+        while (grid.firstChild) grid.removeChild(grid.firstChild);
+        if (!files.length) {
+          var emptyDiv = document.createElement('div');
+          emptyDiv.className = 'media-browser-empty';
+          emptyDiv.textContent = '{{ _gettext("No images found. Upload images to the Media Library first.") }}';
+          grid.appendChild(emptyDiv);
+        } else {
+          files.forEach(function (f) {
+            var item = document.createElement('div');
+            item.className = 'media-browser-item';
+            item.dataset.url = f.url;
+            item.dataset.name = f.name;
+
+            var img = document.createElement('img');
+            img.src = f.thumb_url;
+            img.alt = f.name;
+            img.loading = 'lazy';
+            item.appendChild(img);
+
+            var mark = document.createElement('span');
+            mark.className = 'media-browser-check';
+            mark.innerHTML = '&#10003;';
+            item.appendChild(mark);
+
+            item.addEventListener('click', function () {
+              var url = f.url;
+              if (_modalSelected.has(url)) {
+                _modalSelected.delete(url);
+                item.classList.remove('selected');
+              } else {
+                _modalSelected.add(url);
+                item.classList.add('selected');
+              }
+              confirmBtn.disabled = _modalSelected.size === 0;
+              selName.textContent = _modalSelected.size
+                ? (_modalSelected.size + ' {{ _gettext("selected") }}')
+                : '';
+            });
+
+            grid.appendChild(item);
+          });
+        }
+        grid.style.display = '';
+      }
+
+      window.openMediaBrowser = function () {
+        var grid = document.getElementById('media-browser-grid');
+        var loading = document.getElementById('media-browser-loading');
+        var confirmBtn = document.getElementById('media-browser-confirm');
+        var selName = document.getElementById('media-browser-selected-name');
+
+        _modalSelected = new Set();
+        _modalFiles = [];
+        grid.style.display = 'none';
+        loading.style.display = '';
+        confirmBtn.disabled = true;
+        selName.textContent = '';
+
+        fetch('{{ url_for("media_browser.images") }}')
+          .then(function (r) { return r.json(); })
+          .then(function (files) {
+            _modalFiles = files || [];
+            buildMediaGrid(_modalFiles, grid, loading, confirmBtn, selName);
+          })
+          .catch(function () { loading.textContent = '{{ _gettext("Failed to load images.") }}'; });
+
+        document.getElementById('mediaBrowserTrigger').click();
+      };
+
+      window.confirmGalleryImages = function () {
+        if (_modalSelected.size) addGalleryImages(Array.from(_modalSelected));
+        document.querySelector('#mediaBrowserModal [data-bs-dismiss="modal"]').click();
+      };
+
+      syncActive();
+      syncFeaturedToggle();
+      activeField.addEventListener('change', syncActive);
+      featuredField.addEventListener('change', syncFeaturedToggle);
+
+      try {
+        var initial = JSON.parse(initialDataScript.textContent || '[]');
+        _galleryImages = uniqueUrls(Array.isArray(initial) ? initial : []);
+      } catch (_e) {
+        _galleryImages = [];
+      }
+      if ((featuredInput.value || '').trim() && _galleryImages.indexOf((featuredInput.value || '').trim()) === -1) {
+        _galleryImages.unshift((featuredInput.value || '').trim());
+      } else if (!_galleryImages.length && (featuredInput.value || '').trim()) {
+        _galleryImages = [(featuredInput.value || '').trim()];
+      }
+      syncFeaturedPreview();
+      renderGallery();
+    })();
+  </script>
+{% endblock %}

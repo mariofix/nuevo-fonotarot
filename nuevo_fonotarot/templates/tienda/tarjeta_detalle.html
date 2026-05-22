@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ card.name }} - {{ _("Tarjeta Prepago") }} - Fonotarot{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-6">
+      {% if card.image_url %}
+      <img src="{{ card.image_url }}" alt="{{ card.name }}" class="img-fluid rounded" style="width:100%;max-height:360px;object-fit:cover;" />
+      {% else %}
+      <div class="rounded d-flex align-items-center justify-content-center" style="height:300px;background:var(--lavender)">
+        <i class="ti ti-ticket text-secondary" style="font-size:4rem"></i>
+      </div>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <div class="small text-secondary">{{ _("Tarjeta digital prepago") }}</div>
+      <h1 class="fw-bold mb-2">{{ card.name }}</h1>
+      <div class="h2 mb-1">{{ card.price_display }}</div>
+      <div class="text-secondary mb-3">{{ _("%(minutes)s minutos para regalar", minutes=card.minutes) }}</div>
+      {% if card.description %}
+      <p class="text-secondary">{{ card.description }}</p>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('tarjetas.comprar', slug=card.slug) }}" class="card p-3 mt-3">
+        <div class="mb-3">
+          <label class="form-label" for="email">{{ _("Tu email (comprador)") }}</label>
+          <input type="email" id="email" name="email" class="form-control" required value="{{ prefilled_email or '' }}" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="recipient_email">{{ _("Email destinatario (opcional)") }}</label>
+          <input type="email" id="recipient_email" name="recipient_email" class="form-control" placeholder="{{ _('persona@correo.com') }}" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="gift_message">{{ _("Mensaje (opcional)") }}</label>
+          <textarea id="gift_message" name="gift_message" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="row g-2">
+          <div class="col-5">
+            <label class="form-label" for="quantity">{{ _("Cantidad") }}</label>
+            <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="20" />
+          </div>
+          <div class="col-7">
+            <label class="form-label">{{ _("Método de pago") }}</label>
+            <select name="payment_method" class="form-select" required>
+              <option value="flow">Flow</option>
+              <option value="khipu">Khipu</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">
+          <i class="ti ti-credit-card me-1"></i>{{ _("Comprar tarjeta") }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -179,6 +179,7 @@ class OrderItemType(enum.StrEnum):
     MINUTE_PACK = "minute_pack"
     SUBSCRIPTION = "subscription"
     PRODUCT = "product"
+    GIFT_CARD = "gift_card"
 
 
 class MinutePack(db.Model):
@@ -269,6 +270,7 @@ class Product(db.Model):
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
     stock: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     image_url: Mapped[str | None] = mapped_column(String(500))
+    images: Mapped[list[str] | None] = mapped_column(JSON)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
@@ -290,6 +292,88 @@ class Product(db.Model):
     @staticmethod
     def make_slug(name: str) -> str:
         return slugify(name)
+
+    @property
+    def image_urls(self) -> list[str]:
+        """Return normalized product image URLs with featured image first."""
+        urls = [u.strip() for u in (self.images or []) if isinstance(u, str) and u.strip()]
+        if self.image_url:
+            featured = self.image_url.strip()
+            if featured and featured not in urls:
+                urls.insert(0, featured)
+            elif featured in urls:
+                urls.remove(featured)
+                urls.insert(0, featured)
+        return urls
+
+    @property
+    def cover_image_url(self) -> str | None:
+        """Return featured image, or fallback to first gallery image."""
+        if self.image_url:
+            return self.image_url
+        urls = self.image_urls
+        return urls[0] if urls else None
+
+
+class GiftCardProduct(db.Model):
+    """Digital prepaid card product sold as a giftable minute bundle."""
+
+    __tablename__ = "gift_card_products"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
+    description: Mapped[str | None] = mapped_column(Text)
+    image_url: Mapped[str | None] = mapped_column(String(500))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+    def __repr__(self) -> str:
+        return f"<GiftCardProduct {self.slug}>"
+
+    @property
+    def price_display(self) -> str:
+        """Format price using locale-aware currency formatting."""
+        return babel_format_currency(self.price, self.currency, locale=get_locale())
+
+    @staticmethod
+    def make_slug(name: str) -> str:
+        """Return a URL-safe slug from *name*."""
+        return slugify(name)
+
+
+class GiftCard(db.Model):
+    """Issued prepaid gift card code generated after a successful purchase."""
+
+    __tablename__ = "gift_cards"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    code: Mapped[str] = mapped_column(String(32), unique=True, nullable=False, index=True)
+    gift_card_product_id: Mapped[int] = mapped_column(Integer, ForeignKey("gift_card_products.id"), nullable=False)
+    order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+    purchaser_email: Mapped[str | None] = mapped_column(String(255))
+    recipient_email: Mapped[str | None] = mapped_column(String(255))
+    redeemed_by_user_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"), index=True)
+    redeemed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    redemption_order_id: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="issued")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    gift_card_product = db.relationship("GiftCardProduct", backref=db.backref("gift_cards", lazy="dynamic"))
+    redeemed_by_user = db.relationship("User", foreign_keys=[redeemed_by_user_id])
+
+    def __repr__(self) -> str:
+        return f"<GiftCard {self.code} status={self.status}>"
 
 
 class Order(db.Model, PaymentMixin):
