@@ -146,16 +146,13 @@ def comprar_minutos(pack_id: int):
         else:
             try:
                 firenze_phone = (current_user.username or "").strip() if is_authenticated_user else phone
-                firenze_id = _firenze_search(email=email, phone=firenze_phone or None)
+                firenze_id = _firenze_search(email=email, ani=firenze_phone or None)
                 if firenze_id is not None:
                     order.firenze_client_id = firenze_id
                     if is_authenticated_user and not current_user.firenze_client_id:
                         current_user.firenze_client_id = firenze_id
             except Exception:
-                logger.exception(
-                    "comprar_minutos: Firenze search_client or user update failed for order=%s",
-                    order.id,
-                )
+                logger.exception(f"comprar_minutos: Firenze search_client or user update failed for {order.id=}")
 
         item = OrderItem(
             order_id=order.id,

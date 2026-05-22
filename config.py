@@ -230,7 +230,7 @@ class Config:
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_TIMEOUT: int = int(os.environ.get("FIRENZE_API_TIMEOUT", "5"))
 
-    DEBUG_TB_ENABLED: bool = True
+    DEBUG_TB_ENABLED: bool = bool(os.environ.get("DEBUG_TB_ENABLED", False))
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",

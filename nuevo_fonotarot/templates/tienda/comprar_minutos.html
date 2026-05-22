@@ -97,12 +97,12 @@
           {% if not current_user %}
           <div class="ck-info anon">
             <i class="ti ti-ghost me-1"></i>
-            <strong>{{ _("Compra anónima.") }}</strong> {{ _("Solo necesitamos tu email para enviarte el comprobante.") }}
+            <strong>{{ _("Compra inmediata.") }}</strong> {{ _("Necesitamos el número desde donde nos llamarás y un correo electronico para enviar el comprobante.") }}<br>
             <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
               {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
             </a>
           </div>
-          <div class="form-check mt-3">
+          {# <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
             <label class="form-check-label" for="create_account">
               {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
@@ -110,7 +110,7 @@
             <div class="form-text">
               {{ _("Te enviaremos un correo de bienvenida y confirmación.") }}
             </div>
-          </div>
+          </div> #}
           {% else %}
           <div class="ck-info known">
             <i class="ti ti-user-check me-1"></i>
@@ -120,15 +120,14 @@
           {% endif %}
 
           <div class="row g-2">
-            <div class="col-md-7">
-              <label class="form-label" for="email">{{ _("Email *") }}</label>
-              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated
-                %}readonly{% endif %} />
-            </div>
             <div class="col-md-5">
               <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
-              <input type="tel" id="phone" name="phone" class="form-control" placeholder="+56 9 ..." value="{{ prefilled_phone }}" />
+              <input type="tel" id="phone" name="phone" class="form-control" data-mask="569 0000-0000" data-mask-visible="true" placeholder="+56 9 ..." value="{{ prefilled_phone }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
               <div class="form-text">{{ _("El teléfono usarás para llamar a tu tarotista.") }}</div>
+            </div>
+            <div class="col-md-7">
+              <label class="form-label" for="email">{{ _("Email *") }}</label>
+              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
             </div>
           </div>
         </div>
@@ -160,7 +159,17 @@
 
           </div>
         </div>
-
+        {% if not current_user %}
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
+            <label class="form-check-label" for="create_account">
+              {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
+            </label>
+            <div class="form-text">
+              {{ _("Te enviaremos un correo de bienvenida con intrucciones para utilizar tu cuenta.") }}
+            </div>
+          </div>
+        {% endif %}
         <!-- ── Submit ─────────────────────────────── -->
         <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
           <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>

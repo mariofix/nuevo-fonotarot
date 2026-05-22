@@ -174,6 +174,7 @@
                   data-track-item-category="minute_pack"
                   data-track-item-price="{{ pack.price }}"
                   data-track-item-quantity="1">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <input type="hidden" name="item_type" value="minute_pack"/>
               <input type="hidden" name="item_id" value="{{ pack.id }}"/>
               <input type="hidden" name="quantity" value="1"/>
@@ -236,6 +237,7 @@
                   data-track-item-category="subscription"
                   data-track-item-price="{{ plan.price }}"
                   data-track-item-quantity="1">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
               <input type="hidden" name="item_type" value="subscription"/>
               <input type="hidden" name="item_id" value="{{ plan.id }}"/>
               <input type="hidden" name="quantity" value="1"/>
