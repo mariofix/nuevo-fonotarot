@@ -115,7 +115,8 @@ def search_client(
     if email:
         params["email"] = email
     if phone:
-        params["phone"] = phone
+        # phone is deprecated
+        params["ani"] = phone
     if ani:
         params["ani"] = ani
 

@@ -354,8 +354,6 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
         logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(item_results)}")
         _send_post_purchase_success_notification(order)
         _send_post_purchase_admin_email(order, audit_rows=item_results)
-        
-        
 
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
