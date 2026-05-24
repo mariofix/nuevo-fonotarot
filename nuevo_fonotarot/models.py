@@ -460,6 +460,7 @@ class Order(db.Model, PaymentMixin):
         elif payment_method == "flow":
             # Flow requires email as a first-class field; payer_email is not valid.
             # Optionally restrict accepted payment methods (e.g. webpay only).
+            extra_args["email"] = email
             flow_payment_method = current_app.config.get("FLOW_PAYMENT_METHOD")
             if flow_payment_method:
                 extra_args["paymentMethod"] = flow_payment_method
