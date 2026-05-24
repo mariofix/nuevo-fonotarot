@@ -320,7 +320,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
                 send_firenze_failure_email(order)
             order.firenze_payload = firenze_payloads
             order.firenze_response = firenze_responses
-            db.session.commit()
+
             return False
 
         minute_pack_processed += 1
@@ -344,15 +344,18 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
 
     order.firenze_payload = firenze_payloads
     order.firenze_response = firenze_responses
+    order.status = OrderStatus.DELIVERED
+    db.session.flush()
+    db.session.commit()
+    logger.info(f"post_purchase_process: {order.id=} marked {order.status=}")
 
     all_ok = all(result["status"] == "ok" for result in item_results)
     if item_results and all_ok:
         logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(item_results)}")
         _send_post_purchase_success_notification(order)
         _send_post_purchase_admin_email(order, audit_rows=item_results)
-        order.status = OrderStatus.DELIVERED
-        db.session.commit()
-        logger.info(f"post_purchase_process: order={order.id} marked DELIVERED")
+        
+        
 
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
@@ -408,8 +411,6 @@ def post_purchase_process(order_id: int) -> bool:
     if not _sync_firenze_topup(order, automated=True):
         return False
 
-    order.status = OrderStatus.DELIVERED
-    logger.info(f"post_purchase_process: order={order.id} marked DELIVERED")
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
     db.session.commit()

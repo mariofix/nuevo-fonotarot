@@ -95,7 +95,8 @@ def _firenze_profile_update_payload(
     if email:
         payload["email"] = email
     if phone_changed:
-        payload["phone"] = getattr(user, "phone", None)
+        # payload["phone"] = getattr(user, "phone", None)
+        pass
     return payload
 
 
@@ -190,12 +191,12 @@ def settings():
                 candidate_ani,
             )
             if created_ok and was_created:
-                flash(_("Teléfono adicional agregado."), "success")
+                flash(_("Teléfono agregado."), "success")
             elif created_ok:
-                flash(_("Ese teléfono adicional ya existe."), "info")
+                flash(_("Ese teléfono ya existe."), "info")
             else:
                 flash(
-                    _("No se pudo agregar el teléfono adicional. Verifica el formato e inténtalo de nuevo."),
+                    _("No se pudo agregar el teléfono. Verifica el formato e inténtalo de nuevo."),
                     "danger",
                 )
             return redirect(url_for("account.settings", tab="additional-phones"))
@@ -214,11 +215,11 @@ def settings():
                 target_ani,
             )
             if delete_ok and was_deleted:
-                flash(_("Teléfono adicional eliminado."), "success")
+                flash(_("Teléfono eliminado."), "success")
             elif delete_ok:
                 flash(_("Ese teléfono no existe en tu lista."), "info")
             else:
-                flash(_("No se pudo eliminar el teléfono adicional."), "danger")
+                flash(_("No se pudo eliminar el teléfono."), "danger")
             return redirect(url_for("account.settings", tab="additional-phones"))
 
         if form_type == "notifications":
@@ -235,7 +236,6 @@ def settings():
         previous_phone = current_user.phone
 
         current_user.full_name = request.form.get("full_name", "").strip() or None
-        current_user.phone = request.form.get("phone", "").strip() or None
         current_user.rut = request.form.get("rut", "").strip() or None
         current_user.address = request.form.get("address", "").strip() or None
         current_user.commune = request.form.get("commune", "").strip() or None
@@ -249,12 +249,11 @@ def settings():
         db.session.commit()
 
         full_name_changed = previous_full_name != current_user.full_name
-        phone_changed = previous_phone != current_user.phone
-        if current_user.firenze_client_id and (full_name_changed or phone_changed):
+        if current_user.firenze_client_id and (full_name_changed):
             update_payload = _firenze_profile_update_payload(
                 current_user,
                 full_name_changed=full_name_changed,
-                phone_changed=phone_changed,
+                phone_changed=False,
             )
 
             if not update_client_profile(

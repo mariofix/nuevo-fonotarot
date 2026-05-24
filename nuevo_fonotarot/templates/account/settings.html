@@ -92,7 +92,7 @@
                   aria-controls="tab-additional-phones"
                   aria-selected="{% if active_tab == 'additional-phones' %}true{% else %}false{% endif %}"
                 >
-                  {{ _("Teléfonos adicionales") }}
+                  {{ _("Mis Teléfonos") }}
                 </a>
                 <a
                   href="#tab-notifications"
@@ -128,7 +128,7 @@
                       <input id="account_email" type="text" class="form-control" value="{{ user.email }}" disabled />
                     </div>
                     <div class="col-md-6">
-                      <label for="account_username" class="form-label">{{ _("Usuario") }}</label>
+                      <label for="account_username" class="form-label">{{ _("Teléfono") }}</label>
                       <input id="account_username" type="text" class="form-control" value="{{ user.username or '' }}" disabled />
                     </div>
                   </div>
@@ -138,10 +138,6 @@
                     <div class="col-md-7">
                       <label class="form-label" for="full_name">{{ _("Nombre completo") }}</label>
                       <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name or '' }}" />
-                    </div>
-                    <div class="col-md-5">
-                      <label class="form-label" for="phone">{{ _("Teléfono principal") }}</label>
-                      <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}" />
                     </div>
                   </div>
 
@@ -225,9 +221,9 @@
                 id="tab-additional-phones"
                 role="tabpanel"
               >
-                <h3 class="card-title">{{ _("Teléfonos adicionales") }}</h3>
+                <h3 class="card-title">{{ _("Mis Teléfonos") }}</h3>
                 {% if user.firenze_client_id %}
-                  <p class="card-subtitle">{{ _("Administra aquí los ANIs autorizados para consultas telefónicas.") }}</p>
+                  <p class="card-subtitle">{{ _("Administra aquí los teléfonos autorizados para llamar a Fonotarot.") }}</p>
 
                 <div class="mt-3">
                   {% if additional_phones %}
@@ -247,7 +243,7 @@
                     {% endfor %}
                   </div>
                   {% else %}
-                  <p class="text-secondary mb-0">{{ _("No tienes teléfonos adicionales registrados.") }}</p>
+                  <p class="text-secondary mb-0">{{ _("No tienes teléfonos registrados.") }}</p>
                   {% endif %}
                 </div>
 
@@ -255,7 +251,7 @@
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <input type="hidden" name="form_type" value="add_ani" />
                   <div class="col-md-8">
-                    <label class="form-label" for="additional_phone_1">{{ _("Nuevo ANI adicional") }}</label>
+                    <label class="form-label" for="additional_phone_1">{{ _("Nuevo Teléfono") }}</label>
                     <input
                       type="tel"
                       id="additional_phone_1"
@@ -264,17 +260,17 @@
                       placeholder="{{ _('Ej: +56912345678') }}"
                       required
                     />
-                    <div class="form-hint">{{ _("Formato permitido: 8 a 15 dígitos.") }}</div>
+                    <div class="form-hint">{{ _("Formato permitido: 11 dígitos.") }}</div>
                   </div>
                   <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-outline-primary w-100">
-                      <i class="ti ti-plus me-1"></i>{{ _("Agregar ANI") }}
+                      <i class="ti ti-plus me-1"></i>{{ _("Agregar Teléfono") }}
                     </button>
                   </div>
                 </form>
                 {% else %}
                 <p class="text-warning mb-0">
-                  {{ _("Tu cuenta aún no tiene un cliente Firenze asociado. Completa tu perfil y vuelve a intentar.") }}
+                  {{ _("Tu cuenta aún no está completamente configurada. Completa tu perfil y vuelve a intentar, de lo contrario contactanos.") }}
                 </p>
                 {% endif %}
               </div>
