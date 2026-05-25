@@ -5,7 +5,7 @@ from __future__ import annotations
 from .extensions import db, user_datastore
 from .firenze import search_client
 from .log import get_logger
-from .models import User
+from .models import Order, User
 from .notifications import notify_new_user_registration
 
 logger = get_logger(__name__)
@@ -79,7 +79,6 @@ def process_user_registration(user: User) -> bool:
 
     Performs all necessary setup after user registration, including:
     - Sending a Telegram notification about the new registration
-    - Syncing username (phone) into the phone field if not already set
     - Looking up and saving Firenze client_id if available
     - Adding user to 'clientes' role if client_id is found
 
@@ -101,7 +100,7 @@ def process_user_registration(user: User) -> bool:
 
     # Send Telegram notification about new registration
     try:
-        notify_new_user_registration(email=user.email, phone=user.phone or user.username)
+        notify_new_user_registration(email=user.email, phone=user.username)
         logger.debug(
             "process_user_registration: Telegram notification sent for user=%s",
             user.id,
@@ -112,24 +111,14 @@ def process_user_registration(user: User) -> bool:
             user.id,
         )
 
-    # Copy username → phone if phone is blank (non-enforced convenience sync).
-    if user.username and not user.phone:
-        user.phone = user.username
-        changed = True
-        logger.debug(
-            "process_user_registration: synced username to phone field for user=%s (phone=%r)",
-            user.id,
-            user.phone,
-        )
-
     try:
         logger.debug(
             "process_user_registration: looking up Firenze client for user=%s (email=%r phone=%r)",
             user.id,
             user.email,
-            user.username or user.phone,
+            user.username,
         )
-        client_id = search_client(email=user.email, phone=user.username or user.phone)
+        client_id = search_client(ani=user.username)
 
         if client_id is not None:
             user.firenze_client_id = client_id
@@ -152,14 +141,36 @@ def process_user_registration(user: User) -> bool:
             )
             return True
         else:
-            if changed:
+            from sqlalchemy import or_
+
+            order = Order.query.filter(
+                Order.status == "delivered", or_(Order.email == user.email, Order.shipping_phone == user.username)
+            ).first()
+
+            if order and order.firenze_client_id:
+                user.firenze_client_id = order.firenze_client_id
+                logger.debug(
+                    f"process_user_registration: found Firenze {user.firenze_client_id=} for {user.id=} in {order.id=}"
+                )
+                _assign_clientes_role(user)
+                db.session.flush()
                 db.session.commit()
-            logger.debug(
-                "process_user_registration: no Firenze client_id found for user=%s (email=%r phone=%r)",
-                user.id,
-                user.email,
-                user.phone,
-            )
+                logger.info(
+                    "process_user_registration: saved Firenze client_id=%s and assigned 'clientes' role "
+                    "for user=%s (email=%r phone=%r)",
+                    client_id,
+                    user.id,
+                    user.email,
+                    user.phone,
+                )
+                return True
+            else:
+                logger.debug(
+                    "process_user_registration: no Firenze client_id found for user=%s (email=%r phone=%r)",
+                    user.id,
+                    user.email,
+                    user.phone,
+                )
             return False
     except Exception:
         if changed:

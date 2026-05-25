@@ -198,6 +198,7 @@ def create_client(
     email: str | None,
     ani: str | None,
     transaction_id: str | None,
+    segundos: int | None,
 ) -> int | None:
     """Create a new client in Firenze after a confirmed anonymous payment.
 
@@ -221,11 +222,12 @@ def create_client(
 
     payload = {
         "service": "fonotarot-cl",
-        "full_name": name or "",
-        "email": email or "",
-        "phone_number": ani or "",
-        "ani": ani or "",
-        "transaction_id": transaction_id or "",
+        "full_name": name or None,
+        "email": email or None,
+        "phone_number": ani or None,
+        "ani": ani or None,
+        "transaction_id": transaction_id or None,
+        "credits": segundos or None,
     }
 
     url = urljoin(_base_url(), "/api/v1/payments/complete")
@@ -328,7 +330,7 @@ def post_purchase(
 
     payload = {
         "service": "fonotarot-cl",
-        "client_id": client_id or "",
+        "client_id": client_id or None,
         "credits": segundos or 0,
         "transaction_id": transaction_id or "",
     }

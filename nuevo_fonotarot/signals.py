@@ -7,7 +7,7 @@ from typing import Any
 from flask import current_app, has_app_context, render_template
 
 from .extensions import db
-from .firenze import post_purchase, search_client
+from .firenze import create_client, post_purchase, search_client
 from .log import get_logger
 from .models import MinutePack, Order, OrderItemType, OrderStatus, Role, User
 from .notifications import send_telegram_notification
@@ -262,31 +262,36 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
         quantity = max(int(item.quantity or 1), 1)
         seconds_to_add = int(pack.minutes) * 60 * quantity
         request_payload = {
-            "client_id": client_id,
             "segundos": seconds_to_add,
             "transaction_id": order.transaction_id or str(order.id),
             "name": order.shipping_name,
             "email": order.email,
             "ani": order.shipping_phone,
         }
+        if not is_new_client:
+            request_payload["client_id"] = client_id
+
         logger.info(
             "post_purchase_process: post_purchase request order=%s item_id=%s payload=%r",
             order.id,
             item.item_id,
             request_payload,
         )
-        post_purchase_response = post_purchase(**request_payload)
+        if is_new_client:
+            firenze_post_response = create_client(**request_payload)
+        else:
+            firenze_post_response = post_purchase(**request_payload)
         logger.info(
             "post_purchase_process: post_purchase response order=%s item_id=%s response=%r",
             order.id,
             item.item_id,
-            post_purchase_response,
+            firenze_post_response,
         )
         firenze_payloads.append(request_payload)
-        firenze_responses.append(post_purchase_response)
+        firenze_responses.append(firenze_post_response)
         posted_client_id = None
-        if isinstance(post_purchase_response, dict):
-            response_client_id = post_purchase_response.get("client_id")
+        if isinstance(firenze_post_response, dict):
+            response_client_id = firenze_post_response.get("client_id")
             if response_client_id is not None:
                 try:
                     posted_client_id = int(response_client_id)
@@ -295,7 +300,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
                         f"post_purchase_process: invalid client_id in Firenze response for order={order.id} "
                         f"item_id={item.item_id}: {response_client_id!r}"
                     )
-        row_status = "ok" if post_purchase_response is not None else "failed"
+        row_status = "ok" if firenze_post_response is not None else "failed"
         item_results.append(
             {
                 "item_id": item.item_id,
@@ -308,7 +313,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
             }
         )
 
-        if post_purchase_response is None:
+        if firenze_post_response is None:
             logger.error(
                 f"post_purchase_process: Firenze post_purchase failed order={order.id} "
                 f"item_id={item.item_id} payload={request_payload!r}"
@@ -335,7 +340,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
         elif not is_new_client and posted_client_id != client_id:
             logger.error(
                 f"post_purchase_process: client mismatch order={order.id} item_id={item.item_id} "
-                f"expected={client_id} got={posted_client_id} response={post_purchase_response!r}"
+                f"expected={client_id} got={posted_client_id} response={firenze_post_response!r}"
             )
             send_telegram_notification(
                 f"post_purchase_process: Clientid distinto order_id={order.id} "

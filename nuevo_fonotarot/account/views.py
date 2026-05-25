@@ -233,7 +233,6 @@ def settings():
             return redirect(url_for("account.settings", tab="notifications"))
 
         previous_full_name = current_user.full_name
-        previous_phone = current_user.phone
 
         current_user.full_name = request.form.get("full_name", "").strip() or None
         current_user.rut = request.form.get("rut", "").strip() or None
