@@ -278,6 +278,7 @@ def _sync_firenze_topup(order: Order, *, automated: bool) -> bool:
             request_payload,
         )
         if is_new_client:
+            logger.debug(f"post_purchase_process: to send to create_client {request_payload=}")
             firenze_post_response = create_client(**request_payload)
         else:
             firenze_post_response = post_purchase(**request_payload)
