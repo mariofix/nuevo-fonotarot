@@ -73,6 +73,9 @@ def _sync_firenze_on_payment(order: Order) -> bool:
         ``True`` if Firenze already had a ``client_id`` or the call succeeded,
         ``False`` if the Firenze call returned no ``client_id`` or failed.
     """
+    logger.info("DO NOT USE THIS FUNCTION, use the other ones")
+    return False
+    
     from ...firenze import create_client as _firenze_create
 
     if order.firenze_client_id:
