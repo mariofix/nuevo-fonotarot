@@ -18,7 +18,7 @@ from ...models import (
     Product,
     SubscriptionPlan,
 )
-from ...signals import sync_firenze_topup
+from ...signals import sync_firenze_topup, post_purchase_process
 from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
@@ -471,7 +471,8 @@ def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
         f"state={getattr(getattr(event, 'state', None), 'value', None)!r}"
     )
 
-    _handle_payment_webhook_event(event)
+    # _handle_payment_webhook_event(event)
+    post_purchase_process(transaction_id=event.payment_id)
 
 
 # ---------------------------------------------------------------------------

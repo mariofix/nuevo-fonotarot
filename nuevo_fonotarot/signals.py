@@ -11,6 +11,7 @@ from .firenze import create_client, post_purchase, search_client
 from .log import get_logger
 from .models import MinutePack, Order, OrderItemType, OrderStatus, Role, User
 from .notifications import send_telegram_notification
+from .actions import _assign_clientes_role as _ensure_clientes_role
 
 logger = get_logger(__name__)
 
@@ -174,6 +175,7 @@ def _propagate_client_id_to_order_and_user(order: Order, client_id: int) -> None
         logger.info(
             f"_propagate_client_id_to_order_and_user: assigned firenze_client_id={client_id} to user={linked_user.id}"
         )
+        _ensure_clientes_role(linked_user)
 
 
 def _associate_order_user_by_email(order: Order) -> None:
@@ -381,7 +383,10 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> bool:
     return _sync_firenze_topup(order, automated=automated)
 
 
-def post_purchase_process(order_id: int) -> bool:
+def post_purchase_process(
+    order_id: int | None = None,
+    transaction_id: str | None = None,
+) -> bool:
     """Automated post-purchase flow for paid minute-pack orders.
 
     This entrypoint is used by provider/webhook automation and therefore keeps
@@ -390,19 +395,24 @@ def post_purchase_process(order_id: int) -> bool:
     - requires fulfillment status=PAID before top-up
     - on success marks order DELIVERED and links guest orders by email
     """
-    if not order_id:
-        logger.warning("post_purchase_process: missing order_id")
+    if not order_id and not transaction_id:
+        logger.warning("post_purchase_process: missing order_id or transaction_id")
         return False
 
-    order = db.session.get(Order, int(order_id))
+    order = None
+    if order_id:
+        order = db.session.get(Order, int(order_id))
+    if transaction_id:
+        order = Order.query.filter_by(transaction_id=transaction_id).first()
+
     if order is None:
-        logger.warning(f"post_purchase_process: order_id={order_id} not found")
+        logger.warning(f"post_purchase_process: {order_id=}/{transaction_id=} not found")
         return False
 
     if order.payment_status == "succeeded":
-        logger.info(f"post_purchase_process: order={order.id} marked PAID")
         order.status = OrderStatus.PAID
         db.session.commit()
+        logger.info(f"post_purchase_process: {order.id=} marked PAID")
 
     logger.info(
         f"post_purchase_process: start order={order.id} "
