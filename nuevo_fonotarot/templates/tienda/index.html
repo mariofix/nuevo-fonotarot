@@ -128,7 +128,7 @@
       <h1>{{ _("Tienda Fonotarot") }}</h1>
       <p class="section-subtitle mb-3">{{ _("Minutos prepagados, suscripciones, tarjetas regalo y productos esotéricos") }}</p>
       <span class="badge bg-success-lt text-success border border-success-subtle px-3 py-2 fs-6">
-        <i class="ti ti-eye-off me-1"></i>{{ _("Envíos 100% anónimos — cajas sin marcas") }}
+        <i class="ti ti-eye-off me-1"></i>{{ _("Envíos 100% anónimos - cajas sin marcas") }}
       </span>
     </div>
   </section>
@@ -151,7 +151,7 @@
   <section class="tienda-section">
     <div class="container">
       <div class="text-center mb-5">
-        <div class="section-tag"><i class="ti ti-clock me-1"></i>{{ _("Minutos de Tarot Prepagados") }}</div>
+        <div class="section-tag"><i class="ti ti-clock me-1"></i>{{ _("Minutos de Tarot") }}</div>
         <h2 class="section-title">{{ _("Elige tu Pack") }}</h2>
         <div class="divider-gold"></div>
         <p class="section-subtitle">{{ _("Los minutos nunca vencen. Úsalos cuando quieras.") }}</p>
@@ -194,7 +194,7 @@
       </div>
       <div class="text-center mt-4">
         <a href="{{ url_for('minutos.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-list me-1"></i>{{ _("Registra tu cuentapara objetener beneficios.") }}
+          <i class="ti ti-list me-1"></i>{{ _("Registra tu cuenta para objetener beneficios con tus minutos de tarot.") }}
         </a>
       </div>
     </div>
@@ -283,7 +283,7 @@
             <div class="pack-price">{{ card.price_display }}<small> CLP</small></div>
             {% if card.description %}<p class="section-subtitle small mt-2 mb-0">{{ card.description }}</p>{% endif %}
             <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-pack {% if card.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %} mt-3">
-              <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }}
+              <i class="ti ti-gift me-1"></i>{{ _("Compra y Regala") }}
             </a>
           </div>
         </div>
@@ -291,10 +291,10 @@
       </div>
       <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
         <a href="{{ url_for('tarjetas.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-ticket me-1"></i>{{ _("Ver todas las tarjetas") }}
+          <i class="ti ti-help me-1"></i>{{ _("¿Como Funciona?") }}
         </a>
         <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-ticket-off me-1"></i>{{ _("Canjear código") }}
+          <i class="ti ti-ticket me-1"></i>{{ _("Canjear código") }}
         </a>
       </div>
     </div>
