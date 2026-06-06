@@ -1,7 +1,6 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
 import json as _json
-from datetime import UTC
 from typing import Any
 
 from flask import (
@@ -23,9 +22,9 @@ from ..actions import process_user_registration, register_checkout_account
 from ..extensions import db, limiter, user_datastore
 from ..firenze import complete_promo_credit, search_client, update_client_profile
 from ..log import get_logger
-from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage
+from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, GiftCardProduct
 from ..placeholder import TESTIMONIALS
-from ..utils import get_agents, get_moon_phase_index  # get_agents used by /api/agents endpoint
+from ..utils import get_moon_phase_index
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"
@@ -90,7 +89,7 @@ def _send_admin_promo_notification(ani: str, remaining: int, client_id: int) -> 
     if not recipients:
         return
 
-    redeemed_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+    redeemed_at = datetime.now().strftime("%Y-%m-%d %H:%M")
     daleks_url = current_app.config["DALEKS_URL"]
     daleks_smtp_account = current_app.config["DALEKS_SMTP_ACCOUNT"]
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
@@ -237,6 +236,7 @@ def _homepage_ctx() -> dict:
     log entries.
     """
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
 
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     firenze_ejecutivos_url = f"{api_url}/api/v1/public/ejecutivos" if api_url else ""
@@ -254,6 +254,7 @@ def _homepage_ctx() -> dict:
         "ejecutivos": ejecutivos,
         "testimonials": TESTIMONIALS,
         "minute_packs": minute_packs,
+        "gift_cards": gift_cards,
         "plans": minute_packs,  # alias used by older experiment templates
         "current_moon_phase": get_moon_phase_index(),
         "latest_posts": latest_posts,
@@ -392,23 +393,6 @@ def index():
 
     # Default: hardcoded home template.
     return render_template("index.html", **_homepage_ctx())
-
-
-# ---------------------------------------------------------------------------
-# Agent status API
-# ---------------------------------------------------------------------------
-
-
-@content_bp.route("/api/agents")
-@limiter.exempt
-def api_agents():
-    """Return the live agent list as JSON (consumed by the homepage poller)."""
-    agents, error = get_agents()
-    if error == "timeout":
-        return jsonify({"error": "timeout"}), 504
-    if error:
-        return jsonify({"error": "503"}), 503
-    return jsonify(agents)
 
 
 # ---------------------------------------------------------------------------

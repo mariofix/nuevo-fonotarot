@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
@@ -24,6 +24,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .extensions import db
+from .log import get_logger
+
+logger = get_logger(__name__)
 
 
 class Role(db.Model, fsqla.FsRoleMixin):
@@ -43,7 +46,7 @@ class User(db.Model, fsqla.FsUserMixin):
     # Trust window for passwordless signin: if set and current time < trusted_until,
     # user is automatically logged in without requiring email verification.
     trusted_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
 
     # Customer profile fields ---------------------------------------------------
     # Minimal profile (Known Customer)
@@ -96,11 +99,11 @@ class StaticPage(db.Model):
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     is_homepage: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
         nullable=False,
     )
 
@@ -132,11 +135,11 @@ class BlogPost(db.Model):
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     published: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     published_at: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
         nullable=False,
     )
 
@@ -191,13 +194,14 @@ class MinutePack(db.Model):
     __tablename__ = "minute_packs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=True, index=True)
     minutes: Mapped[int] = mapped_column(Integer, nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
     description: Mapped[str | None] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
 
     def __repr__(self) -> str:
         return f"<MinutePack {self.minutes}min ${self.price}>"
@@ -222,7 +226,7 @@ class SubscriptionPlan(db.Model):
     features: Mapped[str | None] = mapped_column(Text)  # newline-separated feature list
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
 
     def __repr__(self) -> str:
         return f"<SubscriptionPlan {self.name}>"
@@ -273,11 +277,11 @@ class Product(db.Model):
     images: Mapped[list[str] | None] = mapped_column(JSON)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
         nullable=False,
     )
 
@@ -330,16 +334,19 @@ class GiftCardProduct(db.Model):
     image_url: Mapped[str | None] = mapped_column(String(500))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
         nullable=False,
     )
 
     def __repr__(self) -> str:
-        return f"<GiftCardProduct {self.slug}>"
+        return f"<GiftCard {self.slug}>"
+
+    def __str__(self) -> str:
+        return f"giftcard-{self.slug}"
 
     @property
     def price_display(self) -> str:
@@ -360,20 +367,23 @@ class GiftCard(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     code: Mapped[str] = mapped_column(String(32), unique=True, nullable=False, index=True)
     gift_card_product_id: Mapped[int] = mapped_column(Integer, ForeignKey("gift_card_products.id"), nullable=False)
-    order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+    order_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("orders.id"), nullable=True, index=True)
     purchaser_email: Mapped[str | None] = mapped_column(String(255))
     recipient_email: Mapped[str | None] = mapped_column(String(255))
     redeemed_by_user_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("users.id"), index=True)
     redeemed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     redemption_order_id: Mapped[str | None] = mapped_column(String(64))
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="issued")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
 
     gift_card_product = db.relationship("GiftCardProduct", backref=db.backref("gift_cards", lazy="dynamic"))
     redeemed_by_user = db.relationship("User", foreign_keys=[redeemed_by_user_id])
 
     def __repr__(self) -> str:
         return f"<GiftCard {self.code} status={self.status}>"
+
+    def __str__(self) -> str:
+        return f"giftcard: {self.code}({self.status})"
 
 
 class Order(db.Model, PaymentMixin):
@@ -422,6 +432,9 @@ class Order(db.Model, PaymentMixin):
     def __repr__(self) -> str:
         return f"<Order #{self.id} status={self.status!r} payment_status={self.payment_status!r}>"
 
+    def __str__(self) -> str:
+        return f"<Order #{self.id} status={self.status} payment_status={self.payment_status}>"
+
     @property
     def total_display(self) -> str:
         """Format order total using locale-aware currency formatting."""
@@ -454,6 +467,7 @@ class Order(db.Model, PaymentMixin):
         # Stored in self.extra_args for audit and unpacked into create_checkout(**kwargs).
         # Each provider only receives the kwargs it understands.
         extra_args: dict = {}
+        extra_args["subject"] = f"Compra Fonotarot: {self.create_subject()}"
         if payment_method == "khipu":
             # Khipu accepts payer_email to pre-fill the payer's email field.
             extra_args["payer_email"] = email
@@ -461,9 +475,7 @@ class Order(db.Model, PaymentMixin):
             # Flow requires email as a first-class field; payer_email is not valid.
             # Optionally restrict accepted payment methods (e.g. webpay only).
             extra_args["email"] = email
-            extra_args["urlConfirmation"] = ""
-            flow_payment_method = current_app.config.get("FLOW_PAYMENT_METHOD")
-            if flow_payment_method:
+            if flow_payment_method := current_app.config.get("FLOW_PAYMENT_METHOD"):
                 extra_args["paymentMethod"] = flow_payment_method
 
         self.merchants_id = merchants_id
@@ -509,6 +521,8 @@ class Order(db.Model, PaymentMixin):
         (before payment is initiated) and include order-specific fields.
         """
         d = {
+            "order_id": self.id,
+            "order_status": self.status,
             "merchants_id": self.merchants_id,
             "transaction_id": self.transaction_id,
             "provider": self.provider,
@@ -521,9 +535,32 @@ class Order(db.Model, PaymentMixin):
             "response_payload": self.response_payload or {},
             "payment_object": self.payment_object or {},
         }
-        d["order_id"] = self.id
-        d["order_status"] = self.status
         return d
+
+    def create_subject(self) -> str:
+        names = [item.name for item in self.items]
+        return ", ".join(names)
+
+    def has_giftcards(self) -> bool:
+        """If this order has giftcards"""
+
+        # return any(item.item_type == OrderItemType.GIFT_CARD.value for item in list(self.items.all()))
+        return any(item.item_type == OrderItemType.GIFT_CARD.value for item in list(self.items))
+
+    def has_physical_products(self) -> bool:
+        """If this order has physical goods"""
+
+        return any(item.item_type == OrderItemType.PRODUCT.value for item in list(self.items))
+
+    def has_subscriptions(self) -> bool:
+        """If this order has subscriptions"""
+
+        return any(item.item_type == OrderItemType.SUBSCRIPTION.value for item in list(self.items))
+
+    def has_minute_packs(self) -> bool:
+        """If this order has minute packs"""
+
+        return any(item.item_type == OrderItemType.MINUTE_PACK.value for item in list(self.items))
 
 
 class OrderItem(db.Model):

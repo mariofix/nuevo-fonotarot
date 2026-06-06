@@ -42,10 +42,11 @@ def canjear():
             flash(_("El código ingresado no existe."), "danger")
             return redirect(url_for("tarjetas.canjear"))
 
-        purchase_order = db.session.get(Order, gift_card.order_id)
-        if purchase_order is None or purchase_order.payment_status != "succeeded":
-            flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
-            return redirect(url_for("tarjetas.canjear"))
+        if gift_card.order_id is not None:
+            purchase_order = db.session.get(Order, gift_card.order_id)
+            if purchase_order is None or purchase_order.payment_status != "succeeded":
+                flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
+                return redirect(url_for("tarjetas.canjear"))
 
         ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
         flash(_(message), "success" if ok else "danger")
@@ -90,11 +91,8 @@ def comprar(slug: str):
         if not purchaser_email:
             flash(_("El email del comprador es obligatorio."), "danger")
             return redirect(url_for("tarjetas.comprar", slug=slug))
-        try:
-            quantity = int(quantity_raw)
-        except ValueError:
-            quantity = 1
-        quantity = max(1, min(quantity, 20))
+        
+        quantity = 1
 
         total_amount = Decimal(str(card.price)) * quantity
         order = Order(
@@ -143,9 +141,11 @@ def comprar(slug: str):
         )
 
     prefilled_email = current_user.email if is_authenticated_user else ""
+    preferred = current_user.preferred_payment if is_authenticated_user else None
     return render_template(
-        "tienda/tarjeta_detalle.html",
+        "tienda/comprar_tarjeta.html",
         card=card,
+        preferred=preferred,
         prefilled_email=prefilled_email,
         cart_count=len(_get_cart()),
     )

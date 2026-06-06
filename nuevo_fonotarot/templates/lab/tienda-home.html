@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Tienda - Nuevo Home (Lab)") }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .lab-tag {
+    position: fixed;
+    top: 70px;
+    right: 16px;
+    z-index: 200;
+    background: var(--rose);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .3rem .7rem;
+    border-radius: 0 0 8px 8px;
+    letter-spacing: .05em;
+  }
+
+  .shop-hero {
+    padding: 86px 0 64px;
+    background: linear-gradient(160deg, var(--cream) 0%, var(--lavender) 100%);
+    border-bottom: 1px solid rgba(107, 63, 160, .12);
+  }
+
+  .shop-hero-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(2rem, 4.2vw, 3.2rem);
+    font-weight: 900;
+    color: var(--plum-dk);
+    margin-bottom: .9rem;
+  }
+
+  .shop-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: center;
+  }
+
+  .shop-menu-link {
+    border: 1px solid rgba(107, 63, 160, .2);
+    border-radius: 999px;
+    padding: .4rem .9rem;
+    font-size: .82rem;
+    text-decoration: none;
+    color: var(--plum);
+    background: #fff;
+  }
+
+  .shop-menu-link:hover {
+    background: rgba(107, 63, 160, .08);
+    border-color: rgba(107, 63, 160, .35);
+  }
+
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--sand);
+  }
+
+  .stat-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    padding: .45rem .8rem;
+    font-size: .82rem;
+    color: var(--muted);
+  }
+
+  .shop-section {
+    padding: 54px 0;
+  }
+
+  .shop-panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem;
+    height: 100%;
+  }
+
+  .pack-scroll {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+    gap: .85rem;
+  }
+
+  .pack-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background: var(--cream);
+  }
+
+  .pack-card.featured {
+    background: linear-gradient(150deg, var(--blush) 0%, var(--lavender) 100%);
+    border-color: rgba(107, 63, 160, .45);
+    box-shadow: 0 8px 20px rgba(107, 63, 160, .1);
+  }
+
+  .pack-mins {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--plum-dk);
+  }
+
+  .pack-price {
+    font-family: "Playfair Display", serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--plum);
+    margin: .35rem 0 .15rem;
+  }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+  }
+
+  .how-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    background: var(--sand);
+    height: 100%;
+  }
+
+  .how-step {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--plum);
+    margin-bottom: .55rem;
+  }
+
+  .moon-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(120deg, rgba(230, 215, 255, .45), rgba(255, 224, 233, .45));
+  }
+
+  .free-offer {
+    border: 1px dashed rgba(107, 63, 160, .45);
+    border-radius: 14px;
+    background: rgba(107, 63, 160, .06);
+    padding: 1.3rem;
+  }
+
+  .split-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .9rem;
+  }
+
+  .product-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .9rem;
+    background: #fff;
+    height: 100%;
+  }
+
+  .product-thumb {
+    width: 100%;
+    height: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: .7rem;
+    border: 1px solid var(--border);
+  }
+
+  .gift-column {
+    display: grid;
+    gap: .7rem;
+  }
+
+  .gift-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    padding: .9rem;
+  }
+
+  @media (max-width: 991px) {
+    .pack-scroll {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .how-grid {
+      grid-template-columns: 1fr;
+    }
+    .split-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .pack-scroll,
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lab-tag">LAB / Tienda Home</div>
+
+<section class="shop-hero">
+  <div class="container text-center">
+    <div class="section-tag mb-2"><i class="ti ti-shopping-bag me-1"></i>{{ _("Tienda Fonotarot") }}</div>
+    <h1 class="shop-hero-title">{{ _("Tu energía, tus minutos, tu ritmo") }}</h1>
+    <p class="section-subtitle mb-4">{{ _("Nuestros productos digitales principales son los packs de minutos. También puedes regalar giftcards o sumar productos físicos.") }}</p>
+    <div class="shop-menu">
+      <a class="shop-menu-link" href="#packs">{{ _("Packs de minutos") }}</a>
+      <a class="shop-menu-link" href="#como-funciona">{{ _("Cómo funciona") }}</a>
+      <a class="shop-menu-link" href="#tienda-fisica">{{ _("Productos físicos") }}</a>
+      <a class="shop-menu-link" href="#giftcards">{{ _("Giftcards") }}</a>
+      {% if not current_user.is_authenticated %}
+      <a class="shop-menu-link" href="#oferta-5-min">{{ _("Oferta 5 minutos") }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="stats-strip py-3">
+  <div class="container d-flex flex-wrap justify-content-center gap-2">
+    <span class="stat-pill"><i class="ti ti-clock me-1"></i>{{ _("Minutos sin vencimiento") }}</span>
+    <span class="stat-pill"><i class="ti ti-shield-check me-1"></i>{{ _("Pagos seguros con Flow y Khipu") }}</span>
+    <span class="stat-pill"><i class="ti ti-eye-off me-1"></i>{{ _("Despacho discreto para productos físicos") }}</span>
+  </div>
+</section>
+
+<section class="shop-section" id="packs">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="shop-panel">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="section-title mb-0">{{ _("Planes de minutos") }}</h2>
+            <span class="section-subtitle mb-0"><i class="ti ti-chevrons-left me-1"></i>{{ _("Desliza") }}<i class="ti ti-chevrons-right ms-1"></i></span>
+          </div>
+          <div class="pack-scroll">
+            {% for pack in minute_packs %}
+            <article class="pack-card {% if pack.is_featured %}featured{% endif %}">
+              <div class="pack-mins">{{ pack.minutes }} {{ _("min") }}</div>
+              <div class="pack-price">{{ pack.price_display }}</div>
+              <p class="small text-muted mb-3">{{ pack.description or _("Pack prepago de minutos para consultas de tarot.") }}</p>
+              <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="item_type" value="minute_pack">
+                <input type="hidden" name="item_id" value="{{ pack.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="next" value="{{ url_for('pagos.index') }}">
+                <button type="submit" class="btn btn-sm btn-primary w-100">
+                  <i class="ti ti-bolt me-1"></i>{{ _("Comprar ahora") }}
+                </button>
+              </form>
+            </article>
+            {% else %}
+            <div class="alert alert-warning mb-0">{{ _("No hay packs de minutos disponibles en este momento.") }}</div>
+            {% endfor %}
+          </div>
+          <a href="{{ url_for('minutos.index') }}" class="btn btn-outline-secondary btn-sm mt-3">
+            <i class="ti ti-list me-1"></i>{{ _("Ver catálogo completo de minutos") }}
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6" id="como-funciona">
+        <div class="shop-panel">
+          <h2 class="section-title mb-3">{{ _("Cómo funciona") }}</h2>
+          <div class="how-grid">
+            <article class="how-card">
+              <span class="how-step">1</span>
+              <h3 class="h6">{{ _("Elige tu pack") }}</h3>
+              <p class="small text-muted mb-0">{{ _("Selecciona la cantidad de minutos o una giftcard para regalar.") }}</p>
+            </article>
+            <article class="how-card">
+              <span class="how-step">2</span>
+              <h3 class="h6">{{ _("Paga en segundos") }}</h3>
+              <p class="small text-muted mb-0">{{ _("Confirma tu compra con Flow o Khipu y recibe el comprobante por email.") }}</p>
+            </article>
+            <article class="how-card">
+              <span class="how-step">3</span>
+              <h3 class="h6">{{ _("Usa tus minutos") }}</h3>
+              <p class="small text-muted mb-0">{{ _("Tus minutos quedan listos para consulta y no vencen.") }}</p>
+            </article>
+          </div>
+          <div class="mt-3 alert alert-secondary mb-0">
+            <i class="ti ti-calendar-time me-1"></i>{{ _("Suscripciones: disponibles más adelante. Hoy el foco está en packs, giftcards y tienda física.") }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="moon-strip py-4">
+  <div class="container text-center">
+    <div class="section-tag mb-2"><i class="ti ti-moon-stars me-1"></i>{{ _("Fase lunar") }}</div>
+    <p class="mb-0">{{ _("Recomendación del día: ideal para consultas de claridad emocional y limpieza energética.") }}</p>
+  </div>
+</section>
+
+{% if not current_user.is_authenticated %}
+<section class="shop-section pt-4 pb-0" id="oferta-5-min">
+  <div class="container">
+    <div class="free-offer text-center">
+      <h2 class="h4 mb-2">{{ _("Oferta de bienvenida: 5 minutos gratis") }}</h2>
+      <p class="mb-3">{{ _("Disponible solo para nuevas cuentas. Regístrate y prueba una primera consulta sin costo.") }}</p>
+      <button type="button" class="btn btn-primary js-passwordless-trigger" data-next="{{ request.path }}">
+        <i class="ti ti-gift me-1"></i>{{ _("Quiero mis 5 minutos") }}
+      </button>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="shop-section" id="tienda-fisica">
+  <div class="container">
+    <div class="split-grid">
+      <section class="shop-panel">
+        <h2 class="section-title mb-3">{{ _("Tarotistas y tienda física") }}</h2>
+        <p class="section-subtitle">{{ _("Complementa tu experiencia con productos físicos para tus rituales y lecturas.") }}</p>
+        <div class="product-grid">
+          {% for product in featured_products %}
+          <article class="product-card">
+            {% if product.cover_image_url %}
+            <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-thumb">
+            {% else %}
+            <div class="product-thumb d-flex align-items-center justify-content-center bg-light">
+              <i class="ti ti-package" style="font-size:2rem;color:var(--plum)"></i>
+            </div>
+            {% endif %}
+            <h3 class="h6 mb-1">{{ product.name }}</h3>
+            <div class="fw-semibold mb-2" style="color:var(--plum);">{{ product.price_display }}</div>
+            <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-secondary btn-sm w-100">
+              <i class="ti ti-eye me-1"></i>{{ _("Ver producto") }}
+            </a>
+          </article>
+          {% else %}
+          <div class="alert alert-warning mb-0">{{ _("No hay productos físicos activos en este momento.") }}</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="shop-panel" id="giftcards">
+        <h2 class="section-title mb-3">{{ _("Giftcards") }}</h2>
+        <div class="gift-column">
+          {% for card in gift_cards %}
+          <article class="gift-card">
+            <h3 class="h6 mb-1">{{ card.name }}</h3>
+            <p class="small text-muted mb-1">{{ card.minutes }} {{ _("minutos para regalar") }}</p>
+            <div class="fw-semibold mb-2" style="color:var(--plum);">{{ card.price_display }}</div>
+            <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-outline-primary btn-sm w-100">
+              <i class="ti ti-ticket me-1"></i>{{ _("Comprar giftcard") }}
+            </a>
+          </article>
+          {% else %}
+          <div class="alert alert-warning mb-0">{{ _("No hay giftcards activas en este momento.") }}</div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}

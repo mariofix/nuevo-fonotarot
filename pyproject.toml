@@ -15,8 +15,6 @@ dependencies = [
   "flask-debugtoolbar (>=0.16.0,<0.17.0)",
   "pymysql (>=1.1.3,<2.0.0)",
   "flask-debugtoolbar-extrapanels @ git+https://github.com/mariofix/flask-debugtoolbar-extrapanels.git@sandbox",
-  "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
-  "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
   "daleks[contrib] @ git+https://github.com/mariofix/daleks.git",
   "flask-admin-tabler  @ git+https://github.com/mariofix/flask-admin-tablerui.git@main",
   "requests (>=2.33.1,<3.0.0)",
@@ -24,7 +22,19 @@ dependencies = [
   "ephem (>=4.2.1,<5.0)",
   "cryptography (>=48.0.0,<49.0.0)",
   "webauthn (>=2.7.1,<3.0.0)",
+  # "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
+  # "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
+  "merchants-sdk",
+  "flask-merchants",
 ]
+
+[tool.poetry.dependencies]
+merchants-sdk = { path = "../merchants", develop = true }
+flask-merchants = { path = "../flask-merchants", develop = true }
+
+[tool.uv.sources]
+merchants-sdk = { path = "../merchants", editable = true }
+flask-merchants = { path = "../flask-merchants", editable = true }
 
 [project.scripts]
 start = "nuevo_fonotarot:create_app"

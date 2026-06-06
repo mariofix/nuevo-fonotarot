@@ -3,7 +3,7 @@
 from flask import render_template
 
 from ..log import get_logger
-from ..models import BlogPost
+from ..models import BlogPost, GiftCardProduct, MinutePack, Product
 from ..placeholder import PLANS, TESTIMONIALS
 from . import lab_bp
 
@@ -13,6 +13,23 @@ logger = get_logger(__name__)
 def _ctx():
     """Shared template context for all lab views."""
     return {"agents": [], "testimonials": TESTIMONIALS, "plans": PLANS}
+
+
+def _store_preview_ctx() -> dict:
+    """Shared store context for tienda lab previews."""
+    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes.asc()).all()
+    gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price.asc()).limit(4).all()
+    featured_products = (
+        Product.query.filter_by(is_active=True)
+        .order_by(Product.is_featured.desc(), Product.created_at.desc())
+        .limit(6)
+        .all()
+    )
+    return {
+        "minute_packs": minute_packs,
+        "gift_cards": gift_cards,
+        "featured_products": featured_products,
+    }
 
 
 @lab_bp.route("/home-full")
@@ -27,6 +44,20 @@ def new_home_full():
     """Home v2 base enriched with sections from v1, v4, and v6."""
     logger.debug("lab: rendering new-home-full")
     return render_template("new-home-full.html", **_ctx())
+
+
+@lab_bp.route("/tienda-home")
+def tienda_home():
+    """Tienda home redesign preview based on blueprint sketch."""
+    logger.debug("lab: rendering tienda-home")
+    return render_template("lab/tienda-home.html", **_store_preview_ctx(), **_ctx())
+
+
+@lab_bp.route("/tienda-home-v2")
+def tienda_home_v2():
+    """Tienda home redesign preview v2 without hero and with home eye-candy accents."""
+    logger.debug("lab: rendering tienda-home-v2")
+    return render_template("lab/tienda-home-v2.html", **_store_preview_ctx(), **_ctx())
 
 
 @lab_bp.route("/home1")

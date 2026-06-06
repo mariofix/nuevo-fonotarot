@@ -206,6 +206,12 @@
     padding: 90px 0 80px;
     position: relative;
     overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero > .container {
+    position: relative;
+    z-index: 1;
   }
 
   .hero::before,
@@ -249,6 +255,7 @@
     pointer-events: none;
     border-radius: 50%;
     background: var(--plum);
+    z-index: 0;
     opacity: 0;
     animation: particle-float var(--dur, 8s) var(--del, 0s) ease-in-out infinite;
   }
@@ -1078,6 +1085,13 @@
     contain-intrinsic-size: 1px 900px;
   }
 
+ .gcards-section {
+    padding: 90px 0;
+    background: #fff;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+
   .plan-card {
     border: 2px solid var(--border);
     border-radius: 22px;
@@ -1226,6 +1240,48 @@
     }
   }
 
+  .gcards-wrap {
+    position: relative;
+    padding: 0 2.5rem;
+  }
+
+  .gcards-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: .75rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(107, 63, 160, .3) transparent;
+  }
+
+  .gcards-track::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .gcards-track::-webkit-scrollbar-thumb {
+    background: rgba(107, 63, 160, .35);
+    border-radius: 2px;
+  }
+
+  .gcard-item {
+    flex: 0 0 270px;
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 576px) {
+    .gcard-item {
+      flex: 0 0 calc(50% - .625rem);
+    }
+  }
+
+  @media (min-width: 992px) {
+    .gcard-item {
+      flex: 0 0 calc(25% - .94rem);
+    }
+  }
+
   .slider-btn {
     position: absolute;
     top: 50%;
@@ -1256,9 +1312,32 @@
     right: 0;
   }
 
+  .gcards-section .gcards-wrap {
+    padding: 0 2rem;
+  }
+
+  .gcards-section .gcards-track {
+    gap: .9rem;
+  }
+
+  .gcards-section .gcard-item {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .gcards-section .plan-card {
+    padding: 1.5rem 1.1rem;
+  }
+
+  @media (min-width: 576px) {
+    .gcards-section .gcard-item {
+      flex: 0 0 calc((100% - .9rem) / 2);
+    }
+  }
+
   @media (min-width: 992px) {
-    .slider-btn {
-      display: none;
+    .gcards-section .slider-btn {
+      display: flex;
     }
   }
 
@@ -2066,7 +2145,7 @@
 
 <!-- ── HERO ────────────────────────────────────── -->
 <section class="hero" id="hero-section">
-  <div class="container" style="position:relative; z-index:1;">
+  <div class="container">
     <div class="row g-5 align-items-center">
       <div class="col-lg-6">
         <div class="hero-eyebrow">✦ El universo marca el camino, ¡descubrelo!</div>
@@ -2098,7 +2177,7 @@
         <!-- Live agent status widget -->
         <div class="agent-widget">
           <div class="agent-widget-header">
-            <span>Especialistas disponibles ahora</span>
+            <span>Especialistas disponibles</span>
             <span class="live-badge"><span class="live-dot"></span>En vivo</span>
           </div>
           <div class="agent-widget-body">
@@ -2120,7 +2199,7 @@
               {% elif not agents %}
               <p class="text-center py-3 mb-0" style="color:var(--muted); font-size:.9rem;">Sin tarotistas disponibles</p>
               {% else %}
-              {% for agent in agents[:4] %}
+              {% for agent in (agents | sort(attribute='status'))[:4] %}
               <div class="aw-row" data-agent-option="{{ agent.option }}">
                 <div class="aw-avatar">{{ agent.name[0] }}</div>
                 <div style="flex:1; min-width:0;">
@@ -2151,7 +2230,7 @@
   <div class="container">
     <div class="row text-center g-4">
       <div class="col-6 col-md-3">
-        <div class="stat-big" data-count="50000" data-prefix="+" data-suffix=".000">+50.000</div>
+        <div class="stat-big" data-count="120000" data-prefix="+" data-suffix=".000">+120.000</div>
         <div class="stat-label">Consultas realizadas</div>
       </div>
       <div class="col-6 col-md-3">
@@ -2159,7 +2238,7 @@
         <div class="stat-label">Satisfacción</div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-big" data-count="20" data-prefix="+">+20</div>
+        <div class="stat-big" data-count="12" data-prefix="">12</div>
         <div class="stat-label">Especialistas</div>
       </div>
       <div class="col-6 col-md-3">
@@ -2170,45 +2249,73 @@
   </div>
 </section>
 
-<!-- ── FREE TRIAL ─────────────────────────────────── -->
-{% if not current_user.is_authenticated %}
-<section class="trial-section">
+<!-- ── PLANS ─────────────────────────────────────── -->
+<section id="planes" class="plans-section">
   <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-7 reveal">
-        <div class="trial-badge">Oferta de bienvenida</div>
-        <h2 class="trial-title">
-          Tu primera consulta:<br>
-          <em>5 minutos gratis</em>
-        </h2>
-        <p class="trial-desc">
-          Sabemos que dar el primer paso puede generar dudas. Por eso te ofrecemos
-          5 minutos completamente gratuitos para que conozcas a nuestras especialistas
-          y compruebes por ti mismo/a la calidad de cada lectura.
-        </p>
-        <button type="button" class="btn-trial" data-bs-toggle="modal" data-bs-target="#promoModal">
-          <i class="ti ti-sparkles"></i>
-          Obtener mis 5 minutos gratis
-        </button>
-        <p class="trial-terms">Sin compromisos · Sin tarjeta de crédito requerida · Solo para nuevos usuarios</p>
-      </div>
-      <div class="col-lg-5 reveal reveal-d2">
-        <div class="trial-card">
-          <div class="trial-num">5</div>
-          <div class="trial-num-label">Minutos Gratis</div>
-          <ul class="trial-features">
-            <li>Lectura con especialista real</li>
-            <li>Sin cargos ocultos</li>
-            <li>Elige la tarotista que prefieras</li>
-            <li>100% privado y confidencial</li>
-            <li>Disponible las 24 horas</li>
-          </ul>
-        </div>
-      </div>
+    <div class="text-center mb-5">
+      <div class="eyebrow">Tarifas</div>
+      <h2 class="sec-title">Planes a tu medida</h2>
+      <div class="divider-rose mx-auto"></div>
+      <p class="sec-sub">Tus minutos son tuyos — sin fecha de vencimiento, sin letra chica</p>
     </div>
+    {% if minute_packs %}
+    <div class="packs-wrap">
+      <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+      <div class="packs-track" id="packsSlider">
+        {% if not current_user.is_authenticated %}
+        <div class="pack-item">
+          <div class="plan-card featured" style="height:100%;">
+            <div><span class="plan-popular">🔥 Oferta de Bienvenida 🔥</span></div>
+            <div class="plan-min-num">5<small> min</small></div>
+            <div class="plan-clp">¡Gratis!</div>
+            <p class="plan-desc">5 Minutos Libres</p>
+            <div class="mt-auto d-flex flex-column gap-2">
+              <a href="#" class="btn-plan" data-bs-toggle="modal" data-bs-target="#promoModal">
+                <i class="ti ti-bolt me-1"></i>Canjear Promoción
+              </a>
+              {# <form action="{{ url_for('productos.agregar') }}" method="post">
+                <input type="hidden" name="item_type" value="minute_pack" />
+                <input type="hidden" name="item_id" value="{{ pack.id }}" />
+                <input type="hidden" name="quantity" value="1" />
+                <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
+                <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+              </form> #}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% for pack in minute_packs %}
+        <div class="pack-item">
+          <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
+            {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+            <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
+            <div class="plan-clp">{{ pack.price_display }} CLP<span></span></div>
+            <p class="plan-desc">{{ pack.description or '' }}</p>
+            <div class="mt-auto d-flex flex-column gap-2">
+              <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn-plan">
+                <i class="ti ti-bolt me-1"></i>Comprar Minutos
+              </a>
+              {# <form action="{{ url_for('productos.agregar') }}" method="post">
+                <input type="hidden" name="item_type" value="minute_pack" />
+                <input type="hidden" name="item_id" value="{{ pack.id }}" />
+                <input type="hidden" name="quantity" value="1" />
+                <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
+                <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+              </form> #}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
+    </div>
+    {% endif %}
   </div>
 </section>
-{% endif %}
 
 <!-- ── HOW IT WORKS ──────────────────────────────── -->
 <section id="ayuda" class="how-section">
@@ -2287,49 +2394,79 @@
   </div>
 </section>
 
-<!-- ── PLANS ─────────────────────────────────────── -->
-<section id="planes" class="plans-section">
+<!-- ── GIFT CARDS ─────────────────────────────────────── -->
+<section id="gift-cards" class="gcards-section">
   <div class="container">
-    <div class="text-center mb-5">
-      <div class="eyebrow">Tarifas</div>
-      <h2 class="sec-title">Planes a tu medida</h2>
-      <div class="divider-rose mx-auto"></div>
-      <p class="sec-sub">Tus minutos son tuyos — sin fecha de vencimiento, sin letra chica</p>
-    </div>
-    {% if minute_packs %}
-    <div class="packs-wrap">
-      <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
-      <div class="packs-track" id="packsSlider">
-        {% for pack in minute_packs %}
-        <div class="pack-item">
-          <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
-            {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
-            <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-            <div class="plan-clp">{{ pack.price_display }} CLP<span> / sesión</span></div>
-            <p class="plan-desc">{{ pack.description or '' }}</p>
-            <div class="mt-auto d-flex flex-column gap-2">
-              <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
-                <i class="ti ti-bolt me-1"></i>Compra Ahora
-              </a>
-              {# <form action="{{ url_for('productos.agregar') }}" method="post">
-                <input type="hidden" name="item_type" value="minute_pack" />
-                <input type="hidden" name="item_id" value="{{ pack.id }}" />
-                <input type="hidden" name="quantity" value="1" />
-                <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
-                <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
-              </form> #}
+    <div class="row g-5 align-items-start">
+      <div class="col-12 col-lg-6">
+        <div class="text-center text-lg-start mb-5">
+          <div class="eyebrow">Para ese alguien especial</div>
+          <h2 class="sec-title">Tarjetas de Regalo</h2>
+          <div class="divider-rose mx-auto mx-lg-0"></div>
+          <p class="sec-sub">Compra tarjetas y regalalas a quien quieras</p>
+        </div>
+        {% if gift_cards %}
+        <div class="gcards-wrap">
+          <button class="slider-btn slider-prev" id="gcardsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
+          <div class="gcards-track" id="gcardsSlider">
+            {% for pack in gift_cards %}
+            <div class="gcard-item">
+              <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
+                {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+                <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
+                <div class="plan-clp">{{ pack.price_display }} CLP<span></span></div>
+                <p class="plan-desc">{{ pack.description or '' }}</p>
+                <div class="mt-auto d-flex flex-column gap-2">
+                  <a href="{{ url_for('tarjetas.comprar', slug=pack.slug) }}" class="btn-plan">
+                    <i class="ti ti-bolt me-1"></i>Comprar Tarjeta
+                  </a>
+                  {# <form action="{{ url_for('productos.agregar') }}" method="post">
+                    <input type="hidden" name="item_type" value="minute_pack" />
+                    <input type="hidden" name="item_id" value="{{ pack.id }}" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
+                    <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>
+                  </form> #}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <button class="slider-btn slider-next" id="gcardsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <p class="sec-sub">Nuestras tarjetas de regalo están siendo actualizados. Vuelve pronto.</p>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="text-center text-lg-start mb-4">
+          <div class="eyebrow">&nbsp;</div>
+          <h2 class="sec-title">Como funciona</h2>
+          <div class="divider-rose mx-auto mx-lg-0"></div>
+          <p class="sec-sub">Para ese momento especial o para ofrecer claridad en momentos difíciles.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-6 reveal reveal-d1">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <span class="step-icon">💳</span>
+              <div class="step-title">Compra la tarjeta</div>
+              <p class="step-text">Elige la tarjeta de regalo ideal y completa la compra en línea de forma rápida y segura.</p>
+            </div>
+          </div>
+          <div class="col-6 reveal reveal-d2">
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <span class="step-icon">🎁</span>
+              <div class="step-title">Envía tu Tarjeta</div>
+              <p class="step-text">Comparte la tarjeta con la persona que quieras sorprender, o envíala a tu correo para sorprender a la persona cuando quieras.</p>
             </div>
           </div>
         </div>
-        {% endfor %}
       </div>
-      <button class="slider-btn slider-next" id="packsNext" aria-label="Siguiente"><i class="ti ti-chevron-right"></i></button>
     </div>
-    {% else %}
-    <div class="text-center py-5">
-      <p class="sec-sub">Los planes de minutos están siendo actualizados. Vuelve pronto.</p>
-    </div>
-    {% endif %}
   </div>
 </section>
 
@@ -2426,7 +2563,7 @@
 </section>
 
 <!-- ── BLOG PREVIEW ────────────────────────────── -->
-{% if latest_posts %}
+{# {% if latest_posts %}
 <section id="blog-preview" class="blog-preview-section">
   <div class="container">
     <div class="text-center mb-2">
@@ -2467,9 +2604,9 @@
   </div>
 </section>
 {% endif %}
-
+ #}
 <!-- ── FAQ ──────────────────────────────────────── -->
-<section id="faq" class="faq-section">
+{# <section id="faq" class="faq-section">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8">
@@ -2556,10 +2693,10 @@
       </div>
     </div>
   </div>
-</section>
+</section> #}
 
 <!-- ── CTA ──────────────────────────────────────── -->
-<section class="cta-section">
+{# <section class="cta-section">
   <div class="container" style="position:relative; z-index:1;">
     <h2>Da el primer paso hacia la claridad</h2>
     <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
@@ -2568,7 +2705,7 @@
       <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
     </div>
   </div>
-</section>
+</section> #}
 
 <!-- ── BACK TO TOP ──────────────────────────────── -->
 <button class="btn-back-top" id="back-top" aria-label="Volver arriba">
@@ -2644,7 +2781,14 @@
     /* ── Hero particles ─────────────────────────────── */
     var hero = document.getElementById('hero-section');
     if (hero) {
-      for (var i = 0; i < 22; i++) {
+      var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) {
+        return;
+      }
+      hero.querySelectorAll('.hero-particle').forEach(function(node) { node.remove(); });
+      var particleCount = window.innerWidth < 768 ? 12 : 22;
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < particleCount; i++) {
         var p = document.createElement('span');
         p.className = 'hero-particle';
         var size = (Math.random() * 4 + 2) + 'px';
@@ -2655,8 +2799,9 @@
           '--dur:' + (Math.random() * 8 + 6) + 's',
           '--del:' + (Math.random() * 6) + 's'
         ].join(';');
-        hero.appendChild(p);
+        frag.appendChild(p);
       }
+      hero.appendChild(frag);
     }
 
     /* ── Scroll reveal ──────────────────────────────── */
@@ -2675,19 +2820,51 @@
       reveals.forEach(function(el) { el.classList.add('visible'); });
     }
 
-    /* ── Minute packs slider ────────────────────────── */
-    var slider = document.getElementById('packsSlider');
-    if (slider) {
+    function initInfiniteSlider(trackId, itemSelector, prevId, nextId) {
+      var slider = document.getElementById(trackId);
+      if (!slider) return;
+
       var gap = 20;
       function slideW() {
-        var slide = slider.querySelector('.pack-item');
+        var slide = slider.querySelector(itemSelector);
         return slide ? slide.offsetWidth + gap : 290;
       }
-      var prev = document.getElementById('packsPrev');
-      var next = document.getElementById('packsNext');
-      if (prev) prev.addEventListener('click', function() { slider.scrollBy({ left: -slideW(), behavior: 'smooth' }); });
-      if (next) next.addEventListener('click', function() { slider.scrollBy({ left: slideW(), behavior: 'smooth' }); });
+      function maxScrollLeft() {
+        return Math.max(0, slider.scrollWidth - slider.clientWidth);
+      }
+      function isAtStart() {
+        return slider.scrollLeft <= 1;
+      }
+      function isAtEnd() {
+        return slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1;
+      }
+
+      var prev = document.getElementById(prevId);
+      var next = document.getElementById(nextId);
+
+      if (prev) {
+        prev.addEventListener('click', function() {
+          if (isAtStart()) {
+            slider.scrollTo({ left: maxScrollLeft(), behavior: 'smooth' });
+            return;
+          }
+          slider.scrollBy({ left: -slideW(), behavior: 'smooth' });
+        });
+      }
+
+      if (next) {
+        next.addEventListener('click', function() {
+          if (isAtEnd()) {
+            slider.scrollTo({ left: 0, behavior: 'smooth' });
+            return;
+          }
+          slider.scrollBy({ left: slideW(), behavior: 'smooth' });
+        });
+      }
     }
+
+    initInfiniteSlider('packsSlider', '.pack-item', 'packsPrev', 'packsNext');
+    initInfiniteSlider('gcardsSlider', '.gcard-item', 'gcardsPrev', 'gcardsNext');
   })();
 </script>
 

@@ -1,0 +1,627 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Tienda - Nuevo Home v2 (Lab)") }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --mystic-deep: #161229;
+    --mystic-void: #22163a;
+    --mystic-gold: #d4b06a;
+    --mystic-star: #efe7ff;
+  }
+
+  .lab-tag {
+    position: fixed;
+    top: 70px;
+    right: 16px;
+    z-index: 200;
+    background: var(--rose);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .3rem .7rem;
+    border-radius: 0 0 8px 8px;
+    letter-spacing: .05em;
+  }
+
+  .mystic-page {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(1000px 300px at 10% -10%, rgba(151, 102, 243, .2), transparent 70%),
+      radial-gradient(900px 260px at 90% 0, rgba(212, 176, 106, .13), transparent 70%),
+      linear-gradient(180deg, #f8f6fd 0%, #f3effc 100%);
+  }
+
+  .mystic-page::before,
+  .mystic-page::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 999px;
+    filter: blur(30px);
+    opacity: .45;
+  }
+
+  .mystic-page::before {
+    width: 220px;
+    height: 220px;
+    top: 20%;
+    left: -80px;
+    background: rgba(154, 87, 255, .35);
+  }
+
+  .mystic-page::after {
+    width: 260px;
+    height: 260px;
+    bottom: 10%;
+    right: -100px;
+    background: rgba(212, 176, 106, .24);
+  }
+
+  .shop-top {
+    padding: 24px 0 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, .95), rgba(239, 231, 255, .9));
+    border-bottom: 1px solid rgba(107, 63, 160, .16);
+  }
+
+  .shop-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .shop-menu-link {
+    border: 1px solid rgba(107, 63, 160, .22);
+    border-radius: 999px;
+    padding: .38rem .82rem;
+    font-size: .81rem;
+    text-decoration: none;
+    color: var(--plum);
+    background: #fff;
+  }
+
+  .shop-menu-link:hover {
+    background: rgba(107, 63, 160, .08);
+    border-color: rgba(107, 63, 160, .35);
+  }
+
+  .orb-mini {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #9f6fff 0%, #3b2868 76%);
+    box-shadow: 0 0 40px rgba(124, 58, 237, .32), inset 0 0 14px rgba(255, 255, 255, .15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    margin-left: auto;
+    position: relative;
+  }
+
+  .orb-mini::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 168, 76, .36);
+    animation: orbit 8s linear infinite;
+  }
+
+  @keyframes orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .zodiac-strip {
+    overflow: hidden;
+    border-top: 1px solid rgba(212, 176, 106, .3);
+    border-bottom: 1px solid rgba(212, 176, 106, .3);
+    background: linear-gradient(90deg, var(--mystic-deep), var(--mystic-void) 50%, var(--mystic-deep));
+    padding: .7rem 0;
+  }
+
+  .zodiac-scroll {
+    display: inline-flex;
+    gap: 1.7rem;
+    min-width: max-content;
+    animation: zodiac-marquee 30s linear infinite;
+  }
+
+  .zodiac-scroll:hover {
+    animation-play-state: paused;
+  }
+
+  .zodiac-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--mystic-star);
+    opacity: .86;
+  }
+
+  .zodiac-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .zodiac-name {
+    margin-top: .2rem;
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--mystic-gold);
+  }
+
+  @keyframes zodiac-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .shop-section {
+    padding: 44px 0;
+  }
+
+  .shop-panel {
+    background: rgba(255, 255, 255, .88);
+    border: 1px solid rgba(107, 63, 160, .18);
+    border-radius: 16px;
+    padding: 1.15rem;
+    height: 100%;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(44, 27, 76, .08);
+  }
+
+  .section-heading {
+    margin-bottom: .85rem;
+  }
+
+  .section-heading .section-tag {
+    margin-bottom: .35rem;
+  }
+
+  .section-heading .section-title {
+    margin-bottom: .2rem;
+    color: var(--plum-dk);
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+  }
+
+  .section-heading .section-subtitle {
+    color: #6f6785;
+    font-size: .95rem;
+  }
+
+  .packs-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .7rem;
+  }
+
+  .pack-controls {
+    display: inline-flex;
+    gap: .4rem;
+  }
+
+  .pack-ctrl {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(107, 63, 160, .3);
+    background: #fff;
+    color: var(--plum);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .pack-ctrl:hover {
+    background: rgba(107, 63, 160, .1);
+  }
+
+  .packs-viewport {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x mandatory;
+  }
+
+  .packs-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 1.8rem) / 3);
+    gap: .85rem;
+    padding-bottom: .25rem;
+  }
+
+  .pack-card {
+    border: 1px solid rgba(107, 63, 160, .15);
+    border-radius: 14px;
+    padding: .95rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background: linear-gradient(160deg, #fff 0%, #faf7ff 100%);
+    scroll-snap-align: start;
+  }
+
+  .pack-card.featured {
+    background: linear-gradient(150deg, #fff6e2 0%, #f6ebff 100%);
+    border-color: rgba(130, 86, 194, .45);
+    box-shadow: 0 10px 20px rgba(107, 63, 160, .14);
+  }
+
+  .pack-mins {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--plum-dk);
+  }
+
+  .pack-price {
+    font-family: "Playfair Display", serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--plum);
+    margin: .35rem 0 .15rem;
+  }
+
+  .pack-badge {
+    margin: 0 auto .45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 176, 106, .4);
+    color: #72531d;
+    background: rgba(212, 176, 106, .15);
+    font-size: .65rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .18rem .52rem;
+    font-weight: 700;
+  }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+  }
+
+  .how-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    background: var(--sand);
+    height: 100%;
+  }
+
+  .how-step {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--plum);
+    margin-bottom: .55rem;
+  }
+
+  .mystic-chip {
+    border: 1px solid rgba(107, 63, 160, .2);
+    border-radius: 999px;
+    background: #fff;
+    color: #736a89;
+    font-size: .8rem;
+    padding: .3rem .62rem;
+  }
+
+  .free-offer {
+    border: 1px dashed rgba(107, 63, 160, .5);
+    border-radius: 16px;
+    background: linear-gradient(130deg, rgba(107, 63, 160, .08), rgba(212, 176, 106, .12));
+    padding: 1.2rem;
+  }
+
+  .split-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .9rem;
+  }
+
+  .product-card {
+    border: 1px solid rgba(107, 63, 160, .16);
+    border-radius: 14px;
+    padding: .9rem;
+    background: #fff;
+    height: 100%;
+  }
+
+  .product-thumb {
+    width: 100%;
+    height: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: .7rem;
+    border: 1px solid var(--border);
+  }
+
+  .gift-column {
+    display: grid;
+    gap: .7rem;
+  }
+
+  .gift-card {
+    border: 1px solid rgba(107, 63, 160, .16);
+    border-radius: 14px;
+    background: #fff;
+    padding: .9rem;
+  }
+
+  @media (max-width: 991px) {
+    .how-grid {
+      grid-template-columns: 1fr;
+    }
+    .split-grid {
+      grid-template-columns: 1fr;
+    }
+    .packs-row {
+      grid-auto-columns: calc((100% - .85rem) / 2);
+    }
+    .orb-mini {
+      margin: 1rem auto 0;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .packs-row,
+    .product-grid {
+      grid-auto-columns: 100%;
+      grid-template-columns: 1fr;
+    }
+    .zodiac-scroll {
+      gap: 1.2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mystic-page">
+  <div class="lab-tag">LAB / Tienda Home v2</div>
+
+  <section class="shop-top">
+    <div class="container">
+      <div class="row align-items-center g-3">
+        <div class="col-lg-9">
+          <div class="section-tag mb-2"><i class="ti ti-sparkles me-1"></i>{{ _("Tienda Fonotarot") }}</div>
+          <h1 class="h4 mb-2" style="font-family:'Playfair Display',serif;color:var(--plum-dk);font-weight:800;">
+            {{ _("Un escaparate más elegante para tus minutos y rituales") }}
+          </h1>
+          <p class="section-subtitle mb-3">{{ _("Packs de minutos, giftcards y productos físicos en un solo lugar.") }}</p>
+          <div class="shop-menu">
+            <a class="shop-menu-link" href="#packs">{{ _("Packs de minutos") }}</a>
+            <a class="shop-menu-link" href="#como-funciona">{{ _("Cómo funciona") }}</a>
+            <a class="shop-menu-link" href="#tienda-fisica">{{ _("Productos físicos") }}</a>
+            <a class="shop-menu-link" href="#giftcards">{{ _("Giftcards") }}</a>
+            {% if not current_user.is_authenticated %}
+            <a class="shop-menu-link" href="#oferta-5-min">{{ _("Oferta 5 minutos") }}</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-lg-3 d-flex">
+          <div class="orb-mini" aria-hidden="true">
+            <i class="ti ti-crystal-ball" style="font-size:2.1rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="zodiac-strip" aria-hidden="true">
+    <div class="zodiac-scroll">
+      {% set signs = [
+        ("♈", _("Aries")), ("♉", _("Tauro")), ("♊", _("Géminis")), ("♋", _("Cáncer")),
+        ("♌", _("Leo")), ("♍", _("Virgo")), ("♎", _("Libra")), ("♏", _("Escorpio")),
+        ("♐", _("Sagitario")), ("♑", _("Capricornio")), ("♒", _("Acuario")), ("♓", _("Piscis")),
+        ("♈", _("Aries")), ("♉", _("Tauro")), ("♊", _("Géminis")), ("♋", _("Cáncer")),
+        ("♌", _("Leo")), ("♍", _("Virgo")), ("♎", _("Libra")), ("♏", _("Escorpio")),
+        ("♐", _("Sagitario")), ("♑", _("Capricornio")), ("♒", _("Acuario")), ("♓", _("Piscis"))
+      ] %}
+      {% for symbol, name in signs %}
+      <div class="zodiac-item">
+        <span class="zodiac-icon">{{ symbol }}</span>
+        <span class="zodiac-name">{{ name }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="shop-section" id="packs">
+    <div class="container">
+      <div class="shop-panel">
+        <div class="section-heading">
+          <div class="section-tag"><i class="ti ti-bolt me-1"></i>{{ _("Digital") }}</div>
+          <h2 class="section-title">{{ _("Planes de minutos") }}</h2>
+          <p class="section-subtitle">{{ _("Tus packs principales en una fila horizontal. Se ven 3 tarjetas por vez en escritorio.") }}</p>
+        </div>
+
+        <div class="packs-toolbar">
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="mystic-chip"><i class="ti ti-sparkles me-1"></i>{{ _("Sin vencimiento") }}</span>
+            <span class="mystic-chip"><i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro") }}</span>
+          </div>
+          <div class="pack-controls">
+            <button type="button" class="pack-ctrl" id="packsPrevBtn" aria-label="{{ _('Ver packs anteriores') }}">
+              <i class="ti ti-chevron-left"></i>
+            </button>
+            <button type="button" class="pack-ctrl" id="packsNextBtn" aria-label="{{ _('Ver packs siguientes') }}">
+              <i class="ti ti-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="packs-viewport" id="packsViewport">
+          <div class="packs-row">
+            {% for pack in minute_packs %}
+            <article class="pack-card {% if pack.is_featured %}featured{% endif %}">
+              {% if pack.is_featured %}
+              <span class="pack-badge"><i class="ti ti-star-filled"></i>{{ _("Más elegido") }}</span>
+              {% endif %}
+              <div class="pack-mins">{{ pack.minutes }} {{ _("min") }}</div>
+              <div class="pack-price">{{ pack.price_display }}</div>
+              <p class="small text-muted mb-3">{{ pack.description or _("Pack prepago de minutos para consultas de tarot.") }}</p>
+              <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="item_type" value="minute_pack">
+                <input type="hidden" name="item_id" value="{{ pack.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="next" value="{{ url_for('pagos.index') }}">
+                <button type="submit" class="btn btn-sm btn-primary w-100">
+                  <i class="ti ti-bolt me-1"></i>{{ _("Comprar ahora") }}
+                </button>
+              </form>
+            </article>
+            {% else %}
+            <div class="alert alert-warning mb-0">{{ _("No hay packs de minutos disponibles en este momento.") }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <a href="{{ url_for('minutos.index') }}" class="btn btn-outline-secondary btn-sm mt-3">
+          <i class="ti ti-list me-1"></i>{{ _("Ver catálogo completo de minutos") }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="shop-section pt-0" id="como-funciona">
+    <div class="container">
+      <div class="shop-panel">
+        <div class="section-heading">
+          <div class="section-tag"><i class="ti ti-magic-wand me-1"></i>{{ _("Experiencia") }}</div>
+          <h2 class="section-title">{{ _("Cómo funciona") }}</h2>
+        </div>
+        <div class="how-grid">
+          <article class="how-card">
+            <span class="how-step">1</span>
+            <h3 class="h6">{{ _("Elige tu pack") }}</h3>
+            <p class="small text-muted mb-0">{{ _("Selecciona la cantidad de minutos o una giftcard para regalar.") }}</p>
+          </article>
+          <article class="how-card">
+            <span class="how-step">2</span>
+            <h3 class="h6">{{ _("Paga en segundos") }}</h3>
+            <p class="small text-muted mb-0">{{ _("Confirma tu compra con Flow o Khipu y recibe el comprobante por email.") }}</p>
+          </article>
+          <article class="how-card">
+            <span class="how-step">3</span>
+            <h3 class="h6">{{ _("Usa tus minutos") }}</h3>
+            <p class="small text-muted mb-0">{{ _("Tus minutos quedan listos para consulta y no vencen.") }}</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if not current_user.is_authenticated %}
+  <section class="shop-section pt-4 pb-0" id="oferta-5-min">
+    <div class="container">
+      <div class="free-offer text-center">
+        <h2 class="h4 mb-2">{{ _("Oferta de bienvenida: 5 minutos gratis") }}</h2>
+        <p class="mb-3">{{ _("Disponible solo para nuevas cuentas. Regístrate y prueba una primera consulta sin costo.") }}</p>
+        <button type="button" class="btn btn-primary js-passwordless-trigger" data-next="{{ request.path }}">
+          <i class="ti ti-gift me-1"></i>{{ _("Quiero mis 5 minutos") }}
+        </button>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="shop-section" id="tienda-fisica">
+    <div class="container">
+      <div class="split-grid">
+        <section class="shop-panel">
+          <div class="section-heading">
+            <div class="section-tag"><i class="ti ti-flame me-1"></i>{{ _("Ritual") }}</div>
+            <h2 class="section-title">{{ _("Tienda física") }}</h2>
+            <p class="section-subtitle">{{ _("Complementa tu experiencia con productos físicos para tus rituales y lecturas.") }}</p>
+          </div>
+          <div class="product-grid">
+            {% for product in featured_products %}
+            <article class="product-card">
+              {% if product.cover_image_url %}
+              <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-thumb">
+              {% else %}
+              <div class="product-thumb d-flex align-items-center justify-content-center bg-light">
+                <i class="ti ti-package" style="font-size:2rem;color:var(--plum)"></i>
+              </div>
+              {% endif %}
+              <h3 class="h6 mb-1">{{ product.name }}</h3>
+              <div class="fw-semibold mb-2" style="color:var(--plum);">{{ product.price_display }}</div>
+              <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-secondary btn-sm w-100">
+                <i class="ti ti-eye me-1"></i>{{ _("Ver producto") }}
+              </a>
+            </article>
+            {% else %}
+            <div class="alert alert-warning mb-0">{{ _("No hay productos físicos activos en este momento.") }}</div>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="shop-panel" id="giftcards">
+          <div class="section-heading">
+            <div class="section-tag"><i class="ti ti-ticket me-1"></i>{{ _("Regalos") }}</div>
+            <h2 class="section-title">{{ _("Giftcards") }}</h2>
+            <p class="section-subtitle">{{ _("Regala minutos con códigos canjeables.") }}</p>
+          </div>
+          <div class="gift-column">
+            {% for card in gift_cards %}
+            <article class="gift-card">
+              <h3 class="h6 mb-1">{{ card.name }}</h3>
+              <p class="small text-muted mb-1">{{ card.minutes }} {{ _("minutos para regalar") }}</p>
+              <div class="fw-semibold mb-2" style="color:var(--plum);">{{ card.price_display }}</div>
+              <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-outline-primary btn-sm w-100">
+                <i class="ti ti-ticket me-1"></i>{{ _("Comprar giftcard") }}
+              </a>
+            </article>
+            {% else %}
+            <div class="alert alert-warning mb-0">{{ _("No hay giftcards activas en este momento.") }}</div>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (() => {
+    const viewport = document.getElementById("packsViewport");
+    const prev = document.getElementById("packsPrevBtn");
+    const next = document.getElementById("packsNextBtn");
+    if (!viewport || !prev || !next) return;
+    const step = () => Math.max(240, Math.floor(viewport.clientWidth / 1.8));
+    prev.addEventListener("click", () => viewport.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => viewport.scrollBy({ left: step(), behavior: "smooth" }));
+  })();
+</script>
+{% endblock %}

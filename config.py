@@ -123,7 +123,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS: list = ["nuevo.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
+    TRUSTED_HOSTS: list = ["tienda.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")
@@ -150,7 +150,7 @@ class Config:
     SECURITY_RECOVERABLE: bool = False
     SECURITY_CHANGEABLE: bool = False
     SECURITY_WEBAUTHN: bool = False
-    SECURITY_UNIFIED_SIGNIN: bool = True
+    SECURITY_UNIFIED_SIGNIN: bool = False
     SECURITY_US_ENABLED_METHODS: list = ["email"]  # Email and authenticator app
     SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = False  # Replace /login with /us-signin
     SECURITY_LOGIN_URL: str = "/ft-admin-login"

@@ -1,8 +1,3 @@
-import json
-import socket
-import urllib.request
-from urllib.error import URLError
-
 import ephem
 
 _EJECUTIVOS_URL = "https://firenze.156.cl/audiotex/ejecutivos"
@@ -104,49 +99,9 @@ def _normalize_agent(raw: dict) -> dict:
 _STATUS_ORDER = {"available": 0, "busy": 1, "offline": 2}
 
 
-def get_agents() -> tuple[list[dict], str | None]:
-    """Return ``(agents, error_code)`` from the firenze API.
-
-    Agents are sorted available-first.  On failure returns an empty list
-    with one of these error codes:
-
-    * ``None``      — success
-    * ``"timeout"`` — connection timed out (very short 1 s window)
-    * ``"503"``     — HTTP or application-level error
-    """
-    try:
-        req = urllib.request.Request(
-            _EJECUTIVOS_URL,
-            headers={"Accept": "application/json"},
-        )
-        with urllib.request.urlopen(req, timeout=1) as resp:
-            data = json.loads(resp.read().decode())
-        agents = [_normalize_agent(row) for row in data]
-        return sorted(agents, key=lambda a: _STATUS_ORDER.get(a["status"], 99)), None
-    except TimeoutError:
-        return [], "timeout"
-    except URLError as e:
-        if isinstance(e.reason, (TimeoutError, socket.timeout)):
-            return [], "timeout"
-        return [], "503"
-    except Exception:
-        return [], "503"
-
-
-def get_agent_profiles() -> tuple[list[dict], str | None]:
-    """Return agent profiles for the agent cards section.
-
-    Delegates to get_agents() so that both the hero widget and the
-    agent cards section always reflect the same live data.
-    """
-    return get_agents()
-
-
 __all__ = [
     "_flag_class",
     "_LangEntry",
-    "get_agents",
-    "get_agent_profiles",
     "get_moon_phase_index",
     "MOON_PHASE_NAMES",
 ]

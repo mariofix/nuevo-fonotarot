@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -306,6 +307,62 @@ def user_sync_firenze(filter_by: str) -> None:
     click.echo(
         click.style(
             f"✓ Done: {processed} user(s) processed, {errors} error(s).",
+            fg="green",
+        )
+    )
+
+
+@user_cli.command("sync-email-signin")
+@click.option(
+    "--filter",
+    "filter_by",
+    type=click.Choice(["all", "missing"]),
+    default="missing",
+    show_default=True,
+    help="'all': process every user; 'missing': process only users without an email signin secret.",
+)
+@with_appcontext
+def user_sync_email_signin(filter_by: str) -> None:
+    """Backfill unified-signin email secrets for existing users."""
+    from .auth_handlers import ensure_user_email_signin
+    from .models import User
+
+    def _has_email_signin(user: User) -> bool:
+        if isinstance(user.us_totp_secrets, str):
+            if not user.us_totp_secrets:
+                return False
+            try:
+                secrets = json.loads(user.us_totp_secrets)
+            except json.JSONDecodeError:
+                return False
+        else:
+            secrets = user.us_totp_secrets or {}
+        return "email" in secrets
+
+    users = User.query.all()
+    if filter_by == "missing":
+        users = [user for user in users if not _has_email_signin(user)]
+
+    if not users:
+        click.echo(click.style("✓ No users to process.", fg="green"))
+        return
+
+    click.echo(f"→ Processing {len(users)} user(s) …")
+    updated = 0
+
+    with click.progressbar(
+        users,
+        label="Progress",
+        show_pos=True,
+    ) as bar:
+        for user in bar:
+            if ensure_user_email_signin(user):
+                updated += 1
+
+    click.echo()
+    click.echo(
+        click.style(
+            f"✓ Done: {updated} user(s) updated.",
             fg="green",
         )
     )

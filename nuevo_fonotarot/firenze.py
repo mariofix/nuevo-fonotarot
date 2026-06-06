@@ -199,7 +199,7 @@ def create_client(
     ani: str | None,
     transaction_id: str | None,
     segundos: int | None,
-) -> int | None:
+) -> dict[str, Any] | None:
     """Create a new client in Firenze after a confirmed anonymous payment.
 
     Calls ``POST /api/v1/payments/complete`` with a JSON body containing profile
@@ -260,7 +260,7 @@ def create_client(
                 ani,
                 transaction_id,
             )
-            return int(client_id)
+            return data
 
         logger.warning(
             "create_client: no client_id in response for email=%r ani=%r transaction_id=%r",

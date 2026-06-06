@@ -1,13 +1,113 @@
 """Notification utilities for sending alerts via various channels."""
 
 import os
+from daleks.contrib.client import DaleksClient
 from urllib.parse import parse_qs, urlparse
+from flask import current_app, has_app_context, render_template
+from .models import Order, Role
+from typing import Any
 
 import requests
 
 from .log import get_logger
 
 logger = get_logger(__name__)
+
+
+def _active_admin_emails() -> list[str]:
+    """Return active admin-group emails."""
+    admin_role = Role.query.filter_by(name="admin").first()
+    if not admin_role:
+        return []
+    return [u.email for u in admin_role.users.all() if u.active and u.email]
+
+
+def send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, Any]]) -> None:
+    """Notify all admins by email after successful post_purchase completion."""
+
+    if not has_app_context():
+        logger.warning(f"_send_post_purchase_admin_email: no app context — skipping for order={order.id}")
+        return
+
+    daleks_url = current_app.config.get("DALEKS_URL")
+    if not daleks_url:
+        logger.warning(f"_send_post_purchase_admin_email: DALEKS_URL not configured — skipping for order={order.id}")
+        return
+
+    admin_emails = _active_admin_emails()
+    if not admin_emails:
+        logger.debug("_send_post_purchase_admin_email: no active admins with email")
+        return
+
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
+    site_url = current_app.config.get("SITE_URL", "")
+
+    try:
+        logger.info(
+            f"_send_post_purchase_admin_email: preparing admin email for order={order.id} rows={len(audit_rows)}"
+        )
+        html_body = render_template(
+            "tienda/email/post_purchase_admin.html",
+            order=order,
+            site_url=site_url,
+            audit_rows=audit_rows,
+        )
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+            for email in admin_emails:
+                client.send_email(
+                    from_address=from_address,
+                    to=[email],
+                    subject=f"[Admin] post_purchase completed — Order #{order.id}",
+                    html_body=html_body,
+                    smtp_account=daleks_smtp_account,
+                )
+        logger.info(f"_send_post_purchase_admin_email: sent to {len(admin_emails)} admin(s) for order={order.id}")
+    except Exception:
+        logger.exception(f"_send_post_purchase_admin_email: failed to notify admins for order={order.id}")
+
+
+def send_firenze_failure_email(order: Order) -> None:
+    """Notify admins that Firenze sync/top-up failed for a paid order."""
+
+    if not has_app_context():
+        logger.warning(f"send_firenze_failure_email: no app context for order={order.id}")
+        return
+
+    daleks_url = current_app.config.get("DALEKS_URL")
+    if not daleks_url:
+        logger.warning(f"send_firenze_failure_email: DALEKS_URL not configured — skipping for order={order.id}")
+        return
+
+    admin_emails = _active_admin_emails()
+    if not admin_emails:
+        logger.debug("send_firenze_failure_email: no active admins with email")
+        return
+
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
+    site_url = current_app.config.get("SITE_URL", "")
+
+    try:
+        html_body = render_template(
+            "tienda/email/firenze_fallo.html",
+            order=order,
+            site_url=site_url,
+        )
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+            for email in admin_emails:
+                client.send_email(
+                    from_address=from_address,
+                    to=[email],
+                    subject=f"[Admin] Fallo Firenze — Orden #{order.id} pago confirmado",
+                    html_body=html_body,
+                    smtp_account=daleks_smtp_account,
+                )
+        logger.info(f"send_firenze_failure_email: sent to {len(admin_emails)} admin(s) for order={order.id}")
+    except Exception:
+        logger.exception(f"send_firenze_failure_email: failed to notify admins for order={order.id}")
 
 
 def send_telegram_notification(message: str) -> bool:

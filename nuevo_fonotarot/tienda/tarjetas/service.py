@@ -1,6 +1,6 @@
 """Domain services for digital prepaid gift cards."""
 
-from datetime import UTC, datetime
+from datetime import datetime
 from secrets import choice
 from string import ascii_uppercase, digits
 
@@ -84,7 +84,7 @@ def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:
         return False, "La tarjeta no está asociada a un producto válido."
 
     seconds_to_add = int(product.minutes) * 60
-    transaction_id = f"gc_{gift_card.code}_{int(datetime.now(UTC).timestamp())}"
+    transaction_id = f"gc_{gift_card.code}_{int(datetime.now().timestamp())}"
     response = post_purchase(
         client_id=user.firenze_client_id,
         segundos=seconds_to_add,
@@ -112,7 +112,7 @@ def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:
 
     gift_card.status = "redeemed"
     gift_card.redeemed_by_user_id = user.id
-    gift_card.redeemed_at = datetime.now(UTC)
+    gift_card.redeemed_at = datetime.now()
     gift_card.redemption_order_id = transaction_id
     db.session.commit()
     logger.info("redeem_gift_card: redeemed gift_card=%s by user=%s", gift_card.id, user.id)

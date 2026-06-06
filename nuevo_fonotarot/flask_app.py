@@ -125,38 +125,10 @@ def _init_extensions(app: Flask) -> None:
     _ext.user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security.init_app(app, _ext.user_datastore)
 
-    # Hook into Flask-Security to customize the unified signin form
-    from flask_security import UnifiedSigninForm
-
-    from .forms import customize_unified_signin_form
-
-    # Override the form's __init__ to customize it after creation
-    original_init = UnifiedSigninForm.__init__
-
-    def custom_init(self, *args, **kwargs):
-        original_init(self, *args, **kwargs)
-        customize_unified_signin_form(self)
-
-    UnifiedSigninForm.__init__ = custom_init
-
-    # Register custom authentication handlers for remember-me functionality
-    from .auth_handlers import ensure_user_email_signin, register_auth_handlers
+    # Register custom authentication handlers and user lifecycle hooks.
+    from .auth_handlers import register_auth_handlers
 
     register_auth_handlers(app)
-
-    # Hook into Flask-Security's lookup_identity to auto-setup email signin
-    from flask_security.utils import lookup_identity as _original_lookup_identity
-
-    def _patched_lookup_identity(identity):
-        user = _original_lookup_identity(identity)
-        if user:
-            ensure_user_email_signin(user)
-        return user
-
-    # Monkey-patch the lookup_identity function
-    import flask_security.unified_signin
-
-    flask_security.unified_signin.lookup_identity = _patched_lookup_identity
 
     # After a new user registers, look them up in Firenze and persist client_id.
     from flask_security.signals import user_registered as _user_registered_signal
@@ -169,9 +141,7 @@ def _init_extensions(app: Flask) -> None:
         try:
             process_user_registration(user)
         except Exception:
-            from .log import get_logger as _get_logger
-
-            _get_logger(__name__).exception("_on_user_registered: failed to process user=%s", user.id)
+            app.logger.exception("_on_user_registered: failed to process user=%s", user.id)
 
     # TablerTheme blueprint must be registered before Admin registers its own
     # blueprint — Flask resolves templates in blueprint registration order.
@@ -266,7 +236,7 @@ def _init_extensions(app: Flask) -> None:
 
 
 def _init_merchants(app: Flask, admin: Any) -> None:
-    from .tienda.pagos.views import _handle_payment_webhook_finished
+    from .signals import _handle_payment_webhook_finished
 
     providers = []
     if app.config.get("KHIPU_API_KEY", None):

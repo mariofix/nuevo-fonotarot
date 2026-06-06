@@ -2,7 +2,7 @@
 
 import json
 import os
-from datetime import UTC, date
+from datetime import date
 
 from flask import jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
@@ -10,10 +10,9 @@ from flask_admin.actions import action
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
-
-from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 
 from .extensions import db
 
@@ -417,7 +416,7 @@ class BlogPostAdminView(SecureModelView):
         if model.published and model.published_at is None:
             from datetime import datetime
 
-            model.published_at = datetime.now(UTC)
+            model.published_at = datetime.now()
 
 
 class MinutePackAdminView(SecureModelView):
@@ -515,7 +514,7 @@ class GiftCardProductAdminView(SecureModelView):
 class GiftCardAdminView(SecureModelView):
     """Admin view for issued/redeemed gift-card codes."""
 
-    can_create = False
+    can_create = True
     can_delete = False
     can_edit = False
     column_list = (
@@ -530,6 +529,17 @@ class GiftCardAdminView(SecureModelView):
     )
     column_searchable_list = ("code", "purchaser_email", "recipient_email")
     column_filters = ("status", "gift_card_product.name", "created_at", "redeemed_at")
+    column_descriptions = {
+        "order_id": "Opcional. Déjalo vacío para tarjetas creadas manualmente desde admin.",
+    }
+
+    def create_form(self, obj=None):
+        form = super().create_form(obj)
+        if not form.code.data:
+            from .tienda.tarjetas.service import generate_unique_gift_code
+
+            form.code.data = generate_unique_gift_code()
+        return form
 
 
 class SiteSettingsAdminView(JsonColumnsMixin, SecureModelView):

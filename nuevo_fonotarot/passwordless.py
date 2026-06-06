@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import json
 import typing as t
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext as _l
@@ -228,7 +228,7 @@ def create_passwordless_blueprint() -> Blueprint:
             # Success: Store identity/method in session and redirect
             session["_pwl_identity"] = form.identity.data
             session["_pwl_method"] = method
-            session["_pwl_timestamp"] = datetime.now(UTC).isoformat()
+            session["_pwl_timestamp"] = datetime.now().isoformat()
 
             logger.info(f"Passwordless code sent via {method} to user {user.id} ({user.email})")
 
@@ -262,7 +262,7 @@ def create_passwordless_blueprint() -> Blueprint:
         # Check if code request is stale (e.g., older than 10 minutes)
         try:
             req_time = datetime.fromisoformat(timestamp)
-            if datetime.now(UTC) - req_time > timedelta(minutes=10):
+            if datetime.now() - req_time > timedelta(minutes=10):
                 session.pop("_pwl_identity", None)
                 session.pop("_pwl_method", None)
                 session.pop("_pwl_timestamp", None)
@@ -279,7 +279,7 @@ def create_passwordless_blueprint() -> Blueprint:
             # Successful authentication
             # Set trusted_until for remember-me functionality
             if remember_me:
-                user.trusted_until = datetime.now(UTC) + timedelta(days=31)
+                user.trusted_until = datetime.now() + timedelta(days=31)
                 db.session.commit()
 
             # Clean session

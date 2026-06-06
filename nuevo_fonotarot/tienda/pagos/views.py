@@ -6,6 +6,7 @@ import re
 from flask import current_app, redirect, render_template, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
+from ...actions import sync_firenze_topup
 from ...extensions import db
 from ...log import get_logger
 from ...models import (
@@ -18,7 +19,6 @@ from ...models import (
     Product,
     SubscriptionPlan,
 )
-from ...signals import sync_firenze_topup, post_purchase_process
 from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
@@ -123,7 +123,7 @@ def _sync_firenze_on_payment(order: Order) -> bool:
 
 def _send_firenze_failure_email(order: Order) -> None:
     """Backward-compatible alias for signals.send_firenze_failure_email."""
-    from ...signals import send_firenze_failure_email as _send_failure
+    from ...actions import send_firenze_failure_email as _send_failure
 
     _send_failure(order)
 
@@ -462,19 +462,6 @@ def _handle_payment_webhook_event(event) -> None:
     )
 
 
-def _handle_payment_webhook_finished(_sender, *, event, **kwargs) -> None:
-    """Signal receiver that runs after flask-merchants finishes webhook dispatch."""
-    logger.debug(
-        f"_handle_payment_webhook_finished: provider={getattr(event, 'provider', None)!r} "
-        f"event_type={getattr(event, 'event_type', None)!r} "
-        f"payment_id={getattr(event, 'payment_id', None)!r} "
-        f"state={getattr(getattr(event, 'state', None), 'value', None)!r}"
-    )
-
-    # _handle_payment_webhook_event(event)
-    post_purchase_process(transaction_id=event.payment_id)
-
-
 # ---------------------------------------------------------------------------
 # Store index
 # ---------------------------------------------------------------------------
@@ -582,28 +569,29 @@ def pago_retorno(order_id: str):
         f"pago_retorno: order details — transaction_id={order.transaction_id!r} state={order.payment_status!r}"
     )
 
-    # Sync payment state from provider and update order fulfillment status.
-    if order.transaction_id and order.status == OrderStatus.PENDING:
-        logger.debug(f"pago_retorno: order={order.id} is PENDING, syncing from provider")
-        try:
-            order.sync_from_provider()
-            logger.info(f"pago_retorno: synced order={order.id} new_state={order.payment_status!r}")
-            if order.payment_status == "succeeded":
-                _complete_succeeded_order(order, "retorno")
-            elif order.payment_status in ("failed", "cancelled"):
-                order.status = OrderStatus.FAILED
-                logger.warning(
-                    f"pago_retorno: payment failed/cancelled — order={order.id} "
-                    f"status updated to FAILED (state={order.payment_status!r})"
-                )
-                db.session.commit()
-        except Exception as exc:
-            logger.error(f"pago_retorno: sync error for order={order.id} — {exc}", exc_info=True)
-    else:
-        logger.debug(
-            f"pago_retorno: order={order.id} not syncing "
-            f"(has_transaction_id={bool(order.transaction_id)} status={order.status})"
-        )
+    # I DO NOT WANT TO SYNC IN THIS STAGE
+    # # Sync payment state from provider and update order fulfillment status.
+    # if order.transaction_id and order.status == OrderStatus.PENDING:
+    #     logger.debug(f"pago_retorno: order={order.id} is PENDING, syncing from provider")
+    #     try:
+    #         order.sync_from_provider()
+    #         logger.info(f"pago_retorno: synced order={order.id} new_state={order.payment_status!r}")
+    #         if order.payment_status == "succeeded":
+    #             _complete_succeeded_order(order, "retorno")
+    #         elif order.payment_status in ("failed", "cancelled"):
+    #             order.status = OrderStatus.FAILED
+    #             logger.warning(
+    #                 f"pago_retorno: payment failed/cancelled — order={order.id} "
+    #                 f"status updated to FAILED (state={order.payment_status!r})"
+    #             )
+    #             db.session.commit()
+    #     except Exception as exc:
+    #         logger.error(f"pago_retorno: sync error for order={order.id} — {exc}", exc_info=True)
+    # else:
+    #     logger.debug(
+    #         f"pago_retorno: order={order.id} not syncing "
+    #         f"(has_transaction_id={bool(order.transaction_id)} status={order.status})"
+    #     )
 
     return redirect(url_for("pagos.orden_estado", order_id=order.merchants_id))
 
@@ -613,7 +601,7 @@ def pago_retorno(order_id: str):
 # ---------------------------------------------------------------------------
 
 
-@pagos_bp.route("/orden/<order_id>/")
+@pagos_bp.route("/orden/<order_id>")
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")

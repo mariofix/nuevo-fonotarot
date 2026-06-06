@@ -1,6 +1,6 @@
 """Minute-pack store views."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from flask import flash, redirect, render_template, request, url_for
@@ -25,8 +25,8 @@ def index():
     return render_template("tienda/minutos.html", packs=packs, cart_count=len(_get_cart()))
 
 
-@minutos_bp.route("/<int:pack_id>/comprar", methods=["GET", "POST"])
-def comprar_minutos(pack_id: int):
+@minutos_bp.route("/<pack_slug>/comprar", methods=["GET", "POST"])
+def comprar_minutos(pack_slug: str):
     """Fast checkout for a single minute pack.
 
     GET  → show the checkout form (payment method + contact details).
@@ -37,28 +37,28 @@ def comprar_minutos(pack_id: int):
     - Known (authenticated, no physical profile): email pre-filled.
     - Physical (authenticated, full profile): all data pre-filled.
     """
-    pack = MinutePack.query.filter_by(id=pack_id, is_active=True).first_or_404()
+    pack = MinutePack.query.filter_by(slug=pack_slug, is_active=True).first_or_404()
     is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
-        logger.debug("comprar_minutos POST: pack_id=%s payment_method=%r", pack_id, payment_method)
+        logger.debug("comprar_minutos POST: pack_slug=%s payment_method=%r", pack_slug, payment_method)
 
         if payment_method not in ("flow", "khipu"):
-            logger.warning("Invalid payment method %r for pack_id=%s", payment_method, pack_id)
+            logger.warning("Invalid payment method %r for pack_slug=%s", payment_method, pack_slug)
             flash(_("Método de pago no válido."), "danger")
-            return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
+            return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
         email = request.form.get("email", "").strip()
         phone = request.form.get("phone", "").strip()
         create_account = request.form.get("create_account") == "on"
 
         if not email:
-            logger.debug("comprar_minutos: missing email for pack_id=%s", pack_id)
+            logger.debug("comprar_minutos: missing email for pack_slug=%s", pack_slug)
             flash(_("El email es obligatorio."), "danger")
-            return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
+            return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
-        duplicate_cutoff = datetime.now(UTC) - timedelta(minutes=2)
+        duplicate_cutoff = datetime.now() - timedelta(minutes=2)
         duplicate_filter = and_(
             OrderItem.item_type == OrderItemType.MINUTE_PACK,
             OrderItem.item_id == pack.id,
@@ -118,7 +118,7 @@ def comprar_minutos(pack_id: int):
                         _("Ingresa un teléfono válido (solo dígitos, sin +, entre 10 y 13 dígitos)."),
                         "danger",
                     )
-                return redirect(url_for("minutos.comprar_minutos", pack_id=pack_id))
+                return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
             order.user_id = checkout_user.id
             if created:
@@ -180,7 +180,7 @@ def comprar_minutos(pack_id: int):
             order,
             payment_method,
             email,
-            error_redirect=url_for("minutos.comprar_minutos", pack_id=pack_id),
+            error_redirect=url_for("minutos.comprar_minutos", pack_slug=pack_slug),
         )
 
     # GET — pre-fill from authenticated user profile
