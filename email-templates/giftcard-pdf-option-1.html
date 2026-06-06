@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Opción 1</title>
+  <style>
+    :root {
+      --bg:#f5f1ff;
+      --card:#ffffff;
+      --primary:#5a2ea6;
+      --accent:#f3b63f;
+      --text:#2d2440;
+      --muted:#6e6485;
+      --ok:#eaf8ef;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      padding:28px;
+      background:linear-gradient(135deg,#f7f3ff 0%,#eee8ff 45%,#fef8ef 100%);
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+    }
+    .sheet {
+      max-width:820px;
+      margin:0 auto;
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(59,35,117,.14);
+      overflow:hidden;
+      border:1px solid #e6dcfb;
+    }
+    .hero {
+      padding:28px 32px;
+      background:radial-gradient(circle at top right,#7d52d6 0%,#5a2ea6 60%,#4a2388 100%);
+      color:#fff;
+    }
+    .hero h1 { margin:0; font-size:32px; }
+    .hero p { margin:8px 0 0; opacity:.95; }
+    .content { padding:28px 32px 30px; }
+    .code-box {
+      border:2px dashed #cab6f6;
+      border-radius:14px;
+      padding:18px;
+      background:#faf7ff;
+      margin:16px 0 24px;
+    }
+    .code {
+      font-size:34px;
+      letter-spacing:3px;
+      font-weight:800;
+      color:var(--primary);
+      margin:8px 0;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin:0 0 24px;
+    }
+    .panel {
+      border:1px solid #ebdefc;
+      border-radius:12px;
+      padding:16px;
+      background:#fff;
+    }
+    .panel h3 { margin:0 0 10px; font-size:17px; color:var(--primary); }
+    .panel ul { margin:0; padding-left:18px; }
+    .panel li { margin:8px 0; line-height:1.45; }
+    .steps {
+      background:var(--ok);
+      border:1px solid #bfe8ce;
+      border-radius:12px;
+      padding:16px;
+    }
+    .steps h3 { margin:0 0 8px; color:#25653b; }
+    .steps ol { margin:0; padding-left:18px; }
+    .steps li { margin:8px 0; line-height:1.5; }
+    .footer {
+      margin-top:18px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .badge {
+      display:inline-block;
+      background:#fff2d9;
+      border:1px solid #f6d58d;
+      color:#845b08;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.2px;
+      margin-bottom:8px;
+    }
+  </style>
+</head>
+<body>
+  <section class="sheet" aria-label="Gift Card PDF Option 1">
+    <header class="hero">
+      <h1>Gift Card Fonotarot</h1>
+      <p>Regala minutos y energía positiva en una experiencia simple y rápida.</p>
+    </header>
+
+    <main class="content">
+      <span class="badge">Válida por 1 año calendario para canje</span>
+      <div class="code-box">
+        <div><strong>Código de Gift Card</strong></div>
+        <div class="code">GC-XXXX-XXXX</div>
+        <div>Guarda este código, lo necesitarás al canjear.</div>
+      </div>
+
+      <div class="grid">
+        <article class="panel">
+          <h3>Datos obligatorios para canjear</h3>
+          <ul>
+            <li>Código de Gift Card</li>
+            <li>Email del beneficiario</li>
+            <li>Número de teléfono del beneficiario</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>Después del canje</h3>
+          <ul>
+            <li>Se crea una cuenta nueva automáticamente.</li>
+            <li>Los créditos se cargan de inmediato en esa cuenta.</li>
+            <li>Puedes llamar inmediatamente después de canjear.</li>
+            <li>Debes validar el email para seguir usando el sitio web.</li>
+          </ul>
+        </article>
+      </div>
+
+      <section class="steps">
+        <h3>Canje en 3 pasos</h3>
+        <ol>
+          <li>Ingresa tu código + email + teléfono en el formulario de canje.</li>
+          <li>Confirma el canje para crear tu cuenta y acreditar minutos.</li>
+          <li>Verifica tu email para mantener el acceso web completo.</li>
+        </ol>
+      </section>
+
+      <p class="footer">
+        Importante: la Gift Card puede canjearse dentro de un plazo de <strong>un año calendario</strong> desde su emisión.
+        Una vez canjeada, <strong>los créditos no expiran</strong>.
+      </p>
+    </main>
+  </section>
+</body>
+</html>

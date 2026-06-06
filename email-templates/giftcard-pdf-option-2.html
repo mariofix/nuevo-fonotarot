@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Opción 2</title>
+  <style>
+    :root {
+      --ink:#1f2430;
+      --muted:#5a6270;
+      --line:#e4e8f0;
+      --violet:#5f3dc4;
+      --violet-soft:#efeaff;
+      --teal:#0a8475;
+      --paper:#ffffff;
+      --bg:#f3f6fb;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:"Inter", "Segoe UI", Arial, sans-serif;
+      padding:34px;
+    }
+    .doc {
+      max-width:850px;
+      margin:0 auto;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 18px 32px rgba(34,44,70,.08);
+    }
+    .top {
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      border-bottom:1px solid var(--line);
+    }
+    .top-left { padding:28px 30px; }
+    .top-right {
+      background:linear-gradient(160deg,#6d49d4 0%,#5f3dc4 65%,#4c2ca7 100%);
+      color:#fff;
+      padding:28px 26px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    h1 { margin:0; font-size:31px; line-height:1.15; color:var(--violet); }
+    .subtitle { margin:10px 0 0; color:var(--muted); line-height:1.5; }
+    .label { font-size:12px; text-transform:uppercase; letter-spacing:.12em; opacity:.9; }
+    .code { margin-top:8px; font-size:30px; font-weight:800; letter-spacing:3px; }
+    .block { padding:24px 30px; border-bottom:1px solid var(--line); }
+    .block h2 { margin:0 0 14px; font-size:20px; color:var(--violet); }
+    .checks {
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px 18px;
+    }
+    .checks li {
+      border:1px solid #d8dff0;
+      background:var(--violet-soft);
+      border-radius:10px;
+      padding:11px 12px;
+      font-size:14px;
+      line-height:1.4;
+    }
+    .timeline {
+      margin:0;
+      padding-left:20px;
+      line-height:1.55;
+    }
+    .timeline li { margin:9px 0; }
+    .important {
+      margin:18px 0 0;
+      border-left:4px solid var(--teal);
+      background:#ecfbf8;
+      border-radius:8px;
+      padding:11px 12px;
+      color:#0a5e55;
+      font-weight:600;
+      line-height:1.5;
+    }
+    .foot {
+      padding:20px 30px 26px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+  </style>
+</head>
+<body>
+  <article class="doc" aria-label="Gift Card PDF Option 2">
+    <header class="top">
+      <div class="top-left">
+        <h1>Instrucciones de Canje<br>Gift Card Fonotarot</h1>
+        <p class="subtitle">Este documento incluye toda la información necesaria para usar tu gift card en pocos minutos.</p>
+      </div>
+      <div class="top-right">
+        <div class="label">Código de canje</div>
+        <div class="code">GC-XXXX-XXXX</div>
+      </div>
+    </header>
+
+    <section class="block">
+      <h2>Información requerida</h2>
+      <ul class="checks">
+        <li><strong>Código Gift Card</strong><br>Ingresa el código exacto.</li>
+        <li><strong>Email</strong><br>Se usará para crear la cuenta.</li>
+        <li><strong>Teléfono</strong><br>Necesario para habilitar llamadas.</li>
+        <li><strong>Validación de email</strong><br>Obligatoria para seguir usando el sitio web.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>¿Qué ocurre al canjear?</h2>
+      <ol class="timeline">
+        <li>Se crea una cuenta nueva con tus datos (email y teléfono).</li>
+        <li>Los créditos de la gift card se agregan automáticamente a esa cuenta.</li>
+        <li>Podrás llamar inmediatamente después del canje exitoso.</li>
+        <li>Para continuar usando el sitio web, deberás validar tu email.</li>
+      </ol>
+      <p class="important">Validez: la gift card se puede canjear durante <strong>1 año calendario</strong>. Una vez canjeada, los créditos <strong>no expiran</strong>.</p>
+    </section>
+
+    <footer class="foot">
+      Recomendación: conserva este PDF junto al código hasta completar el canje y la validación de email.
+    </footer>
+  </article>
+</body>
+</html>
