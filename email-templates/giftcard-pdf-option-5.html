@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Light & Airy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Outfit:wght@500;700;900&display=swap');
+    
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 40px;
+      background: #fdfaf6;
+      font-family: 'Nunito', sans-serif;
+      color: #3d3b44;
+      display: flex;
+      justify-content: center;
+    }
+    .card-container {
+      max-width: 750px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(220,135,135,0.08), 0 1px 3px rgba(0,0,0,0.02);
+      padding: 50px;
+      position: relative;
+      border: 1px solid #f6ebe9;
+    }
+    .ribbon {
+      position: absolute;
+      top: 0;
+      right: 50px;
+      width: 60px;
+      height: 70px;
+      background: #ff7878;
+      border-radius: 0 0 8px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 28px;
+      box-shadow: 0 10px 20px rgba(255, 120, 120, 0.3);
+    }
+    .header {
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 42px;
+      color: #2b2835;
+      margin: 0 0 10px;
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      font-size: 18px;
+      color: #797687;
+      margin: 0;
+    }
+    .code-box {
+      background: linear-gradient(135deg, #fff0f0 0%, #ffeaea 100%);
+      border: 2px dashed #ffb4b4;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .code-title {
+      font-weight: 800;
+      color: #d15656;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .code-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      color: #ff5c5c;
+      letter-spacing: 5px;
+      margin: 0 0 10px;
+    }
+    .validity {
+      display: inline-block;
+      background: #fff;
+      color: #ff7878;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(255, 120, 120, 0.1);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 30px;
+    }
+    .box {
+      background: #fcfcfd;
+      border: 1px solid #f0f2f8;
+      border-radius: 16px;
+      padding: 25px;
+    }
+    .box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      color: #2b2835;
+      margin: 0 0 15px;
+    }
+    .req-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .req-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #5d5968;
+    }
+    .req-list li::before {
+      content: '✓';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: #4ade80;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+      margin-right: 12px;
+    }
+    .steps p {
+      margin: 0 0 12px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #5d5968;
+    }
+    .steps a {
+      color: #ff5c5c;
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .phone-cta {
+      display: block;
+      background: #2b2835;
+      color: #fff;
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 16px;
+      margin-top: 15px;
+      text-decoration: none;
+    }
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #9a98a3;
+    }
+  </style>
+</head>
+<body>
+  <div class="card-container">
+    <div class="ribbon">✦</div>
+    
+    <div class="header">
+      <h1>Un regalo para ti</h1>
+      <p>Minutos para consultas de tarot con nuestras expertas.</p>
+    </div>
+    
+    <div class="code-box">
+      <div class="code-title">Tu Código de Gift Card</div>
+      <!-- Replace GC-####-#### with the runtime gift card code (format: GC-####-####) -->
+      <div class="code-value">GC-####-####</div>
+      <div class="validity">Válido hasta 05/06/2027</div>
+    </div>
+    
+    <div class="grid">
+      <div class="box">
+        <h3>Necesitas estos datos</h3>
+        <ul class="req-list">
+          <li>Tu código de Gift Card</li>
+          <li>Un correo electrónico</li>
+          <li>Tu número de teléfono</li>
+        </ul>
+      </div>
+      
+      <div class="box steps">
+        <h3>¿Cómo disfrutar tu regalo?</h3>
+        <p>1. Ingresa a <a href="https://www.fonotarot.com/canje">www.fonotarot.com/canje</a> para activar tu código.</p>
+        <p>2. El sistema asociará los minutos a tu teléfono de forma segura para usarlos cuando quieras.</p>
+        <p>3. Recibirás en tu correo los datos de acceso a tu portal web.</p>
+        <a href="tel:+56222301515" class="phone-cta">Llama al +56 2 2230 1515</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      Una vez que actives tus minutos, estos no expiran nunca. Si necesitas ayuda, visita www.fonotarot.com
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Mystical</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap');
+    
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 40px;
+      background: #0b0c10;
+      font-family: 'Poppins', sans-serif;
+      color: #e5e9f0;
+      display: flex;
+      justify-content: center;
+    }
+    .ticket {
+      max-width: 800px;
+      width: 100%;
+      background: linear-gradient(135deg, #1f1c2c 0%, #0d0c13 100%);
+      border-radius: 20px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .ticket::before, .ticket::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40px;
+      height: 40px;
+      background: #0b0c10;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .ticket::before { left: -20px; }
+    .ticket::after { right: -20px; }
+    
+    .header {
+      padding: 40px;
+      text-align: center;
+      border-bottom: 2px dashed rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      color: #dfce9d;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .header p {
+      color: #a0a5b5;
+      font-size: 15px;
+      margin: 10px 0 0;
+    }
+    .validity {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 6px 16px;
+      background: rgba(223, 206, 157, 0.1);
+      color: #dfce9d;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .body {
+      padding: 40px;
+      display: flex;
+      gap: 40px;
+    }
+    .code-section {
+      flex: 1;
+      text-align: center;
+      padding: 30px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .code-label {
+      font-family: 'Playfair Display', serif;
+      color: #a0a5b5;
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+    .code-value {
+      font-size: 32px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 4px;
+      margin: 10px 0;
+      text-shadow: 0 0 20px rgba(223, 206, 157, 0.3);
+    }
+    .instructions {
+      flex: 1;
+    }
+    .instructions h3 {
+      font-family: 'Playfair Display', serif;
+      color: #dfce9d;
+      font-size: 22px;
+      margin: 0 0 20px;
+    }
+    .step {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: flex-start;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: #dfce9d;
+      color: #0d0c13;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    .step-text {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #c0c5d5;
+    }
+    .step-text a {
+      color: #dfce9d;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 40px 30px;
+      font-size: 12px;
+      color: #6e7485;
+    }
+    .footer a {
+      color: #a0a5b5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="header">
+      <h1>Fonotarot Gift Card</h1>
+      <p>Una experiencia de claridad y energía positiva te espera.</p>
+      <div class="validity">Válido hasta 05/06/2027</div>
+    </div>
+    
+    <div class="body">
+      <div class="code-section">
+        <div class="code-label">Tu Código Mágico</div>
+        <!-- Replace GC-####-#### with the runtime gift card code (format: GC-####-####) -->
+        <div class="code-value">GC-####-####</div>
+        <p style="font-size: 13px; color: #a0a5b5; margin-top: 15px; line-height: 1.5;">Esta tarjeta contiene minutos para consultar con nuestras expertas. Guárdalo bien.</p>
+      </div>
+      
+      <div class="instructions">
+        <h3>¿Cómo activar tu regalo?</h3>
+        
+        <div class="step">
+          <div class="step-number">1</div>
+          <p class="step-text">Ingresa a <a href="https://www.fonotarot.com/canje">www.fonotarot.com/canje</a> para activar tu código.</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <p class="step-text">Ingresa tu código, un email y tu número de teléfono para asociar tus minutos.</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <p class="step-text">Llama al <strong>+56 2 2230 1515</strong>. ¡Tus minutos estarán listos de inmediato!</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">4</div>
+          <p class="step-text">Recibirás tus datos de acceso web por correo electrónico.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      Tus minutos activados no expiran nunca. Si necesitas ayuda, visita <a href="https://www.fonotarot.com">www.fonotarot.com</a>
+    </div>
+  </div>
+</body>
+</html>

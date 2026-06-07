@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Classic Voucher</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Cinzel:wght@600;700&display=swap');
+    
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 40px;
+      background: #e8ecef;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      justify-content: center;
+      color: #333;
+    }
+    .voucher {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      display: flex;
+      overflow: hidden;
+      border: 1px solid #d1d9e6;
+    }
+    .stub {
+      width: 280px;
+      background: #2a1b54;
+      color: #fff;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      border-right: 2px dashed #d1d9e6;
+    }
+    .stub::after {
+      content: '';
+      position: absolute;
+      right: -12px;
+      top: 0;
+      bottom: 0;
+      width: 24px;
+      background-image: radial-gradient(circle at 12px 12px, #e8ecef 12px, transparent 13px);
+      background-size: 24px 24px;
+      background-position: -12px 0;
+    }
+    .stub h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      color: #e5b95c;
+      margin: 0 0 15px;
+      line-height: 1.2;
+    }
+    .stub p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #b1a7d1;
+      margin: 0;
+    }
+    .main {
+      flex: 1;
+      padding: 40px;
+      background: #fff;
+      position: relative;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .code-wrapper {
+      background: #f8f9fa;
+      padding: 15px 25px;
+      border-radius: 8px;
+      border: 1px solid #e8ecef;
+    }
+    .code-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6c757d;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .code-value {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      color: #2a1b54;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    .date-badge {
+      background: #fdf5e6;
+      color: #b08d3e;
+      border: 1px solid #f2dfa7;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #2a1b54;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0 0 15px;
+      border-bottom: 2px solid #f0f2f5;
+      padding-bottom: 8px;
+    }
+    .list {
+      margin: 0;
+      padding: 0 0 0 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+    }
+    .list li {
+      margin-bottom: 8px;
+    }
+    .list li strong {
+      color: #333;
+    }
+    
+    .action-step {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .action-step a {
+      color: #e5b95c;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .call-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: #e5b95c;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    
+    .bottom-note {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #888;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="voucher">
+    <div class="stub">
+      <h1>Gift Card Fonotarot</h1>
+      <p>Esta tarjeta de regalo contiene minutos exclusivos para hablar con nuestras expertas tarotistas.</p>
+    </div>
+    
+    <div class="main">
+      <div class="top-bar">
+        <div class="code-wrapper">
+          <div class="code-label">Tu Código de Gift Card</div>
+          <!-- Replace GC-####-#### with the runtime gift card code (format: GC-####-####) -->
+          <div class="code-value">GC-####-####</div>
+        </div>
+        <div class="date-badge">Válido hasta 05/06/2027</div>
+      </div>
+      
+      <div class="content-grid">
+        <div>
+          <h3 class="section-title">Necesitas estos datos</h3>
+          <ul class="list">
+            <li><strong>Tu código</strong> de Gift Card</li>
+            <li><strong>Un correo electrónico</strong> para enviarte los datos de acceso a tu portal.</li>
+            <li><strong>Tu número de teléfono</strong> para asociar tus minutos.</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="section-title">¿Cómo disfrutar tu regalo?</h3>
+          <div class="action-step">1. Ingresa a <a href="https://www.fonotarot.com/canje">www.fonotarot.com/canje</a> para activar tu código y asociar los minutos a tu teléfono.</div>
+          <div class="action-step">2. Recibirás en tu correo los datos de acceso a tu cuenta.</div>
+          <div class="action-step">3. ¡Llama y conéctate de inmediato!</div>
+          <a href="tel:+56222301515" class="call-btn">+56 2 2230 1515</a>
+        </div>
+      </div>
+      
+      <div class="bottom-note">
+        Tus minutos se irán descontando solo mientras hablas. Una vez que actives tus minutos, estos no expiran nunca. Más info en www.fonotarot.com.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
