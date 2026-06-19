@@ -2891,8 +2891,8 @@
       var busy = agents.filter(function(a) { return a.status === 'busy'; });
 
       /* Full rebuild of all agent lists */
-      rebuildList('hero-agent-rows', agents.slice(0, 4), awRowHTML, null);
-      rebuildList('oc-all', agents, ocRowHTML, null);
+      rebuildList('hero-agent-rows', agents.slice(0, 4), awRowHTML, 'Nuestras Tarotistas no están conectadas, por favor intenta más tarde.');
+      rebuildList('oc-all', agents, ocRowHTML, 'Nuestras Tarotistas no están conectadas, por favor intenta más tarde.');
       rebuildList('oc-online', available, ocRowHTML, 'Todas las especialistas están ocupadas. Inténtalo pronto.');
       rebuildList('oc-busy', busy, ocRowHTML, 'No hay especialistas en consulta ahora.');
 
