@@ -1,0 +1,420 @@
+"""init
+
+Revision ID: b7c8d9e0f1a2
+Revises:
+Create Date: 2026-06-08 22:30:00.000000
+"""
+
+import sqlalchemy as sa
+from alembic import op
+from flask_security.datastore import AsaList
+from sqlalchemy.ext.mutable import MutableList
+
+# revision identifiers, used by Alembic.
+revision = "b7c8d9e0f1a2"
+down_revision = None
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.create_table(
+        "roles",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=80), nullable=False),
+        sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("permissions", MutableList.as_mutable(AsaList()), nullable=True),
+        sa.Column(
+            "update_datetime",
+            sa.DateTime(),
+            server_default=sa.text("(CURRENT_TIMESTAMP)"),
+            nullable=False,
+        ),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+    )
+
+    op.create_table(
+        "users",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("email", sa.String(length=255), nullable=False),
+        sa.Column("username", sa.String(length=255), nullable=True),
+        sa.Column("password", sa.String(length=255), nullable=True),
+        sa.Column("active", sa.Boolean(), nullable=False),
+        sa.Column("fs_uniquifier", sa.String(length=64), nullable=False),
+        sa.Column("confirmed_at", sa.DateTime(), nullable=True),
+        sa.Column("last_login_at", sa.DateTime(), nullable=True),
+        sa.Column("current_login_at", sa.DateTime(), nullable=True),
+        sa.Column("last_login_ip", sa.String(length=64), nullable=True),
+        sa.Column("current_login_ip", sa.String(length=64), nullable=True),
+        sa.Column("login_count", sa.Integer(), nullable=True),
+        sa.Column("tf_primary_method", sa.String(length=64), nullable=True),
+        sa.Column("tf_totp_secret", sa.String(length=255), nullable=True),
+        sa.Column("tf_phone_number", sa.String(length=128), nullable=True),
+        sa.Column("us_totp_secrets", sa.Text(), nullable=True),
+        sa.Column("us_phone_number", sa.String(length=128), nullable=True),
+        sa.Column("fs_webauthn_user_handle", sa.String(length=64), nullable=True),
+        sa.Column("mf_recovery_codes", MutableList.as_mutable(AsaList()), nullable=True),
+        sa.Column("create_datetime", sa.DateTime(), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column("update_datetime", sa.DateTime(), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column("trusted_until", sa.DateTime(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("full_name", sa.String(length=255), nullable=True),
+        sa.Column("phone", sa.String(length=30), nullable=True),
+        sa.Column("rut", sa.String(length=20), nullable=True),
+        sa.Column("address", sa.String(length=500), nullable=True),
+        sa.Column("commune", sa.String(length=100), nullable=True),
+        sa.Column("postal_code", sa.String(length=20), nullable=True),
+        sa.Column("preferred_payment", sa.String(length=30), nullable=True),
+        sa.Column("favorite_tarotista_option", sa.String(length=20), nullable=True),
+        sa.Column(
+            "notification_preferences",
+            sa.JSON(),
+            server_default=sa.text("'[]'"),
+            nullable=False,
+        ),
+        sa.Column("firenze_client_id", sa.Integer(), nullable=True),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("email"),
+        sa.UniqueConstraint("fs_uniquifier"),
+        sa.UniqueConstraint("fs_webauthn_user_handle"),
+        sa.UniqueConstraint("username"),
+        sa.UniqueConstraint("us_phone_number"),
+    )
+
+    op.create_table(
+        "webauthn",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("credential_id", sa.LargeBinary(length=1024), nullable=False),
+        sa.Column("public_key", sa.LargeBinary(), nullable=False),
+        sa.Column("sign_count", sa.Integer(), nullable=True),
+        sa.Column("transports", MutableList.as_mutable(AsaList()), nullable=True),
+        sa.Column("backup_state", sa.Boolean(), nullable=False),
+        sa.Column("device_type", sa.String(length=64), nullable=False),
+        sa.Column("extensions", sa.String(length=255), nullable=True),
+        sa.Column("create_datetime", sa.DateTime(), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column("lastuse_datetime", sa.DateTime(), nullable=False),
+        sa.Column("name", sa.String(length=64), nullable=False),
+        sa.Column("usage", sa.String(length=64), nullable=False),
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("webauthn", schema=None) as batch_op:
+        batch_op.create_index("ix_webauthn_credential_id", ["credential_id"], unique=True)
+
+    op.create_table(
+        "static_pages",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("path", sa.String(length=255), nullable=False),
+        sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("featured_image_url", sa.String(length=500), nullable=True),
+        sa.Column("content", sa.Text(), nullable=False),
+        sa.Column("is_homepage", sa.Boolean(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("static_pages", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_static_pages_path"), ["path"], unique=True)
+
+    op.create_table(
+        "blog_posts",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("slug", sa.String(length=255), nullable=False),
+        sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("featured_image_url", sa.String(length=500), nullable=True),
+        sa.Column("excerpt", sa.Text(), nullable=True),
+        sa.Column("content", sa.Text(), nullable=False),
+        sa.Column("published", sa.Boolean(), nullable=False),
+        sa.Column("published_at", sa.DateTime(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("blog_posts", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_blog_posts_slug"), ["slug"], unique=True)
+
+    op.create_table(
+        "minute_packs",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("slug", sa.String(length=255), nullable=True),
+        sa.Column("minutes", sa.Integer(), nullable=False),
+        sa.Column("price", sa.Numeric(precision=19, scale=4), nullable=False),
+        sa.Column("currency", sa.String(length=3), nullable=False),
+        sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_featured", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("minute_packs", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_minute_packs_slug"), ["slug"], unique=True)
+
+    op.create_table(
+        "subscription_plans",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=80), nullable=False),
+        sa.Column("minutes_per_month", sa.Integer(), nullable=False),
+        sa.Column("price", sa.Numeric(precision=19, scale=4), nullable=False),
+        sa.Column("currency", sa.String(length=3), nullable=False),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.Column("features", sa.Text(), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_featured", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+
+    op.create_table(
+        "product_categories",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("slug", sa.String(length=50), nullable=False),
+        sa.Column("name", sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("product_categories", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_product_categories_slug"), ["slug"], unique=True)
+
+    op.create_table(
+        "products",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("slug", sa.String(length=255), nullable=False),
+        sa.Column("category_id", sa.Integer(), nullable=True),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.Column("price", sa.Numeric(precision=19, scale=4), nullable=False),
+        sa.Column("currency", sa.String(length=3), nullable=False),
+        sa.Column("stock", sa.Integer(), nullable=False),
+        sa.Column("image_url", sa.String(length=500), nullable=True),
+        sa.Column("images", sa.JSON(), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_featured", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(["category_id"], ["product_categories.id"]),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_products_slug"), ["slug"], unique=True)
+
+    op.create_table(
+        "gift_card_products",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("slug", sa.String(length=255), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("minutes", sa.Integer(), nullable=False),
+        sa.Column("price", sa.Numeric(precision=19, scale=4), nullable=False),
+        sa.Column("currency", sa.String(length=3), nullable=False),
+        sa.Column("description", sa.Text(), nullable=True),
+        sa.Column("image_url", sa.String(length=500), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("is_featured", sa.Boolean(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("gift_card_products", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_gift_card_products_slug"), ["slug"], unique=True)
+
+    op.create_table(
+        "orders",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("user_id", sa.Integer(), nullable=True),
+        sa.Column("status", sa.String(length=30), nullable=False),
+        sa.Column("shipping_name", sa.String(length=255), nullable=True),
+        sa.Column("shipping_email", sa.String(length=255), nullable=True),
+        sa.Column("shipping_phone", sa.String(length=30), nullable=True),
+        sa.Column("shipping_address", sa.Text(), nullable=True),
+        sa.Column("shipping_uses_pickup", sa.Boolean(), nullable=False),
+        sa.Column("shipping_pickup_point", sa.String(length=255), nullable=True),
+        sa.Column("anonymous_shipping", sa.Boolean(), nullable=False),
+        sa.Column("firenze_client_id", sa.Integer(), nullable=True),
+        sa.Column("firenze_payload", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("firenze_response", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("merchants_id", sa.String(length=128), nullable=True),
+        sa.Column("transaction_id", sa.String(length=128), nullable=True),
+        sa.Column("provider", sa.String(length=64), nullable=True),
+        sa.Column("amount", sa.Numeric(precision=19, scale=4), nullable=True),
+        sa.Column("currency", sa.String(length=3), nullable=True),
+        sa.Column("payment_status", sa.String(length=32), nullable=False),
+        sa.Column("email", sa.String(length=255), nullable=True),
+        sa.Column("extra_args", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("request_payload", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("response_payload", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("payment_object", sa.JSON(), server_default=sa.text("'{}'"), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("orders", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_orders_email"), ["email"], unique=False)
+        batch_op.create_index(batch_op.f("ix_orders_firenze_client_id"), ["firenze_client_id"], unique=False)
+        batch_op.create_index(batch_op.f("ix_orders_merchants_id"), ["merchants_id"], unique=True)
+        batch_op.create_index(batch_op.f("ix_orders_payment_status"), ["payment_status"], unique=False)
+        batch_op.create_index(batch_op.f("ix_orders_provider"), ["provider"], unique=False)
+        batch_op.create_index(batch_op.f("ix_orders_transaction_id"), ["transaction_id"], unique=True)
+
+    op.create_table(
+        "order_items",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("order_id", sa.Integer(), nullable=False),
+        sa.Column("item_type", sa.String(length=20), nullable=False),
+        sa.Column("item_id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("quantity", sa.Integer(), nullable=False),
+        sa.Column("unit_price", sa.Numeric(precision=19, scale=4), nullable=False),
+        sa.Column("currency", sa.String(length=3), nullable=False),
+        sa.Column("fulfillment_status", sa.String(length=20), nullable=False),
+        sa.Column("fulfilled_at", sa.DateTime(), nullable=True),
+        sa.Column("fulfillment_error", sa.Text(), nullable=True),
+        sa.Column("fulfillment_attempts", sa.Integer(), nullable=False),
+        sa.Column("fulfillment_reference", sa.String(length=255), nullable=True),
+        sa.ForeignKeyConstraint(["order_id"], ["orders.id"]),
+        sa.PrimaryKeyConstraint("id"),
+    )
+
+    op.create_table(
+        "gift_cards",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("code", sa.String(length=32), nullable=False),
+        sa.Column("gift_card_product_id", sa.Integer(), nullable=False),
+        sa.Column("order_id", sa.Integer(), nullable=True),
+        sa.Column("purchaser_email", sa.String(length=255), nullable=True),
+        sa.Column("recipient_email", sa.String(length=255), nullable=True),
+        sa.Column("redeemed_by_user_id", sa.Integer(), nullable=True),
+        sa.Column("redeemed_at", sa.DateTime(), nullable=True),
+        sa.Column("redemption_order_id", sa.String(length=64), nullable=True),
+        sa.Column("status", sa.String(length=20), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(["gift_card_product_id"], ["gift_card_products.id"]),
+        sa.ForeignKeyConstraint(["order_id"], ["orders.id"]),
+        sa.ForeignKeyConstraint(["redeemed_by_user_id"], ["users.id"]),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("gift_cards", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_gift_cards_code"), ["code"], unique=True)
+        batch_op.create_index(batch_op.f("ix_gift_cards_order_id"), ["order_id"], unique=False)
+        batch_op.create_index(batch_op.f("ix_gift_cards_redeemed_by_user_id"), ["redeemed_by_user_id"], unique=False)
+
+    op.create_table(
+        "site_settings",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("key", sa.String(length=80), nullable=False),
+        sa.Column("value", sa.Text(), nullable=True),
+        sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("module", sa.String(length=50), nullable=False, server_default="general"),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    with op.batch_alter_table("site_settings", schema=None) as batch_op:
+        batch_op.create_index(batch_op.f("ix_site_settings_key"), ["key"], unique=True)
+
+    op.create_table(
+        "roles_users",
+        sa.Column("user_id", sa.Integer(), nullable=True),
+        sa.Column("role_id", sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(["role_id"], ["roles.id"]),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
+    )
+
+    op.bulk_insert(
+        sa.table(
+            "product_categories",
+            sa.column("slug", sa.String),
+            sa.column("name", sa.String),
+        ),
+        [
+            {"slug": "mazos", "name": "Mazos de Tarot"},
+            {"slug": "velas", "name": "Velas"},
+            {"slug": "inciensos", "name": "Inciensos"},
+            {"slug": "cristales", "name": "Cristales"},
+            {"slug": "otros", "name": "Otros"},
+        ],
+    )
+
+    op.bulk_insert(
+        sa.table(
+            "site_settings",
+            sa.column("key", sa.String),
+            sa.column("value", sa.Text),
+            sa.column("description", sa.String),
+            sa.column("module", sa.String),
+        ),
+        [
+            {
+                "key": "default_currency",
+                "value": "CLP",
+                "description": (
+                    "ISO 4217 currency code used for new orders when no other currency is specified."
+                ),
+                "module": "general",
+            },
+            {
+                "key": "default_language",
+                "value": "es_CL",
+                "description": (
+                    "Fallback locale used when a visitor has no session language and no Accept-Language match."
+                ),
+                "module": "general",
+            },
+        ],
+    )
+
+
+def downgrade():
+    op.drop_table("roles_users")
+    with op.batch_alter_table("site_settings", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_site_settings_key"))
+    op.drop_table("site_settings")
+
+    with op.batch_alter_table("gift_cards", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_gift_cards_redeemed_by_user_id"))
+        batch_op.drop_index(batch_op.f("ix_gift_cards_order_id"))
+        batch_op.drop_index(batch_op.f("ix_gift_cards_code"))
+    op.drop_table("gift_cards")
+
+    op.drop_table("order_items")
+
+    with op.batch_alter_table("orders", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_orders_transaction_id"))
+        batch_op.drop_index(batch_op.f("ix_orders_provider"))
+        batch_op.drop_index(batch_op.f("ix_orders_payment_status"))
+        batch_op.drop_index(batch_op.f("ix_orders_merchants_id"))
+        batch_op.drop_index(batch_op.f("ix_orders_firenze_client_id"))
+        batch_op.drop_index(batch_op.f("ix_orders_email"))
+    op.drop_table("orders")
+
+    with op.batch_alter_table("gift_card_products", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_gift_card_products_slug"))
+    op.drop_table("gift_card_products")
+
+    with op.batch_alter_table("products", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_products_slug"))
+    op.drop_table("products")
+
+    with op.batch_alter_table("product_categories", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_product_categories_slug"))
+    op.drop_table("product_categories")
+
+    op.drop_table("subscription_plans")
+
+    with op.batch_alter_table("minute_packs", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_minute_packs_slug"))
+    op.drop_table("minute_packs")
+
+    with op.batch_alter_table("blog_posts", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_blog_posts_slug"))
+    op.drop_table("blog_posts")
+
+    with op.batch_alter_table("static_pages", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_static_pages_path"))
+    op.drop_table("static_pages")
+
+    with op.batch_alter_table("webauthn", schema=None) as batch_op:
+        batch_op.drop_index("ix_webauthn_credential_id")
+    op.drop_table("webauthn")
+
+    op.drop_table("users")
+    op.drop_table("roles")

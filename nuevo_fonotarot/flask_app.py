@@ -13,6 +13,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from config import config
 
 from .admin import SecureAdminIndexView, init_admin
+
 from .extensions import (
     admin,
     babel,
@@ -173,6 +174,18 @@ def _init_extensions(app: Flask) -> None:
 
     app.before_request_funcs.setdefault("admin", []).append(_admin_rate_limit)
 
+    @app.before_request
+    def _inject_site_settings():
+        from .models import SiteSettings
+    
+        try:    
+            all_settings = SiteSettings.all()
+            app.logger.debug(f"_inject_site_settings: found {len(all_settings)} SiteSettings")
+            all_settings = {f"FT_{k.upper()}": v for k, v in all_settings.items()}
+            app.config.from_mapping(all_settings)
+        except Exception as e:
+            app.logger.warning(f"_inject_site_settings: failed to fetch SiteSettings")
+
     @app.context_processor
     def inject_site_languages() -> dict:
         return {"site_languages": _parse_available_langs()}
@@ -186,6 +199,7 @@ def _init_extensions(app: Flask) -> None:
 
     @app.context_processor
     def inject_site_settings() -> dict:
+        # TO DEPRECATE AFTER CHANGING ACCESS FROM TEMPLATES
         """Expose SEO, analytics, and theme settings to all templates.
 
         Fetches every needed key in a **single** DB query via

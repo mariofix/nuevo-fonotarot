@@ -170,6 +170,7 @@ class OrderStatus(enum.StrEnum):
 
     PENDING = "pending"
     PAID = "paid"
+    FULFILLING = "fulfilling"
     FAILED = "failed"
     SHIPPED = "shipped"
     DELIVERED = "delivered"
@@ -183,6 +184,15 @@ class OrderItemType(enum.StrEnum):
     SUBSCRIPTION = "subscription"
     PRODUCT = "product"
     GIFT_CARD = "gift_card"
+
+
+class OrderItemFulfillmentStatus(enum.StrEnum):
+    """Fulfillment status values for an OrderItem line."""
+
+    PENDING = "pending"
+    PROCESSING = "processing"
+    FULFILLED = "fulfilled"
+    FAILED = "failed"
 
 
 class MinutePack(db.Model):
@@ -576,6 +586,13 @@ class OrderItem(db.Model):
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
+    fulfillment_status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default=OrderItemFulfillmentStatus.PENDING
+    )
+    fulfilled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    fulfillment_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    fulfillment_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    fulfillment_reference: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     def __repr__(self) -> str:
         return f"<OrderItem {self.name} x{self.quantity}>"
@@ -739,6 +756,17 @@ class SiteSettings(db.Model):
         rows = cls.query.filter(cls.key.in_(keys)).all()
         found = {row.key: row.value for row in rows}
         return {key: found.get(key) or defaults.get(key) for key in keys}
+
+    @classmethod
+    def all(cls) -> dict[str, str | None]:
+        """Return values for all *keys* in a single query.
+
+        Missing keys resolve to the value in *defaults* (if provided)
+        or ``None``.
+        """
+        rows = cls.query.all()
+        found = {row.key: row.value for row in rows}
+        return {key: found.get(key) for key in found}
 
     @classmethod
     def set(

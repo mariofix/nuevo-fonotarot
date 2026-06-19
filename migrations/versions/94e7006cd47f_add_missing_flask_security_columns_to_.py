@@ -8,7 +8,7 @@ Create Date: 2026-05-05 16:28:31.763945
 
 import sqlalchemy as sa
 from alembic import op
-from flask_security import AsaList
+from flask_security.datastore import AsaList
 from sqlalchemy.ext.mutable import MutableList
 
 # revision identifiers, used by Alembic.

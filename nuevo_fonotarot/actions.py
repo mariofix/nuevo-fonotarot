@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 from typing import Any
 
 from flask import current_app, has_app_context, render_template
@@ -11,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from .extensions import db, user_datastore
 from .firenze import create_client, post_purchase, search_client
 from .log import get_logger
-from .models import MinutePack, Order, OrderItemType, OrderStatus, Role, User
+from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, Role, User
 from .notifications import notify_new_user_registration, send_telegram_notification, send_post_purchase_admin_email
 
 logger = get_logger(__name__)
@@ -256,6 +258,30 @@ def _iter_order_items(order: Order) -> list[Any]:
     return list(items)
 
 
+def _item_fulfillment_status(item: Any) -> str:
+    status = getattr(item, "fulfillment_status", None)
+    if not status:
+        return OrderItemFulfillmentStatus.PENDING.value
+    return str(status)
+
+
+def _update_order_status_after_fulfillment(order: Order) -> None:
+    items = _iter_order_items(order)
+    if not items:
+        return
+
+    has_fulfillment_progress = any(
+        _item_fulfillment_status(item) in {OrderItemFulfillmentStatus.FULFILLED.value, OrderItemFulfillmentStatus.FAILED.value}
+        for item in items
+    )
+    has_pending = any(_item_fulfillment_status(item) != OrderItemFulfillmentStatus.FULFILLED.value for item in items)
+
+    if has_fulfillment_progress and has_pending:
+        order.status = OrderStatus.FULFILLING
+    elif not has_pending:
+        order.status = OrderStatus.DELIVERED
+
+
 def _propagate_client_id_to_order_and_user(order: Order, client_id: int) -> None:
     """Store Firenze client_id on order and linked user (when missing on user)."""
     order.firenze_client_id = client_id
@@ -352,10 +378,20 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
                 f"item_type={item.item_type!r} item_id={item.item_id}"
             )
             continue
+        if _item_fulfillment_status(item) == OrderItemFulfillmentStatus.FULFILLED.value:
+            logger.info(
+                "post_purchase_process: skipping already fulfilled minute item order=%s item_id=%s",
+                order.id,
+                item.item_id,
+            )
+            continue
 
         pack = db.session.get(MinutePack, int(item.item_id))
         if pack is None:
             logger.warning(f"post_purchase_process: minute pack id={item.item_id} not found for order={order.id}")
+            item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+            item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
+            item.fulfillment_error = "minute_pack_not_found"
             item_results.append(
                 {
                     "item_id": item.item_id,
@@ -388,6 +424,7 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
             firenze_post_response = create_client(**request_payload)
         else:
             firenze_post_response = post_purchase(**request_payload)
+        item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
         logger.info(
             "post_purchase_process: post_purchase response order=%s item_id=%s response=%r",
             order.id,
@@ -425,6 +462,8 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
                 f"post_purchase_process: Firenze post_purchase failed order={order.id} "
                 f"item_id={item.item_id} payload={request_payload!r}"
             )
+            item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+            item.fulfillment_error = "firenze_post_purchase_failed"
             send_telegram_notification(
                 f"post_purchase_process: ERROR order_id={order.id} item_id={item.item_id} post_purchase returned None"
             )
@@ -432,12 +471,18 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
                 send_firenze_failure_email(order)
             order.firenze_payload = firenze_payloads
             order.firenze_response = firenze_responses
+            _update_order_status_after_fulfillment(order)
+            db.session.commit()
 
             return False, item_results
 
         ## Move this out of this function
         ## and after this function reports OK
         minute_pack_processed += 1
+        item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
+        item.fulfilled_at = datetime.now()
+        item.fulfillment_error = None
+        item.fulfillment_reference = str(order.transaction_id or order.id)
         if is_new_client and posted_client_id is not None:
             # Firenze created a new client — store and reuse for remaining items.
             client_id = posted_client_id
@@ -455,13 +500,12 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
                 f"post_purchase_process: Clientid distinto order_id={order.id} "
                 f"firenze_client_id={client_id} posted_client_id={posted_client_id}"
             )
+        db.session.commit()
 
     order.firenze_payload = firenze_payloads
     order.firenze_response = firenze_responses
 
-    ## Move this out of this function
-    ## and after this function reports OK
-    order.status = OrderStatus.DELIVERED
+    _update_order_status_after_fulfillment(order)
     db.session.flush()
     db.session.commit()
     logger.info(f"post_purchase_process: {order.id=} marked {order.status=}")
@@ -490,6 +534,150 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
         f"total_items={len(item_results)} all_ok={all_ok}"
     )
     return all_ok, item_results
+
+
+def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool, dict[str, Any]]:
+    pack = db.session.get(MinutePack, int(item.item_id))
+    if pack is None:
+        item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+        item.fulfillment_error = "minute_pack_not_found"
+        item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
+        db.session.commit()
+        return False, {"status": "failed", "reason": "missing_pack", "item_id": item.id}
+
+    quantity = max(int(item.quantity or 1), 1)
+    seconds_to_add = int(pack.minutes) * 60 * quantity
+    client_id = order.firenze_client_id or _resolve_or_lookup_client_id(order)
+    payload = {
+        "segundos": seconds_to_add,
+        "transaction_id": f"{order.transaction_id or order.id}:item:{item.id}",
+        "name": order.shipping_name,
+        "email": order.email,
+        "ani": order.shipping_phone,
+    }
+    if client_id is not None:
+        payload["client_id"] = client_id
+
+    item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
+    item.fulfillment_status = OrderItemFulfillmentStatus.PROCESSING.value
+    item.fulfillment_error = None
+    db.session.commit()
+
+    if client_id is None:
+        response = create_client(**payload)
+    else:
+        response = post_purchase(**payload)
+
+    if response is None:
+        item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+        item.fulfillment_error = "firenze_post_purchase_failed"
+        db.session.commit()
+        return False, {"status": "failed", "reason": "firenze_post_purchase_failed", "item_id": item.id}
+
+    posted_client_id = None
+    if isinstance(response, dict) and response.get("client_id") is not None:
+        try:
+            posted_client_id = int(response["client_id"])
+        except (TypeError, ValueError):
+            posted_client_id = None
+
+    if posted_client_id is not None and order.firenze_client_id is None:
+        _propagate_client_id_to_order_and_user(order, posted_client_id)
+
+    item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
+    item.fulfilled_at = datetime.now()
+    item.fulfillment_error = None
+    item.fulfillment_reference = str(payload["transaction_id"])
+    db.session.commit()
+    return True, {"status": "ok", "item_id": item.id, "seconds_posted": seconds_to_add}
+
+
+def fulfill_single_order_item(order_id: int, order_item_id: int) -> dict[str, Any]:
+    """Fulfill one order item by type, with item-level idempotency."""
+    order = db.session.get(Order, int(order_id))
+    item = db.session.get(OrderItem, int(order_item_id))
+    if order is None or item is None or item.order_id != int(order_id):
+        return {"status": "failed", "reason": "order_or_item_not_found", "order_id": order_id, "item_id": order_item_id}
+    if order.payment_status != "succeeded":
+        return {"status": "failed", "reason": "payment_not_succeeded", "order_id": order.id, "item_id": item.id}
+    if _item_fulfillment_status(item) == OrderItemFulfillmentStatus.FULFILLED.value:
+        return {"status": "skipped", "reason": "already_fulfilled", "order_id": order.id, "item_id": item.id}
+
+    if item.item_type == OrderItemType.MINUTE_PACK.value:
+        ok, detail = _fulfill_minute_pack_order_item(order, item)
+    elif item.item_type == OrderItemType.GIFT_CARD.value:
+        # Lazy import avoids circular imports during app startup.
+        from .tienda.tarjetas.service import issue_gift_cards_for_order_item
+
+        ok, detail = issue_gift_cards_for_order_item(order, item)
+    else:
+        return {"status": "skipped", "reason": "unsupported_item_type", "order_id": order.id, "item_id": item.id}
+
+    _update_order_status_after_fulfillment(order)
+    db.session.commit()
+    detail["order_id"] = order.id
+    detail["item_type"] = item.item_type
+    detail["ok"] = ok
+    return detail
+
+
+def _run_single_item_worker(app, order_id: int, order_item_id: int) -> dict[str, Any]:
+    with app.app_context():
+        return fulfill_single_order_item(order_id=order_id, order_item_id=order_item_id)
+
+
+def dispatch_order_fulfillment_async(
+    order_id: int,
+    *,
+    max_workers: int = 4,
+    retry_statuses: tuple[str, ...] = (
+        OrderItemFulfillmentStatus.PENDING.value,
+        OrderItemFulfillmentStatus.FAILED.value,
+    ),
+) -> dict[str, Any]:
+    """Fan out item fulfillment in parallel for minute packs and gift cards."""
+    if not has_app_context():
+        raise RuntimeError("dispatch_order_fulfillment_async requires an app context")
+
+    order = db.session.get(Order, int(order_id))
+    if order is None:
+        return {"status": "failed", "reason": "order_not_found", "order_id": order_id}
+    if order.payment_status != "succeeded":
+        return {"status": "failed", "reason": "payment_not_succeeded", "order_id": order.id}
+
+    dispatchable_types = {OrderItemType.MINUTE_PACK.value, OrderItemType.GIFT_CARD.value}
+    item_ids = [
+        int(item.id)
+        for item in _iter_order_items(order)
+        if item.item_type in dispatchable_types and _item_fulfillment_status(item) in retry_statuses
+    ]
+    if not item_ids:
+        _update_order_status_after_fulfillment(order)
+        db.session.commit()
+        return {"status": "ok", "order_id": order.id, "scheduled": 0, "results": []}
+
+    order.status = OrderStatus.FULFILLING
+    db.session.commit()
+    app = current_app._get_current_object()
+
+    results: list[dict[str, Any]] = []
+    worker_count = max(1, min(int(max_workers), len(item_ids)))
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        futures = [executor.submit(_run_single_item_worker, app, int(order.id), item_id) for item_id in item_ids]
+        for future in as_completed(futures):
+            results.append(future.result())
+
+    refreshed_order = db.session.get(Order, int(order.id))
+    if refreshed_order is not None:
+        _update_order_status_after_fulfillment(refreshed_order)
+        db.session.commit()
+
+    return {
+        "status": "ok",
+        "order_id": order.id,
+        "scheduled": len(item_ids),
+        "results": results,
+    }
 
 
 def post_purchase_process(

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gift Card Fonotarot · Instrucciones de Canje</title>
+  <style>
+    :root {
+      --bg:#f5f1ff;
+      --card:#ffffff;
+      --primary:#5a2ea6;
+      --accent:#f3b63f;
+      --text:#2d2440;
+      --muted:#6e6485;
+      --ok:#eaf8ef;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      padding:28px;
+      background:linear-gradient(135deg,#f7f3ff 0%,#eee8ff 45%,#fef8ef 100%);
+      font-family:Inter,Segoe UI,Arial,sans-serif;
+      color:var(--text);
+    }
+    .sheet {
+      max-width:820px;
+      margin:0 auto;
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(59,35,117,.14);
+      overflow:hidden;
+      border:1px solid #e6dcfb;
+    }
+    .hero {
+      padding:28px 32px;
+      background:radial-gradient(circle at top right,#7d52d6 0%,#5a2ea6 60%,#4a2388 100%);
+      color:#fff;
+      text-align: center;
+    }
+    .hero h1 { margin:0; font-size:32px; }
+    .hero p { margin:8px 0 0; opacity:.95; }
+    .content { padding:28px 32px 30px; }
+    .code-box {
+      border:2px dashed #cab6f6;
+      border-radius:14px;
+      padding:18px;
+      background:#faf7ff;
+      margin:16px 0 24px;
+    }
+    .code {
+      font-size:34px;
+      letter-spacing:3px;
+      font-weight:800;
+      color:var(--primary);
+      margin:8px 0;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin:0 0 24px;
+    }
+    .panel {
+      border:1px solid #ebdefc;
+      border-radius:12px;
+      padding:16px;
+      background:#fff;
+    }
+    .panel h3 { margin:0 0 10px; font-size:17px; color:var(--primary); }
+    .panel ul { margin:0; padding-left:18px; }
+    .panel li { margin:8px 0; line-height:1.45; }
+    .panel p { margin:0 0 8px; line-height:1.45; }
+    .panel p:last-child { margin:0; }
+    .steps {
+      background:var(--ok);
+      border:1px solid #bfe8ce;
+      border-radius:12px;
+      padding:16px;
+    }
+    .steps h3 { margin:0 0 8px; color:#25653b; }
+    .steps ol { margin:0; padding-left:18px; }
+    .steps li { margin:8px 0; line-height:1.5; }
+    .steps p { margin:0 0 10px; line-height:1.5; }
+    .steps p:last-child { margin:0; }
+    .footer {
+      margin-top:18px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .badge {
+      display:inline-block;
+      background:#fff2d9;
+      border:1px solid #f6d58d;
+      color:#845b08;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.2px;
+      margin-bottom:8px;
+    }
+  </style>
+</head>
+<body>
+  <section class="sheet" aria-label="GIftCard Fonotarot">
+    <header class="hero">
+      <h1>Fonotarot</h1>
+      <p>Regala minutos y energía positiva en una experiencia simple y rápida.</p>
+    </header>
+
+    <main class="content">
+      <span class="badge">Válido hasta {{ giftcard.redem_until }}</span>
+      <div class="code-box">
+        <div><strong>Tu Código de Gift Card</strong></div>
+        <div class="code">{{ giftcard.code }}</div>
+        <div>Esta tarjeta de regalo contiene {{ giftcard.minutes }} minutos para hablar con nuestras tarotistas. Guarda este código, lo necesitarás para activar tus minutos.</div>
+      </div>
+
+      <div class="grid">
+        <article class="panel">
+          <h3>Necesitas estos datos para canjear</h3>
+          <ul>
+            <li>Tu código de Gift Card</li>
+            <li>Un correo electrónico</li>
+            <li>Tu número de teléfono</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>¿Cómo disfrutar tu regalo?</h3>
+          <p>1. Ingresa a <a href="https://tienda.fonotarot.com/tienda/giftcards/canje" style="color:var(--primary); font-weight:bold;">tienda.fonotarot.com/canje</a> para activar tu código.</p>
+          <p>2. Revisa <a href="https://fonotarot.com/" style="color:var(--primary); font-weight:bold;">fonotarot.com</a> para ver el estado actual de nuestras tarotistas.</p>
+          <p>3. Llama al <strong>+56 2 2230 1515</strong>. ¡Tus minutos estarán listos de inmediato!</p>
+        </article>
+      </div>
+
+      <section class="steps">
+        <h3>Tu experiencia Fonotarot</h3>
+        <p>Al canjear tu tarjeta, el sistema asociará los minutos a tu teléfono. Tus minutos se irán descontando sólo mientras hablas.</p>
+        <p>Recibirás en tu correo los datos de acceso nuestra tienda, donde podrás ver tu saldo y beneficios exclusivos.</p>
+      </section>
+
+      <p class="footer">
+        Importante: recuerda canjear tu Gift Card antes del <strong>{{ giftcard.redem_until }}</strong>.
+        Una vez que actives tus minutos, <strong>estos no expiran nunca</strong> y estarán siempre disponibles para ti. Si necesitas ayuda, visita <a href="{{ base_url }}" style="color:var(--muted);">{{ base_url }}</a>.
+      </p>
+    </main>
+  </section>
+</body>
+</html>

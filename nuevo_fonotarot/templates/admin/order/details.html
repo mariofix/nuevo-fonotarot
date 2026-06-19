@@ -4,6 +4,7 @@
   {% set order_labels = {
     'pending': _gettext('Pending'),
     'paid': _gettext('Paid'),
+    'fulfilling': _gettext('Fulfilling'),
     'shipped': _gettext('Shipped'),
     'delivered': _gettext('Delivered'),
     'failed': _gettext('Failed'),
@@ -21,6 +22,7 @@
   {% set order_badges = {
     'pending': 'bg-warning-lt text-warning',
     'paid': 'bg-success-lt text-success',
+    'fulfilling': 'bg-info-lt text-info',
     'shipped': 'bg-primary-lt text-primary',
     'delivered': 'bg-teal-lt text-teal',
     'failed': 'bg-danger-lt text-danger',
@@ -173,6 +175,8 @@
               {% set order_steps = ['pending', 'paid', 'shipped', 'delivered'] %}
             {% elif model.status == 'shipped' %}
               {% set order_steps = ['pending', 'paid', 'shipped'] %}
+            {% elif model.status == 'fulfilling' %}
+              {% set order_steps = ['pending', 'paid', 'fulfilling'] %}
             {% elif model.status == 'paid' %}
               {% set order_steps = ['pending', 'paid'] %}
             {% else %}

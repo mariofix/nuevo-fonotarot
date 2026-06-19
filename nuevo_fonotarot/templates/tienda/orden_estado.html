@@ -82,7 +82,7 @@
 {% endblock %}
 
 {% block content %}
-{% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'delivered') %}
+{% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'fulfilling', 'delivered') %}
 {% set support_phone = '+56 2 2230 1515' %}
 {% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else none %}
 

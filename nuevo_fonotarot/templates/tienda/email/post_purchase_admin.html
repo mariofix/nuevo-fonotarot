@@ -26,6 +26,7 @@
 {% set order_labels = {
   'pending':   'Pendiente',
   'paid':      'Pagado',
+  'fulfilling':'En proceso de entrega',
   'delivered': 'Entregado',
   'cancelled': 'Cancelado',
 } %}
@@ -41,6 +42,7 @@
 {% set order_badge_style = {
   'pending':   'background:#fff3cd; color:#856404;',
   'paid':      'background:#d1fae5; color:#065f46;',
+  'fulfilling':'background:#dbeafe; color:#1e40af;',
   'delivered': 'background:#ccfbf1; color:#0f6657;',
   'cancelled': 'background:#fee2e2; color:#991b1b;',
 } %}
@@ -53,7 +55,7 @@
   'refunded':   'background:#f3f4f6; color:#4b5563;',
   'unknown':    'background:#f3f4f6; color:#4b5563;',
 } %}
-{% set order_flow     = ['pending', 'paid'] %}
+{% set order_flow     = ['pending', 'paid', 'fulfilling'] %}
 {% set order_terminals = ['delivered', 'cancelled'] %}
 {% set payment_flow    = ['pending', 'processing'] %}
 {% set payment_terminals = ['succeeded', 'failed', 'cancelled', 'refunded', 'unknown'] %}

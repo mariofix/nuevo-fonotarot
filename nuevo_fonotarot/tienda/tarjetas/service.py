@@ -7,7 +7,7 @@ from string import ascii_uppercase, digits
 from ...extensions import db
 from ...firenze import post_purchase
 from ...log import get_logger
-from ...models import GiftCard, GiftCardProduct, Order, OrderItemType, User
+from ...models import GiftCard, GiftCardProduct, Order, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, User
 
 logger = get_logger(__name__)
 
@@ -36,6 +36,7 @@ def generate_unique_gift_code() -> str:
 def issue_gift_cards_for_order(order: Order) -> int:
     """Create missing gift-card codes for paid order gift-card items."""
     issued_count = 0
+    status_changed = False
     request_payload = order.request_payload if isinstance(order.request_payload, dict) else {}
     recipient_email = (request_payload.get("gift_card_recipient_email") or "").strip() or None
 
@@ -43,6 +44,7 @@ def issue_gift_cards_for_order(order: Order) -> int:
         if item.item_type != OrderItemType.GIFT_CARD.value:
             continue
 
+        item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
         product = db.session.get(GiftCardProduct, int(item.item_id))
         if product is None:
             logger.warning(
@@ -50,6 +52,8 @@ def issue_gift_cards_for_order(order: Order) -> int:
                 item.item_id,
                 order.id,
             )
+            item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+            item.fulfillment_error = "gift_card_product_not_found"
             continue
 
         quantity = max(int(item.quantity or 1), 1)
@@ -66,12 +70,75 @@ def issue_gift_cards_for_order(order: Order) -> int:
             )
             db.session.add(gift_card)
             issued_count += 1
+        item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
+        item.fulfillment_error = None
+        if item.fulfilled_at is None:
+            item.fulfilled_at = datetime.now()
 
-    if issued_count:
+    if any(
+        getattr(item, "fulfillment_status", OrderItemFulfillmentStatus.PENDING.value)
+        in {OrderItemFulfillmentStatus.FULFILLED.value, OrderItemFulfillmentStatus.FAILED.value}
+        for item in list(order.items)
+    ):
+        has_pending = any(
+            getattr(item, "fulfillment_status", OrderItemFulfillmentStatus.PENDING.value)
+            != OrderItemFulfillmentStatus.FULFILLED.value
+            for item in list(order.items)
+        )
+        if has_pending:
+            if order.status != OrderStatus.FULFILLING:
+                order.status = OrderStatus.FULFILLING
+                status_changed = True
+        elif order.status != OrderStatus.SHIPPED:
+            if order.status != OrderStatus.DELIVERED:
+                order.status = OrderStatus.DELIVERED
+                status_changed = True
+
+    if issued_count or status_changed:
         db.session.commit()
         logger.info("issue_gift_cards_for_order: issued=%s order=%s", issued_count, order.id)
 
     return issued_count
+
+
+def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
+    """Create missing gift cards for a single gift-card order item."""
+    if item.item_type != OrderItemType.GIFT_CARD.value:
+        return False, {"status": "skipped", "reason": "not_gift_card"}
+
+    item.fulfillment_attempts = int(getattr(item, "fulfillment_attempts", 0) or 0) + 1
+    product = db.session.get(GiftCardProduct, int(item.item_id))
+    if product is None:
+        item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
+        item.fulfillment_error = "gift_card_product_not_found"
+        db.session.commit()
+        return False, {"status": "failed", "reason": "missing_product", "item_id": item.id}
+
+    request_payload = order.request_payload if isinstance(order.request_payload, dict) else {}
+    recipient_email = (request_payload.get("gift_card_recipient_email") or "").strip() or None
+    quantity = max(int(item.quantity or 1), 1)
+    existing = GiftCard.query.filter_by(order_id=order.id, gift_card_product_id=product.id).count()
+    missing = max(0, quantity - existing)
+    issued = 0
+    for _ in range(missing):
+        gift_card = GiftCard(
+            code=generate_unique_gift_code(),
+            gift_card_product_id=product.id,
+            order_id=order.id,
+            purchaser_email=order.shipping_email or order.email,
+            recipient_email=recipient_email,
+            status="issued",
+        )
+        db.session.add(gift_card)
+        issued += 1
+
+    item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
+    item.fulfillment_error = None
+    if item.fulfilled_at is None:
+        item.fulfilled_at = datetime.now()
+    item.fulfillment_reference = f"gift_cards:{product.id}:{quantity}"
+    db.session.commit()
+    return True, {"status": "ok", "item_id": item.id, "issued": issued, "existing": existing}
 
 
 def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:

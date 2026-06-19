@@ -245,19 +245,24 @@ def _complete_succeeded_order(order: Order, label: str) -> None:
     has_physical_products = any(item.item_type == OrderItemType.PRODUCT.value for item in items)
 
     if requires_firenze:
-        sync_ok = _sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False)
+        topup_ok = False
+        sync_ok = _sync_firenze_on_payment(order)
+        if sync_ok:
+            topup_ok, _ = sync_firenze_topup(order, automated=False)
+            sync_ok = topup_ok
         if not sync_ok:
             logger.warning(
                 "_complete_succeeded_order: Firenze sync failed for order=%s "
-                "— order remains PENDING, notifying admins",
+                "— order fulfillment incomplete, notifying admins",
                 order.id,
             )
             db.session.commit()
             _send_firenze_failure_email(order)
             return
 
-    order.status = OrderStatus.PAID
-    db.session.commit()
+    if order.status == OrderStatus.PENDING:
+        order.status = OrderStatus.PAID
+        db.session.commit()
 
     if has_gift_cards:
         issued = issue_gift_cards_for_order(order)
@@ -285,15 +290,22 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
     has_gift_cards = any(item.item_type == OrderItemType.GIFT_CARD.value for item in items)
     has_physical_products = any(item.item_type == OrderItemType.PRODUCT.value for item in items)
 
-    if requires_firenze and not (_sync_firenze_on_payment(order) and sync_firenze_topup(order, automated=False)):
+    sync_ok = True
+    if requires_firenze:
+        sync_ok = _sync_firenze_on_payment(order)
+        if sync_ok:
+            topup_ok, _ = sync_firenze_topup(order, automated=False)
+            sync_ok = topup_ok
+    if requires_firenze and not sync_ok:
         logger.warning(
-            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order remains PENDING"
+            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"
         )
         _send_firenze_failure_email(order)
         return False
 
-    order.status = OrderStatus.PAID
-    db.session.commit()
+    if order.status == OrderStatus.PENDING:
+        order.status = OrderStatus.PAID
+        db.session.commit()
     if has_gift_cards:
         issued = issue_gift_cards_for_order(order)
         logger.info("_complete_succeeded_order_admin_flow: issued %s gift card(s) for order=%s", issued, order.id)

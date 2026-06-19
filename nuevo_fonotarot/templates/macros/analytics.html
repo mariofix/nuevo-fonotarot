@@ -22,7 +22,7 @@
 
 {# ── Umami web tracker ──────────────────────────────────────────────────── #}
 {% macro umami_script() %}
-{% if umami_website_id %}
+{% if config.FT_umami_website_id %}
 <script defer src="https://cloud.umami.is/script.js" data-website-id="{{ umami_website_id }}"></script>
 {% endif %}
 {% endmacro %}
