@@ -3,163 +3,6 @@
 {# ── Title ─────────────────────────────────────────────────────────────── #}
 {% block title %}Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile{% endblock %}
 
-{# ── Homepage-specific SEO / head additions ────────────────────────────── #}
-{% block extra_head %}
-<!-- ── Primary SEO ─────────────────────────────────────────── -->
-<meta name="description"
-  content="Consulta tarot por teléfono en Chile con tarotistas reales. Orientación en amor, trabajo, salud y vida personal. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-<meta name="keywords" content="tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot, tarot telefónico, orientación espiritual, tarot amor, tarot trabajo" />
-<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-<meta name="googlebot" content="index, follow" />
-<meta name="distribution" content="Chile" />
-<link rel="canonical" href="{{ site_url }}/" />
-<link rel="alternate" hreflang="es-CL" href="{{ site_url }}/" />
-<link rel="alternate" hreflang="x-default" href="{{ site_url }}/" />
-
-<!-- ── Open Graph / Facebook ────────────────────────────────── -->
-<meta property="og:locale" content="es_CL" />
-<meta property="og:title" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
-<meta property="og:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Planes desde 15 min, disponible 24/7. El universo marca el camino, ¡descúbrelo!" />
-<meta property="og:image" content="{{ site_url }}/static/og-image.png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
-
-<!-- ── Twitter / X Card ─────────────────────────────────────── -->
-<meta name="twitter:title" content="Fonotarot - El universo marca un camino, ¡descúbrelo! | Chile" />
-<meta name="twitter:description" content="Consulta tarot por teléfono en Chile con tarotistas reales. Disponible 24/7." />
-<meta name="twitter:image" content="{{ site_url }}/static/og-image.png" />
-
-<!-- ── Schema.org JSON-LD ───────────────────────────────────── -->
-<script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "{{ site_url }}/#organization",
-          "name": "Fonotarot",
-          "url": "{{ site_url }}",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "{{ site_url }}/static/logo.png",
-            "width": 520,
-            "height": 140
-          },
-          "description": "Servicio de consulta de tarot terapéutico y holístico por teléfono en Chile.",
-          "areaServed": { "@type": "Country", "name": "Chile" },
-          "sameAs": [
-            "https://twitter.com/fonotarot",
-            "https://www.instagram.com/fonotarot"
-          ]
-        },
-        {
-          "@type": "Service",
-          "@id": "{{ site_url }}/#service",
-          "name": "Consulta de Tarot por Teléfono",
-          "description": "Consulta de tarot holístico y terapéutico por teléfono con tarotistas reales en Chile. Orientación en amor, trabajo, salud y desarrollo personal.",
-          "provider": { "@id": "{{ site_url }}/#organization" },
-          "areaServed": { "@type": "Country", "name": "Chile" },
-          "availableChannel": {
-            "@type": "ServiceChannel",
-            "serviceType": "Teléfono",
-            "availableLanguage": { "@type": "Language", "name": "Spanish" }
-          },
-          "offers": {
-            "@type": "Offer",
-            "description": "Planes de consulta desde 15 minutos",
-            "priceCurrency": "CLP",
-            "availability": "https://schema.org/InStock"
-          }
-        },
-        {
-          "@type": "WebSite",
-          "@id": "{{ site_url }}/#website",
-          "url": "{{ site_url }}",
-          "name": "Fonotarot",
-          "description": "Tarot por teléfono con personas reales en Chile",
-          "publisher": { "@id": "{{ site_url }}/#organization" },
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": { "@type": "EntryPoint", "urlTemplate": "{{ site_url }}/?q={search_term_string}" },
-            "query-input": "required name=search_term_string"
-          }
-        },
-        {
-          "@type": "FAQPage",
-          "@id": "{{ site_url }}/#faq",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "¿Cómo funciona el servicio?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al +56 2 2230 1515 y conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan solo mientras hablas."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Puedo elegir con qué especialista hablar?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Sí. En nuestra página puedes ver en tiempo real quién está disponible, en consulta o desconectada. Al llamar, el sistema te pedirá el número de conexión de la especialista que prefieras. También puedes pedir que te asignen una al azar."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Los minutos tienen fecha de vencimiento?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "No. Los minutos que compres quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más los necesites, sin apuros. Si compras más minutos, se suman a tu saldo existente."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Es completamente confidencial?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Sí, totalmente. Al llamar, la tarotista no tiene acceso a tu número ni a ningún dato personal. Puedes usar un seudónimo si lo prefieres. Está estrictamente prohibido compartir información de contacto entre clientes y especialistas, y toda la información de la consulta es confidencial."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Realizan rituales, amarras u otros trabajos espirituales?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "No, absolutamente no. Nuestro servicio es exclusivamente de consulta de tarot por teléfono. Ninguna de nuestras especialistas está autorizada para ofrecer ni realizar trabajos adicionales."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Qué hago si la llamada se corta inesperadamente?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Si tus minutos se agotaron o hubo un problema de red, comunícate con nuestro supervisor por WhatsApp. Si fue un fallo técnico, te repondrán los minutos sin problema."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Puedo llamar desde el extranjero?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Sí, por lo general puedes llamar al +56 2 2230 1515 desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de tu operadora."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "¿Cuál es el horario de atención?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Atendemos los 365 días del año. El horario general es de 9:00 a 23:00 horas, aunque con frecuencia es posible encontrar especialistas disponibles fuera de ese horario. El estado en tiempo real siempre está visible en nuestra página web."
-              }
-            }
-          ]
-        }
-      ]
-    }
-    </script>
-{% endblock %}
-
 {# ── Homepage-specific styles ──────────────────────────────────────────── #}
 {% block extra_css %}
 <style>
@@ -2234,7 +2077,7 @@
         <div class="stat-label">Consultas realizadas</div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-big" data-count="98" data-suffix="%">98%</div>
+        <div class="stat-big" data-count="98" data-suffix="%">98.7%</div>
         <div class="stat-label">Satisfacción</div>
       </div>
       <div class="col-6 col-md-3">
@@ -2484,7 +2327,7 @@
       <div class="col-6 col-md-4 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
         <div class="agent-card" data-option="{{ agent.option }}">
           {% if not agent.avatar %}
-          <div class="agent-no-photo-bg">{{ agent.name[0] }}</div>
+          <div class="agent-no-photo-bg">{{ agent.name }}</div>
           {% else %}
           <img
             class="agent-photo"
@@ -2696,7 +2539,7 @@
 </section> #}
 
 <!-- ── CTA ──────────────────────────────────────── -->
-{# <section class="cta-section">
+<section class="cta-section">
   <div class="container" style="position:relative; z-index:1;">
     <h2>Da el primer paso hacia la claridad</h2>
     <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
@@ -2705,7 +2548,7 @@
       <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
     </div>
   </div>
-</section> #}
+</section>
 
 <!-- ── BACK TO TOP ──────────────────────────────── -->
 <button class="btn-back-top" id="back-top" aria-label="Volver arriba">
@@ -3117,9 +2960,9 @@
     }) ();
 </script>
 
+{% if not current_user.is_authenticated %}
 <script>
   /* ── Promo modal: phone validation + API call ───────── */
-  {% if not current_user.is_authenticated %}
   (function() {
     var input = document.getElementById('promoPhoneInput');
     var btn = document.getElementById('promoSubmitBtn');
@@ -3203,6 +3046,6 @@
         });
     });
   })();
-  {% endif %}
 </script>
+{% endif %}
 {% endblock %}

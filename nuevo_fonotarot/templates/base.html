@@ -18,15 +18,15 @@
   <meta name="robots" content="{{ config.FT_SEO_ROBOTS or " index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" }}" />
   <meta name="googlebot" content="{{ config.FT_SEO_ROBOTS or " index, follow" }}" />
   <meta name="bingbot" content="{{ config.FT_SEO_ROBOTS or " index, follow" }}" />
-  <meta name="language" content="{{ config.FT_SEO_language or " Spanish" }}" />
-  <meta name="geo.region" content="{{ config.FT_SEO_geo_region or " CL" }}" />
-  <meta name="geo.country" content="{{ config.FT_SEO_geo_country or " Chile" }}" />
-  <meta name="geo.placename" content="{{ config.FT_SEO_geo_placename or " Chile" }}" />
-  <meta name="copyright" content="{{ config.FT_SEO_copyright or " Fonotarot" }}" />
-  {% if config.FT_SEO_google_verification %}
-  <meta name="google-site-verification" content="{{ config.FT_SEO_google_verification }}" />{% endif %}
-  {% if config.FT_SEO_bing_verification %}
-  <meta name="msvalidate.01" content="{{ config.FT_SEO_bing_verification }}" />{% endif %}
+  <meta name="language" content="{{ config.FT_SEO_LANGUAGE or " Spanish" }}" />
+  <meta name="geo.region" content="{{ config.FT_SEO_GEO_REGION or " CL" }}" />
+  <meta name="geo.country" content="{{ config.FT_SEO_GEO_COUNTRY or " Chile" }}" />
+  <meta name="geo.placename" content="{{ config.FT_SEO_GEO_PLACENAME or " Chile" }}" />
+  <meta name="copyright" content="{{ config.FT_SEO_COPYRIGHT or " Fonotarot" }}" />
+  {% if config.FT_SEO_GOOGLE_VERIFICATION %}
+  <meta name="google-site-verification" content="{{ config.FT_SEO_GOOGLE_VERIFICATION }}" />{% endif %}
+  {% if config.FT_SEO_BING_VERIFICATION %}
+  <meta name="msvalidate.01" content="{{ config.FT_SEO_BING_VERIFICATION }}" />{% endif %}
   <link rel="canonical" href="https://{{ site_domain }}{{ request.path }}" />
   <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.path }}" />
   <link rel="alternate" hreflang="es-US" href="https://{{ site_domain }}{{ request.path }}" />
