@@ -1,0 +1,144 @@
+
+<style>
+.cart-wrap { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+.cart-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.cart-item:last-child { border-bottom: none; }
+.item-type-badge { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--color-background-tertiary); color: var(--color-text-secondary); white-space: nowrap; }
+.item-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+.item-price { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+.qty-ctrl { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
+.qty-btn { width: 26px; height: 26px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; line-height: 1; }
+.qty-btn:hover { background: var(--color-background-secondary); }
+.qty-num { font-size: 14px; font-weight: 500; min-width: 18px; text-align: center; color: var(--color-text-primary); }
+.remove-btn { width: 26px; height: 26px; border: none; background: none; cursor: pointer; color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-md); }
+.remove-btn:hover { color: var(--color-text-danger); background: var(--color-background-danger); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: var(--color-text-secondary); }
+.summary-total { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.checkout-btn { width: 100%; padding: 10px; border-radius: var(--border-radius-md); border: none; background: var(--color-text-primary); color: var(--color-background-primary); font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+.checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.checkout-btn:not(:disabled):hover { opacity: 0.85; }
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--color-text-secondary); font-size: 14px; }
+.alert-msg { font-size: 13px; border-radius: var(--border-radius-md); padding: 8px 12px; margin-bottom: 10px; display: none; }
+.alert-err { background: var(--color-background-danger); color: var(--color-text-danger); }
+.alert-ok  { background: var(--color-background-success); color: var(--color-text-success); }
+</style>
+
+<h2 class="sr-only">Cart — interactive preview with sample items</h2>
+
+<div class="cart-wrap">
+  <div id="cart-alert" class="alert-msg"></div>
+  <div id="cart-list"></div>
+  <div id="cart-footer" style="display:none; border-top: 0.5px solid var(--color-border-tertiary); margin-top: 8px; padding-top: 12px;">
+    <div class="summary-row">
+      <span>Items</span><span id="cart-count">0</span>
+    </div>
+    <div class="summary-row" style="padding-bottom: 12px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 12px;">
+      <span>Subtotal</span><span class="summary-total" id="cart-total">$0.00</span>
+    </div>
+    <button class="checkout-btn" id="checkout-btn" onclick="doCheckout()">
+      <i class="ti ti-lock" aria-hidden="true" style="font-size:15px; margin-right:6px; vertical-align:-2px;"></i>Checkout
+    </button>
+  </div>
+</div>
+
+<script>
+const LABEL = { minute_pack: 'Minutes', giftcard: 'Gift card', product: 'Product' };
+
+const _state = {
+  items: [
+    { type: 'minute_pack', slug: 'pack-30min', name: '30-minute pack',   price: 14.90, qty: 1 },
+    { type: 'giftcard',    slug: 'gift-5000',  name: 'Gift card $50',    price: 50.00, qty: 2 },
+    { type: 'product',     slug: 'tarot-deck', name: 'Classic tarot deck', price: 29.90, qty: 1 },
+  ]
+};
+
+const fmt = (n) => '$' + n.toFixed(2);
+
+const key = (i) => i.type + '::' + i.slug;
+
+function render() {
+  const list = document.getElementById('cart-list');
+  const footer = document.getElementById('cart-footer');
+  const items = _state.items;
+
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-shopping-cart" style="font-size:32px; display:block; margin-bottom:8px;" aria-hidden="true"></i>Your cart is empty</div>';
+    footer.style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = items.map(i => `
+    <div class="cart-item" data-key="${key(i)}">
+      <div style="flex:1; min-width:0;">
+        <p class="item-name">${i.name}</p>
+        <p class="item-price">${fmt(i.price)} &nbsp;<span class="item-type-badge">${LABEL[i.type] ?? i.type}</span></p>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('${i.type}','${i.slug}',-1)" aria-label="decrease">−</button>
+        <span class="qty-num">${i.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${i.type}','${i.slug}',1)" aria-label="increase">+</button>
+      </div>
+      <button class="remove-btn" onclick="removeItem('${i.type}','${i.slug}')" aria-label="remove item">
+        <i class="ti ti-trash" style="font-size:16px;" aria-hidden="true"></i>
+      </button>
+    </div>
+  `).join('');
+
+  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = items.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-total').textContent = fmt(total);
+  document.getElementById('cart-count').textContent = count;
+  footer.style.display = 'block';
+}
+
+function changeQty(type, slug, delta) {
+  const item = _state.items.find(i => i.type === type && i.slug === slug);
+  if (!item) return;
+  item.qty = Math.max(0, item.qty + delta);
+  if (item.qty === 0) _state.items = _state.items.filter(i => !(i.type === type && i.slug === slug));
+  render();
+}
+
+function removeItem(type, slug) {
+  _state.items = _state.items.filter(i => !(i.type === type && i.slug === slug));
+  render();
+}
+
+function showAlert(msg, type) {
+  const el = document.getElementById('cart-alert');
+  el.className = 'alert-msg ' + (type === 'ok' ? 'alert-ok' : 'alert-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+async function doCheckout() {
+  const btn = document.getElementById('checkout-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true" style="font-size:15px; margin-right:6px; vertical-align:-2px;"></i>Processing…';
+
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+  try {
+    const res = await fetch('/cart/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+      body: JSON.stringify({ items: _state.items }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.ok) {
+      _state.items = [];
+      render();
+      showAlert('Order placed — thank you!', 'ok');
+    } else {
+      showAlert(data.error || 'Checkout failed. Try again.', 'err');
+    }
+  } catch {
+    showAlert('Network error. Check your connection.', 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-lock" aria-hidden="true" style="font-size:15px; margin-right:6px; vertical-align:-2px;"></i>Checkout';
+  }
+}
+
+render();
+</script>

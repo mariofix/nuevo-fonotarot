@@ -208,14 +208,11 @@ def _init_extensions(app: Flask) -> None:
         """
         from datetime import datetime
 
-        from .admin import _ANALYTICS_KEYS, _SEO_KEYS
         from .models import SiteSettings
 
-        seo_keys = [key for key, *_ in _SEO_KEYS]
-        analytics_keys = [key for key, *_ in _ANALYTICS_KEYS]
         theme_keys = ["dark_hours_start", "dark_hours_end"]
 
-        all_keys = seo_keys + analytics_keys + theme_keys
+        all_keys = theme_keys
         defaults = {"dark_hours_start": "20", "dark_hours_end": "8"}
 
         try:
@@ -230,7 +227,7 @@ def _init_extensions(app: Flask) -> None:
             settings = {key: defaults.get(key, "") for key in all_keys}
 
         # Build template context — SEO & analytics keys as-is (empty string fallback)
-        ctx: dict[str, str] = {key: settings.get(key) or "" for key in seo_keys + analytics_keys}
+        ctx: dict[str, str] = {}
 
         # Theme: derive from dark_hours_start / dark_hours_end
         try:
@@ -286,21 +283,21 @@ def _init_merchants(app: Flask, admin: Any) -> None:
 def _register_blueprints(app: Flask) -> None:
     from .account import account_bp
     from .content import blog_bp, content_bp
-    from .lab import lab_bp
-    from .legacy import legacy_bp
+    # from .lab import lab_bp
+    # from .legacy import legacy_bp
     from .passwordless import create_passwordless_blueprint
-    from .tienda import minutos_bp, pagos_bp, productos_bp, suscripciones_bp, tarjetas_bp
+    from .tienda import minutos_bp, pagos_bp, tarjetas_bp, productos_bp #, suscripciones_bp, 
 
     app.register_blueprint(content_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
     app.register_blueprint(pagos_bp)
     app.register_blueprint(minutos_bp)
-    app.register_blueprint(suscripciones_bp)
+    # app.register_blueprint(suscripciones_bp)
     app.register_blueprint(productos_bp)
     app.register_blueprint(tarjetas_bp)
     app.register_blueprint(account_bp, url_prefix="/ft-settings")
-    app.register_blueprint(lab_bp)
-    app.register_blueprint(legacy_bp)
+    # app.register_blueprint(lab_bp)
+    # app.register_blueprint(legacy_bp)
     app.register_blueprint(create_passwordless_blueprint())
 
     from .cli import lang_cli, seed_promo_cli, user_cli

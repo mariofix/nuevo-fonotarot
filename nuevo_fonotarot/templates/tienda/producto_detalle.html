@@ -112,21 +112,24 @@
             {% endif %}
             {% if product.stock > 0 %}
             <p class="text-success"><i class="ti ti-check me-1"></i>{{ _("En stock (%(stock)s disponibles)", stock=product.stock) }}</p>
-            <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex gap-2 align-items-center mt-4"
-                  data-track-event="add_to_cart"
-                  data-track-value="{{ product.price }}"
-                  data-track-currency="CLP"
-                  data-track-item-id="product-{{ product.id }}"
-                  data-track-item-name="{{ product.name }}"
-                  data-track-item-category="product"
-                  data-track-item-price="{{ product.price }}"
-                  data-track-item-quantity="1">
-              <input type="hidden" name="item_type" value="product"/>
-              <input type="hidden" name="item_id" value="{{ product.id }}"/>
-              <label class="text-secondary me-2" for="qty">{{ _("Cantidad:") }}</label>
-              <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:80px"/>
-              <button type="submit" class="btn btn-primary"><i class="ti ti-shopping-cart-plus me-1"></i>{{ _("Agregar al carrito") }}</button>
-            </form>
+            <div class="d-flex gap-2 align-items-center mt-4"
+     data-track-event="add_to_cart"
+     data-track-value="{{ product.price | int }}"
+     data-track-currency="CLP"
+     data-track-item-id="product-{{ product.slug }}"
+     data-track-item-name="{{ product.name }}"
+     data-track-item-category="product"
+     data-track-item-price="{{ product.price | int }}"
+     data-track-item-quantity="1">
+  <label class="text-secondary me-2" for="qty">{{ _("Cantidad:") }}</label>
+  <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}"
+         class="form-control" style="width:80px"/>
+  <button type="button"
+          class="btn btn-primary"
+          onclick="Cart.add('product', '{{ product.slug }}', parseInt(document.getElementById('qty').value) || 1, '{{ product.name }}', {{ product.price | float }})">
+    <i class="ti ti-shopping-cart-plus me-1"></i>{{ _("Agregar al carrito") }}
+  </button>
+</div>
             {% else %}
             <p class="text-danger"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</p>
             {% endif %}
@@ -134,8 +137,8 @@
               <div class="d-flex align-items-start gap-2">
                 <i class="ti ti-eye-off text-success" style="font-size:1.4rem"></i>
                 <div>
-                  <strong>{{ _("Envío anónimo garantizado") }}</strong>
-                  <p class="text-secondary small mb-0">{{ _("Caja sin marcas, sin etiquetas del remitente. Opción de retiro en punto seguro.") }}</p>
+                  <strong>{{ _("Envío anónimo, regalo, o normal.") }}</strong>
+                  <p class="text-secondary small mb-0">{{ _("Caja Normal, Caja sin marcas, o nuestra caja de regalo especial para tí.") }}</p>
                 </div>
               </div>
             </div>

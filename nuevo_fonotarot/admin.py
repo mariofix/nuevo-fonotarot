@@ -1100,4 +1100,4 @@ def init_admin(app, admin_ext):
             url="/media",
         )
     )
-    admin_ext.add_link(MenuLink(name="Home Page", url="/", icon_type="tabler", icon_value="home"))
+    admin_ext.add_link(MenuLink(name=_l("Sitio Web"), url="/", icon_type="tabler", icon_value="home"))

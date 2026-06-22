@@ -22,29 +22,29 @@
 
 {# ── Umami web tracker ──────────────────────────────────────────────────── #}
 {% macro umami_script() %}
-{% if config.FT_umami_website_id %}
-<script defer src="https://cloud.umami.is/script.js" data-website-id="{{ umami_website_id }}"></script>
+{% if config.FT_UMAMI_WEBSITE_ID %}
+<script defer src="https://cloud.umami.is/script.js" data-website-id="{{ config.FT_UMAMI_WEBSITE_ID }}"></script>
 {% endif %}
 {% endmacro %}
 
 {# ── Google Tag Manager — <head> snippet ────────────────────────────────── #}
 {% macro gtm_head() %}
-{% if gtm_container_id %}
+{% if config.FT_GTM_CONTAINER_ID %}
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','{{ gtm_container_id }}');</script>
+})(window,document,'script','dataLayer','{{ config.FT_GTM_CONTAINER_ID }}');</script>
 <!-- End Google Tag Manager -->
 {% endif %}
 {% endmacro %}
 
 {# ── Google Tag Manager — <body> noscript fallback ──────────────────────── #}
 {% macro gtm_body() %}
-{% if gtm_container_id %}
+{% if config.FT_GTM_CONTAINER_ID %}
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_container_id }}"
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config.FT_GTM_CONTAINER_ID }}"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 {% endif %}
@@ -52,14 +52,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 {# ── Google Analytics 4 ─────────────────────────────────────────────────── #}
 {% macro ga_script() %}
-{% if ga_measurement_id %}
+{% if config.FT_GA_MEASUREMENT_ID %}
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_measurement_id }}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.FT_GA_MEASUREMENT_ID }}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', '{{ ga_measurement_id }}');
+  gtag('config', '{{ config.FT_GA_MEASUREMENT_ID }}');
 </script>
 <!-- End Google Analytics -->
 {% endif %}
@@ -67,7 +67,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 {# ── Meta (Facebook) Pixel ──────────────────────────────────────────────── #}
 {% macro meta_pixel() %}
-{% if meta_pixel_id %}
+{% if config.FT_META_PIXEL_ID %}
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -75,18 +75,18 @@ n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','{{ meta_pixel_id }}');
+fbq('init','{{ config.FT_META_PIXEL_ID }}');
 fbq('track','PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id={{ meta_pixel_id }}&ev=PageView&noscript=1"/></noscript>
+src="https://www.facebook.com/tr?id={{ config.FT_META_PIXEL_ID }}&ev=PageView&noscript=1"/></noscript>
 <!-- End Meta Pixel -->
 {% endif %}
 {% endmacro %}
 
 {# ── Twilio Segment — <head> snippet ────────────────────────────────────── #}
 {% macro segment_head() %}
-{% if segment_write_key %}
+{% if config.FT_SEGMENT_WRITE_KEY %}
 <!-- Twilio Segment -->
 <script>
 !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)
@@ -106,8 +106,8 @@ analytics.load=function(key,n){var t=document.createElement("script");
 t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);
 t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";
 var r=document.head;r.insertBefore(t,r.firstChild);analytics._loadOptions=n};
-analytics._writeKey="{{ segment_write_key }}";analytics.SNIPPET_VERSION="5.2.1";
-analytics.load("{{ segment_write_key }}");
+analytics._writeKey="{{ config.FT_SEGMENT_WRITE_KEY }}";analytics.SNIPPET_VERSION="5.2.1";
+analytics.load("{{ config.FT_SEGMENT_WRITE_KEY }}");
 analytics.page();}}();
 </script>
 <!-- End Twilio Segment -->
@@ -116,7 +116,7 @@ analytics.page();}}();
 
 {# ── Umami email open-tracking pixel ────────────────────────────────────── #}
 {% macro umami_email_pixel() %}
-{% if umami_email_pixel_id %}
-<img src="https://cloud.umami.is/p/{{ umami_email_pixel_id }}" width="1" height="1" id="umami-pixel" role="img">
+{% if config.FT_UMAMI_EMAIL_PIXEL_ID %}
+<img src="https://cloud.umami.is/p/{{ config.FT_UMAMI_EMAIL_PIXEL_ID }}" width="1" height="1" id="umami-pixel" role="img">
 {% endif %}
 {% endmacro %}

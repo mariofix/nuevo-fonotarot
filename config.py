@@ -255,6 +255,7 @@ class Config:
     # Sub-classes set a different default so dev logs at DEBUG and prod at INFO.
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "DEBUG")
     LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
+    SESSION_COOKIE_NAME: str = "tienda_fonotarot"
 
 
 class DevelopmentConfig(Config):

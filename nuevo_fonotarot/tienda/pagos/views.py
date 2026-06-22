@@ -479,7 +479,7 @@ def _handle_payment_webhook_event(event) -> None:
 # ---------------------------------------------------------------------------
 
 
-@pagos_bp.route("/")
+@pagos_bp.route("/vitrina")
 def index():
     """Main store page: minute packs, subscriptions, and random products."""
     logger.debug("pagos.index: loading store page")
@@ -506,6 +506,31 @@ def index():
     )
 
 
+@pagos_bp.route("/pagar")
+def cart_checkout():
+    """Checkout page for cart flow."""
+    logger.debug("pagos.cart_checkout: loading cart checkout page")
+    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
+    active_products = Product.query.filter_by(is_active=True).all()
+    featured_products = random.sample(active_products, k=min(5, len(active_products)))
+    try:
+        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
+    except SQLAlchemyError:
+        gift_cards = []
+    cart = _get_cart()
+    logger.debug(
+        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
+        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
+    )
+    return render_template(
+        "tienda/index.html",
+        minute_packs=minute_packs,
+        subscription_plans=subscription_plans,
+        featured_products=featured_products,
+        gift_cards=gift_cards,
+        cart_count=len(cart),
+    )
 # ---------------------------------------------------------------------------
 # Payment callbacks
 # ---------------------------------------------------------------------------
@@ -580,30 +605,6 @@ def pago_retorno(order_id: str):
     logger.debug(
         f"pago_retorno: order details — transaction_id={order.transaction_id!r} state={order.payment_status!r}"
     )
-
-    # I DO NOT WANT TO SYNC IN THIS STAGE
-    # # Sync payment state from provider and update order fulfillment status.
-    # if order.transaction_id and order.status == OrderStatus.PENDING:
-    #     logger.debug(f"pago_retorno: order={order.id} is PENDING, syncing from provider")
-    #     try:
-    #         order.sync_from_provider()
-    #         logger.info(f"pago_retorno: synced order={order.id} new_state={order.payment_status!r}")
-    #         if order.payment_status == "succeeded":
-    #             _complete_succeeded_order(order, "retorno")
-    #         elif order.payment_status in ("failed", "cancelled"):
-    #             order.status = OrderStatus.FAILED
-    #             logger.warning(
-    #                 f"pago_retorno: payment failed/cancelled — order={order.id} "
-    #                 f"status updated to FAILED (state={order.payment_status!r})"
-    #             )
-    #             db.session.commit()
-    #     except Exception as exc:
-    #         logger.error(f"pago_retorno: sync error for order={order.id} — {exc}", exc_info=True)
-    # else:
-    #     logger.debug(
-    #         f"pago_retorno: order={order.id} not syncing "
-    #         f"(has_transaction_id={bool(order.transaction_id)} status={order.status})"
-    #     )
 
     return redirect(url_for("pagos.orden_estado", order_id=order.merchants_id))
 
