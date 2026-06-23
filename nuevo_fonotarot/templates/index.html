@@ -2136,8 +2136,13 @@
             <p class="plan-desc">{{ pack.description or '' }}</p>
             <div class="mt-auto d-flex flex-column gap-2">
               <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn-plan">
-                <i class="ti ti-bolt me-1"></i>Comprar Minutos
+                <i class="ti ti-credit-card me-1"></i>Comprar Minutos
               </a>
+              {% if current_user and current_user.is_authenticated and current_user.preferred_payment %}
+                <a href="{{ url_for('minutos.one_click', pack_slug=pack.slug) }}" class="btn-plan">
+                  <i class="ti ti-bolt me-1"></i>Compra con un Click<i class="ti ti-bolt me-1"></i>
+                </a>
+              {% endif %}
               {# <form action="{{ url_for('productos.agregar') }}" method="post">
                 <input type="hidden" name="item_type" value="minute_pack" />
                 <input type="hidden" name="item_id" value="{{ pack.id }}" />

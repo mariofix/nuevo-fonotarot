@@ -1124,7 +1124,7 @@
           </ul>
         </div>
         <!-- Cart.js -->
-        <button type="button" class="btn btn-lime" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas" aria-controls="cart-offcanvas">
+        <button type="button" class="btn btn-lime" id="cart-trigger" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas" aria-controls="cart-offcanvas" style="display:none;opacity:0;transition:opacity .25s ease;">
           <i class="ti ti-shopping-cart"></i>
           <span class="badge badge-notification" id="cart-badge">0</span>
         </button>
@@ -1136,35 +1136,8 @@
     </div>
   </nav>
 
-  {% if current_user.is_authenticated %}
-  <section class="credits-strip" aria-label="{{ _('Estado de créditos') }}">
-    <div class="container py-2">
-      <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-2">
-          <span class="credits-badge"><i class="ti ti-wallet"></i>{{ _("Créditos") }}</span>
-          <span class="credits-copy">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
-        </div>
-        <div class="credits-actions d-flex align-items-center gap-2">
-          <span id="global-credits-value" class="credits-value" aria-live="polite">{{ _("Consultando saldo...") }}</span>
-          <button
-            id="global-credits-refresh"
-            type="button"
-            class="btn btn-outline-secondary btn-sm"
-            aria-label="{{ _('Actualizar saldo') }}"
-            title="{{ _('Actualizar saldo') }}"
-          >
-            <i class="ti ti-refresh me-1"></i>{{ _("Actualizar") }}
-          </button>
-          <a href="{{ url_for('account.profile') }}" class="btn btn-primary btn-sm">
-            <i class="ti ti-user me-1"></i>{{ _("Ir a mi perfil") }}
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-  {% endif %}
 
-  <!-- ── MOBILE NAV OFFCANVAS ──────────────────────── -->
+  <!--MOBILE NAV OFFCANVAS -->
   <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1" id="mobileNavCanvas" aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
     <div class="offcanvas-header">
       <span class="offcanvas-title" id="mobileNavLabel">FonoTarot</span>
@@ -1172,10 +1145,9 @@
     </div>
     <div class="offcanvas-body d-flex flex-column gap-0 p-0">
       <div class="px-3 pt-2">
-        <a href="/#tarotistas" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
+        <a href="https://fonotarot.com/nuestro-equipo/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
         <a href="/#planes" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
-        <a href="/blog/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Blog") }}</a>
-        <a href="/#faq" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
+        <a href="https://fonotarot.com/preguntas-frecuentes/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
       </div>
       <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
         <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
@@ -1201,6 +1173,7 @@
     </div>
   </div>
 
+  <!--AGENTS OFFCANVAS -->
   <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas" aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
@@ -1233,7 +1206,35 @@
     </div>
   </div>
 
-  <!-- ── PAGE CONTENT ────────────────────────────── -->
+  <!-- PAGE CONTENT -->
+  {% if current_user.is_authenticated %}
+  <section class="credits-strip" aria-label="{{ _('Estado de créditos') }}">
+    <div class="container py-2">
+      <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="credits-badge"><i class="ti ti-wallet"></i>{{ _("Créditos") }}</span>
+          <span class="credits-copy">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
+        </div>
+        <div class="credits-actions d-flex align-items-center gap-2">
+          <span id="global-credits-value" class="credits-value" aria-live="polite">{{ _("Consultando saldo...") }}</span>
+          <button
+            id="global-credits-refresh"
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            aria-label="{{ _('Actualizar saldo') }}"
+            title="{{ _('Actualizar saldo') }}"
+          >
+            <i class="ti ti-refresh me-1"></i>{{ _("Actualizar") }}
+          </button>
+          <a href="{{ url_for('account.profile') }}" class="btn btn-primary btn-sm">
+            <i class="ti ti-user me-1"></i>{{ _("Ir a mi perfil") }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
   <div class="page-content">
     {% block content %}{% endblock %}
   </div>
@@ -1640,7 +1641,7 @@
 
       document.addEventListener('DOMContentLoaded', function() {
         pollAgents();
-        window.setInterval(pollAgents, 15000);
+        window.setInterval(pollAgents, 9000);
       });
     })();
 

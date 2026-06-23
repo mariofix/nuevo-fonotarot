@@ -27,7 +27,7 @@ const Cart = (() => {
 
   // ── public api ───────────────────────────────────────────
 
-  // CartItem: { type, slug, qty, price }
+  // CartItem: { type, slug, qty, name?, price? }
   // type: 'minute_pack' | 'giftcard' | 'product'
 
   const add = (type, slug, qty = 1, name = null, price = null) => {
@@ -36,8 +36,11 @@ const Cart = (() => {
     if (found) {
       found.qty += qty;
     } else {
-      items.push({ type, slug, qty, ...(name  !== null && { name }),
-                                     ...(price !== null && { price }) });
+      items.push({
+        type, slug, qty,
+        ...(name  !== null && { name }),
+        ...(price !== null && { price }),
+      });
     }
     save(items);
     emit(items);
@@ -61,7 +64,7 @@ const Cart = (() => {
     emit([]);
   };
 
-  const get = () => load();
+  const get  = () => load();
 
   const count = (items = load()) =>
     items.reduce((sum, i) => sum + i.qty, 0);
@@ -75,7 +78,10 @@ const Cart = (() => {
 
     let res;
     try {
-      res = await fetch(_CART_CHECKOUT_URL, {
+      const url = (typeof _CART_CHECKOUT_URL !== 'undefined' && _CART_CHECKOUT_URL)
+        ? _CART_CHECKOUT_URL
+        : '/cart/checkout';
+      res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +90,7 @@ const Cart = (() => {
         body: JSON.stringify({ items, ...meta }),
       });
     } catch {
-      return { ok: false, error: 'Network error' };
+      return { ok: false, error: 'Error de conexión. Intenta nuevamente.' };
     }
 
     const data = await res.json().catch(() => ({}));
@@ -92,14 +98,15 @@ const Cart = (() => {
       clear();
       return { ok: true, order: data.order };
     }
-    return { ok: false, error: data.error || `Server error ${res.status}` };
+    return { ok: false, error: data.error || `Error del servidor (${res.status})` };
   };
 
   // ── UI renderer ──────────────────────────────────────────
-  // CartUI.render(mountEl) — call on offcanvas show.bs.offcanvas
+  // Cart.UI.render(mountEl) — called automatically on show.bs.offcanvas
 
   const UI = (() => {
-    const fmt = (n) => '$' + Number(n).toFixed(2);
+    // CLP: integer, thousands separator, no decimals
+    const fmt = (n) => '$' + Math.round(Number(n)).toLocaleString('es-CL');
 
     const css = `
       .cart-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--tblr-border-color);}
@@ -128,9 +135,16 @@ const Cart = (() => {
       styleInjected = true;
     };
 
+    // mount is stored so handleClick can re-render without DOM traversal
+    let _mount = null;
+
     const render = (mount) => {
       injectStyle();
       if (!mount) return;
+      _mount = mount;
+
+      // remove stale listener before re-render
+      mount.removeEventListener('click', handleClick);
 
       const items = load();
 
@@ -153,28 +167,25 @@ const Cart = (() => {
             </p>
           </div>
           <div class="cart-qty">
-            <button class="cart-qty-btn" data-action="dec" data-type="${i.type}" data-slug="${i.slug}" aria-label="quitar">−</button>
+            <button class="cart-qty-btn" data-action="dec" data-type="${i.type}" data-slug="${i.slug}" aria-label="Quitar uno">−</button>
             <span class="cart-qty-num">${i.qty}</span>
-            <button class="cart-qty-btn" data-action="inc" data-type="${i.type}" data-slug="${i.slug}" aria-label="agregar">+</button>
+            <button class="cart-qty-btn" data-action="inc" data-type="${i.type}" data-slug="${i.slug}" aria-label="Agregar uno">+</button>
           </div>
           <button class="cart-remove" data-action="remove" data-type="${i.type}" data-slug="${i.slug}" aria-label="Eliminar ${i.name ?? i.slug}">
             <i class="ti ti-trash" style="font-size:16px;"></i>
           </button>
         </div>`).join('');
 
-      const subtotal = total(items);
-      const itemCount = count(items);
-
       mount.innerHTML = `
         <div id="cart-alert-msg" class="cart-alert" style="display:none;"></div>
         <div class="cart-items">${rows}</div>
         <div class="cart-footer">
           <div class="cart-summary-row">
-            <span>Items</span><span>${itemCount}</span>
+            <span>Productos</span><span>${count(items)}</span>
           </div>
           <div class="cart-summary-row" style="padding-bottom:12px;border-bottom:1px solid var(--tblr-border-color);margin-bottom:12px;">
-            <span>Subtotal</span>
-            <span class="cart-summary-total">${fmt(subtotal)}</span>
+            <span>Total</span>
+            <span class="cart-summary-total">${fmt(total(items))} CLP</span>
           </div>
           <button id="cart-checkout-btn" class="btn btn-primary w-100">
             <i class="ti ti-lock me-1"></i>Pagar
@@ -182,7 +193,6 @@ const Cart = (() => {
         </div>`;
 
       mount.addEventListener('click', handleClick);
-      document.getElementById('cart-checkout-btn')?.addEventListener('click', () => handleCheckout(mount));
     };
 
     const handleClick = (e) => {
@@ -192,11 +202,12 @@ const Cart = (() => {
       if (action === 'inc')    update(type, slug, (load().find(i => i.type === type && i.slug === slug)?.qty ?? 0) + 1);
       if (action === 'dec')    update(type, slug, (load().find(i => i.type === type && i.slug === slug)?.qty ?? 1) - 1);
       if (action === 'remove') remove(type, slug);
-      render(btn.closest('[id]') ?? btn.closest('div').parentElement);
+      if (action === 'checkout') handleCheckout(_mount);
+      render(_mount);
     };
 
     const showAlert = (mount, msg, variant) => {
-      const el = mount.querySelector('#cart-alert-msg');
+      const el = mount?.querySelector('#cart-alert-msg');
       if (!el) return;
       el.className = `cart-alert alert alert-${variant}`;
       el.textContent = msg;
@@ -212,7 +223,7 @@ const Cart = (() => {
 
       if (result.ok) {
         render(mount);
-        showAlert(mount, 'Gracias!', 'success');
+        showAlert(mount, '¡Gracias! Tu pedido fue recibido.', 'success');
       } else {
         if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock me-1"></i>Pagar'; }
         showAlert(mount, result.error, 'danger');
@@ -222,9 +233,19 @@ const Cart = (() => {
     return { render };
   })();
 
-  // ── offcanvas wiring ─────────────────────────────────────
+  // ── offcanvas + badge wiring ─────────────────────────────
 
   document.addEventListener('DOMContentLoaded', () => {
+    // restore trigger visibility on page load if cart has items
+    const initCount = count();
+    if (initCount > 0) {
+      const trigger = document.getElementById('cart-trigger');
+      const badge   = document.getElementById('cart-badge');
+      if (trigger) { trigger.style.display = 'inline-flex'; trigger.style.opacity = '1'; }
+      if (badge)   badge.textContent = initCount;
+    }
+
+    // re-render cart on offcanvas open
     const offcanvas = document.getElementById('cart-offcanvas');
     if (offcanvas) {
       offcanvas.addEventListener('show.bs.offcanvas', () => {
@@ -232,12 +253,24 @@ const Cart = (() => {
       });
     }
 
-    // keep badge in sync
+    // keep trigger + badge in sync
     document.addEventListener('cart:updated', ({ detail }) => {
-      const badge = document.getElementById('cart-badge');
-      if (!badge) return;
-      badge.textContent = detail.count;
-      badge.style.display = detail.count > 0 ? 'inline-block' : 'none';
+      const badge   = document.getElementById('cart-badge');
+      const trigger = document.getElementById('cart-trigger');
+
+      if (badge) badge.textContent = detail.count;
+
+      if (trigger) {
+        if (detail.count > 0) {
+          trigger.style.display = 'inline-flex';
+          requestAnimationFrame(() => { trigger.style.opacity = '1'; });
+        } else {
+          trigger.style.opacity = '0';
+          trigger.addEventListener('transitionend', () => {
+            trigger.style.display = 'none';
+          }, { once: true });
+        }
+      }
     });
   });
 

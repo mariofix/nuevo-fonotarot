@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for, abort
 from flask_babel import _
 from flask_security import current_user
 from sqlalchemy import and_
@@ -202,4 +202,85 @@ def comprar_minutos(pack_slug: str):
         prefilled_phone=prefilled_phone,
         prefilled_shipping_phone=prefilled_shipping_phone,
         cart_count=len(_get_cart()),
+    )
+
+@minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])
+def one_click(pack_slug: str):
+    """One-Click uprchase for registered users"""
+    is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
+    if not is_authenticated_user:
+        abort(403)
+    if not current_user.preferred_payment or not current_user.email or not current_user.username:
+        abort(403)
+
+    pack = MinutePack.query.filter_by(slug=pack_slug, is_active=True).first_or_404()
+
+    duplicate_cutoff = datetime.now() - timedelta(minutes=2)
+    duplicate_filter = and_(
+        OrderItem.item_type == OrderItemType.MINUTE_PACK,
+        OrderItem.item_id == pack.id,
+    )
+    duplicate_query = Order.query.filter(
+        Order.status == OrderStatus.PENDING,
+        Order.provider == current_user.preferred_payment,
+        Order.amount == pack.price,
+        Order.shipping_email == current_user.email,
+        Order.created_at >= duplicate_cutoff,
+        Order.items.any(duplicate_filter),
+    ).order_by(Order.created_at.desc())
+    if is_authenticated_user:
+        duplicate_query = duplicate_query.filter(Order.user_id == current_user.id)
+    else:
+        duplicate_query = duplicate_query.filter(Order.user_id.is_(None))
+
+    existing_order = duplicate_query.first()
+    if existing_order:
+        logger.info(
+            "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s "
+            "user=%s email=%r",
+            pack.id,
+            existing_order.id,
+            existing_order.user_id,
+            current_user.email,
+        )
+        order = existing_order
+    else:
+        order = Order(
+            amount=Decimal(str(pack.price)),
+            currency=pack.currency,
+            provider=current_user.preferred_payment,
+            email=current_user.email,
+            shipping_phone=current_user.username,
+            user=current_user
+        )
+        db.session.add(order)
+        db.session.flush()
+    
+    item = OrderItem(
+        order_id=order.id,
+        item_type=OrderItemType.MINUTE_PACK,
+        item_id=pack.id,
+        name=f"{pack.minutes} minutos de tarot (One-Click)",
+        quantity=1,
+        unit_price=Decimal(str(pack.price)),
+        currency=pack.currency,
+    )
+    db.session.add(item)
+    db.session.commit()
+
+    logger.info(
+        "Order created: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
+        order.id,
+        pack.id,
+        pack.minutes,
+        pack.price,
+        order.user_id,
+        current_user.email,
+    )
+
+    return create_payment_and_redirect(
+        order,
+        current_user.preferred_payment,
+        email=current_user.email,
+        error_redirect=url_for("minutos.comprar_minutos", pack_slug=pack_slug),
     )
