@@ -1,15 +1,15 @@
 """Notification utilities for sending alerts via various channels."""
 
 import os
-from daleks.contrib.client import DaleksClient
-from urllib.parse import parse_qs, urlparse
-from flask import current_app, has_app_context, render_template
-from .models import Order, Role
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 import requests
+from daleks.contrib.client import DaleksClient
+from flask import current_app, has_app_context, render_template
 
 from .log import get_logger
+from .models import Order, Role
 
 logger = get_logger(__name__)
 

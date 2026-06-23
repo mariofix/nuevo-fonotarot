@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 
 from flask import current_app
-from flask_security.signals import user_registered, user_authenticated
+from flask_security.signals import user_authenticated, user_registered
 
 
 def register_auth_handlers(app):

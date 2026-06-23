@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from flask import flash, redirect, render_template, request, url_for, abort
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
 from sqlalchemy import and_
@@ -167,7 +167,7 @@ def comprar_minutos(pack_slug: str):
         db.session.commit()
 
         logger.info(
-            "Order created: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
+            "Order created via Checkout: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
             order.id,
             pack.id,
             pack.minutes,
@@ -204,6 +204,7 @@ def comprar_minutos(pack_slug: str):
         cart_count=len(_get_cart()),
     )
 
+
 @minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])
 def one_click(pack_slug: str):
     """One-Click uprchase for registered users"""
@@ -236,8 +237,7 @@ def one_click(pack_slug: str):
     existing_order = duplicate_query.first()
     if existing_order:
         logger.info(
-            "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s "
-            "user=%s email=%r",
+            "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s user=%s email=%r",
             pack.id,
             existing_order.id,
             existing_order.user_id,
@@ -251,11 +251,12 @@ def one_click(pack_slug: str):
             provider=current_user.preferred_payment,
             email=current_user.email,
             shipping_phone=current_user.username,
-            user=current_user
+            user=current_user,
+            firenze_client_id=current_user.firenze_client_id,
         )
         db.session.add(order)
         db.session.flush()
-    
+
     item = OrderItem(
         order_id=order.id,
         item_type=OrderItemType.MINUTE_PACK,
@@ -269,7 +270,7 @@ def one_click(pack_slug: str):
     db.session.commit()
 
     logger.info(
-        "Order created: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
+        "Order created via One-Click: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
         order.id,
         pack.id,
         pack.minutes,

@@ -6,15 +6,15 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Any
 
-from flask import current_app, has_app_context, render_template
+from flask import current_app, has_app_context
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
 from .extensions import db, user_datastore
 from .firenze import create_client, post_purchase, search_client
 from .log import get_logger
-from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, Role, User
-from .notifications import notify_new_user_registration, send_telegram_notification, send_post_purchase_admin_email
+from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, User
+from .notifications import notify_new_user_registration, send_post_purchase_admin_email, send_telegram_notification
 
 logger = get_logger(__name__)
 
@@ -271,7 +271,8 @@ def _update_order_status_after_fulfillment(order: Order) -> None:
         return
 
     has_fulfillment_progress = any(
-        _item_fulfillment_status(item) in {OrderItemFulfillmentStatus.FULFILLED.value, OrderItemFulfillmentStatus.FAILED.value}
+        _item_fulfillment_status(item)
+        in {OrderItemFulfillmentStatus.FULFILLED.value, OrderItemFulfillmentStatus.FAILED.value}
         for item in items
     )
     has_pending = any(_item_fulfillment_status(item) != OrderItemFulfillmentStatus.FULFILLED.value for item in items)
@@ -578,7 +579,7 @@ def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool
     if isinstance(response, dict) and response.get("client_id") is not None:
         try:
             posted_client_id = int(response["client_id"])
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             posted_client_id = None
 
     if posted_client_id is not None and order.firenze_client_id is None:
@@ -597,7 +598,12 @@ def fulfill_single_order_item(order_id: int, order_item_id: int) -> dict[str, An
     order = db.session.get(Order, int(order_id))
     item = db.session.get(OrderItem, int(order_item_id))
     if order is None or item is None or item.order_id != int(order_id):
-        return {"status": "failed", "reason": "order_or_item_not_found", "order_id": order_id, "item_id": order_item_id}
+        return {
+            "status": "failed",
+            "reason": "order_or_item_not_found",
+            "order_id": order_id,
+            "item_id": order_item_id,
+        }
     if order.payment_status != "succeeded":
         return {"status": "failed", "reason": "payment_not_succeeded", "order_id": order.id, "item_id": item.id}
     if _item_fulfillment_status(item) == OrderItemFulfillmentStatus.FULFILLED.value:

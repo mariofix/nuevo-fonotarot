@@ -91,7 +91,7 @@ def comprar(slug: str):
         if not purchaser_email:
             flash(_("El email del comprador es obligatorio."), "danger")
             return redirect(url_for("tarjetas.comprar", slug=slug))
-        
+
         quantity = 1
 
         total_amount = Decimal(str(card.price)) * quantity

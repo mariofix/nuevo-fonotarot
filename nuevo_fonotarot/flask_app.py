@@ -13,7 +13,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from config import config
 
 from .admin import SecureAdminIndexView, init_admin
-
 from .extensions import (
     admin,
     babel,
@@ -177,14 +176,14 @@ def _init_extensions(app: Flask) -> None:
     @app.before_request
     def _inject_site_settings():
         from .models import SiteSettings
-    
-        try:    
+
+        try:
             all_settings = SiteSettings.all()
             app.logger.debug(f"_inject_site_settings: found {len(all_settings)} SiteSettings")
             all_settings = {f"FT_{k.upper()}": v for k, v in all_settings.items()}
             app.config.from_mapping(all_settings)
-        except Exception as e:
-            app.logger.warning(f"_inject_site_settings: failed to fetch SiteSettings")
+        except Exception:
+            app.logger.warning("_inject_site_settings: failed to fetch SiteSettings")
 
     @app.context_processor
     def inject_site_languages() -> dict:
@@ -283,10 +282,11 @@ def _init_merchants(app: Flask, admin: Any) -> None:
 def _register_blueprints(app: Flask) -> None:
     from .account import account_bp
     from .content import blog_bp, content_bp
+
     # from .lab import lab_bp
     # from .legacy import legacy_bp
     from .passwordless import create_passwordless_blueprint
-    from .tienda import minutos_bp, pagos_bp, tarjetas_bp, productos_bp #, suscripciones_bp, 
+    from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 
     app.register_blueprint(content_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])

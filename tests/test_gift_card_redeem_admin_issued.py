@@ -48,7 +48,9 @@ def test_canjear_allows_admin_issued_card_without_order(monkeypatch):
 
     monkeypatch.setattr(tarjetas_views, "current_user", user)
     monkeypatch.setattr(tarjetas_views, "GiftCard", SimpleNamespace(query=_GiftCardQueryStub(gift_card)))
-    monkeypatch.setattr(tarjetas_views.db.session, "get", lambda *args, **kwargs: calls.__setitem__("get", calls["get"] + 1))
+    monkeypatch.setattr(
+        tarjetas_views.db.session, "get", lambda *args, **kwargs: calls.__setitem__("get", calls["get"] + 1)
+    )
 
     def fake_redeem(*, gift_card, user):
         calls["redeem"] += 1

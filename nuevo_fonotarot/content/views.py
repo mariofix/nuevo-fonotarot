@@ -22,7 +22,7 @@ from ..actions import process_user_registration, register_checkout_account
 from ..extensions import db, limiter, user_datastore
 from ..firenze import complete_promo_credit, search_client, update_client_profile
 from ..log import get_logger
-from ..models import BlogPost, MinutePack, Role, SiteSettings, StaticPage, GiftCardProduct
+from ..models import BlogPost, GiftCardProduct, MinutePack, Role, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..utils import get_moon_phase_index
 
