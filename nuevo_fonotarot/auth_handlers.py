@@ -70,7 +70,7 @@ def ensure_user_email_signin(user) -> bool:
 
     if "email" not in secrets:
         # Generate a proper TOTP secret using Flask-Security's factory.
-        totp_factory = security._totp_factory
+        totp_factory = security.totp_factory
         secrets["email"] = totp_factory.generate_totp_secret()
         user.us_totp_secrets = json.dumps(secrets)
         db.session.commit()

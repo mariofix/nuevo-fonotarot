@@ -398,6 +398,7 @@ def complete_promo_credit(ani: str | None, credits: int) -> int | None:
 
     payload = {
         "service": "fonotarot-cl",
+        "email": f"{normalized_ani}@fonotarot.cl",
         "credits": credits,
         "ani": normalized_ani,
         "transaction_id": f"pr_{normalized_ani}",
