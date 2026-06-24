@@ -275,7 +275,7 @@ def settings():
         phones = list_client_anis(int(current_user.firenze_client_id))
         if phones is None:
             flash(
-                _("No fue posible cargar los teléfonos adicionales desde Firenze."),
+                _("Nos fue imposible cargar tus Teléfonos, por favor intenta nuevamente."),
                 "warning",
             )
         else:
