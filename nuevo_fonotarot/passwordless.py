@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext as _l
+from flask_security import totp
 from flask_security.forms import Form
 from flask_security.utils import config_value as cv
 from flask_security.utils import login_user
@@ -208,7 +209,7 @@ def create_passwordless_blueprint() -> Blueprint:
 
             # Get TOTP secret for this method
             totp_secrets = _get_totp_secrets(user)
-
+            logger.info(f"{totp_secrets=}")
             # Send code via the chosen method
             msg = user.us_send_security_token(
                 method,
@@ -216,7 +217,7 @@ def create_passwordless_blueprint() -> Blueprint:
                 phone_number=getattr(user, "us_phone_number", None),
                 send_magic_link=True,
             )
-
+            print(f"{msg=}")
             if msg:
                 # Error sending code
                 form.identity.errors.append(_l("Error enviando el código. Intenta de nuevo."))

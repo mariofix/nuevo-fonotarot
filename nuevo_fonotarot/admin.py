@@ -342,6 +342,39 @@ class UserAdminView(SecureModelView):
                 "warning",
             )
 
+    @action(
+        "fix_totp",
+        _l("Generar Secretos TOTP"),
+        _l("Regenera secreto TOTP para el usuario."),
+    )
+    def action_fix_totp(self, ids):
+        """Rerun the standard post-registration flow for selected users."""
+        from flask import flash
+
+        from .auth_handlers import ensure_user_email_signin
+
+        processed = 0
+        missing = 0
+        for user_id in ids:
+            user = self.session.get(self.model, int(user_id))
+            if user is None:
+                missing += 1
+                continue
+
+            ensure_user_email_signin(user)
+            processed += 1
+
+        if processed:
+            flash(
+                _l("%(count)s usuario(s) reprocesado(s).") % {"count": processed},
+                "success",
+            )
+        if missing:
+            flash(
+                _l("%(count)s usuario(s) no se encontraron.") % {"count": missing},
+                "warning",
+            )
+
 
 class RoleAdminView(SecureModelView):
     """Admin view for the Role model."""

@@ -23,6 +23,7 @@ from .extensions import (
     migrate,
     security,
     toolbar,
+    cors,
 )
 from .utils import _LangEntry
 
@@ -79,7 +80,8 @@ def _init_extensions(app: Flask) -> None:
     csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-
+    cors.init_app(app)
+    
     # Initialize Flask-Security models before importing User/Role
     from flask_security.models import fsqla_v3 as fsqla
 
@@ -285,10 +287,12 @@ def _register_blueprints(app: Flask) -> None:
 
     # from .lab import lab_bp
     # from .legacy import legacy_bp
+    from .api import api_bp
     from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 
     app.register_blueprint(content_bp)
+    app.register_blueprint(api_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
     app.register_blueprint(pagos_bp)
     app.register_blueprint(minutos_bp)

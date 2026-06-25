@@ -146,11 +146,11 @@ class Config:
     # Custom login/logout routing
     SECURITY_TRACKABLE: bool = True
     SECURITY_CONFIRMABLE: bool = True
-    SECURITY_REGISTERABLE: bool = False
+    SECURITY_REGISTERABLE: bool = True
     SECURITY_RECOVERABLE: bool = False
     SECURITY_CHANGEABLE: bool = False
     SECURITY_WEBAUTHN: bool = False
-    SECURITY_UNIFIED_SIGNIN: bool = False
+    SECURITY_UNIFIED_SIGNIN: bool = True
     SECURITY_US_ENABLED_METHODS: list = ["email"]  # Email and authenticator app
     SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = False  # Replace /login with /us-signin
     SECURITY_LOGIN_URL: str = "/ft-admin-login"
@@ -171,7 +171,7 @@ class Config:
     SECURITY_REMEMBER_ME_DAYS: int = 31  # Trust window for remember_me checkbox
 
     # TOTP settings (required for unified signin)
-    SECURITY_TOTP_SECRETS: dict = {"1": "JBSWY3DPEBLW64TMMQQ"}
+    SECURITY_TOTP_SECRETS: dict = {"1": os.environ.get("SECURITY_TOTP_SECRET_1", "JBSWY3DPEBLW64TMMQQ")}
     SECURITY_TOTP_ISSUER: str = "Fonotarot"
 
     # Flask-Admin locale
@@ -256,6 +256,8 @@ class Config:
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "DEBUG")
     LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
     SESSION_COOKIE_NAME: str = "tienda_fonotarot"
+
+    CORS_ORIGINS = ["https://fonotarot.com"]
 
 
 class DevelopmentConfig(Config):

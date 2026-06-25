@@ -193,6 +193,89 @@ def search_client(
         return None
 
 
+def search_client_data(
+    client_id: int | str | None = None,
+    email: str | None = None,
+    phone: str | None = None,
+    ani: str | None = None,
+) -> dict | None:
+    """Search for an existing Firenze client by client_id/email/phone.
+
+    Calls ``GET /api/v1/clients/search`` with ``service=fonotarot-cl`` and one
+    or more lookup fields (``client_id``, ``email``, ``phone``, ``ani``).
+
+    Args:
+        client_id: Firenze client identifier (preferred when known).
+        email: Customer e-mail address (optional but recommended).
+        phone: Customer phone number / ANI (optional but recommended).
+
+    Returns:
+        The complete API payload.
+    """
+    normalized_client_id = str(client_id).strip() if client_id is not None else ""
+    if not normalized_client_id and not email and not phone and not ani:
+        logger.warning("search_client: called with no client_id/email/phone/ani — skipping")
+        return None
+
+    headers = _auth_headers()
+    if not headers:
+        logger.warning("search_client: missing Firenze API credentials")
+        return None
+
+    params: dict[str, str] = {}
+    params["service"] = "fonotarot-cl"
+    if normalized_client_id:
+        params["client_id"] = normalized_client_id
+    if email:
+        params["email"] = email
+    if phone:
+        # phone is deprecated
+        params["ani"] = phone
+    if ani:
+        params["ani"] = ani
+
+    url = urljoin(_base_url(), "/api/v1/clients/search")
+    logger.debug(
+        "search_client: searching for client (client_id=%r email=%r phone=%r ani=%r)",
+        normalized_client_id or None,
+        email,
+        phone,
+        ani,
+    )
+    try:
+        resp = requests.get(url, params=params, headers=headers, timeout=_timeout())
+        if resp.status_code != 200:
+            logger.warning(
+                "search_client: unexpected status %s for client_id=%r email=%r phone=%r ani=%r",
+                resp.status_code,
+                normalized_client_id or None,
+                email,
+                phone,
+                ani,
+            )
+            return None
+        return resp.json()
+    except requests.RequestException as exc:
+        logger.warning(
+            "search_client: network error for client_id=%r email=%r phone=%r ani=%r — %s",
+            normalized_client_id or None,
+            email,
+            phone,
+            ani,
+            exc,
+        )
+        return None
+    except Exception:
+        logger.exception(
+            "search_client: unexpected error for client_id=%r email=%r phone=%r ani=%r",
+            normalized_client_id or None,
+            email,
+            phone,
+            ani,
+        )
+        return None
+
+
 def create_client(
     name: str | None,
     email: str | None,

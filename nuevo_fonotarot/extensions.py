@@ -12,9 +12,11 @@ from flask_security.core import Security
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 
 from .phone_util import PhoneUsernameUtil
 
+cors = CORS()
 csrf = CSRFProtect()
 db = SQLAlchemy()
 migrate = Migrate()

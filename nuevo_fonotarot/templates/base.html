@@ -1148,6 +1148,7 @@
         <a href="https://fonotarot.com/nuestro-equipo/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
         <a href="/#planes" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
         <a href="https://fonotarot.com/preguntas-frecuentes/" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
+        <a href="#" class="mobile-nav-link" data-bs-toggle="modal" data-bs-target="#saldoModal" data-bs-dismiss="offcanvas">{{ _("Consulta tu saldo") }}</a>
       </div>
       <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
         <a href="{{ url_for('pagos.index') }}" class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
@@ -1275,6 +1276,38 @@
   </footer>
   {% endblock %}
 
+<div class="modal fade modal-blur" id="saldoModal" tabindex="-1" aria-labelledby="saldoModalLabel" aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Consulta Tu saldo
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Ingresa tu teléfono</label>
+          <div class="row g-2">
+            <div class="col">
+              <input id="telefono-saldo" type="tel" class="form-control" placeholder="569123456789" />
+            </div>
+            <div class="col-auto">
+              <a href="#" class="btn btn-2 btn-icon" aria-label="Button" id="saldo-search">
+                <i class="ti ti-search icon icon-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn btn-info" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div class="modal fade modal-blur" id="passwordlessModal" tabindex="-1" aria-labelledby="passwordlessModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content modal-ft">
@@ -1285,7 +1318,7 @@
           </div>
           <div class="modal-body">
             <p class="text-secondary mb-3">
-              {{ _('Te enviaremos un código de 6 dígitos a tu correo para que ingreses rápido y seguro.') }}
+              {{ _('Te enviaremos un código de 6 dígitos a tu correo para que ingreses a tu cuenta. Rápido y seguro.') }}
             </p>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="next" id="passwordless-next" value="{{ request.full_path.rstrip('?') }}">
@@ -1484,7 +1517,130 @@
       }
     }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.getElementById('saldo-search');
+  const input = document.getElementById('telefono-saldo');
+  const modal = document.getElementById('saldoModal');
 
+  // Reset state every time the modal opens
+  modal.addEventListener('show.bs.modal', function () {
+    input.value = '';
+    input.classList.remove('is-valid', 'is-invalid');
+    btn.classList.remove('disabled');
+    btn.setAttribute('aria-disabled', 'false');
+    const result = document.getElementById('saldo-result');
+    if (result) result.remove();
+  });
+
+  btn.addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    const telefono = input.value.trim();
+
+    // Client-side validation
+    if (!telefono) {
+      input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
+      setFeedback(input, 'invalid', 'Ingresa un número de teléfono.');
+      return;
+    }
+
+    // Lock the button — one shot only
+    btn.classList.add('disabled');
+    btn.setAttribute('aria-disabled', 'true');
+    input.classList.remove('is-valid', 'is-invalid');
+    clearFeedback(input);
+    clearResult();
+
+    try {
+      const response = await fetch('/api/v1/consulta-saldo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ani: telefono }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'ok') {
+        input.classList.add('is-valid');
+        setFeedback(input, 'valid', 'Número encontrado.');
+        renderResult(data);
+      } else if (data.status === 'not_found') {
+        input.classList.add('is-invalid');
+        setFeedback(input, 'invalid', 'No encontramos ese número en el sistema.');
+        // Re-enable so the user can try again
+        btn.classList.remove('disabled');
+        btn.setAttribute('aria-disabled', 'false');
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+
+    } catch (err) {
+      input.classList.add('is-invalid');
+      setFeedback(input, 'invalid', `Error al consultar: ${err.message}`);
+      btn.classList.remove('disabled');
+      btn.setAttribute('aria-disabled', 'false');
+    }
+  });
+
+  // --- Helpers ---
+
+  function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+  }
+
+  function setFeedback(inputEl, type, message) {
+    clearFeedback(inputEl);
+    const div = document.createElement('div');
+    div.className = type === 'valid' ? 'valid-feedback' : 'invalid-feedback';
+    div.textContent = message;
+    inputEl.parentNode.appendChild(div);
+  }
+
+  function clearFeedback(inputEl) {
+    inputEl.parentNode.querySelectorAll('.valid-feedback, .invalid-feedback')
+      .forEach(el => el.remove());
+  }
+
+  function clearResult() {
+    const existing = document.getElementById('saldo-result');
+    if (existing) existing.remove();
+  }
+
+  function renderResult(data) {
+    clearResult();
+    const container = document.createElement('div');
+    container.id = 'saldo-result';
+    container.className = 'mt-3 alert alert-success';
+
+    // Adapt these keys to whatever your API actually returns
+    container.innerHTML = `
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <i class="ti ti-circle-check text-success icon"></i>
+        <strong>Saldo disponible</strong>
+      </div>
+      <ul class="mb-0 ps-3">
+        ${Object.entries(data)
+          .filter(([key]) => key !== 'status')
+          .map(([key, val]) => `<li><strong>${key}:</strong> ${val} Segundos</li>`)
+          .join('')}
+      </ul>
+    `;
+
+    // Inject below the form group inside modal-body
+    const modalBody = document.querySelector('#saldoModal .modal-body');
+    modalBody.appendChild(container);
+  }
+});
+  </script>
   <script>
     function openPasswordlessModal(nextValue) {
       const modalEl = document.getElementById('passwordlessModal');

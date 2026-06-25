@@ -597,7 +597,7 @@ def cart_checkout():
 #     return "OK", 200
 
 
-@pagos_bp.route("/pago/retorno/<order_id>")
+@pagos_bp.route("/pago/retorno/<order_id>", methods=["GET", "POST"])
 def pago_retorno(order_id: str):
     """User-facing return page after payment (success or cancel)."""
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
