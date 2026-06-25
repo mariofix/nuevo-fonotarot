@@ -145,23 +145,9 @@ def _init_extensions(app: Flask) -> None:
         except Exception:
             app.logger.exception("_on_user_registered: failed to process user=%s", user.id)
 
-    # TablerTheme blueprint must be registered before Admin registers its own
-    # blueprint — Flask resolves templates in blueprint registration order.
-    from flask_admin_tabler import TablerTheme
-
-    theme = TablerTheme(
-        theme="light",
-        theme_primary="lime",
-        theme_base="neutral",
-        theme_radius="2",
-    )
-    theme.init_app(app)
-
     if app.config.get("TESTING") and admin.app is not None and admin.app is not app:
         _reset_admin_for_factory_reuse()
 
-    admin.name = app.config.get("ADMIN_NAME", "Fonotarot Admin")
-    admin.theme = theme
     admin.init_app(app, index_view=SecureAdminIndexView(url="/ft-admin"))
     init_admin(app, admin)
 

@@ -1,0 +1,17 @@
+{# This template receives the following context:
+  login_link - the link that should be fetched (GET) to reset
+  login_token - this token is part of reset link - but can be used to
+    construct arbitrary URLs for redirecting.
+  user - the entire user model object
+  username - username
+  within - how long the link/code is valid
+  security - the Flask-Security configuration
+#}
+{{ _('Bienvenido de nuevo a Fonotarot. Usa el código de un solo uso que aparece más abajo para acceder a tu cuenta.') }}
+
+{{ _fsdomain("Código de acceso: %(code)s", code=login_token) }}
+
+{% if login_link %}
+{{ _fsdomain("O puedes usar este link: %(login_link)s", login_link=login_link) }}
+{% endif %}
+{{ _fsdomain('Este código expira en 5 minutos.') }}

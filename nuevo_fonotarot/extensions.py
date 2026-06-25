@@ -2,6 +2,7 @@
 
 from daleks.contrib.flask_security_mail import DaleksMailUtil
 from flask_admin import Admin
+from flask_admin.theme import TablerTheme
 from flask_babel import Babel
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_limiter import Limiter
@@ -23,7 +24,7 @@ migrate = Migrate()
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
 babel = Babel()
 security = Security(mail_util_cls=DaleksMailUtil, username_util_cls=PhoneUsernameUtil)
-admin = Admin(name="Fonotarot")
+admin = Admin(name="Fonotarot", theme=TablerTheme(layout="fluid", theme_primary="lime"))
 merchants_ext = FlaskMerchants()
 toolbar = DebugToolbarExtension()
 # Set by the application factory after Security is initialised.
