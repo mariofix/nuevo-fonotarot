@@ -306,7 +306,7 @@ class UserAdminView(SecureModelView):
 
     column_list = ("email", "username", "active", "roles", "firenze_client_id", "created_at")
     column_searchable_list = ("email", "username")
-    column_filters = ("active",)
+    column_filters = ("firenze_client_id", "email", "username")
     form_excluded_columns = ("password", "fs_uniquifier", "created_at")
 
     @action(
@@ -392,7 +392,7 @@ class StaticPageAdminView(SecureModelView):
 
     column_list = ("path", "title", "is_active", "created_at", "updated_at")
     column_searchable_list = ("path", "title")
-    column_filters = ("is_active",)
+    column_filters = ("is_active","path", "title")
     form_excluded_columns = ("created_at", "updated_at")
     form_widget_args = {
         "featured_image_url": {
@@ -862,11 +862,11 @@ class OrderAdminView(JsonColumnsMixin, SecureModelView):
         "firenze_client_id",
         "created_at",
     )
-    column_filters = ("status", "provider", "firenze_client_id", "anonymous_shipping")
+    column_filters = ("status", "provider", "firenze_client_id", "email", "status", "transaction_id", "merchants_id")
     can_create = False
     form_excluded_columns = ("created_at", "updated_at", "items")
     column_sortable_list = ("firenze_client_id", "created_at", "provider")
-    column_searchable_list = ("firenze_client_id", "email", "shipping_phone")
+    column_searchable_list = ("firenze_client_id", "email", "shipping_phone", "transaction_id", "merchants_id")
     page_size = 50
     column_default_sort = ("id", True)
 
@@ -952,7 +952,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Users"),
             category=_l("Auth"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="users",
         )
     )
@@ -962,7 +962,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Roles"),
             category=_l("Auth"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="shield",
         )
     )
@@ -972,7 +972,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Pages"),
             category=_l("Content"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="file-text",
         )
     )
@@ -982,7 +982,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Blog Posts"),
             category=_l("Content"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="file-text",
         )
     )
@@ -992,7 +992,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Packs de Minutos"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="clock",
         )
     )
@@ -1002,7 +1002,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Suscripciones"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="credit-card",
         )
     )
@@ -1012,7 +1012,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Categorías"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="tag",
         )
     )
@@ -1022,7 +1022,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Productos"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="package",
         )
     )
@@ -1032,7 +1032,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Tarjetas Digitales"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="ticket",
         )
     )
@@ -1042,7 +1042,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Códigos de Tarjetas"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="ticket-off",
         )
     )
@@ -1052,7 +1052,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Órdenes"),
             category=_l("Tienda"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="shopping-cart",
         )
     )
@@ -1062,7 +1062,7 @@ def init_admin(app, admin_ext):
             db.session,
             name=_l("Configuración"),
             category=_l("Sitio"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="settings",
         )
     )
@@ -1071,7 +1071,7 @@ def init_admin(app, admin_ext):
             name=_l("SEO"),
             endpoint="seo_settings",
             category=_l("Sitio"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="search",
         )
     )
@@ -1080,7 +1080,7 @@ def init_admin(app, admin_ext):
             name=_l("Analytics"),
             endpoint="analytics_settings",
             category=_l("Sitio"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="chart-dots",
         )
     )
@@ -1089,7 +1089,7 @@ def init_admin(app, admin_ext):
             name=_l("Reporte Mensual"),
             endpoint="monthly_report",
             category=_l("Reportes"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="chart-bar",
         )
     )
@@ -1098,7 +1098,7 @@ def init_admin(app, admin_ext):
             name=_l("Reporte Agentes"),
             endpoint="monthly_agent_report",
             category=_l("Reportes"),
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="users",
         )
     )
@@ -1111,7 +1111,7 @@ def init_admin(app, admin_ext):
             name=_l("Media Library"),
             category=_l("Content"),
             endpoint="media_library",
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="photo",
         )
     )
@@ -1122,7 +1122,7 @@ def init_admin(app, admin_ext):
             name=_l("Static Files"),
             category=_l("Content"),
             endpoint="static_files",
-            menu_icon_type="tabler",
+            menu_icon_type="ti",
             menu_icon_value="folder",
         )
     )
@@ -1133,4 +1133,4 @@ def init_admin(app, admin_ext):
             url="/media",
         )
     )
-    admin_ext.add_link(MenuLink(name=_l("Sitio Web"), url="/", icon_type="tabler", icon_value="home"))
+    admin_ext.add_link(MenuLink(name=_l("Sitio Web"), url="/", icon_type="ti", icon_value="home"))

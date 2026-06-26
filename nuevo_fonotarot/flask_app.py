@@ -167,7 +167,7 @@ def _init_extensions(app: Flask) -> None:
 
         try:
             all_settings = SiteSettings.all()
-            app.logger.debug(f"_inject_site_settings: found {len(all_settings)} SiteSettings")
+            # app.logger.debug(f"_inject_site_settings: found {len(all_settings)} SiteSettings")
             all_settings = {f"FT_{k.upper()}": v for k, v in all_settings.items()}
             app.config.from_mapping(all_settings)
         except Exception:

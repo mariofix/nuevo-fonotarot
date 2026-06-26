@@ -375,7 +375,7 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
     for item in _iter_order_items(order):
         if item.item_type != OrderItemType.MINUTE_PACK.value:
             logger.debug(
-                f"post_purchase_process: skipping non-minute item order={order.id} "
+                f"post_purchase_process: skipping non-minute items order={order.id} "
                 f"item_type={item.item_type!r} item_id={item.item_id}"
             )
             continue
@@ -723,14 +723,15 @@ def post_purchase_process(
         logger.info(f"post_purchase_process: {order.id=} marked PAID")
 
     logger.info(
-        f"post_purchase_process: starting top-up {order.id=} {order.transaction_id} "
+        f"post_purchase_process: starting fullfillment for {order.id=} {order.transaction_id} "
         f" {order.payment_status=} {order.status=} {order.provider=}"
     )
-    if order.has_minute_packs():
-        topup, _ = sync_firenze_topup(order, automated=True)
-        if not topup:
-            logger.warning("post_purchase_process: sync_firenze_topup returned False")
-
+    
+    # topup, _ = sync_firenze_topup(order, automated=True)
+    # if not topup:
+    #     logger.warning("post_purchase_process: sync_firenze_topup returned False")
+    fulfill = dispatch_order_fulfillment_async(order_id=order.id)
+    logger.info(f"post_purchase_process: fulfilling result {fulfill=}")
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
     db.session.commit()
