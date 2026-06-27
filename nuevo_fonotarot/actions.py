@@ -14,7 +14,12 @@ from .extensions import db, user_datastore
 from .firenze import create_client, post_purchase, search_client
 from .log import get_logger
 from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, User
-from .notifications import notify_new_user_registration, send_post_purchase_admin_email, send_telegram_notification
+from .notifications import (
+    notify_new_user_registration,
+    send_post_purchase_admin_email,
+    send_telegram_notification,
+    send_firenze_failure_email,
+)
 
 logger = get_logger(__name__)
 
@@ -512,12 +517,6 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
     logger.info(f"post_purchase_process: {order.id=} marked {order.status=}")
 
     all_ok = all(result["status"] == "ok" for result in item_results)
-    if item_results and all_ok:
-        logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(item_results)}")
-        ## Move this out of this function
-        ## and after this function reports OK
-        _send_post_purchase_success_notification(order)
-        _send_post_purchase_admin_email(order, audit_rows=item_results)
 
     ## Move this out of this function
     ## and after this function reports OK
@@ -538,6 +537,8 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
 
 
 def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool, dict[str, Any]]:
+    firenze_payloads: list[dict[str, Any]] = []
+    firenze_responses: list[Any] = []
     pack = db.session.get(MinutePack, int(item.item_id))
     if pack is None:
         item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
@@ -569,10 +570,18 @@ def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool
     else:
         response = post_purchase(**payload)
 
+    firenze_payloads.append(payload)
+    firenze_responses.append(response)
+
     if response is None:
         item.fulfillment_status = OrderItemFulfillmentStatus.FAILED.value
         item.fulfillment_error = "firenze_post_purchase_failed"
         db.session.commit()
+        send_telegram_notification(
+            f"_fulfill_minute_pack_order_item: ERROR order_id={order.id} item_id={item.item_id} response returned None"
+        )
+
+        send_firenze_failure_email(order)
         return False, {"status": "failed", "reason": "firenze_post_purchase_failed", "item_id": item.id}
 
     posted_client_id = None
@@ -589,6 +598,8 @@ def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool
     item.fulfilled_at = datetime.now()
     item.fulfillment_error = None
     item.fulfillment_reference = str(payload["transaction_id"])
+    order.firenze_payload = firenze_payloads
+    order.firenze_response = firenze_responses
     db.session.commit()
     return True, {"status": "ok", "item_id": item.id, "seconds_posted": seconds_to_add}
 
@@ -664,7 +675,7 @@ def dispatch_order_fulfillment_async(
 
     order.status = OrderStatus.FULFILLING
     db.session.commit()
-    app = current_app._get_current_object()
+    app = current_app._get_current_object()  # type: ignore
 
     results: list[dict[str, Any]] = []
     worker_count = max(1, min(int(max_workers), len(item_ids)))
@@ -726,12 +737,19 @@ def post_purchase_process(
         f"post_purchase_process: starting fullfillment for {order.id=} {order.transaction_id} "
         f" {order.payment_status=} {order.status=} {order.provider=}"
     )
-    
+
     # topup, _ = sync_firenze_topup(order, automated=True)
     # if not topup:
     #     logger.warning("post_purchase_process: sync_firenze_topup returned False")
     fulfill = dispatch_order_fulfillment_async(order_id=order.id)
-    logger.info(f"post_purchase_process: fulfilling result {fulfill=}")
+    logger.debug(f"post_purchase_process: fulfilling result {fulfill=}")
+
+    if fulfill.get("status", False) == "ok":
+        logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(fulfill["results"])}")
+        ## Move this out of this function
+        ## and after this function reports OK
+        _send_post_purchase_success_notification(order)
+        _send_post_purchase_admin_email(order, audit_rows=fulfill["results"])
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
     db.session.commit()

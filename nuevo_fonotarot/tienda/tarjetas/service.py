@@ -8,6 +8,7 @@ from ...extensions import db
 from ...firenze import post_purchase
 from ...log import get_logger
 from ...models import GiftCard, GiftCardProduct, Order, OrderItemFulfillmentStatus, OrderItemType, OrderStatus, User
+from ...notifications import notify_issuer_of_issued_giftcard
 
 logger = get_logger(__name__)
 
@@ -120,6 +121,7 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
     existing = GiftCard.query.filter_by(order_id=order.id, gift_card_product_id=product.id).count()
     missing = max(0, quantity - existing)
     issued = 0
+    new_gc = None
     for _ in range(missing):
         gift_card = GiftCard(
             code=generate_unique_gift_code(),
@@ -130,6 +132,7 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
             status="issued",
         )
         db.session.add(gift_card)
+        new_gc = gift_card
         issued += 1
 
     item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
@@ -138,6 +141,9 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
         item.fulfilled_at = datetime.now()
     item.fulfillment_reference = f"gift_cards:{product.id}:{quantity}"
     db.session.commit()
+    if new_gc:
+        notify_issuer_of_issued_giftcard(card=new_gc)
+
     return True, {"status": "ok", "item_id": item.id, "issued": issued, "existing": existing}
 
 

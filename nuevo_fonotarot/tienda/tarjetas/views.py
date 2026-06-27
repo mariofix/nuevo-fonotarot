@@ -72,6 +72,19 @@ def detalle(slug: str):
     return render_template("tienda/tarjeta_detalle.html", card=card, cart_count=len(_get_cart()))
 
 
+@tarjetas_bp.route("/<card_slug>/<order_id>/<item_id>/instrucciones")
+def instrucciones(card_slug: str, order_id: int, item_id: int):
+    """Gift-card product detail page."""
+    from ...models import Order, OrderItem, OrderStatus, OrderItemType, OrderItemFulfillmentStatus
+    from ...extensions import db
+
+    order = db.session.get(Order, int(order_id))
+    item = db.session.get(OrderItem, int(item_id))
+    card = db.session.get(GiftCardProduct, int(item.item_id))
+
+    return render_template("tienda/tarjeta_instrucciones.html", card=card, order=order, item=item)
+
+
 @tarjetas_bp.route("/<slug>/comprar", methods=["GET", "POST"])
 def comprar(slug: str):
     """Fast checkout for one gift-card product."""
