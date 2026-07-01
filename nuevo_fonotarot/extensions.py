@@ -21,10 +21,14 @@ cors = CORS()
 csrf = CSRFProtect()
 db = SQLAlchemy()
 migrate = Migrate()
-limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["240 per minute"],
+    headers_enabled=True,
+)
 babel = Babel()
 security = Security(mail_util_cls=DaleksMailUtil, username_util_cls=PhoneUsernameUtil)
-admin = Admin(name="Fonotarot", theme=TablerTheme(layout="fluid", theme_primary="lime"))
+admin = Admin(name="Fonotarot", theme=TablerTheme(layout="fluid", theme_primary="lime", theme_radius="2"))
 merchants_ext = FlaskMerchants()
 toolbar = DebugToolbarExtension()
 # Set by the application factory after Security is initialised.

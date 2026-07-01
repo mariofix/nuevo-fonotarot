@@ -6,7 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 from daleks.contrib.client import DaleksClient
-from flask import current_app, has_app_context, render_template
+from flask import current_app, has_app_context, render_template, url_for
 
 from .log import get_logger
 from .models import Order, Role, GiftCard
@@ -25,26 +25,39 @@ def _active_admin_emails() -> list[str]:
 def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
     """Send an email to the giftcard purchaser"""
     if not has_app_context():
-        logger.warning(f"notify_issuer_of_issued_giftcard: no app context — skipping for order={order.id}")
+        logger.warning(f"notify_issuer_of_issued_giftcard: no app context — skipping for {card=}")
         return
 
     daleks_url = current_app.config.get("DALEKS_URL")
     if not daleks_url:
         logger.warning(f"notify_issuer_of_issued_giftcard: DALEKS_URL not configured — skipping for {card=}")
         return
+    from .models import OrderItem
+    from .utils import encrypt_string
+    from json import dumps as json_dumps
+
+    site_url = current_app.config.get("TRUSTED_HOSTS", [None])[0]
+    _secret_key = current_app.config["SECRET_KEY"]
+    fonotarot_url = "https://fonotarot.com"
+    item = OrderItem.query.filter_by(order_id=card.order_id).first()
+    payload = {"giftcard_id": card.id, "order_id": card.order_id, "item_id": item.id}
+    token = encrypt_string(json_dumps(payload), _secret_key)
 
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
 
-    try:
-        logger.debug(f"notify_issuer_of_issued_giftcard: preparing admin email for {card=}")
-        html_body = render_template(
-            "tienda/email/pdf-giftcard.html",
-            giftcard=card,
-        )
-        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+    logger.debug(f"notify_issuer_of_issued_giftcard: preparing admin email for {card=}")
+    html_body = render_template(
+        "tienda/email/issued_giftcard_user.html",
+        giftcard=card,
+        site_url=site_url,
+        fonotarot_url=fonotarot_url,
+        gc_token=token,
+    )
 
+    try:
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
             client.send_email(
                 from_address=from_address,
                 to=[card.purchaser_email],
@@ -55,6 +68,8 @@ def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
         logger.info(f"notify_issuer_of_issued_giftcard: sent to {card.purchaser_email=}")
     except Exception:
         logger.exception(f"notify_issuer_of_issued_giftcard: failed to notify purchaser for {card=}")
+
+    return html_body
 
 
 def send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, Any]]) -> None:

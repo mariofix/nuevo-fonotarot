@@ -1,4 +1,5 @@
 """Domain services for minute pack."""
+
 from ...extensions import db
 
 from ...log import get_logger

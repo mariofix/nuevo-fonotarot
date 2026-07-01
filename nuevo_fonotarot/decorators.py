@@ -22,7 +22,7 @@ def login_required_modal(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user :
+        if not current_user:
             return (
                 render_template(
                     "auth/login_gate.html",

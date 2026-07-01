@@ -21,22 +21,25 @@ dependencies = [
     "ephem (>=4.2.1,<6.0)",
     "cryptography (>=48.0.0,<51.0.0)",
     "webauthn (>=2.7.1,<4.0.0)",
-    # "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
-    # "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
-    "merchants-sdk",
-    "flask-merchants",
+    "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
+    "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
+    # "merchants-sdk",
+    # "flask-merchants",
     "flask-cors (>=6.0.5,<7.0.0)",
+    "weasyprint (>=69.0,<70.0)",
+    # "flask-admin-tabler",
 ]
 
-[tool.poetry.dependencies]
-merchants-sdk = { path = "../merchants", develop = true }
-flask-merchants = { path = "../flask-merchants", develop = true }
-flask-admin = { path = "../flask-admin", develop = true }
+# [tool.poetry.dependencies]
+# merchants-sdk = { path = "../merchants", develop = true }
+# flask-merchants = { path = "../flask-merchants", develop = true }
+# flask-admin = { path = "../flask-admin", develop = true }
+# flask-admin-tabler = { path = "../flask-admin-tablerui", develop = true }
 
-[tool.uv.sources]
-merchants-sdk = { path = "../merchants", editable = true }
-flask-merchants = { path = "../flask-merchants", editable = true }
-flask-admin = { path = "../flask-admin", editable = true }
+# [tool.uv.sources]
+# merchants-sdk = { path = "../merchants", editable = true }
+# flask-merchants = { path = "../flask-merchants", editable = true }
+# flask-admin = { path = "../flask-admin", editable = true }
 
 [project.scripts]
 start = "nuevo_fonotarot:create_app"

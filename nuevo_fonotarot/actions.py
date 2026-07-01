@@ -745,7 +745,7 @@ def post_purchase_process(
     logger.debug(f"post_purchase_process: fulfilling result {fulfill=}")
 
     if fulfill.get("status", False) == "ok":
-        logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(fulfill["results"])}")
+        logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(fulfill['results'])}")
         ## Move this out of this function
         ## and after this function reports OK
         _send_post_purchase_success_notification(order)

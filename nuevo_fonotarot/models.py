@@ -3,6 +3,7 @@
 import enum
 import uuid
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
@@ -394,6 +395,9 @@ class GiftCard(db.Model):
 
     def __str__(self) -> str:
         return f"giftcard: {self.code}({self.status})"
+
+    def redeem_until(self) -> datetime:
+        return self.created_at + relativedelta(years=1)
 
 
 class Order(db.Model, PaymentMixin):

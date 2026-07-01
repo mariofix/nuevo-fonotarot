@@ -81,7 +81,7 @@ def _init_extensions(app: Flask) -> None:
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app)
-    
+
     # Initialize Flask-Security models before importing User/Role
     from flask_security.models import fsqla_v3 as fsqla
 

@@ -392,7 +392,7 @@ class StaticPageAdminView(SecureModelView):
 
     column_list = ("path", "title", "is_active", "created_at", "updated_at")
     column_searchable_list = ("path", "title")
-    column_filters = ("is_active","path", "title")
+    column_filters = ("is_active", "path", "title")
     form_excluded_columns = ("created_at", "updated_at")
     form_widget_args = {
         "featured_image_url": {

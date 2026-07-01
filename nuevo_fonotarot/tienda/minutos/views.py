@@ -25,7 +25,7 @@ def index():
     return render_template("tienda/minutos.html", packs=packs, cart_count=len(_get_cart()))
 
 
-@minutos_bp.route("/<pack_slug>/comprar", methods=["GET", "POST"])
+@minutos_bp.route("/<pack_slug>/comprar", methods=["GET", "POST"])  # type: ignore
 def comprar_minutos(pack_slug: str):
     """Fast checkout for a single minute pack.
 
@@ -205,7 +205,7 @@ def comprar_minutos(pack_slug: str):
     )
 
 
-@minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])
+@minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])  # type: ignore
 def one_click(pack_slug: str):
     """One-Click uprchase for registered users"""
     is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))

@@ -15,6 +15,22 @@ MOON_PHASE_NAMES = [
 ]
 
 
+def encrypt_string(msg: str, key: str) -> str:
+    from cryptography.fernet import Fernet
+
+    f = Fernet(key)
+    return f.encrypt(msg.encode()).decode()
+
+
+def decrypt_token(token: str, key: str) -> str:
+    from cryptography.fernet import Fernet, InvalidToken
+
+    f = Fernet(key)
+    return f.encrypt(msg.encode()).decode()
+
+    return msg
+
+
 def get_moon_phase_index() -> int:
     """Return the current moon phase as an index from 0 to 7.
 

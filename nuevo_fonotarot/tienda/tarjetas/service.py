@@ -3,6 +3,7 @@
 from datetime import datetime
 from secrets import choice
 from string import ascii_uppercase, digits
+from flask import render_template, current_app, request
 
 from ...extensions import db
 from ...firenze import post_purchase
@@ -70,7 +71,17 @@ def issue_gift_cards_for_order(order: Order) -> int:
                 status="issued",
             )
             db.session.add(gift_card)
+            db.session.flush()
             issued_count += 1
+            pdf_info = {
+                "file_name": f"gc-{order.merchants_id.lower()}.pdf",
+                "valido_hasta": f"{gift_card.redeem_until}",
+                "codigo": f"{gift_card.code}",
+                "minutos": f"{product.name}",
+            }
+            create_giftcard_pdf(pdf_data=pdf_info)
+            notify_issuer_of_issued_giftcard(card=gift_card)
+
         item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
         item.fulfillment_error = None
         if item.fulfilled_at is None:
@@ -132,8 +143,17 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
             status="issued",
         )
         db.session.add(gift_card)
-        new_gc = gift_card
+        db.session.flush()
         issued += 1
+        pdf_info = {
+            "file_name": f"gc-{order.merchants_id.lower()}.pdf",
+            "valido_hasta": f"{gift_card.redeem_until}",
+            "codigo": f"{gift_card.code}",
+            "minutos": f"{product.name}",
+            "giftcard": gift_card,
+        }
+        create_giftcard_pdf(pdf_data=pdf_info)
+        notify_issuer_of_issued_giftcard(card=gift_card)
 
     item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
     item.fulfillment_error = None
@@ -141,8 +161,7 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
         item.fulfilled_at = datetime.now()
     item.fulfillment_reference = f"gift_cards:{product.id}:{quantity}"
     db.session.commit()
-    if new_gc:
-        notify_issuer_of_issued_giftcard(card=new_gc)
+
 
     return True, {"status": "ok", "item_id": item.id, "issued": issued, "existing": existing}
 
@@ -195,3 +214,22 @@ def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:
 def normalize_input_code(raw: str) -> str:
     """Normalize user input code to canonical uppercase representation."""
     return _normalize_code(raw)
+
+
+def create_giftcard_pdf(pdf_data: dict, base_url: str | None = None, site_domain: str | None = None) -> str:
+    """Create the PDF File for a giftcard"""
+
+    with current_app.app_context():
+        from weasyprint import HTML, CSS
+
+        if not pdf_data:
+            return "False"
+        if not base_url:
+            base_url = current_app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
+        html_body = render_template("tienda/pdf-giftcard.html", base_url=base_url, raw_data=pdf_data, **pdf_data)
+        output_path = f"{current_app.static_folder}/pdfs-cache/{pdf_data.get('file_name', 'file.pdf')}"
+        css = CSS(string="@page { margin: 0; }")
+
+        HTML(string=html_body, base_url=base_url).write_pdf(output_path, stylesheets=[css])
+
+        return html_body

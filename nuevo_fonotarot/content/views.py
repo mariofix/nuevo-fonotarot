@@ -500,6 +500,18 @@ def api_promo_actualizar_email():
     return jsonify(response_body), status
 
 
+@content_bp.route("/test-emails")
+def test_emails():
+    from ..notifications import notify_issuer_of_issued_giftcard
+    from ..models import GiftCard
+    from ..extensions import db
+    from flask import render_template_string
+
+    card = db.session.get(GiftCard, 3)
+    template = notify_issuer_of_issued_giftcard(card=card)
+    return render_template_string(template)
+
+
 # ---------------------------------------------------------------------------
 # Static pages (catch-all — must remain last)
 # ---------------------------------------------------------------------------

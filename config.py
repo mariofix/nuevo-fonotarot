@@ -124,6 +124,8 @@ class Config:
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
     TRUSTED_HOSTS: list = ["tienda.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
+    SERVER_NAME: str = "tardis.local:9000"
+    PREFERRED_URL_SCHEME: str = "http"
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")

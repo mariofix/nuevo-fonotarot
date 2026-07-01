@@ -23,7 +23,7 @@ def consulta_saldo():
 
     data = {"status": "not_found", "saldo": 0}
 
-    if client := search_client_data(ani=ani) :
+    if client := search_client_data(ani=ani):
         found = client.get("found", False)
         if found:
             data["status"] = "ok"

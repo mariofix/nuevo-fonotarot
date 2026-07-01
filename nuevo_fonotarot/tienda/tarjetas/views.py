@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for, abort, current_app, jsonify
 from flask_babel import _
 from flask_security import current_user
 
@@ -11,7 +11,7 @@ from ...log import get_logger
 from ...models import GiftCard, GiftCardProduct, Order, OrderItem, OrderItemType, OrderStatus
 from ..utils import _get_cart, create_payment_and_redirect
 from . import tarjetas_bp
-from .service import normalize_input_code, redeem_gift_card
+from .service import normalize_input_code, redeem_gift_card, create_giftcard_pdf
 
 logger = get_logger(__name__)
 
@@ -72,17 +72,66 @@ def detalle(slug: str):
     return render_template("tienda/tarjeta_detalle.html", card=card, cart_count=len(_get_cart()))
 
 
-@tarjetas_bp.route("/<card_slug>/<order_id>/<item_id>/instrucciones")
-def instrucciones(card_slug: str, order_id: int, item_id: int):
+@tarjetas_bp.route("/instrucciones/<data_str>", methods=["GET", "POST"])
+def instrucciones(data_str: str):
     """Gift-card product detail page."""
-    from ...models import Order, OrderItem, OrderStatus, OrderItemType, OrderItemFulfillmentStatus
+    if not data_str:
+        logger.warning("tarjetas.instrucciones: data_str not present")
+        return abort(404)
+    from cryptography.fernet import Fernet, InvalidToken
+    from json import loads as json_loads
+
+    f = Fernet(current_app.config["SECRET_KEY"])
+    data = None
+    try:
+        data = json_loads(f.decrypt(data_str.encode()))
+        logger.info(f"{data=}")
+    except InvalidToken as e:
+        logger.warning(f"InvalidToken: {e}")
+    except TypeError:
+        logger.warning(f"TypeError: {data_str} no es una cadena de texto")
+
+    if not data:
+        return abort(404)
+
+    if not all(k in ["giftcard_id", "order_id", "item_id"] for k in data.keys()):
+        logger.warning(f"tarjetas.instrucciones: {data=} malformado")
+        return abort(404)
+
+    from ...models import Order, OrderItem, GiftCard
     from ...extensions import db
 
-    order = db.session.get(Order, int(order_id))
-    item = db.session.get(OrderItem, int(item_id))
-    card = db.session.get(GiftCardProduct, int(item.item_id))
+    order = db.session.get(Order, data.get("order_id"))
+    order_item = db.session.get(OrderItem, data.get("item_id"))
+    card = db.session.get(GiftCardProduct, order_item.item_id)
+    giftcard = GiftCard.query.filter_by(
+        id=data.get("giftcard_id"),
+        order_id=order.id,
+        gift_card_product_id=card.id,
+    ).first_or_404()
+    pdf_info = {
+        "file_name": f"gc-{order.merchants_id.lower()}.pdf",
+        "giftcard": giftcard,
+        "card": card,
+    }
 
-    return render_template("tienda/tarjeta_instrucciones.html", card=card, order=order, item=item)
+    base_url = current_app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
+    site_domain = "https://fonotarot.com"
+    card_html = create_giftcard_pdf(pdf_data=pdf_info, base_url=base_url, site_domain=site_domain)
+    card_template = render_template(
+        "tienda/email/email-giftcard.html", hidecss=True, base_url=site_domain, raw_data=pdf_info, **pdf_info
+    )
+    if request.method == "POST":
+        return jsonify("yeah")
+
+    return render_template(
+        "tienda/tarjeta_instrucciones.html",
+        card=card,
+        order=order,
+        item=order_item,
+        gc_info=pdf_info,
+        card_template=card_template,
+    )
 
 
 @tarjetas_bp.route("/<slug>/comprar", methods=["GET", "POST"])

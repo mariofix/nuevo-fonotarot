@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gift Card Fonotarot · Un cariñito para el alma</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700&display=swap");
+      {% if hide_css %}
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 40px;
+        background: #fdf8f5;
+        font-family: "Nunito", sans-serif;
+        color: #4a3b52;
+        display: flex;
+        justify-content: center;
+      }
+      {% endif %}
+      .greeting-card {
+        max-width: 700px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(114, 82, 128, 0.15);
+        overflow: hidden;
+        border: 8px solid #f2e3e9;
+        position: relative;
+      }
+
+      .header-banner {
+        background: linear-gradient(135deg, #a78bfa 0%, #c4a5fe 100%);
+        padding: 45px 40px 30px;
+        text-align: center;
+        color: #ffffff;
+        position: relative;
+      }
+
+      .header-banner::after {
+        content: "✨";
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        opacity: 0.3;
+      }
+
+      .header-banner::before {
+        content: "🌙";
+        position: absolute;
+        bottom: 20px;
+        left: 30px;
+        font-size: 30px;
+        opacity: 0.3;
+      }
+
+      h1 {
+        font-family: "Caveat", cursive;
+        font-size: 48px;
+        margin: 0;
+        color: #ffffff;
+        text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+        line-height: 1.1;
+      }
+
+      .intro-text {
+        font-size: 18px;
+        margin: 15px 0 0;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .body-content {
+        padding: 40px;
+      }
+
+      .explanation {
+        background: #fcf9fb;
+        border-left: 5px solid #d4b3e5;
+        padding: 20px 25px;
+        border-radius: 0 12px 12px 0;
+        margin-bottom: 35px;
+      }
+
+      .explanation p {
+        margin: 0 0 10px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .explanation p:last-child {
+        margin: 0;
+      }
+
+      .code-container {
+        text-align: center;
+        margin-bottom: 35px;
+      }
+
+      .code-label {
+        font-family: "Caveat", cursive;
+        font-size: 26px;
+        color: #8c6b9d;
+        margin-bottom: 5px;
+      }
+
+      .code-box {
+        display: inline-block;
+        background: #fff;
+        border: 2px dashed #c4a5fe;
+        padding: 15px 35px;
+        border-radius: 12px;
+        font-size: 34px;
+        font-weight: 700;
+        color: #6d4b8e;
+        letter-spacing: 3px;
+        box-shadow: 0 4px 10px rgba(196, 165, 254, 0.15);
+      }
+
+      .quote-container {
+        text-align: center;
+        margin-bottom: 35px;
+      }
+
+      .quote-label {
+        font-family: "Caveat", cursive;
+        font-size: 23px;
+        color: #8c6b9d;
+        margin-bottom: 5px;
+      }
+
+      .quote-box {
+        display: inline-block;
+        background: #fff;
+        border: 2px dashed #c4a5fe;
+        padding: 15px 35px;
+        border-radius: 12px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #6d4b8e;
+        letter-spacing: 3px;
+        box-shadow: 0 4px 10px rgba(196, 165, 254, 0.15);
+      }
+
+      .validity {
+        display: block;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #9c8a9e;
+        font-weight: 600;
+      }
+
+      .steps-section {
+        margin-top: 20px;
+      }
+
+      .steps-title {
+        font-family: "Caveat", cursive;
+        font-size: 32px;
+        color: #6d4b8e;
+        margin: 0 0 20px;
+        text-align: center;
+      }
+
+      .step-list {
+        display: grid;
+        gap: 20px;
+      }
+
+      .step-item {
+        display: flex;
+        align-items: flex-start;
+        background: #fff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #f2e3e9;
+      }
+
+      .step-number {
+        background: #c4a5fe;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        margin-right: 15px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .step-text {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .step-text strong {
+        color: #6d4b8e;
+      }
+
+      .step-text a {
+        color: #d4b3e5;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .footer {
+        background: #fdf8f5;
+        text-align: center;
+        padding: 25px 40px;
+        border-top: 1px solid #f2e3e9;
+        font-size: 14px;
+        color: #8c6b9d;
+      }
+
+      .heart {
+        color: #ff8fa3;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="greeting-card">
+      <div class="header-banner">
+        <h1>¡Un regalito para el alma!</h1>
+        <p class="intro-text"><strong>{{ card.minutes }}</strong> minutos con nuestras tarotistas.</p>
+      </div>
+
+      <div class="body-content">
+        <div class="explanation">
+          <p><strong>¿Qué es esto?</strong></p>
+          <p>
+            Te han regalado minutos para hablar con las maravillosas expertas de
+            <strong>Fonotarot</strong>. Es un espacio íntimo y súper seguro donde podrás escuchar consejos, tirar las cartas y llenarte de buena energía.
+          </p>
+          <p>Si nunca lo has usado, ¡no te preocupes! Es facilísimo y nosotras te guiamos en todo momento. Tómate un tecito, ponte cómoda y regálate este momentito para ti.</p>
+        </div>
+
+        <div class="code-container">
+          <div class="code-label">Tu código:</div>
+          <div class="code-box">{{ giftcard.code }}</div>
+          <span class="validity">Tómate tu tiempo, tienes hasta el {{ giftcard.redeem_until() | dateformat("dd/MM/yyyy") }} para usarlo.</span>
+        </div>
+
+        <div class="quote-container">
+          <div class="quote-label"><span id="remitente-text-box">{{ nombre }}</span> te ha escrito:</div>
+          <div class="quote-box" id="mensaje-text-box">{{ mensaje }}</div>
+        </div>
+
+        <div class="steps-section">
+          <h2 class="steps-title">¿Cómo lo uso? Súper fácil:</h2>
+
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <p class="step-text">
+                Entra a nuestra página
+                <strong><a href="https://www.fonotarot.com/canjear?utm_source=email-giftcard&utm_medium=email">www.fonotarot.com/canjear</a></strong>
+                desde tu celu o compu.
+              </p>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <p class="step-text">Anota tu <strong>código</strong>, un correo y tu <strong>número de celular</strong>. (Así el sistema sabe que eres tú cuando llames).</p>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <p class="step-text">¡Listo! Ahora solo llama al <strong>+56 2 2230 1515</strong>. Te contestaremos al tiro y tus minutos se irán gastando solo mientras hablas.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Hecho con mucho cariño <span class="heart">♥</span> Si tienes dudas, visita www.fonotarot.com<br />
+        <small style="opacity: 0.8; margin-top: 8px; display: block">¡Tus minutos activados no se vencen nunca!</small>
+      </div>
+    </div>
+  </body>
+</html>
