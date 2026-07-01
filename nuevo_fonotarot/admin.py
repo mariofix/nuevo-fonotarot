@@ -10,7 +10,6 @@ from flask_admin.actions import action
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
-from flask_admin_tabler import JsonColumnsMixin, tabler_bool_formatter
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
@@ -183,7 +182,7 @@ class SecureModelView(ModelView):
     """ModelView accessible only to authenticated users with the 'admin' role."""
 
     column_type_formatters = dict(ModelView.column_type_formatters)
-    column_type_formatters[bool] = tabler_bool_formatter
+
     can_view_details = True
 
     def is_accessible(self):
@@ -575,7 +574,7 @@ class GiftCardAdminView(SecureModelView):
         return form
 
 
-class SiteSettingsAdminView(JsonColumnsMixin, SecureModelView):
+class SiteSettingsAdminView(SecureModelView):
     """Admin view for generic site settings."""
 
     json_columns = ["value"]
@@ -841,7 +840,7 @@ class SeoSettingsAdminView(BaseView):
         )
 
 
-class OrderAdminView(JsonColumnsMixin, SecureModelView):
+class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
     details_template = "admin/order/details.html"
