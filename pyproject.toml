@@ -4,7 +4,8 @@ version = "0.1.3"
 requires-python = ">=3.14,<4.0"
 dependencies = [
     "flask>=3.1.3",
-    "flask-admin[images,sqlalchemy-with-utils,translation]",
+    "flask-admin[images,sqlalchemy-with-utils,translation] @ git+https://github.com/mariofix/flask-admin.git@tabler-ui",
+    # "flask-admin[images,sqlalchemy-with-utils,translation] (>=2.2.0,<3.0.0)",
     "flask-security[babel,common,fsqla] (>=5.8.1,<7.0.0)",
     "python-slugify (>=8.0.4,<9.0.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
