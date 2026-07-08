@@ -8,6 +8,7 @@ from flask_babel import _
 
 from ..log import get_logger
 from ..models import Order
+from ..notifications import send_new_order_admin_email
 
 logger = get_logger(__name__)
 
@@ -85,4 +86,5 @@ def create_payment_and_redirect(
         payment_method,
         order.transaction_id,
     )
+    send_new_order_admin_email(order)
     return redirect(redirect_url)
