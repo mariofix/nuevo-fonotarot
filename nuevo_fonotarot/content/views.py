@@ -55,7 +55,7 @@ def _homepage_ctx() -> dict:
 
     try:
         ejecutivos = _json.loads(current_app.config.get("FT_EJECUTIVOS", []))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
         ejecutivos = []
 
@@ -252,8 +252,6 @@ def promo_exito():
 
     minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
     return render_template("promo_exito.html", ani=ani, minute_packs=minute_packs)
-
-
 
 
 @content_bp.route("/test-emails")

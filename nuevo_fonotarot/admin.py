@@ -96,7 +96,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -144,7 +144,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -945,13 +945,41 @@ def init_admin(app, admin_ext):
         User,
     )
 
-    admin_ext.add_category(name=_l("Inicio"), icon_type="ti", icon_value="home-2",)
-    admin_ext.add_category(name=_l("Auth"), icon_type="ti", icon_value="lock",)
-    admin_ext.add_category(name=_l("Content"), icon_type="ti", icon_value="layout-dashboard",)
-    admin_ext.add_category(name=_l("Tienda"), icon_type="ti", icon_value="building-store",)
-    admin_ext.add_category(name=_l("Sitio"), icon_type="ti", icon_value="globe",)
-    admin_ext.add_category(name=_l("Reportes"), icon_type="ti", icon_value="report",)
-    admin_ext.add_category(name=_l("Merchants"), icon_type="ti", icon_value="credit-card-pay",)
+    admin_ext.add_category(
+        name=_l("Inicio"),
+        icon_type="ti",
+        icon_value="home-2",
+    )
+    admin_ext.add_category(
+        name=_l("Auth"),
+        icon_type="ti",
+        icon_value="lock",
+    )
+    admin_ext.add_category(
+        name=_l("Content"),
+        icon_type="ti",
+        icon_value="layout-dashboard",
+    )
+    admin_ext.add_category(
+        name=_l("Tienda"),
+        icon_type="ti",
+        icon_value="building-store",
+    )
+    admin_ext.add_category(
+        name=_l("Sitio"),
+        icon_type="ti",
+        icon_value="globe",
+    )
+    admin_ext.add_category(
+        name=_l("Reportes"),
+        icon_type="ti",
+        icon_value="report",
+    )
+    admin_ext.add_category(
+        name=_l("Merchants"),
+        icon_type="ti",
+        icon_value="credit-card-pay",
+    )
     admin_ext.add_view(
         UserAdminView(
             User,

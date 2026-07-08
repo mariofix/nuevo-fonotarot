@@ -14,6 +14,7 @@ _PROMO_DURATION_SECONDS = 300  # 5 minutes of free trial credit
 
 logger = get_logger(__name__)
 
+
 def _promo_claim_remaining() -> tuple[bool, int]:
     """Atomically decrement the promo stock counter.
 

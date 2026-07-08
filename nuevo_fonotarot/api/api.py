@@ -6,7 +6,7 @@ from ..promo_helpers import (
     _promo_claim_remaining,
     _complete_promo_claim,
     _send_admin_promo_notification,
-    _finalize_promo_email
+    _finalize_promo_email,
 )
 
 logger = get_logger(__name__)

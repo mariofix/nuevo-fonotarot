@@ -92,7 +92,9 @@ def send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, A
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
-    site_url = current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    site_url = (
+        current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    )
 
     try:
         logger.info(
@@ -138,7 +140,9 @@ def send_firenze_failure_email(order: Order) -> None:
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
-    site_url = current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    site_url = (
+        current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    )
 
     try:
         html_body = render_template(
@@ -289,7 +293,9 @@ def send_new_order_admin_email(order: Order) -> None:
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
-    site_url = current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    site_url = (
+        current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    )
 
     try:
         logger.info(f"send_new_order_admin_email: preparing admin email for order={order.id}")

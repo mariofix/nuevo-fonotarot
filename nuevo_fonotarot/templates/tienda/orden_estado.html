@@ -78,6 +78,11 @@
     background: rgba(245, 158, 11, .08);
     border-radius: 10px;
   }
+
+  #payment-wait-countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
 </style>
 {% endblock %}
 
@@ -269,11 +274,27 @@
           </div>
         </div>
 
-        <div class="refresh-hint p-3 mb-4">
+        <div class="refresh-hint p-3 mb-4"
+             id="payment-wait-panel"
+             data-created-at="{{ order.created_at.strftime('%Y-%m-%dT%H:%M:%S') }}Z"
+             data-order-id="{{ order.id }}">
           <div class="fw-semibold mb-1">{{ _("No cierres esta ventana") }}</div>
-          <div class="text-secondary small">
+          <div class="text-secondary small mb-2">
             {{ _("Si ya pagaste, no necesitas repetir la compra.") }}
-            <button type="button" role="button" class="btn btn-info" id="btn-status-update">Consultar Estado de pago</button>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-secondary-lt text-secondary" id="payment-wait-timer">
+              <i class="ti ti-clock me-1"></i>
+              {{ _("Verificación automática en") }}
+              <span id="payment-wait-countdown">05:00</span>
+            </span>
+            <button type="button"
+                    role="button"
+                    class="btn btn-info btn-sm d-none"
+                    id="btn-status-update"
+                    disabled>
+              <i class="ti ti-refresh me-1"></i>{{ _("Consultar estado de pago") }}
+            </button>
           </div>
         </div>
 
@@ -346,12 +367,91 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script>
-    (function () {
-      var status_btn = document.getElementById('btn-status-update');
-      
-    })();
-  </script>
+{% if not is_paid %}
+<script>
+  (function () {
+    var panel = document.getElementById('payment-wait-panel');
+    if (!panel) return;
+
+    var createdAt = new Date(panel.dataset.createdAt);
+    var expiresAt = new Date(createdAt.getTime() + 5 * 60 * 1000); // created_at + 5min
+
+    var timerBadge = document.getElementById('payment-wait-timer');
+    var countdownEl = document.getElementById('payment-wait-countdown');
+    var statusBtn = document.getElementById('btn-status-update');
+    var intervalId = null;
+
+    function pad(n) {
+      return String(n).padStart(2, '0');
+    }
+
+    function formatRemaining(ms) {
+      var totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      return pad(Math.floor(totalSeconds / 60)) + ':' + pad(totalSeconds % 60);
+    }
+
+    function expire() {
+      if (intervalId) clearInterval(intervalId);
+      if (timerBadge) timerBadge.classList.add('d-none');
+      if (statusBtn) {
+        statusBtn.classList.remove('d-none');
+        statusBtn.disabled = false;
+      }
+    }
+
+    function tick() {
+      var remaining = expiresAt.getTime() - Date.now();
+      if (remaining <= 0) {
+        expire();
+        return;
+      }
+      if (countdownEl) countdownEl.textContent = formatRemaining(remaining);
+    }
+
+    // Handle page loaded after the 5min window already passed (e.g. reopened from email).
+    if (expiresAt.getTime() - Date.now() <= 0) {
+      expire();
+    } else {
+      tick();
+      intervalId = setInterval(tick, 1000);
+    }
+
+    if (statusBtn) {
+      statusBtn.addEventListener('click', function () {
+        statusBtn.disabled = true;
+        var originalHtml = statusBtn.innerHTML;
+        statusBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ _("Consultando...") }}';
+
+        // TODO: point this at your actual status-check endpoint (route name is a placeholder).
+        fetch('/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ order_id: panel.dataset.orderId })
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('status-check-failed');
+            return response.json();
+          })
+          .then(function (data) {
+            if (data && data.is_paid) {
+              window.location.reload();
+            } else {
+              statusBtn.disabled = false;
+              statusBtn.innerHTML = originalHtml;
+            }
+          })
+          .catch(function () {
+            statusBtn.disabled = false;
+            statusBtn.innerHTML = originalHtml;
+          });
+      });
+    }
+  })();
+</script>
+{% endif %}
 
 {% if is_paid %}
 <script>

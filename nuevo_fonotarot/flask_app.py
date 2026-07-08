@@ -26,6 +26,7 @@ from .extensions import (
     cors,
 )
 from .utils import _LangEntry
+import sentry_sdk
 
 
 def _reset_admin_for_factory_reuse() -> None:
@@ -55,6 +56,16 @@ def create_flask(config_name: str | None = None) -> Flask:
     """
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "development")
+
+    if os.environ.get("SENTRY_DSN", False):
+        sentry_sdk.init(
+            dsn=os.environ.get("SENTRY_DSN"),
+            send_default_pii=True,
+            enable_logs=True,
+            traces_sample_rate=1.0,
+            profile_session_sample_rate=1.0,
+            profile_lifecycle="trace",
+        )
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
@@ -220,7 +231,7 @@ def _init_extensions(app: Flask) -> None:
         try:
             start = int(settings.get("dark_hours_start") or "20")
             end = int(settings.get("dark_hours_end") or "8")
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             start, end = 20, 8
 
         hour = datetime.now().hour

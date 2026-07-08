@@ -261,6 +261,8 @@ class Config:
 
     CORS_ORIGINS = ["https://fonotarot.com"]
 
+    SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
+
 
 class DevelopmentConfig(Config):
     DEBUG: bool = True

@@ -445,7 +445,7 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
             if response_client_id is not None:
                 try:
                     posted_client_id = int(response_client_id)
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     logger.warning(
                         f"post_purchase_process: invalid client_id in Firenze response for order={order.id} "
                         f"item_id={item.item_id}: {response_client_id!r}"
@@ -588,7 +588,7 @@ def _fulfill_minute_pack_order_item(order: Order, item: OrderItem) -> tuple[bool
     if isinstance(response, dict) and response.get("client_id") is not None:
         try:
             posted_client_id = int(response["client_id"])
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             posted_client_id = None
 
     if posted_client_id is not None and order.firenze_client_id is None:
