@@ -162,7 +162,6 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
     item.fulfillment_reference = f"gift_cards:{product.id}:{quantity}"
     db.session.commit()
 
-
     return True, {"status": "ok", "item_id": item.id, "issued": issued, "existing": existing}
 
 
