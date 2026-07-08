@@ -3025,7 +3025,7 @@
       btn.disabled = true;
       clearError();
 
-      fetch('/api/promo/cobrar', {
+      fetch('{{ url_for("api.promo_cobrar") }}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
         body: JSON.stringify({ ani: ani }),
