@@ -3,6 +3,7 @@
 import os
 from typing import Any
 from urllib.parse import parse_qs, urlparse
+from json import dumps as json_dumps
 
 import requests
 from daleks.contrib.client import DaleksClient
@@ -32,8 +33,6 @@ def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
     if not daleks_url:
         logger.warning(f"notify_issuer_of_issued_giftcard: DALEKS_URL not configured — skipping for {card=}")
         return
-    from json import dumps as json_dumps
-
     from .models import OrderItem
     from .utils import encrypt_string
 
