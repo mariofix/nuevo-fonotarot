@@ -6,10 +6,10 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 from daleks.contrib.client import DaleksClient
-from flask import current_app, has_app_context, render_template, url_for
+from flask import current_app, has_app_context, render_template
 
 from .log import get_logger
-from .models import Order, Role, GiftCard
+from .models import GiftCard, Order, Role
 
 logger = get_logger(__name__)
 
@@ -32,9 +32,10 @@ def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
     if not daleks_url:
         logger.warning(f"notify_issuer_of_issued_giftcard: DALEKS_URL not configured — skipping for {card=}")
         return
+    from json import dumps as json_dumps
+
     from .models import OrderItem
     from .utils import encrypt_string
-    from json import dumps as json_dumps
 
     site_url = current_app.config.get("TRUSTED_HOSTS", [None])[0]
     _secret_key = current_app.config["SECRET_KEY"]
@@ -61,7 +62,7 @@ def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
             client.send_email(
                 from_address=from_address,
                 to=[card.purchaser_email],
-                subject=f"[Fonotarot] Gracias por regalar Fonotarot",
+                subject="[Fonotarot] Gracias por regalar Fonotarot",
                 html_body=html_body,
                 smtp_account=daleks_smtp_account,
             )
@@ -268,3 +269,45 @@ def notify_new_user_registration(email: str, phone: str | None = None) -> None:
     message = f"🔔 Nuevo usuario registrado\n\nEmail: {email}{phone_str}"
 
     send_telegram_notification(message)
+
+
+def send_new_order_admin_email(order: Order) -> None:
+    """Notify all admins by email that a new order has been created (pending payment)."""
+    if not has_app_context():
+        logger.warning(f"send_new_order_admin_email: no app context — skipping for order={order.id}")
+        return
+
+    daleks_url = current_app.config.get("DALEKS_URL")
+    if not daleks_url:
+        logger.warning(f"send_new_order_admin_email: DALEKS_URL not configured — skipping for order={order.id}")
+        return
+
+    admin_emails = _active_admin_emails()
+    if not admin_emails:
+        logger.debug("send_new_order_admin_email: no active admins with email")
+        return
+
+    daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
+    daleks_smtp_account = current_app.config.get("DALEKS_SMTP_ACCOUNT")
+    from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
+    site_url = current_app.config.get("SITE_URL", "")
+
+    try:
+        logger.info(f"send_new_order_admin_email: preparing admin email for order={order.id}")
+        html_body = render_template(
+            "tienda/email/orden_creada_admin.html",
+            order=order,
+            site_url=site_url,
+        )
+        with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
+            for email in admin_emails:
+                client.send_email(
+                    from_address=from_address,
+                    to=[email],
+                    subject=f"[Admin] Nueva orden creada #{order.id} (Pendiente de pago)",
+                    html_body=html_body,
+                    smtp_account=daleks_smtp_account,
+                )
+        logger.info(f"send_new_order_admin_email: sent to {len(admin_emails)} admin(s) for order={order.id}")
+    except Exception:
+        logger.exception(f"send_new_order_admin_email: failed to notify admins for order={order.id}")
