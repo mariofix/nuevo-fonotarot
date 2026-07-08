@@ -96,7 +96,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -144,7 +144,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))

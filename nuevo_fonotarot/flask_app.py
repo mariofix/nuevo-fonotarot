@@ -220,7 +220,7 @@ def _init_extensions(app: Flask) -> None:
         try:
             start = int(settings.get("dark_hours_start") or "20")
             end = int(settings.get("dark_hours_end") or "8")
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             start, end = 20, 8
 
         hour = datetime.now().hour

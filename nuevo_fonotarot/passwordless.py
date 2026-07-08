@@ -268,7 +268,7 @@ def create_passwordless_blueprint() -> Blueprint:
                 session.pop("_pwl_method", None)
                 session.pop("_pwl_timestamp", None)
                 return redirect("/passwordless/request-code")
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             return redirect("/passwordless/request-code")
 
         form = VerifyCodeForm()
