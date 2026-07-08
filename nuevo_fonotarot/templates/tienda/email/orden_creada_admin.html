@@ -7,32 +7,28 @@
 #}
 {% extends "email/base.html" %}
 
-{% block email_title %}[Admin] Nueva orden creada — #{{ order.id }}{% endblock %}
-{% block preview_text %}Orden #{{ order.id }} creada y pendiente de pago.{% endblock %}
+{% block email_title %}Nueva orden creada — #{{ order.merchants_id }}{% endblock %}
+{% block preview_text %}Orden #{{ order.merchants_id }} creada y pendiente de pago.{% endblock %}
 
 {% block content %}
-  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px; font-weight:700; color:#4a2872; line-height:1.2;">
-    Nueva Orden Creada
-  </h1>
+  <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px; font-weight:700; color:#4a2872; line-height:1.2;">Nueva Orden Creada</h1>
   <div style="width:40px; height:3px; background:#c9a84c; border-radius:2px; margin:0 0 20px;"></div>
 
-  <p style="margin:0 0 16px; font-size:16px; line-height:1.5; color:#4b5563;">
-    Se ha creado una nueva orden y el usuario ha sido redirigido al portal de pago.
-  </p>
+  <p style="margin:0 0 16px; font-size:16px; line-height:1.5; color:#4b5563;">Se ha creado una nueva orden y el usuario ha sido redirigido al portal de pago.</p>
 
   <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:16px; margin:0 0 24px;">
     <table border="0" cellpadding="0" cellspacing="0" style="width:100%; font-size:14px; color:#374151;">
       <tr>
         <td style="padding:4px 0; font-weight:600; width:120px; color:#6b7280;">Nº Orden</td>
-        <td style="padding:4px 0;">#{{ order.id }}</td>
+        <td style="padding:4px 0;">#{{ order.merchants_id }}</td>
       </tr>
       <tr>
         <td style="padding:4px 0; font-weight:600; color:#6b7280;">Cliente</td>
-        <td style="padding:4px 0;">{{ order.shipping_name or order.email or 'N/A' }}</td>
+        <td style="padding:4px 0;">{{ order.shipping_name or order.email or 'N/A' }} - ClientID: {{ order.firenze_client_id }}</td>
       </tr>
       <tr>
         <td style="padding:4px 0; font-weight:600; color:#6b7280;">Total</td>
-        <td style="padding:4px 0;">${{ order.total_display }}</td>
+        <td style="padding:4px 0;">{{ order.total_display }}</td>
       </tr>
       <tr>
         <td style="padding:4px 0; font-weight:600; color:#6b7280;">Método de Pago</td>
@@ -44,9 +40,11 @@
   <table border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;">
     <tr>
       <td align="center" bgcolor="#4a2872" style="border-radius:4px;">
-        <a href="{{ site_url }}/admin/order/details/?id={{ order.id }}"
-           style="display:inline-block; padding:12px 24px; font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-                  font-size:14px; font-weight:600; color:#ffffff; text-decoration:none;">
+        <a
+          href="{{ site_url }}/admin/order/details/?id={{ order.id }}"
+          style="display:inline-block; padding:12px 24px; font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+                  font-size:14px; font-weight:600; color:#ffffff; text-decoration:none;"
+        >
           Ver en Panel de Administración
         </a>
       </td>

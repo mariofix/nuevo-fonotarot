@@ -303,7 +303,7 @@ def send_new_order_admin_email(order: Order) -> None:
                 client.send_email(
                     from_address=from_address,
                     to=[email],
-                    subject=f"[Admin] Nueva orden creada #{order.id} (Pendiente de pago)",
+                    subject=f"[Tienda] Nueva Orden #{order.merchants_id}",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
