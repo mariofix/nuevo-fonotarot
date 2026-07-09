@@ -20,7 +20,7 @@
     <table border="0" cellpadding="0" cellspacing="0" style="width:100%; font-size:14px; color:#374151;">
       <tr>
         <td style="padding:4px 0; font-weight:600; width:120px; color:#6b7280;">Nº Orden</td>
-        <td style="padding:4px 0;">#{{ order.merchants_id }}</td>
+        <td style="padding:4px 0;">{{ order.merchants_id }}</td>
       </tr>
       <tr>
         <td style="padding:4px 0; font-weight:600; color:#6b7280;">Cliente</td>
@@ -37,11 +37,24 @@
     </table>
   </div>
 
+  <p style="margin:0 0 16px; font-size:16px; line-height:1.5; color:#4b5563;">Items Comprados.</p>
+
+  <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:16px; margin:0 0 24px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="width:100%; font-size:14px; color:#374151;">
+      {% for item in order.items %}
+        <tr>
+          <td style="padding:4px 0; font-weight:600; width:120px; color:#6b7280;">{{ item.item_type }}:</td>
+          <td style="padding:4px 0;">{{ item.name }} x {{ item.quantity }} ({{ item.subtotal_display }} {{ item.currency }})</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
   <table border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;">
     <tr>
       <td align="center" bgcolor="#4a2872" style="border-radius:4px;">
         <a
-          href="{{ site_url }}/admin/order/details/?id={{ order.id }}"
+          href="{{ url_for("order.details_view", id=order.id) }}"
           style="display:inline-block; padding:12px 24px; font-family:-apple-system,BlinkMacSystemFont,sans-serif;
                   font-size:14px; font-weight:600; color:#ffffff; text-decoration:none;"
         >

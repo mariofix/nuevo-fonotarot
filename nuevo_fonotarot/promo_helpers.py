@@ -94,6 +94,7 @@ def _send_user_promo_instructions(email: str, remaining: int) -> bool:
     daleks_timeout = current_app.config.get("DALEKS_TIMEOUT", 10)
     from_address = current_app.config.get("SECURITY_EMAIL_SENDER", "hola@fonotarot.cl")
     daleks_smtp_account = current_app.config["DALEKS_SMTP_ACCOUNT"]
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
 
     try:
         html_body = render_template(
@@ -104,7 +105,7 @@ def _send_user_promo_instructions(email: str, remaining: int) -> bool:
             client.send_email(
                 from_address=from_address,
                 to=[email],
-                subject="¡Tus 5 minutos gratuitos en Fonotarot están listos!",
+                subject=f"[{subject_prefix}] ¡Tus 5 minutos gratuitos en están listos!",
                 html_body=html_body,
                 smtp_account=daleks_smtp_account,
             )

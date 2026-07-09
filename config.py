@@ -262,6 +262,8 @@ class Config:
     CORS_ORIGINS = ["https://fonotarot.com"]
 
     SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
+    EMAIL_PREFIX = "Tienda Fonotarot"
+
 
 
 class DevelopmentConfig(Config):

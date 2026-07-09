@@ -256,14 +256,22 @@ def promo_exito():
 
 @content_bp.route("/test-emails")
 def test_emails():
-    from ..notifications import notify_issuer_of_issued_giftcard
-    from ..models import GiftCard
+    from ..models import  Order
     from ..extensions import db
     from flask import render_template_string
 
-    card = db.session.get(GiftCard, 3)
-    template = notify_issuer_of_issued_giftcard(card=card)
-    return render_template_string(template)
+    order = db.session.get(Order, 50)
+    site_url = (
+        current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
+    )
+
+    html_body = render_template(
+            "tienda/email/orden_creada_admin.html",
+            order=order,
+            site_url=site_url,
+        )
+    return render_template_string(html_body)
+
 
 
 # ---------------------------------------------------------------------------

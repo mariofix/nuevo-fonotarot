@@ -35,14 +35,14 @@ def get_moon_phase_index() -> int:
     """Return the current moon phase as an index from 0 to 7.
 
     Phases:
-        0 – Luna Nueva       (New Moon)
-        1 – Creciente        (Waxing Crescent)
-        2 – Cuarto Creciente (First Quarter)
-        3 – Gibosa Creciente (Waxing Gibbous)
-        4 – Luna Llena       (Full Moon)
-        5 – Gibosa Menguante (Waning Gibbous)
-        6 – Cuarto Menguante (Last Quarter)
-        7 – Menguante        (Waning Crescent)
+        0 - Luna Nueva       (New Moon)
+        1 - Creciente        (Waxing Crescent)
+        2 - Cuarto Creciente (First Quarter)
+        3 - Gibosa Creciente (Waxing Gibbous)
+        4 - Luna Llena       (Full Moon)
+        5 - Gibosa Menguante (Waning Gibbous)
+        6 - Cuarto Menguante (Last Quarter)
+        7 - Menguante        (Waning Crescent)
 
     The position is derived from the fraction of the synodic cycle elapsed
     since the most recent new moon, split into 8 equal segments.

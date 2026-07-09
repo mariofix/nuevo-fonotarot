@@ -157,6 +157,7 @@ def _send_order_confirmation_email(order: Order) -> None:
     site_url = current_app.config.get("SITE_URL", "")
 
     recipient_name = order.shipping_name or order.shipping_email or ""
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
 
     # --- Customer email ---
     if order.shipping_email and _customer_wants_purchase_notification(order):
@@ -176,7 +177,7 @@ def _send_order_confirmation_email(order: Order) -> None:
                 client.send_email(
                     from_address=from_address,
                     to=[order.shipping_email],
-                    subject=f"Orden #{order.id} confirmada — Fonotarot",
+                    subject=f"[{subject_prefix}] Orden #{order.id} confirmada — Fonotarot",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
@@ -200,6 +201,7 @@ def _send_order_confirmation_email(order: Order) -> None:
                 len(admin_emails),
                 order.id,
             )
+            subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
             try:
                 html_body = render_template(
                     "tienda/email/orden_confirmada.html",
@@ -212,7 +214,7 @@ def _send_order_confirmation_email(order: Order) -> None:
                         client.send_email(
                             from_address=from_address,
                             to=[email],
-                            subject=f"[Admin] Nueva orden #{order.id} pagada — ${order.total_display}",
+                            subject=f"[{subject_prefix}] Nueva orden #{order.id} pagada — ${order.total_display}",
                             html_body=html_body,
                             smtp_account=daleks_smtp_account,
                         )

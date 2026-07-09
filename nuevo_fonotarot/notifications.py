@@ -55,13 +55,14 @@ def notify_issuer_of_issued_giftcard(card: GiftCard) -> None:
         fonotarot_url=fonotarot_url,
         gc_token=token,
     )
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
 
     try:
         with DaleksClient(daleks_url, timeout=daleks_timeout) as client:
             client.send_email(
                 from_address=from_address,
                 to=[card.purchaser_email],
-                subject="[Fonotarot] Gracias por regalar Fonotarot",
+                subject=f"[{subject_prefix}] Gracias por regalar Fonotarot",
                 html_body=html_body,
                 smtp_account=daleks_smtp_account,
             )
@@ -95,7 +96,7 @@ def send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, A
     site_url = (
         current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
     )
-
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
     try:
         logger.info(
             f"_send_post_purchase_admin_email: preparing admin email for order={order.id} rows={len(audit_rows)}"
@@ -111,7 +112,7 @@ def send_post_purchase_admin_email(order: Order, *, audit_rows: list[dict[str, A
                 client.send_email(
                     from_address=from_address,
                     to=[email],
-                    subject=f"[Admin] post_purchase completed — Order #{order.id}",
+                    subject=f"[{subject_prefix}] Nueva Orden #{order.merchants_id[:13]}",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
@@ -143,6 +144,7 @@ def send_firenze_failure_email(order: Order) -> None:
     site_url = (
         current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
     )
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
 
     try:
         html_body = render_template(
@@ -155,7 +157,7 @@ def send_firenze_failure_email(order: Order) -> None:
                 client.send_email(
                     from_address=from_address,
                     to=[email],
-                    subject=f"[Admin] Fallo Firenze — Orden #{order.id} pago confirmado",
+                    subject=f"[{subject_prefix}] Nueva Orden #{order.merchants_id[:13]}",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
@@ -296,6 +298,7 @@ def send_new_order_admin_email(order: Order) -> None:
     site_url = (
         current_app.config.get("SITE_URL") or current_app.config.get("TRUSTED_HOSTS", ["https://fonotarot.cl"])[0]
     )
+    subject_prefix = current_app.config.get("EMAIL_PREFIX", "Tienda")
 
     try:
         logger.info(f"send_new_order_admin_email: preparing admin email for order={order.id}")
@@ -309,7 +312,7 @@ def send_new_order_admin_email(order: Order) -> None:
                 client.send_email(
                     from_address=from_address,
                     to=[email],
-                    subject=f"[Tienda] Nueva Orden #{order.merchants_id}",
+                    subject=f"[{subject_prefix}] Nueva Orden #{order.merchants_id[:13]}",
                     html_body=html_body,
                     smtp_account=daleks_smtp_account,
                 )
