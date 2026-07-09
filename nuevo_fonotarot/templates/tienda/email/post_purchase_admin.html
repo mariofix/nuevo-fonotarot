@@ -23,38 +23,46 @@
 {# ─────────────────────────────────────────────────────
    STATUS BADGE MAPS  (inline-CSS equivalents of Tabler badges)
    ───────────────────────────────────────────────────── #}
-{% set order_labels = {
-  'pending':   'Pendiente',
-  'paid':      'Pagado',
-  'fulfilling':'En proceso de entrega',
-  'delivered': 'Entregado',
-  'cancelled': 'Cancelado',
-} %}
-{% set payment_labels = {
-  'pending':    'Pendiente',
-  'processing': 'Procesando',
-  'succeeded':  'Completado',
-  'failed':     'Fallido',
-  'cancelled':  'Cancelado',
-  'refunded':   'Reembolsado',
-  'unknown':    'Desconocido',
-} %}
-{% set order_badge_style = {
-  'pending':   'background:#fff3cd; color:#856404;',
-  'paid':      'background:#d1fae5; color:#065f46;',
-  'fulfilling':'background:#dbeafe; color:#1e40af;',
-  'delivered': 'background:#ccfbf1; color:#0f6657;',
-  'cancelled': 'background:#fee2e2; color:#991b1b;',
-} %}
-{% set payment_badge_style = {
-  'pending':    'background:#fff3cd; color:#856404;',
-  'processing': 'background:#dbeafe; color:#1e40af;',
-  'succeeded':  'background:#d1fae5; color:#065f46;',
-  'failed':     'background:#fee2e2; color:#991b1b;',
-  'cancelled':  'background:#fee2e2; color:#991b1b;',
-  'refunded':   'background:#f3f4f6; color:#4b5563;',
-  'unknown':    'background:#f3f4f6; color:#4b5563;',
-} %}
+{%
+  set order_labels = {
+    'pending':   'Pendiente',
+    'paid':      'Pagado',
+    'fulfilling':'En proceso de entrega',
+    'delivered': 'Entregado',
+    'cancelled': 'Cancelado',
+  }
+%}
+{%
+  set payment_labels = {
+    'pending':    'Pendiente',
+    'processing': 'Procesando',
+    'succeeded':  'Completado',
+    'failed':     'Fallido',
+    'cancelled':  'Cancelado',
+    'refunded':   'Reembolsado',
+    'unknown':    'Desconocido',
+  }
+%}
+{%
+  set order_badge_style = {
+    'pending':   'background:#fff3cd; color:#856404;',
+    'paid':      'background:#d1fae5; color:#065f46;',
+    'fulfilling':'background:#dbeafe; color:#1e40af;',
+    'delivered': 'background:#ccfbf1; color:#0f6657;',
+    'cancelled': 'background:#fee2e2; color:#991b1b;',
+  }
+%}
+{%
+  set payment_badge_style = {
+    'pending':    'background:#fff3cd; color:#856404;',
+    'processing': 'background:#dbeafe; color:#1e40af;',
+    'succeeded':  'background:#d1fae5; color:#065f46;',
+    'failed':     'background:#fee2e2; color:#991b1b;',
+    'cancelled':  'background:#fee2e2; color:#991b1b;',
+    'refunded':   'background:#f3f4f6; color:#4b5563;',
+    'unknown':    'background:#f3f4f6; color:#4b5563;',
+  }
+%}
 {% set order_flow     = ['pending', 'paid', 'fulfilling'] %}
 {% set order_terminals = ['delivered', 'cancelled'] %}
 {% set payment_flow    = ['pending', 'processing'] %}
@@ -66,469 +74,625 @@
 
 {# Section divider with title #}
 {% macro section_title(label) %}
-<tr>
-  <td colspan="2" style="padding:20px 0 8px;
+  <tr>
+    <td
+      colspan="2"
+      style="padding:20px 0 8px;
       font-family:Arial,sans-serif; font-size:11px; font-weight:700;
       color:#8a7a8e; letter-spacing:.8px; text-transform:uppercase;
-      border-bottom:2px solid #e0d4e8;">
-    {{ label }}
-  </td>
-</tr>
+      border-bottom:2px solid #e0d4e8;"
+    >
+      {{ label }}
+    </td>
+  </tr>
 {% endmacro %}
 
 {# Two-column label / value row #}
 {% macro kv(label, value, mono=false) %}
-<tr>
-  <td style="padding:7px 12px 7px 0; font-family:Arial,sans-serif;
+  <tr>
+    <td
+      style="padding:7px 12px 7px 0; font-family:Arial,sans-serif;
       font-size:13px; color:#8a7a8e; vertical-align:top;
-      white-space:nowrap; width:38%;">
-    {{ label }}
-  </td>
-  <td style="padding:7px 0 7px 0;
+      white-space:nowrap; width:38%;"
+    >
+      {{ label }}
+    </td>
+    <td
+      style="padding:7px 0 7px 0;
       font-family:{% if mono %}monospace{% else %}Arial,sans-serif{% endif %};
-      font-size:13px; color:#2d2233; vertical-align:top; word-break:break-all;">
-    {{ value if value else '—' }}
-  </td>
-</tr>
+      font-size:13px; color:#2d2233; vertical-align:top; word-break:break-all;"
+    >
+      {{ value if value else '—' }}
+    </td>
+  </tr>
 {% endmacro %}
 
 {# Status badge (inline span) #}
 {% macro badge(text, style) %}
-<span style="{{ style }} display:inline-block; padding:3px 10px;
+  <span
+    style="{{ style }} display:inline-block; padding:3px 10px;
     border-radius:20px; font-family:Arial,sans-serif;
     font-size:11px; font-weight:700; letter-spacing:.3px;
-    white-space:nowrap;">{{ text }}</span>
+    white-space:nowrap;"
+    >{{ text }}</span
+  >
 {% endmacro %}
 
 {# Lifecycle step row — done=true fills the dot #}
 {% macro lifecycle_step(label, done, terminal_color=none) %}
-<tr>
-  <td style="padding:4px 8px 4px 0; vertical-align:middle; width:20px;">
-    {% if done %}
-    <span style="display:inline-block; width:10px; height:10px;
-        border-radius:50%; background:{% if terminal_color %}{{ terminal_color }}{% else %}#2ca73f{% endif %};"></span>
-    {% else %}
-    <span style="display:inline-block; width:10px; height:10px;
-        border-radius:50%; border:2px solid #c9a84c; background:#fff;"></span>
-    {% endif %}
-  </td>
-  <td style="padding:4px 0; font-family:Arial,sans-serif; font-size:13px;
-      color:{% if done %}#2d2233{% else %}#8a7a8e{% endif %}; font-weight:{% if done %}700{% else %}400{% endif %};">
-    {{ label }}
-  </td>
-</tr>
+  <tr>
+    <td style="padding:4px 8px 4px 0; vertical-align:middle; width:20px;">
+      {% if done %}
+        <span
+          style="display:inline-block; width:10px; height:10px;
+        border-radius:50%; background:{% if terminal_color %}{{ terminal_color }}{% else %}#2ca73f{% endif %};"
+        ></span>
+      {% else %}
+        <span
+          style="display:inline-block; width:10px; height:10px;
+        border-radius:50%; border:2px solid #c9a84c; background:#fff;"
+        ></span>
+      {% endif %}
+    </td>
+    <td
+      style="padding:4px 0; font-family:Arial,sans-serif; font-size:13px;
+      color:{% if done %}#2d2233{% else %}#8a7a8e{% endif %}; font-weight:{% if done %}700{% else %}400{% endif %};"
+    >
+      {{ label }}
+    </td>
+  </tr>
 {% endmacro %}
 
 {# JSON audit block #}
 {% macro audit_block(label, data) %}
-{% if data %}
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 16px; border:1px solid #f0c96e;
-              border-radius:8px; overflow:hidden;">
-  <tr>
-    <td style="padding:8px 14px; background:#fffbeb;
+  {% if data %}
+    <table
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+      border="0"
+      style="margin:0 0 16px; border:1px solid #f0c96e;
+              border-radius:8px; overflow:hidden;"
+    >
+      <tr>
+        <td
+          style="padding:8px 14px; background:#fffbeb;
         font-family:Arial,sans-serif; font-size:12px;
-        font-weight:700; color:#92400e; border-bottom:1px solid #f0c96e;">
-      {{ label }}
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:10px 14px; font-family:monospace; font-size:11px;
+        font-weight:700; color:#92400e; border-bottom:1px solid #f0c96e;"
+        >
+          {{ label }}
+        </td>
+      </tr>
+      <tr>
+        <td
+          style="padding:10px 14px; font-family:monospace; font-size:11px;
         color:#2d2233; line-height:1.7; word-break:break-all;
-        background:#fafaf5; white-space:pre-wrap;">{{ data | tojson(indent=2) }}</td>
-  </tr>
-</table>
-{% endif %}
+        background:#fafaf5; white-space:pre-wrap;"
+        >
+          {{ data | tojson(indent=2) }}
+        </td>
+      </tr>
+    </table>
+  {% endif %}
 {% endmacro %}
 
 {% block content %}
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ① INVOICE HEADER  —  Order number · Status badges · Total
    ═══════════════════════════════════════════════════════ #}
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 24px; border:1px solid #e0d4e8;
-              border-radius:10px; overflow:hidden;">
-  {# Top bar: purple background with order number #}
-  <tr>
-    <td colspan="2"
+  <table
+    cellpadding="0"
+    cellspacing="0"
+    width="100%"
+    border="0"
+    style="margin:0 0 24px; border:1px solid #e0d4e8;
+              border-radius:10px; overflow:hidden;"
+  >
+    {# Top bar: purple background with order number #}
+    <tr>
+      <td
+        colspan="2"
         style="background-color:#1e1535; padding:16px 20px;
-               border-radius:10px 10px 0 0;">
-      <p style="margin:0 0 2px; font-family:Arial,sans-serif;
+               border-radius:10px 10px 0 0;"
+      >
+        <p
+          style="margin:0 0 2px; font-family:Arial,sans-serif;
                 font-size:11px; color:rgba(255,255,255,.5);
-                letter-spacing:.8px; text-transform:uppercase;">
-        Orden
-      </p>
-      <p style="margin:0; font-family:monospace; font-size:18px;
-                font-weight:700; color:#c9a84c; letter-spacing:.5px;">
-        #{{ order.id }}
-      </p>
-    </td>
-  </tr>
-  {# Status badges row #}
-  <tr>
-    <td style="padding:12px 20px; background:#f5f0fa;
-               border-bottom:1px solid #e0d4e8; vertical-align:middle;">
-      {{ badge(
-           '📦 Orden: ' ~ order_labels.get(order.status, order.status),
-           order_badge_style.get(order.status, 'background:#f3f4f6; color:#4b5563;')
-         ) }}
-      &nbsp;
-      {{ badge(
-           '💳 Pago: ' ~ payment_labels.get(order.payment_status, order.payment_status),
-           payment_badge_style.get(order.payment_status, 'background:#f3f4f6; color:#4b5563;')
-         ) }}
-    </td>
-    <td align="right"
+                letter-spacing:.8px; text-transform:uppercase;"
+        >
+          Orden
+        </p>
+        <p
+          style="margin:0; font-family:monospace; font-size:18px;
+                font-weight:700; color:#c9a84c; letter-spacing:.5px;"
+        >
+          #{{ order.id }}
+        </p>
+      </td>
+    </tr>
+    {# Status badges row #}
+    <tr>
+      <td
+        style="padding:12px 20px; background:#f5f0fa;
+               border-bottom:1px solid #e0d4e8; vertical-align:middle;"
+      >
+        {{
+          badge(
+            '📦 Orden: ' ~ order_labels.get(order.status, order.status),
+            order_badge_style.get(order.status, 'background:#f3f4f6; color:#4b5563;')
+          )
+        }}
+        &nbsp;
+        {{
+          badge(
+            '💳 Pago: ' ~ payment_labels.get(order.payment_status, order.payment_status),
+            payment_badge_style.get(order.payment_status, 'background:#f3f4f6; color:#4b5563;')
+          )
+        }}
+      </td>
+      <td
+        align="right"
         style="padding:12px 20px; background:#f5f0fa;
                border-bottom:1px solid #e0d4e8; vertical-align:middle;
-               white-space:nowrap;">
-      <span style="font-family:Arial,sans-serif; font-size:11px;
-                   color:#8a7a8e; display:block;">Total</span>
-      <span style="font-family:Georgia,serif; font-size:22px;
-                   font-weight:700; color:#4a2872;">
-        {{ order.total_display }}
-      </span>
-    </td>
-  </tr>
-  {# Date + Firenze client quick info #}
-  <tr>
-    <td style="padding:10px 20px; font-family:Arial,sans-serif;
-               font-size:12px; color:#8a7a8e;">
-      {% if order.created_at %}
-        {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}
-      {% endif %}
-    </td>
-    <td align="right" style="padding:10px 20px; font-family:Arial,sans-serif;
-               font-size:12px; color:#8a7a8e;">
-      Firenze client_id:&nbsp;
-      <strong style="color:#4a2872;">{{ order.firenze_client_id or '—' }}</strong>
-    </td>
-  </tr>
-</table>
+               white-space:nowrap;"
+      >
+        <span
+          style="font-family:Arial,sans-serif; font-size:11px;
+                   color:#8a7a8e; display:block;"
+          >Total</span
+        >
+        <span
+          style="font-family:Georgia,serif; font-size:22px;
+                   font-weight:700; color:#4a2872;"
+        >
+          {{ order.total_display }}
+        </span>
+      </td>
+    </tr>
+    {# Date + Firenze client quick info #}
+    <tr>
+      <td
+        style="padding:10px 20px; font-family:Arial,sans-serif;
+               font-size:12px; color:#8a7a8e;"
+      >
+        {% if order.created_at %}
+          {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}
+        {% endif %}
+      </td>
+      <td
+        align="right"
+        style="padding:10px 20px; font-family:Arial,sans-serif;
+               font-size:12px; color:#8a7a8e;"
+      >
+        Firenze client_id:&nbsp;
+        <strong style="color:#4a2872;">{{ order.firenze_client_id or '—' }}</strong>
+      </td>
+    </tr>
+  </table>
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ② LIFECYCLE — Order workflow + Payment workflow (2-col)
    ═══════════════════════════════════════════════════════ #}
-{% set order_base_index    = order_flow.index(order.status)         if order.status         in order_flow         else -1 %}
-{% set payment_base_index  = payment_flow.index(order.payment_status) if order.payment_status in payment_flow       else -1 %}
-{% set is_order_terminal   = order.status         in order_terminals %}
-{% set is_payment_terminal = order.payment_status in payment_terminals %}
+  {% set order_base_index    = order_flow.index(order.status)         if order.status         in order_flow         else -1 %}
+  {% set payment_base_index  = payment_flow.index(order.payment_status) if order.payment_status in payment_flow       else -1 %}
+  {% set is_order_terminal   = order.status         in order_terminals %}
+  {% set is_payment_terminal = order.payment_status in payment_terminals %}
 
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 24px;">
-  <tr>
-    {# Order lifecycle column #}
-    <td width="48%" valign="top"
+  <table cellpadding="0" cellspacing="0" width="100%" border="0" style="margin:0 0 24px;">
+    <tr>
+      {# Order lifecycle column #}
+      <td
+        width="48%"
+        valign="top"
         style="border:1px solid #e0d4e8; border-radius:10px;
-               padding:0; overflow:hidden;">
-      <table cellpadding="0" cellspacing="0" width="100%" border="0">
-        <tr>
-          <td colspan="2"
+               padding:0; overflow:hidden;"
+      >
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+          <tr>
+            <td
+              colspan="2"
               style="padding:10px 16px; background:#f5f0fa;
                      font-family:Arial,sans-serif; font-size:11px;
                      font-weight:700; color:#4a2872; letter-spacing:.6px;
-                     text-transform:uppercase; border-bottom:1px solid #e0d4e8;">
-            Ciclo de Orden
-          </td>
-        </tr>
-        <tr><td colspan="2" style="padding:12px 16px;">
-          <table cellpadding="0" cellspacing="0" border="0">
-            {% for step in order_flow %}
-            {{ lifecycle_step(order_labels.get(step, step), order_base_index >= loop.index0) }}
-            {% endfor %}
-            {% if is_order_terminal %}
-            {{ lifecycle_step(
-                 order_labels.get(order.status, order.status),
-                 true,
-                 '#991b1b' if order.status == 'cancelled' else '#0f6657'
-               ) }}
-            {% endif %}
-          </table>
-        </td></tr>
-      </table>
-    </td>
-    {# Spacer #}
-    <td width="4%"></td>
-    {# Payment workflow column #}
-    <td width="48%" valign="top"
+                     text-transform:uppercase; border-bottom:1px solid #e0d4e8;"
+            >
+              Ciclo de Orden
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding:12px 16px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                {% for step in order_flow %}
+                  {{ lifecycle_step(order_labels.get(step, step), order_base_index >= loop.index0) }}
+                {% endfor %}
+                {% if is_order_terminal %}
+                  {{
+                    lifecycle_step(
+                      order_labels.get(order.status, order.status),
+                      true,
+                      '#991b1b' if order.status == 'cancelled' else '#0f6657'
+                    )
+                  }}
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+      {# Spacer #}
+      <td width="4%"></td>
+      {# Payment workflow column #}
+      <td
+        width="48%"
+        valign="top"
         style="border:1px solid #e0d4e8; border-radius:10px;
-               padding:0; overflow:hidden;">
-      <table cellpadding="0" cellspacing="0" width="100%" border="0">
-        <tr>
-          <td colspan="2"
+               padding:0; overflow:hidden;"
+      >
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+          <tr>
+            <td
+              colspan="2"
               style="padding:10px 16px; background:#f5f0fa;
                      font-family:Arial,sans-serif; font-size:11px;
                      font-weight:700; color:#4a2872; letter-spacing:.6px;
-                     text-transform:uppercase; border-bottom:1px solid #e0d4e8;">
-            Flujo de Pago
-          </td>
-        </tr>
-        <tr><td colspan="2" style="padding:12px 16px;">
-          <table cellpadding="0" cellspacing="0" border="0">
-            {% for step in payment_flow %}
-            {{ lifecycle_step(payment_labels.get(step, step), payment_base_index >= loop.index0) }}
-            {% endfor %}
-            {% if is_payment_terminal %}
-            {{ lifecycle_step(
-                 payment_labels.get(order.payment_status, order.payment_status),
-                 true,
-                 '#065f46' if order.payment_status == 'succeeded'
-                 else '#991b1b' if order.payment_status in ('failed', 'cancelled')
-                 else '#4b5563'
-               ) }}
-            {% endif %}
-          </table>
-        </td></tr>
-      </table>
-    </td>
-  </tr>
-</table>
+                     text-transform:uppercase; border-bottom:1px solid #e0d4e8;"
+            >
+              Flujo de Pago
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding:12px 16px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                {% for step in payment_flow %}
+                  {{ lifecycle_step(payment_labels.get(step, step), payment_base_index >= loop.index0) }}
+                {% endfor %}
+                {% if is_payment_terminal %}
+                  {{
+                    lifecycle_step(
+                      payment_labels.get(order.payment_status, order.payment_status),
+                      true,
+                      '#065f46' if order.payment_status == 'succeeded'
+                      else '#991b1b' if order.payment_status in ('failed', 'cancelled')
+                      else '#4b5563'
+                    )
+                  }}
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ③ SUMMARY  —  Provider / IDs / Contact (mirrors card "Summary")
    ═══════════════════════════════════════════════════════ #}
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
-              overflow:hidden;">
-  <tr>
-    <td colspan="2"
+  <table
+    cellpadding="0"
+    cellspacing="0"
+    width="100%"
+    border="0"
+    style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
+              overflow:hidden;"
+  >
+    <tr>
+      <td
+        colspan="2"
         style="padding:10px 20px; background:#f5f0fa; border-bottom:1px solid #e0d4e8;
                font-family:Arial,sans-serif; font-size:11px; font-weight:700;
-               color:#4a2872; letter-spacing:.6px; text-transform:uppercase;">
-      Resumen
-    </td>
-  </tr>
-  {# 2-column grid: left and right halves #}
-  <tr>
-    <td width="50%" valign="top" style="padding:12px 20px 12px 20px;
-        border-right:1px solid #f0e8f8;">
-      <table cellpadding="0" cellspacing="0" width="100%" border="0">
-        {{ kv('Nombre',       order.shipping_name or '—') }}
-        {{ kv('Correo',       order.email or order.shipping_email or '—') }}
-        {{ kv('Teléfono',     order.shipping_phone or '—') }}
-        {{ kv('Firenze ID',   order.firenze_client_id or '—') }}
-      </table>
-    </td>
-    <td width="50%" valign="top" style="padding:12px 20px;">
-      <table cellpadding="0" cellspacing="0" width="100%" border="0">
-        {{ kv('Proveedor',     order.provider or '—') }}
-        {{ kv('Transaction ID', order.transaction_id or '—', mono=true) }}
-        {{ kv('Merchant ID',   order.merchants_id or '—', mono=true) }}
-        {{ kv('Moneda',        order.currency or 'CLP') }}
-      </table>
-    </td>
-  </tr>
-</table>
+               color:#4a2872; letter-spacing:.6px; text-transform:uppercase;"
+      >
+        Resumen
+      </td>
+    </tr>
+    {# 2-column grid: left and right halves #}
+    <tr>
+      <td
+        width="50%"
+        valign="top"
+        style="padding:12px 20px 12px 20px;
+        border-right:1px solid #f0e8f8;"
+      >
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+          {{ kv('Nombre',       order.shipping_name or '—') }}
+          {{ kv('Correo',       order.email or order.shipping_email or '—') }}
+          {{ kv('Teléfono',     order.shipping_phone or '—') }}
+          {{ kv('Firenze ID',   order.firenze_client_id or '—') }}
+        </table>
+      </td>
+      <td width="50%" valign="top" style="padding:12px 20px;">
+        <table cellpadding="0" cellspacing="0" width="100%" border="0">
+          {{ kv('Proveedor',     order.provider or '—') }}
+          {{ kv('Transaction ID', order.transaction_id or '—', mono=true) }}
+          {{ kv('Merchant ID',   order.merchants_id or '—', mono=true) }}
+          {{ kv('Moneda',        order.currency or 'CLP') }}
+        </table>
+      </td>
+    </tr>
+  </table>
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ④ ITEMS TABLE  (mirrors card "Items")
    ═══════════════════════════════════════════════════════ #}
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
-              overflow:hidden;">
-  {# header #}
-  <tr style="background:#f5f0fa; border-bottom:1px solid #e0d4e8;">
-    <td colspan="5"
+  <table
+    cellpadding="0"
+    cellspacing="0"
+    width="100%"
+    border="0"
+    style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
+              overflow:hidden;"
+  >
+    {# header #}
+    <tr style="background:#f5f0fa; border-bottom:1px solid #e0d4e8;">
+      <td
+        colspan="5"
         style="padding:10px 16px; font-family:Arial,sans-serif; font-size:11px;
                font-weight:700; color:#4a2872; letter-spacing:.6px;
-               text-transform:uppercase; border-bottom:1px solid #e0d4e8;">
-      Ítems
-    </td>
-  </tr>
-  {# column headers #}
-  <tr style="background:#fafafa; border-bottom:1px solid #f0e8f8;">
-    <td style="padding:8px 14px; font-family:Arial,sans-serif; font-size:11px;
-                font-weight:700; color:#8a7a8e; text-transform:uppercase;
-                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;">
-      Nombre
-    </td>
-    <td style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
-                font-weight:700; color:#8a7a8e; text-transform:uppercase;
-                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;">
-      Tipo
-    </td>
-    <td align="center"
-        style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
-                font-weight:700; color:#8a7a8e; text-transform:uppercase;
-                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;">
-      Cant.
-    </td>
-    <td align="right"
-        style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
-                font-weight:700; color:#8a7a8e; text-transform:uppercase;
-                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;">
-      P. Unitario
-    </td>
-    <td align="right"
+               text-transform:uppercase; border-bottom:1px solid #e0d4e8;"
+      >
+        Ítems
+      </td>
+    </tr>
+    {# column headers #}
+    <tr style="background:#fafafa; border-bottom:1px solid #f0e8f8;">
+      <td
         style="padding:8px 14px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; text-transform:uppercase;
-                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;">
-      Subtotal
-    </td>
-  </tr>
-  {# line items #}
-  {% for item in order.items %}
-  <tr style="border-bottom:1px solid #f0e8f8;">
-    <td style="padding:10px 14px; font-family:Arial,sans-serif;
-                font-size:13px; color:#2d2233;">
-      {{ item.name }}
-    </td>
-    <td style="padding:10px 10px; font-family:monospace;
-                font-size:11px; color:#8a7a8e;">
-      {{ item.item_type }}
-    </td>
-    <td align="center"
-        style="padding:10px 10px; font-family:Arial,sans-serif;
-                font-size:13px; color:#2d2233;">
-      {{ item.quantity }}
-    </td>
-    <td align="right"
-        style="padding:10px 10px; font-family:Arial,sans-serif;
-                font-size:13px; color:#2d2233; white-space:nowrap;">
-      {{ item.unit_price }}
-    </td>
-    <td align="right"
-        style="padding:10px 14px; font-family:Arial,sans-serif;
-                font-size:13px; color:#2d2233; white-space:nowrap;">
-      {{ item.subtotal_display }}
-    </td>
-  </tr>
-  {% else %}
-  <tr>
-    <td colspan="5"
-        style="padding:14px; font-family:Arial,sans-serif;
-               font-size:13px; color:#8a7a8e; text-align:center;">
-      Sin ítems registrados.
-    </td>
-  </tr>
-  {% endfor %}
-  {# Total row #}
-  <tr style="background:#f5f0fa;">
-    <td colspan="4"
+                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;"
+      >
+        Nombre
+      </td>
+      <td
+        style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
+                font-weight:700; color:#8a7a8e; text-transform:uppercase;
+                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;"
+      >
+        Tipo
+      </td>
+      <td
+        align="center"
+        style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
+                font-weight:700; color:#8a7a8e; text-transform:uppercase;
+                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;"
+      >
+        Cant.
+      </td>
+      <td
+        align="right"
+        style="padding:8px 10px; font-family:Arial,sans-serif; font-size:11px;
+                font-weight:700; color:#8a7a8e; text-transform:uppercase;
+                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;"
+      >
+        P. Unitario
+      </td>
+      <td
+        align="right"
+        style="padding:8px 14px; font-family:Arial,sans-serif; font-size:11px;
+                font-weight:700; color:#8a7a8e; text-transform:uppercase;
+                letter-spacing:.4px; border-bottom:1px solid #e0d4e8;"
+      >
+        Subtotal
+      </td>
+    </tr>
+    {# line items #}
+    {% for item in order.items %}
+      <tr style="border-bottom:1px solid #f0e8f8;">
+        <td
+          style="padding:10px 14px; font-family:Arial,sans-serif;
+                font-size:13px; color:#2d2233;"
+        >
+          {{ item.name }}
+        </td>
+        <td
+          style="padding:10px 10px; font-family:monospace;
+                font-size:11px; color:#8a7a8e;"
+        >
+          {{ item.item_type }}
+        </td>
+        <td
+          align="center"
+          style="padding:10px 10px; font-family:Arial,sans-serif;
+                font-size:13px; color:#2d2233;"
+        >
+          {{ item.quantity }}
+        </td>
+        <td
+          align="right"
+          style="padding:10px 10px; font-family:Arial,sans-serif;
+                font-size:13px; color:#2d2233; white-space:nowrap;"
+        >
+          {{ item.unit_price }}
+        </td>
+        <td
+          align="right"
+          style="padding:10px 14px; font-family:Arial,sans-serif;
+                font-size:13px; color:#2d2233; white-space:nowrap;"
+        >
+          {{ item.subtotal_display }}
+        </td>
+      </tr>
+    {% else %}
+      <tr>
+        <td
+          colspan="5"
+          style="padding:14px; font-family:Arial,sans-serif;
+               font-size:13px; color:#8a7a8e; text-align:center;"
+        >
+          Sin ítems registrados.
+        </td>
+      </tr>
+    {% endfor %}
+    {# Total row #}
+    <tr style="background:#f5f0fa;">
+      <td
+        colspan="4"
         style="padding:12px 10px 12px 14px; font-family:Arial,sans-serif;
                font-size:14px; font-weight:700; color:#4a2872;
-               text-align:right; border-top:2px solid #e0d4e8;">
-      Total
-    </td>
-    <td align="right"
+               text-align:right; border-top:2px solid #e0d4e8;"
+      >
+        Total
+      </td>
+      <td
+        align="right"
         style="padding:12px 14px; font-family:Georgia,serif;
                font-size:17px; font-weight:700; color:#6b3fa0;
-               white-space:nowrap; border-top:2px solid #e0d4e8;">
-      {{ order.total_display }}
-    </td>
-  </tr>
-</table>
+               white-space:nowrap; border-top:2px solid #e0d4e8;"
+      >
+        {{ order.total_display }}
+      </td>
+    </tr>
+  </table>
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ⑤ FIRENZE AUDIT  (post_purchase_process results)
    ═══════════════════════════════════════════════════════ #}
-{% if audit_rows %}
-<table cellpadding="0" cellspacing="0" width="100%" border="0"
-       style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
-              overflow:hidden;">
-  <tr>
-    <td colspan="5"
-        style="padding:10px 16px; background:#f5f0fa; border-bottom:1px solid #e0d4e8;
+  {% if audit_rows %}
+    <table
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+      border="0"
+      style="margin:0 0 24px; border:1px solid #e0d4e8; border-radius:10px;
+              overflow:hidden;"
+    >
+      <tr>
+        <td
+          colspan="5"
+          style="padding:10px 16px; background:#f5f0fa; border-bottom:1px solid #e0d4e8;
                font-family:Arial,sans-serif; font-size:11px; font-weight:700;
-               color:#4a2872; letter-spacing:.6px; text-transform:uppercase;">
-      Auditoría post_purchase (Firenze)
-    </td>
-  </tr>
-  <tr style="background:#fafafa;">
-    <td style="padding:7px 10px 7px 14px; font-family:Arial,sans-serif; font-size:11px;
+               color:#4a2872; letter-spacing:.6px; text-transform:uppercase;"
+        >
+          Auditoría post_purchase (Firenze)
+        </td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td
+          style="padding:7px 10px 7px 14px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; letter-spacing:.4px; text-transform:uppercase;
-                border-bottom:1px solid #e0d4e8;">Item</td>
-    <td style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
+                border-bottom:1px solid #e0d4e8;"
+        >
+          Item
+        </td>
+        <td
+          style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; letter-spacing:.4px; text-transform:uppercase;
-                border-bottom:1px solid #e0d4e8;">Cant.</td>
-    <td style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
+                border-bottom:1px solid #e0d4e8;"
+        >
+          Cant.
+        </td>
+        <td
+          style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; letter-spacing:.4px; text-transform:uppercase;
-                border-bottom:1px solid #e0d4e8;">Segundos</td>
-    <td style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
+                border-bottom:1px solid #e0d4e8;"
+        >
+          Segundos
+        </td>
+        <td
+          style="padding:7px 10px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; letter-spacing:.4px; text-transform:uppercase;
-                border-bottom:1px solid #e0d4e8;">Client ID</td>
-    <td style="padding:7px 14px 7px 10px; font-family:Arial,sans-serif; font-size:11px;
+                border-bottom:1px solid #e0d4e8;"
+        >
+          Client ID
+        </td>
+        <td
+          style="padding:7px 14px 7px 10px; font-family:Arial,sans-serif; font-size:11px;
                 font-weight:700; color:#8a7a8e; letter-spacing:.4px; text-transform:uppercase;
-                border-bottom:1px solid #e0d4e8;">Estado</td>
-  </tr>
-  {% for row in audit_rows %}
-  <tr style="border-bottom:1px solid #f0e8f8;">
-    <td style="padding:9px 10px 9px 14px; font-family:monospace;
-                font-size:11px; color:#2d2233; vertical-align:top;">
-      {{ row.item_id }}
-    </td>
-    <td style="padding:9px 10px; font-family:Arial,sans-serif;
-                font-size:12px; color:#2d2233; vertical-align:top;">
-      {{ row.quantity }}
-    </td>
-    <td style="padding:9px 10px; font-family:Arial,sans-serif;
-                font-size:13px; font-weight:700; color:#2d2233; vertical-align:top;">
-      {{ row.seconds_posted }}
-    </td>
-    <td style="padding:9px 10px; font-family:monospace;
-                font-size:11px; color:#2d2233; vertical-align:top;">
-      {{ row.posted_client_id or '—' }}
-    </td>
-    <td style="padding:9px 14px 9px 10px; font-family:Arial,sans-serif;
+                border-bottom:1px solid #e0d4e8;"
+        >
+          Estado
+        </td>
+      </tr>
+      {% for row in audit_rows %}
+        <tr style="border-bottom:1px solid #f0e8f8;">
+          <td
+            style="padding:9px 10px 9px 14px; font-family:monospace;
+                font-size:11px; color:#2d2233; vertical-align:top;"
+          >
+            {{ row.item_id }}
+          </td>
+          <td
+            style="padding:9px 10px; font-family:Arial,sans-serif;
+                font-size:12px; color:#2d2233; vertical-align:top;"
+          >
+            {{ row.quantity }}
+          </td>
+          <td
+            style="padding:9px 10px; font-family:Arial,sans-serif;
+                font-size:13px; font-weight:700; color:#2d2233; vertical-align:top;"
+          >
+            {{ row.seconds_posted }}
+          </td>
+          <td
+            style="padding:9px 10px; font-family:monospace;
+                font-size:11px; color:#2d2233; vertical-align:top;"
+          >
+            {{ row.posted_client_id or '—' }}
+          </td>
+          <td
+            style="padding:9px 14px 9px 10px; font-family:Arial,sans-serif;
                 font-size:12px; font-weight:700; vertical-align:top;
-                color:{% if row.status == 'ok' %}#065f46{% else %}#991b1b{% endif %};">
-      {{ row.status | upper }}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
+                color:{% if row.status == 'ok' %}#065f46{% else %}#991b1b{% endif %};"
+          >
+            {{ row.status | upper }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ⑥ AUDIT FILES  (mirrors card "Audit files" — amber blocks)
    ═══════════════════════════════════════════════════════ #}
-{{ audit_block('Argumentos Extra',           order.extra_args) }}
-{{ audit_block('Payload Proveedor (envío)',  order.request_payload) }}
-{{ audit_block('Payload Proveedor (resp.)',  order.response_payload) }}
-{{ audit_block('Objeto de Pago',             order.payment_object) }}
-{% if order.firenze_payload %}
-  {% if order.firenze_payload is iterable and order.firenze_payload is not mapping %}
-    {% for pl in order.firenze_payload %}
-    {{ audit_block('Envío Firenze — Ítem ' ~ loop.index, pl) }}
-    {% endfor %}
-  {% else %}
-    {{ audit_block('Envío Firenze', order.firenze_payload) }}
+  {{ audit_block('Argumentos Extra',           order.extra_args) }}
+  {{ audit_block('Payload Proveedor (envío)',  order.request_payload) }}
+  {{ audit_block('Payload Proveedor (resp.)',  order.response_payload) }}
+  {{ audit_block('Objeto de Pago',             order.payment_object) }}
+  {% if order.firenze_payload %}
+    {% if order.firenze_payload is iterable and order.firenze_payload is not mapping %}
+      {% for pl in order.firenze_payload %}
+        {{ audit_block('Envío Firenze — Ítem ' ~ loop.index, pl) }}
+      {% endfor %}
+    {% else %}
+      {{ audit_block('Envío Firenze', order.firenze_payload) }}
+    {% endif %}
   {% endif %}
-{% endif %}
-{% if order.firenze_response %}
-  {% if order.firenze_response is iterable and order.firenze_response is not mapping %}
-    {% for rsp in order.firenze_response %}
-    {{ audit_block('Respuesta Firenze — Ítem ' ~ loop.index, rsp) }}
-    {% endfor %}
-  {% else %}
-    {{ audit_block('Respuesta Firenze', order.firenze_response) }}
+  {% if order.firenze_response %}
+    {% if order.firenze_response is iterable and order.firenze_response is not mapping %}
+      {% for rsp in order.firenze_response %}
+        {{ audit_block('Respuesta Firenze — Ítem ' ~ loop.index, rsp) }}
+      {% endfor %}
+    {% else %}
+      {{ audit_block('Respuesta Firenze', order.firenze_response) }}
+    {% endif %}
   {% endif %}
-{% endif %}
 
-{# ═══════════════════════════════════════════════════════
+  {# ═══════════════════════════════════════════════════════
    ⑦ CTA BUTTON
    ═══════════════════════════════════════════════════════ #}
-<table cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center" style="border-radius:30px; background-color:#6b3fa0;">
-      <a href="{{ site_url }}/admin/order/details/?id={{ order.id }}"
-         style="display:inline-block; padding:13px 32px;
+  <table cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+    <tr>
+      <td align="center" style="border-radius:30px; background-color:#6b3fa0;">
+        <a
+          href="{{ url_for("order.details_view", id=order.id, _external=True) }}"
+          style="display:inline-block; padding:13px 32px;
                 font-family:Arial,sans-serif; font-size:14px; font-weight:700;
-                color:#ffffff; text-decoration:none; border-radius:30px;">
-        Ver detalle completo en el panel
-      </a>
-    </td>
-  </tr>
-</table>
+                color:#ffffff; text-decoration:none; border-radius:30px;"
+        >
+          Ver detalle completo en el panel
+        </a>
+      </td>
+    </tr>
+  </table>
 
-<hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 16px;" />
+  <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 16px;" />
 
-<p style="margin:0; font-family:Arial,sans-serif; font-size:11px;
-           color:#8a7a8e; line-height:1.7;">
-  Generado automáticamente por <code>post_purchase_process</code>.
-  Estado final: pago=<strong>{{ order.payment_status }}</strong>
-  / orden=<strong>{{ order.status }}</strong>.
-</p>
-
+  <p
+    style="margin:0; font-family:Arial,sans-serif; font-size:11px;
+           color:#8a7a8e; line-height:1.7;"
+  >
+    Generado automáticamente por <code>post_purchase_process</code>. Estado final: pago=<strong>{{ order.payment_status }}</strong>
+    / orden=<strong>{{ order.status }}</strong>.
+  </p>
 {% endblock %}
