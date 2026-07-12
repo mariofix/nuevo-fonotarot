@@ -225,6 +225,7 @@ class Config:
     # Firenze client lookup/creation service (internal, not internet-accessible)
     # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
     FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "")
+    FIRENZE_API_URL_LOCAL: str = os.environ.get("FIRENZE_API_URL_LOCAL", "")
     FIRENZE_API_KEY: str = os.environ.get("FIRENZE_API_KEY", "")
     FIRENZE_API_SECRET: str = os.environ.get("FIRENZE_API_SECRET", "")
     # Backward compatibility with previous Firenze credential names.
@@ -263,7 +264,6 @@ class Config:
 
     SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
     EMAIL_PREFIX = "Tienda Fonotarot"
-
 
 
 class DevelopmentConfig(Config):

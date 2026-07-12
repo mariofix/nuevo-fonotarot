@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, session, url_for
 from ..extensions import limiter, csrf, db
 from ..log import get_logger
-from ..firenze import search_client_data, search_client
+from ..firenze import search_client_data, search_client, search_credits
 from ..promo_helpers import (
     _promo_claim_remaining,
     _complete_promo_claim,
@@ -29,11 +29,10 @@ def consulta_saldo():
 
     data = {"status": "not_found", "saldo": 0}
 
-    if client := search_client_data(ani=ani):
-        found = client.get("found", False)
-        if found:
+    if client := search_credits(ani=ani):
+        if isinstance(client, int):
             data["status"] = "ok"
-            data["saldo"] = client["credits"]
+            data["saldo"] = client
 
     return jsonify(data)
 

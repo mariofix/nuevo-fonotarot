@@ -256,7 +256,7 @@ def promo_exito():
 
 @content_bp.route("/test-emails")
 def test_emails():
-    from ..models import  Order
+    from ..models import Order
     from ..extensions import db
     from flask import render_template_string
 
@@ -266,12 +266,11 @@ def test_emails():
     )
 
     html_body = render_template(
-            "tienda/email/orden_creada_admin.html",
-            order=order,
-            site_url=site_url,
-        )
+        "tienda/email/orden_creada_admin.html",
+        order=order,
+        site_url=site_url,
+    )
     return render_template_string(html_body)
-
 
 
 # ---------------------------------------------------------------------------

@@ -176,7 +176,7 @@ def _init_extensions(app: Flask) -> None:
     def _inject_site_settings():
         if request.path.startswith(app.static_url_path):
             return
-
+        app.logger.info(f"_inject_site_settings: {request.headers=}")
         from .models import SiteSettings
 
         try:

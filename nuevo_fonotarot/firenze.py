@@ -49,6 +49,11 @@ def _base_url() -> str:
     return current_app.config.get("FIRENZE_API_URL", "http://firenze.local").rstrip("/")
 
 
+def _local_base_url() -> str:
+    """Return the configured Firenze base URL."""
+    return current_app.config.get("FIRENZE_API_URL", "http://firenze.local").rstrip("/")
+
+
 def _timeout() -> int:
     """Return the configured request timeout in seconds."""
     return int(current_app.config.get("FIRENZE_API_TIMEOUT", current_app.config.get("FIRENZE_TIMEOUT", 5)))
@@ -78,6 +83,81 @@ def _auth_headers() -> dict[str, str] | None:
     }
 
 
+def search_credits(
+    ani: str | None = None,
+) -> int | None:
+    """Get credits for an ANI
+
+    Args:
+        ani: Firenze client ANI.
+
+    Returns:
+        The integer ``creditos`` from Firenze, or ``None`` if the client
+        was not found or if the request failed for any reason.
+    """
+
+    headers = _auth_headers()
+    if not headers:
+        logger.warning("search_credits: missing Firenze API credentials")
+        return None
+
+    params: dict[str, str] = {}
+    params["service"] = "fonotarot-cl"
+    if ani:
+        params["ani"] = ani
+
+    url = urljoin(_local_base_url(), "/api/v1/clients/search")
+    logger.debug(
+        "search_credits: searching for client (ani=%r)",
+        ani or None,
+    )
+    try:
+        resp = requests.get(url, params=params, headers=headers, timeout=_timeout())
+        if resp.status_code != 200:
+            logger.warning(
+                "search_credits: unexpected status %s for ani=%r",
+                resp.status_code,
+                ani or None,
+            )
+            return None
+        data = resp.json()
+        found = data.get("found", False)
+        if not found:
+            logger.debug(
+                "search_credits: client not found for ani=%r",
+                ani or None,
+            )
+            return None
+
+        credits = data.get("credits")
+        if credits is not None:
+            logger.info(
+                "search_credits: found credits=%s for lookup ani=%r",
+                credits,
+                ani or None,
+            )
+            return int(credits)
+
+        logger.warning(
+            "search_credits: found=true but no client_id in response for lookup ani=%r",
+            ani or None,
+        )
+        return None
+    except requests.RequestException as exc:
+        logger.warning(
+            "search_credits: network error for ani=%r - %s",
+            ani or None,
+            exc,
+        )
+        return None
+    except Exception:
+        logger.exception(
+            "search_credits: unexpected error for ani=%r",
+            ani or None,
+        )
+        return None
+
+
 def search_client(
     client_id: int | str | None = None,
     email: str | None = None,
@@ -100,7 +180,7 @@ def search_client(
     """
     normalized_client_id = str(client_id).strip() if client_id is not None else ""
     if not normalized_client_id and not email and not phone and not ani:
-        logger.warning("search_client: called with no client_id/email/phone/ani — skipping")
+        logger.warning("search_client: called with no client_id/email/phone/ani - skipping")
         return None
 
     headers = _auth_headers()
@@ -174,7 +254,7 @@ def search_client(
         return None
     except requests.RequestException as exc:
         logger.warning(
-            "search_client: network error for client_id=%r email=%r phone=%r ani=%r — %s",
+            "search_client: network error for client_id=%r email=%r phone=%r ani=%r - %s",
             normalized_client_id or None,
             email,
             phone,
@@ -214,7 +294,7 @@ def search_client_data(
     """
     normalized_client_id = str(client_id).strip() if client_id is not None else ""
     if not normalized_client_id and not email and not phone and not ani:
-        logger.warning("search_client: called with no client_id/email/phone/ani — skipping")
+        logger.warning("search_client: called with no client_id/email/phone/ani - skipping")
         return None
 
     headers = _auth_headers()
@@ -257,7 +337,7 @@ def search_client_data(
         return resp.json()
     except requests.RequestException as exc:
         logger.warning(
-            "search_client: network error for client_id=%r email=%r phone=%r ani=%r — %s",
+            "search_client: network error for client_id=%r email=%r phone=%r ani=%r - %s",
             normalized_client_id or None,
             email,
             phone,
@@ -354,7 +434,7 @@ def create_client(
         return None
     except requests.RequestException as exc:
         logger.warning(
-            "create_client: network error for email=%r ani=%r — %s",
+            "create_client: network error for email=%r ani=%r - %s",
             email,
             ani,
             exc,
@@ -452,7 +532,7 @@ def post_purchase(
         return data
     except requests.RequestException as exc:
         logger.warning(
-            "post_purchase: network error for email=%r ani=%r — %s",
+            "post_purchase: network error for email=%r ani=%r - %s",
             email,
             ani,
             exc,
@@ -524,7 +604,7 @@ def complete_promo_credit(ani: str | None, credits: int) -> int | None:
         return None
     except requests.RequestException as exc:
         logger.warning(
-            "complete_promo_credit: network error for ani=%r credits=%s — %s",
+            "complete_promo_credit: network error for ani=%r credits=%s - %s",
             normalized_ani,
             credits,
             exc,
@@ -665,7 +745,7 @@ def search_client_minutes(
         return _extract_minutes_from_client_search(payload), None
     except requests.RequestException as exc:
         logger.warning(
-            "search_client_minutes: network error for client_id=%r email=%r — %s",
+            "search_client_minutes: network error for client_id=%r email=%r - %s",
             normalized_client_id,
             normalized_email,
             exc,
@@ -741,7 +821,7 @@ def update_client_profile(
         return True
     except requests.RequestException as exc:
         logger.warning(
-            "update_client_profile: network error for client_id=%s payload=%s — %s",
+            "update_client_profile: network error for client_id=%s payload=%s - %s",
             client_id,
             payload,
             exc,
@@ -778,7 +858,7 @@ def list_client_anis(client_id: int, *, service: str = "fonotarot-cl") -> list[s
         normalized = [_normalize_ani(str(item)) for item in anis]
         return [ani for ani in normalized if ani]
     except requests.RequestException as exc:
-        logger.warning("list_client_anis: network error for client_id=%s — %s", client_id, exc)
+        logger.warning("list_client_anis: network error for client_id=%s - %s", client_id, exc)
         return None
     except Exception:
         logger.exception("list_client_anis: unexpected error for client_id=%s", client_id)
@@ -823,7 +903,7 @@ def add_client_ani(
         data = resp.json()
         return bool(data.get("ok", True)), bool(data.get("created", False))
     except requests.RequestException as exc:
-        logger.warning("add_client_ani: network error for client_id=%s ani=%s — %s", client_id, normalized_ani, exc)
+        logger.warning("add_client_ani: network error for client_id=%s ani=%s - %s", client_id, normalized_ani, exc)
         return False, False
     except Exception:
         logger.exception("add_client_ani: unexpected error for client_id=%s ani=%s", client_id, normalized_ani)
@@ -867,7 +947,7 @@ def delete_client_ani(
         data = resp.json()
         return bool(data.get("ok", True)), bool(data.get("deleted", False))
     except requests.RequestException as exc:
-        logger.warning("delete_client_ani: network error for client_id=%s ani=%s — %s", client_id, normalized_ani, exc)
+        logger.warning("delete_client_ani: network error for client_id=%s ani=%s - %s", client_id, normalized_ani, exc)
         return False, False
     except Exception:
         logger.exception("delete_client_ani: unexpected error for client_id=%s ani=%s", client_id, normalized_ani)
