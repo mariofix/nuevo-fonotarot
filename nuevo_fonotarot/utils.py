@@ -18,17 +18,17 @@ MOON_PHASE_NAMES = [
 def encrypt_string(msg: str, key: str) -> str:
     from cryptography.fernet import Fernet
 
-    f = Fernet(key)
+    f = Fernet(key.encode())
     return f.encrypt(msg.encode()).decode()
 
 
-def decrypt_token(token: str, key: str) -> str:
+def decrypt_token(token: str, key: str) -> str | None:
     from cryptography.fernet import Fernet, InvalidToken
-
-    f = Fernet(key)
-    return f.encrypt(msg.encode()).decode()
-
-    return msg
+    try:
+        f = Fernet(key.encode())
+        return f.encrypt(token.encode()).decode()
+    except InvalidToken as e:
+        return None
 
 
 def get_moon_phase_index() -> int:
