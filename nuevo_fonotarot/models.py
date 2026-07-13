@@ -597,6 +597,7 @@ class OrderItem(db.Model):
     fulfillment_error: Mapped[str | None] = mapped_column(Text, nullable=True)
     fulfillment_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     fulfillment_reference: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    fulfillment_data: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
 
     def __repr__(self) -> str:
         return f"<OrderItem {self.name} x{self.quantity}>"

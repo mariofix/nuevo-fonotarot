@@ -122,6 +122,10 @@ def instrucciones(data_str: str):
         "tienda/email/email-giftcard.html", hidecss=True, base_url=site_domain, raw_data=pdf_info, **pdf_info
     )
     if request.method == "POST":
+
+        card_template = render_template(
+            "tienda/email/email-giftcard.html", base_url=site_domain, raw_data=pdf_info, **pdf_info
+        )
         return jsonify("yeah")
 
     return render_template(
@@ -164,13 +168,10 @@ def comprar(slug: str):
             email=purchaser_email,
             shipping_email=purchaser_email,
             status=OrderStatus.PENDING,
-            request_payload={
-                "gift_card_recipient_email": recipient_email or None,
-                "gift_card_message": gift_message or None,
-            },
         )
         if is_authenticated_user:
             order.user_id = current_user.id
+            order.firenze_client_id = current_user.firenze_client_id
 
         db.session.add(order)
         db.session.flush()
@@ -183,6 +184,10 @@ def comprar(slug: str):
             quantity=quantity,
             unit_price=Decimal(str(card.price)),
             currency=card.currency,
+            fulfillment_data={
+                "gift_card_recipient_email": recipient_email or None,
+                "gift_card_message": gift_message or None,
+            },
         )
         db.session.add(item)
         db.session.commit()
