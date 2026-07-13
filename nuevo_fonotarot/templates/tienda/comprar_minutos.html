@@ -289,6 +289,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token() }}'
           },
           body: JSON.stringify({
             discount_code: code,
@@ -308,7 +309,7 @@
         
         // Format numbers for CLP (e.g., $10.000)
         var formatCurrency = function(val) {
-          return '$' + Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          return '$' + Math.round(Number(val)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         };
         
         discountRow.classList.remove('d-none');

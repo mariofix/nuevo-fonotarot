@@ -414,7 +414,7 @@ class DiscountCode(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
-    discount_type: Mapped[str] = mapped_column(String(20), nullable=False, default=DiscountCodeType.FIXED)
+    discount_type: Mapped[str] = mapped_column(String(20), nullable=False, default=DiscountCodeType.FIXED.value)
     discount_value: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
     currency: Mapped[str | None] = mapped_column(String(3), nullable=True)  # Required if type is FIXED
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

@@ -156,8 +156,9 @@ def comprar_minutos(pack_slug: str):
                 )
 
         if discount_obj:
-            discount_obj.uses_count += 1
-            db.session.add(discount_obj)
+            DiscountCode.query.filter_by(id=discount_obj.id).update({
+                DiscountCode.uses_count: DiscountCode.uses_count + 1
+            })
 
         db.session.add(order)
         db.session.flush()

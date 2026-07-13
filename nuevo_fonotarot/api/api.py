@@ -118,7 +118,7 @@ def general_status():
 
 
 @api_bp.route("/checkout/preview-discount", methods=["POST"])
-@limiter.limit("10 per minute")
+@limiter.limit("5 per minute")
 def preview_discount():
     from ..models import DiscountCode, MinutePack, GiftCardProduct, Product
     from ..tienda.utils import apply_discount
@@ -142,21 +142,17 @@ def preview_discount():
     price = None
     currency = None
     
-    if item_type == "minute_pack":
-        pack = MinutePack.query.get(item_id)
-        if pack:
-            price = pack.price
-            currency = pack.currency
-    elif item_type == "gift_card":
-        card = GiftCardProduct.query.get(item_id)
-        if card:
-            price = card.price
-            currency = card.currency
-    elif item_type == "product":
-        prod = Product.query.get(item_id)
-        if prod:
-            price = prod.price
-            currency = prod.currency
+    models_map = {
+        "minute_pack": MinutePack,
+        "gift_card": GiftCardProduct,
+        "product": Product,
+    }
+
+    if item_type in models_map:
+        item = models_map[item_type].query.get(item_id)
+        if item:
+            price = item.price
+            currency = item.currency
             
     if price is None:
         return jsonify({"error": _("Producto no encontrado.")}), 404
@@ -169,9 +165,9 @@ def preview_discount():
     
     return jsonify({
         "success": True,
-        "discount_amount": float(discount_amount),
-        "final_price": float(final_price),
+        "discount_amount": str(discount_amount),
+        "final_price": str(final_price),
         "discount_type": discount_obj.discount_type,
-        "discount_value": float(discount_obj.discount_value),
+        "discount_value": str(discount_obj.discount_value),
         "currency": currency
     })
