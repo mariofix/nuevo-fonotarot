@@ -71,7 +71,7 @@ All Flask extension objects live in `nuevo_fonotarot/extensions.py` as module-le
 ### Models
 - Use SQLAlchemy 2 `Mapped` / `mapped_column` style (not legacy `Column`).
 - All models live in `nuevo_fonotarot/models.py` unless they belong to a `flask-merchants` sub-package.
-- Timestamps use `datetime.now(timezone.utc)`.
+- Timestamps use `datetime.now()`.
 
 ### Admin panel
 - Secure every admin view by inheriting from `SecureModelView` (defined in `admin.py`).

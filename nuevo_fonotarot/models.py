@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
@@ -400,12 +400,6 @@ class GiftCard(db.Model):
         return self.created_at + relativedelta(years=1)
 
 
-def _ensure_tz(dt: datetime | None) -> datetime | None:
-    """Ensure a datetime is timezone aware."""
-    if dt is None:
-        return None
-    return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
-
 class DiscountCodeType(enum.StrEnum):
     """Types of discount for a discount code."""
 
@@ -428,9 +422,9 @@ class DiscountCode(db.Model):
     valid_to: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     max_uses: Mapped[int | None] = mapped_column(Integer, nullable=True)
     uses_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime, default=lambda: datetime.now(), onupdate=lambda: datetime.now(), nullable=False
     )
 
     def __repr__(self) -> str:
@@ -441,10 +435,10 @@ class DiscountCode(db.Model):
         if not self.is_active:
             return False
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now()
 
-        valid_from = _ensure_tz(self.valid_from)
-        valid_to = _ensure_tz(self.valid_to)
+        valid_from = self.valid_from
+        valid_to = self.valid_to
 
         if valid_from and now < valid_from:
             return False

@@ -1,6 +1,6 @@
 """Minute-pack store views."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from flask import abort, flash, redirect, render_template, request, url_for
@@ -73,7 +73,7 @@ def comprar_minutos(pack_slug: str):
                 flash(_("El código de descuento no es aplicable a este producto."), "danger")
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
-        duplicate_cutoff = datetime.now(timezone.utc) - timedelta(minutes=2)
+        duplicate_cutoff = datetime.now() - timedelta(minutes=2)
         duplicate_filter = and_(
             OrderItem.item_type == OrderItemType.MINUTE_PACK,
             OrderItem.item_id == pack.id,
@@ -240,7 +240,7 @@ def one_click(pack_slug: str):
 
     pack = MinutePack.query.filter_by(slug=pack_slug, is_active=True).first_or_404()
 
-    duplicate_cutoff = datetime.now(timezone.utc) - timedelta(minutes=2)
+    duplicate_cutoff = datetime.now() - timedelta(minutes=2)
     duplicate_filter = and_(
         OrderItem.item_type == OrderItemType.MINUTE_PACK,
         OrderItem.item_id == pack.id,
