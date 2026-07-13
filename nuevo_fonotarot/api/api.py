@@ -115,3 +115,63 @@ def general_status():
         })
 
     return jsonify(entries)
+
+
+@api_bp.route("/checkout/preview-discount", methods=["POST"])
+@limiter.limit("10 per minute")
+def preview_discount():
+    from ..models import DiscountCode, MinutePack, GiftCardProduct, Product
+    from ..tienda.utils import apply_discount
+    from flask_babel import _
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid request"}), 400
+        
+    code_str = data.get("discount_code", "").strip()
+    item_type = data.get("item_type")
+    item_id = data.get("item_id")
+    
+    if not code_str or not item_type or not item_id:
+        return jsonify({"error": _("Faltan parámetros.")}), 400
+        
+    discount_obj = DiscountCode.query.filter_by(code=code_str).first()
+    if not discount_obj or not discount_obj.is_valid():
+        return jsonify({"error": _("Código de descuento inválido o expirado.")}), 400
+        
+    price = None
+    currency = None
+    
+    if item_type == "minute_pack":
+        pack = MinutePack.query.get(item_id)
+        if pack:
+            price = pack.price
+            currency = pack.currency
+    elif item_type == "gift_card":
+        card = GiftCardProduct.query.get(item_id)
+        if card:
+            price = card.price
+            currency = card.currency
+    elif item_type == "product":
+        prod = Product.query.get(item_id)
+        if prod:
+            price = prod.price
+            currency = prod.currency
+            
+    if price is None:
+        return jsonify({"error": _("Producto no encontrado.")}), 404
+        
+    discount_amount = apply_discount(price, currency, discount_obj)
+    if discount_amount <= 0:
+        return jsonify({"error": _("El código de descuento no es aplicable a este producto.")}), 400
+        
+    final_price = price - discount_amount
+    
+    return jsonify({
+        "success": True,
+        "discount_amount": float(discount_amount),
+        "final_price": float(final_price),
+        "discount_type": discount_obj.discount_type,
+        "discount_value": float(discount_obj.discount_value),
+        "currency": currency
+    })
