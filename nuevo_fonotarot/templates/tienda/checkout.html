@@ -99,6 +99,10 @@
                 </div>
                 {% endfor %}
                 <hr style="border-color:var(--border)"/>
+                <div class="mb-3">
+                  <label class="form-label" for="discount_code"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</label>
+                  <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
+                </div>
                 <div class="d-flex justify-content-between total-display mb-4">
                   <span>{{ _("Total") }}</span>
                   <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
