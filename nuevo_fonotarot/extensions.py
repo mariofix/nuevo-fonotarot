@@ -25,7 +25,14 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["240 per minute"],
     headers_enabled=True,
+    swallow_errors=True,
+    key_prefix="fonotarot",
 )
+@limiter.request_filter
+def exempt_options():
+    from flask import request
+    return request.method == "OPTIONS"
+
 babel = Babel()
 security = Security(mail_util_cls=DaleksMailUtil, username_util_cls=PhoneUsernameUtil)
 admin = Admin(name="Fonotarot", theme=TablerTheme(layout="fluid", theme_primary="lime", theme_radius="2"))

@@ -260,7 +260,7 @@ class Config:
     LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
     SESSION_COOKIE_NAME: str = "tienda_fonotarot"
 
-    CORS_ORIGINS = ["https://fonotarot.com"]
+    CORS_ORIGINS = ["https://fonotarot.com", "https://compra.fonotarot.com0"]
 
     SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
     EMAIL_PREFIX = "Tienda Fonotarot"

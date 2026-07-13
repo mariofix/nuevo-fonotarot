@@ -95,3 +95,23 @@ def promo_actualizar_email():
 
     response_body, status = _finalize_promo_email(email)
     return jsonify(response_body), status
+
+
+@api_bp.route("/limiter-status", methods=["GET"])
+@limiter.exempt
+def general_status():
+    import time
+
+    backend = limiter.storage  # the MemoryStorage instance
+    now = time.time()
+
+    entries = []
+    for key, count in backend.storage.items():
+        expiry = backend.expirations.get(key)
+        entries.append({
+            "key": key,
+            "count": count,
+            "expires_in": round(expiry - now, 1) if expiry else None,
+        })
+
+    return jsonify(entries)
