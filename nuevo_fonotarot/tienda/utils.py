@@ -1,6 +1,7 @@
 """Shared helpers for tienda sub-blueprints."""
 
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from flask import flash, redirect, request, session
@@ -9,6 +10,9 @@ from flask_babel import _
 from ..log import get_logger
 from ..models import Order
 from ..notifications import send_new_order_admin_email
+
+if TYPE_CHECKING:
+    from ..models import DiscountCode
 
 logger = get_logger(__name__)
 
@@ -45,6 +49,19 @@ def _cart_total(cart: list) -> Decimal:
         (Decimal(str(item["unit_price"])) * item["quantity"] for item in cart),
         Decimal(0),
     )
+
+
+def apply_discount(amount: Decimal, currency: str, discount_code: "DiscountCode | None") -> Decimal:
+    """Calculate the discount amount for a given code and total amount."""
+    if not discount_code or not discount_code.is_valid():
+        return Decimal("0")
+    if discount_code.discount_type == "fixed" and discount_code.currency != currency:
+        return Decimal("0")
+    if discount_code.discount_type == "fixed":
+        return min(amount, discount_code.discount_value)
+    elif discount_code.discount_type == "percentage":
+        return min(amount, amount * (discount_code.discount_value / Decimal("100")))
+    return Decimal("0")
 
 
 def create_payment_and_redirect(

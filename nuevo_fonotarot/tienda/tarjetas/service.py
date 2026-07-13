@@ -193,7 +193,7 @@ def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:
         if response_client_id and not user.firenze_client_id:
             try:
                 user.firenze_client_id = int(response_client_id)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 logger.warning(
                     "redeem_gift_card: invalid client_id in response gift_card=%s user=%s client_id=%r",
                     gift_card.id,

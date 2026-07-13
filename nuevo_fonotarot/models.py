@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
@@ -400,6 +400,61 @@ class GiftCard(db.Model):
         return self.created_at + relativedelta(years=1)
 
 
+def _ensure_tz(dt: datetime | None) -> datetime | None:
+    """Ensure a datetime is timezone aware."""
+    if dt is None:
+        return None
+    return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
+
+class DiscountCodeType(enum.StrEnum):
+    """Types of discount for a discount code."""
+
+    FIXED = "fixed"
+    PERCENTAGE = "percentage"
+
+
+class DiscountCode(db.Model):
+    """Discount code for minute packs and products."""
+
+    __tablename__ = "discount_codes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    discount_type: Mapped[str] = mapped_column(String(20), nullable=False, default=DiscountCodeType.FIXED)
+    discount_value: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str | None] = mapped_column(String(3), nullable=True)  # Required if type is FIXED
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    valid_from: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    valid_to: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    max_uses: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    uses_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<DiscountCode {self.code}>"
+
+    def is_valid(self) -> bool:
+        """Check if the code is currently active and valid."""
+        if not self.is_active:
+            return False
+
+        now = datetime.now(timezone.utc)
+
+        valid_from = _ensure_tz(self.valid_from)
+        valid_to = _ensure_tz(self.valid_to)
+
+        if valid_from and now < valid_from:
+            return False
+        if valid_to and now > valid_to:
+            return False
+        if self.max_uses is not None and self.uses_count >= self.max_uses:
+            return False
+        return True
+
+
 class Order(db.Model, PaymentMixin):
     """Customer order and payment record.
 
@@ -440,6 +495,12 @@ class Order(db.Model, PaymentMixin):
     firenze_client_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
     firenze_payload: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
     firenze_response: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("'{}'"))
+
+    # Discount tracking
+    discount_code_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("discount_codes.id"))
+    applied_discount_code: Mapped[str | None] = mapped_column(String(50))
+    discount_amount: Mapped[Decimal | None] = mapped_column(Numeric(19, 4))
+    discount_code = db.relationship("DiscountCode", backref=db.backref("orders", lazy="dynamic"))
 
     items = db.relationship("OrderItem", backref="order", lazy="dynamic", cascade="all, delete-orphan")
 

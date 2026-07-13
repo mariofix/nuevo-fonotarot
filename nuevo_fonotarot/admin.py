@@ -96,7 +96,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -144,7 +144,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -840,6 +840,35 @@ class SeoSettingsAdminView(BaseView):
         )
 
 
+class DiscountCodeAdminView(SecureModelView):
+    """Admin view for DiscountCode."""
+
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+    column_searchable_list = ["code"]
+    column_filters = ["code", "discount_type", "is_active", "valid_from", "valid_to"]
+    column_list = [
+        "code",
+        "discount_type",
+        "discount_value",
+        "currency",
+        "is_active",
+        "uses_count",
+        "max_uses",
+    ]
+    form_columns = [
+        "code",
+        "discount_type",
+        "discount_value",
+        "currency",
+        "is_active",
+        "valid_from",
+        "valid_to",
+        "max_uses",
+    ]
+
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -1028,6 +1057,17 @@ def init_admin(app, admin_ext):
             category=_l("Tienda"),
             menu_icon_type="ti",
             menu_icon_value="clock",
+        )
+    )
+    from .models import DiscountCode
+    admin_ext.add_view(
+        DiscountCodeAdminView(
+            DiscountCode,
+            db.session,
+            name=_l("Códigos de Descuento"),
+            category=_l("Tienda"),
+            menu_icon_type="ti",
+            menu_icon_value="discount-2",
         )
     )
     admin_ext.add_view(

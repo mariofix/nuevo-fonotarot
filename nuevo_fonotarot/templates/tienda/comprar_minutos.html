@@ -170,6 +170,15 @@
             </div>
           </div>
         {% endif %}
+
+        <!-- Discount Code -->
+        <div class="ck-form-section">
+          <h2 class="ck-section-title"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</h2>
+          <div class="mb-3">
+            <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
+          </div>
+        </div>
+
         <!-- ── Submit ─────────────────────────────── -->
         <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
           <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>

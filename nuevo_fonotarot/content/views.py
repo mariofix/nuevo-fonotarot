@@ -55,7 +55,7 @@ def _homepage_ctx() -> dict:
 
     try:
         ejecutivos = _json.loads(current_app.config.get("FT_EJECUTIVOS", []))
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
         ejecutivos = []
 

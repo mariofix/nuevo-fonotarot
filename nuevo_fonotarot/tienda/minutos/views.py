@@ -1,6 +1,6 @@
 """Minute-pack store views."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from flask import abort, flash, redirect, render_template, request, url_for
@@ -11,8 +11,8 @@ from sqlalchemy import and_
 from ...actions import register_checkout_account
 from ...extensions import db
 from ...log import get_logger
-from ...models import MinutePack, Order, OrderItem, OrderItemType, OrderStatus
-from ..utils import _get_cart, create_payment_and_redirect
+from ...models import DiscountCode, MinutePack, Order, OrderItem, OrderItemType, OrderStatus
+from ..utils import _get_cart, apply_discount, create_payment_and_redirect
 from . import minutos_bp
 
 logger = get_logger(__name__)
@@ -58,7 +58,22 @@ def comprar_minutos(pack_slug: str):
             flash(_("El email es obligatorio."), "danger")
             return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
-        duplicate_cutoff = datetime.now() - timedelta(minutes=2)
+        # Check for discount code
+        discount_code_str = request.form.get("discount_code", "").strip()
+        discount_obj = None
+        discount_amount = Decimal("0")
+        if discount_code_str:
+            discount_obj = DiscountCode.query.filter_by(code=discount_code_str).first()
+            if not discount_obj or not discount_obj.is_valid():
+                flash(_("Código de descuento inválido o expirado."), "danger")
+                return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
+
+            discount_amount = apply_discount(pack.price, pack.currency, discount_obj)
+            if discount_amount <= 0:
+                flash(_("El código de descuento no es aplicable a este producto."), "danger")
+                return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
+
+        duplicate_cutoff = datetime.now(timezone.utc) - timedelta(minutes=2)
         duplicate_filter = and_(
             OrderItem.item_type == OrderItemType.MINUTE_PACK,
             OrderItem.item_id == pack.id,
@@ -92,12 +107,17 @@ def comprar_minutos(pack_slug: str):
             )
             return redirect(url_for("pagos.orden_estado", order_id=existing_order.id))
 
+        final_amount = max(Decimal("0"), pack.price - discount_amount)
+
         order = Order(
-            amount=Decimal(str(pack.price)),
+            amount=final_amount,
             currency=pack.currency,
             provider=payment_method,
             email=email,
             shipping_phone=phone or None,
+            discount_code_id=discount_obj.id if discount_obj else None,
+            applied_discount_code=discount_obj.code if discount_obj else None,
+            discount_amount=discount_amount if discount_amount > 0 else None,
         )
         if is_authenticated_user:
             order.user_id = current_user.id
@@ -134,6 +154,10 @@ def comprar_minutos(pack_slug: str):
                     _("Ya existe una cuenta con ese email. Puedes ingresar con acceso sin contraseña."),
                     "info",
                 )
+
+        if discount_obj:
+            discount_obj.uses_count += 1
+            db.session.add(discount_obj)
 
         db.session.add(order)
         db.session.flush()
@@ -216,7 +240,7 @@ def one_click(pack_slug: str):
 
     pack = MinutePack.query.filter_by(slug=pack_slug, is_active=True).first_or_404()
 
-    duplicate_cutoff = datetime.now() - timedelta(minutes=2)
+    duplicate_cutoff = datetime.now(timezone.utc) - timedelta(minutes=2)
     duplicate_filter = and_(
         OrderItem.item_type == OrderItemType.MINUTE_PACK,
         OrderItem.item_id == pack.id,
