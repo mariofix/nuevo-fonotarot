@@ -430,6 +430,9 @@ class DiscountCode(db.Model):
     def __repr__(self) -> str:
         return f"<DiscountCode {self.code}>"
 
+    def __str__(self) -> str:
+        return self.code
+
     def is_valid(self) -> bool:
         """Check if the code is currently active and valid."""
         if not self.is_active:
@@ -510,6 +513,13 @@ class Order(db.Model, PaymentMixin):
         if self.amount is None:
             return ""
         return babel_format_currency(Decimal(str(self.amount)), self.currency or "CLP", locale=get_locale())
+
+    @property
+    def discount_display(self) -> str:
+        """Format order discount using locale-aware currency formatting."""
+        if self.discount_amount is None:
+            return ""
+        return babel_format_currency(Decimal(str(self.discount_amount)), self.currency or "CLP", locale=get_locale())
 
     def initiate_payment(self, payment_method: str, email: str) -> str:
         """Prepare this order as a payment record and start checkout.

@@ -909,6 +909,7 @@ class OrderAdminView(SecureModelView):
     ]
     column_list = (
         "status",
+        "discount_code",
         "amount",
         "provider",
         "email",
