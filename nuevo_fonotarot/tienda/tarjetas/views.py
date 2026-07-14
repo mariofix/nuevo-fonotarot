@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from flask import flash, redirect, render_template, request, url_for, abort, current_app, jsonify
+from flask import abort, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
 
@@ -11,7 +11,7 @@ from ...log import get_logger
 from ...models import GiftCard, GiftCardProduct, Order, OrderItem, OrderItemType, OrderStatus
 from ..utils import _get_cart, create_payment_and_redirect
 from . import tarjetas_bp
-from .service import normalize_input_code, redeem_gift_card, create_giftcard_pdf
+from .service import create_giftcard_pdf, normalize_input_code, redeem_gift_card
 
 logger = get_logger(__name__)
 
@@ -25,6 +25,36 @@ def index():
 
 @tarjetas_bp.route("/canjear", methods=["GET", "POST"])
 def canjear():
+    """Redeem a purchased gift-card code into user minutes."""
+    if request.method == "POST":
+        raw_code = request.form.get("code", "")
+        code = normalize_input_code(raw_code)
+        if not code:
+            flash(_("Ingresa un código válido."), "danger")
+            return redirect(url_for("tarjetas.canjear"))
+
+        gift_card = GiftCard.query.filter_by(code=code).first()
+        if gift_card is None:
+            flash(_("El código ingresado no existe."), "danger")
+            return redirect(url_for("tarjetas.canjear"))
+
+        if gift_card.order_id is not None:
+            purchase_order = db.session.get(Order, gift_card.order_id)
+            if purchase_order is None or purchase_order.payment_status != "succeeded":
+                flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
+                return redirect(url_for("tarjetas.canjear"))
+
+        ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
+        flash(_(message), "success" if ok else "danger")
+        return redirect(url_for("tarjetas.canjear"))
+
+    return render_template(
+        "tienda/canjear_tarjeta.html",
+    )
+
+
+@tarjetas_bp.route("/canjear-orig", methods=["GET", "POST"])
+def canjear_orig():
     """Redeem a purchased gift-card code into user minutes."""
     if not (current_user and current_user.is_authenticated):
         flash(_("Debes iniciar sesión para canjear una tarjeta."), "warning")
@@ -78,8 +108,9 @@ def instrucciones(data_str: str):
     if not data_str:
         logger.warning("tarjetas.instrucciones: data_str not present")
         return abort(404)
-    from cryptography.fernet import Fernet, InvalidToken
     from json import loads as json_loads
+
+    from cryptography.fernet import Fernet, InvalidToken
 
     f = Fernet(current_app.config["SECRET_KEY"])
     data = None
@@ -98,8 +129,8 @@ def instrucciones(data_str: str):
         logger.warning(f"tarjetas.instrucciones: {data=} malformado")
         return abort(404)
 
-    from ...models import Order, OrderItem, GiftCard
     from ...extensions import db
+    from ...models import GiftCard, Order, OrderItem
 
     order = db.session.get(Order, data.get("order_id"))
     order_item = db.session.get(OrderItem, data.get("item_id"))
@@ -122,7 +153,6 @@ def instrucciones(data_str: str):
         "tienda/email/email-giftcard.html", hidecss=True, base_url=site_domain, raw_data=pdf_info, **pdf_info
     )
     if request.method == "POST":
-
         card_template = render_template(
             "tienda/email/email-giftcard.html", base_url=site_domain, raw_data=pdf_info, **pdf_info
         )

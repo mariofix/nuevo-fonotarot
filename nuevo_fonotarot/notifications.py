@@ -1,9 +1,9 @@
 """Notification utilities for sending alerts via various channels."""
 
 import os
+from json import dumps as json_dumps
 from typing import Any
 from urllib.parse import parse_qs, urlparse
-from json import dumps as json_dumps
 
 import requests
 from daleks.contrib.client import DaleksClient

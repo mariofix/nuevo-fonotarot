@@ -387,14 +387,12 @@ def ejecutivosfonotarot():
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT *
                     FROM operators
                     WHERE type IN (7) AND loggedin = '1'
                     ORDER BY available DESC, loggedin DESC
-                    """
-                )
+                    """)
                 operators = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)
@@ -418,14 +416,12 @@ def ejecutivosalotarottest():
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT *
                     FROM operators
                     WHERE type IN (7) AND loggedin = '1'
                     ORDER BY available DESC, loggedin DESC
-                    """
-                )
+                    """)
                 operators = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)
@@ -449,14 +445,12 @@ def ejecutivosalotarottestx():
     try:
         with audiotex_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT *
                     FROM operators
                     WHERE type IN (7) AND loggedin = '1'
                     ORDER BY available DESC, loggedin DESC
-                    """
-                )
+                    """)
                 operators = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)
@@ -485,14 +479,12 @@ def indexfirenzex():
     try:
         with firenze_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT TIMEDIFF(NOW(), modified_at) AS resultado,
                            operator,
                            client_id
                     FROM onlinecalls
-                    """
-                )
+                    """)
                 calls = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)
@@ -518,14 +510,12 @@ def ultimas():
     try:
         with portal_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT calldate, dst, duration, disposition, zvn_clientid
                     FROM cdr
                     ORDER BY calldate DESC
                     LIMIT 100
-                    """
-                )
+                    """)
                 rows = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)
@@ -546,15 +536,13 @@ def laatste():
     try:
         with portal_conn() as conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                cur.execute("""
                     SELECT calldate, dst, duration, disposition,
                            zvn_clientid, dcontext, lastdata
                     FROM cdr
                     ORDER BY calldate DESC
                     LIMIT 100
-                    """
-                )
+                    """)
                 rows = cur.fetchall()
     except Exception as exc:
         return _db_error(exc)

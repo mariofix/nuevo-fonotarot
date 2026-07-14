@@ -4,6 +4,7 @@ from daleks.contrib.flask_security_mail import DaleksMailUtil
 from flask_admin import Admin
 from flask_admin.theme import TablerTheme
 from flask_babel import Babel
+from flask_cors import CORS
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -13,7 +14,6 @@ from flask_security.core import Security
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
-from flask_cors import CORS
 
 from .phone_util import PhoneUsernameUtil
 
@@ -28,10 +28,14 @@ limiter = Limiter(
     swallow_errors=True,
     key_prefix="fonotarot",
 )
+
+
 @limiter.request_filter
 def exempt_options():
     from flask import request
+
     return request.method == "OPTIONS"
+
 
 babel = Babel()
 security = Security(mail_util_cls=DaleksMailUtil, username_util_cls=PhoneUsernameUtil)

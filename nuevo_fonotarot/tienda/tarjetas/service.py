@@ -3,7 +3,8 @@
 from datetime import datetime
 from secrets import choice
 from string import ascii_uppercase, digits
-from flask import render_template, current_app, request
+
+from flask import current_app, render_template, request
 
 from ...extensions import db
 from ...firenze import post_purchase
@@ -193,7 +194,7 @@ def redeem_gift_card(*, gift_card: GiftCard, user: User) -> tuple[bool, str]:
         if response_client_id and not user.firenze_client_id:
             try:
                 user.firenze_client_id = int(response_client_id)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 logger.warning(
                     "redeem_gift_card: invalid client_id in response gift_card=%s user=%s client_id=%r",
                     gift_card.id,
@@ -219,7 +220,7 @@ def create_giftcard_pdf(pdf_data: dict, base_url: str | None = None, site_domain
     """Create the PDF File for a giftcard"""
 
     with current_app.app_context():
-        from weasyprint import HTML, CSS
+        from weasyprint import CSS, HTML
 
         if not pdf_data:
             return "False"

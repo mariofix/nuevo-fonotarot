@@ -627,7 +627,7 @@ def _int_from(value: object) -> int | None:
         if isinstance(value, bool):
             return None
         return int(value)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return None
 
 

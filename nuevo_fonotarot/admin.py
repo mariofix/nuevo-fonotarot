@@ -10,6 +10,7 @@ from flask_admin.actions import action
 from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+from flask_admin.model.template import EndpointLinkRowAction
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 
@@ -96,7 +97,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -144,7 +145,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -869,6 +870,31 @@ class DiscountCodeAdminView(SecureModelView):
         "max_uses",
     ]
 
+
+class ModelLinkRowAction(EndpointLinkRowAction):
+    """
+    Like EndpointLinkRowAction, but each value in url_args is treated as
+    an attribute name on `row` and resolved at render time — instead of
+    being passed straight through to url_for(), and instead of always
+    appending the row's PK as `id_arg`.
+
+    Usage:
+        ModelLinkRowAction("ti ti-graph", "pagos.orden_estado",
+                            url_args={"order_id": "merchants_id"})
+
+    -> url_for("pagos.orden_estado", order_id=row.merchants_id)
+    """
+
+    def render(self, context, row_id, row):
+        m = self._resolve_symbol(context, "row_actions.link")
+        get_url = self._resolve_symbol(context, "get_url")
+
+        kwargs = {key: getattr(row, attr_name) for key, attr_name in (self.url_args or {}).items()}
+
+        url = get_url(self.endpoint, **kwargs)
+        return m(self, url)
+
+
 class OrderAdminView(SecureModelView):
     """Admin view for customer orders."""
 
@@ -897,6 +923,9 @@ class OrderAdminView(SecureModelView):
     column_searchable_list = ("firenze_client_id", "email", "shipping_phone", "transaction_id", "merchants_id")
     page_size = 50
     column_default_sort = ("id", True)
+    column_extra_row_actions = [
+        ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id"})
+    ]
 
     @action("post_purchase", "Proceso post webhook")
     def action_post_purchase(self, ids):
@@ -1060,6 +1089,7 @@ def init_admin(app, admin_ext):
         )
     )
     from .models import DiscountCode
+
     admin_ext.add_view(
         DiscountCodeAdminView(
             DiscountCode,

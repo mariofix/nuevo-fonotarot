@@ -3,10 +3,10 @@
 import enum
 import uuid
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
+from dateutil.relativedelta import relativedelta
 from flask_babel import get_locale
 from flask_merchants.models import PaymentMixin
 from flask_security.models import fsqla_v3 as fsqla

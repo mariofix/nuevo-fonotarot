@@ -35,7 +35,7 @@ def _load_ejecutivos() -> list[dict[str, str]]:
     try:
         raw = SiteSettings.get("ejecutivos") or "[]"
         payload = json.loads(raw)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON")
         return []
 

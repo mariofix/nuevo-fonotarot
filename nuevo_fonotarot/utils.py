@@ -24,6 +24,7 @@ def encrypt_string(msg: str, key: str) -> str:
 
 def decrypt_token(token: str, key: str) -> str | None:
     from cryptography.fernet import Fernet, InvalidToken
+
     try:
         f = Fernet(key.encode())
         return f.encrypt(token.encode()).decode()

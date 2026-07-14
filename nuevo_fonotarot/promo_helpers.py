@@ -1,11 +1,13 @@
 from typing import Any
-from flask import current_app, session, url_for, render_template
-from .log import get_logger
+
+from flask import current_app, render_template, session, url_for
+from flask_security.utils import login_user
+
+from .actions import process_user_registration, register_checkout_account
 from .extensions import db, user_datastore
 from .firenze import complete_promo_credit, search_client, update_client_profile
-from .models import SiteSettings, Role
-from flask_security.utils import login_user
-from .actions import process_user_registration, register_checkout_account
+from .log import get_logger
+from .models import Role, SiteSettings
 
 # SiteSettings key that tracks how many free-trial promos are left.
 _PROMO_REMAINING_KEY = "promo_free_minutes_remaining"

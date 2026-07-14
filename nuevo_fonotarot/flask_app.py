@@ -4,6 +4,7 @@ import logging.config
 import os
 from typing import Any
 
+import sentry_sdk
 from flask import Flask, request, session
 from flask_babel import get_locale
 from flask_merchants.signals import webhook_event_finished
@@ -16,6 +17,7 @@ from .admin import SecureAdminIndexView, init_admin
 from .extensions import (
     admin,
     babel,
+    cors,
     csrf,
     db,
     limiter,
@@ -23,10 +25,8 @@ from .extensions import (
     migrate,
     security,
     toolbar,
-    cors,
 )
 from .utils import _LangEntry
-import sentry_sdk
 
 
 def _reset_admin_for_factory_reuse() -> None:
@@ -234,7 +234,7 @@ def _init_extensions(app: Flask) -> None:
         try:
             start = int(settings.get("dark_hours_start") or "20")
             end = int(settings.get("dark_hours_end") or "8")
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             start, end = 20, 8
 
         hour = datetime.now().hour
@@ -283,11 +283,11 @@ def _init_merchants(app: Flask, admin: Any) -> None:
 
 def _register_blueprints(app: Flask) -> None:
     from .account import account_bp
-    from .content import blog_bp, content_bp
 
     # from .lab import lab_bp
     # from .legacy import legacy_bp
     from .api import api_bp
+    from .content import blog_bp, content_bp
     from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 

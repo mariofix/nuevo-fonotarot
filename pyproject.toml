@@ -1,9 +1,9 @@
 [project]
 name = "nuevo-fonotarot"
 version = "0.1.4"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.14,<4.0"
 dependencies = [
-    "flask>=3.1.3",
+    "flask (>=3.1.3,<4.0.0)",
     "flask-admin[images,sqlalchemy-with-utils,translation] @ git+https://github.com/mariofix/flask-admin.git@tabler-ui",
     "flask-security[babel,common,fsqla] (>=5.8.1,<7.0.0)",
     "python-slugify (>=8.0.4,<9.0.0)",
@@ -12,19 +12,18 @@ dependencies = [
     "flask-migrate (>=4.1.0,<5.0.0)",
     "pyflowcl (>=2026.5.0,<2027.0.0)",
     "khipu-tools (>=2025.1.0,<2026.0.0)",
-    "flask-debugtoolbar (>=0.16.0,<1.0.0)",
     "pymysql (>=1.2.0,<2.0.0)",
     "flask-debugtoolbar-extrapanels @ git+https://github.com/mariofix/flask-debugtoolbar-extrapanels.git@sandbox",
     "daleks[contrib] @ git+https://github.com/mariofix/daleks.git",
-    "requests (>=2.34.2,<4.0.0)",
-    "gunicorn (>=26.0.0,<28.0.0)",
-    "ephem (>=4.2.1,<6.0)",
-    "cryptography (>=49.0.0,<51.0.0)",
+    "requests[security] (>=2.34.2,<3.0.0)",
+    "gunicorn (>=26.0.0,<27.0.0)",
+    "ephem (>=4.2.1,<5.0.0)",
+    "cryptography (>=49.0.0,<50.0.0)",
     "merchants-sdk @ git+https://github.com/mariofix/merchants.git@main",
     "flask-merchants @ git+https://github.com/mariofix/flask-merchants.git@main",
     "flask-cors (>=6.0.5,<7.0.0)",
     "weasyprint (>=69.0,<70.0)",
-    "sentry-sdk (>=2.64.0,<3.0.0)",
+    "sentry-sdk (>=2.65.0,<3.0.0)",
 ]
 
 [project.scripts]

@@ -1,5 +1,6 @@
 """Payment callbacks, order status, and store index."""
 
+import json
 import random
 import re
 
@@ -19,6 +20,7 @@ from ...models import (
     Product,
     SubscriptionPlan,
 )
+from ...utils import encrypt_string
 from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
@@ -618,13 +620,24 @@ def pago_retorno(order_id: str):
 # ---------------------------------------------------------------------------
 
 
-@pagos_bp.route("/orden/<order_id>")
+@pagos_bp.app_template_global()
+def make_giftcard_token(card_id, order_id, item_id):
+    payload = {"giftcard_id": card_id, "order_id": order_id, "item_id": item_id}
+    return encrypt_string(json.dumps(payload), current_app.config["SECRET_KEY"])
+
+
+@pagos_bp.route("/orden/<order_id>", methods=["GET", "POST"])
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
+
+    from json import dumps as json_dumps
+
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     items = _materialize_order_items(order)
     packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
+
     try:
         issued_gift_cards = GiftCard.query.filter_by(order_id=order.id).order_by(GiftCard.id.asc()).all()
     except SQLAlchemyError:
@@ -636,6 +649,7 @@ def orden_estado(order_id: str):
         order=order,
         items=items,
         packs=packs,
+        cards=cards,
         issued_gift_cards=issued_gift_cards,
         purchased_minutes=purchased_minutes,
     )

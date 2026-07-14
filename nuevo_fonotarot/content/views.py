@@ -25,7 +25,6 @@ from ..models import BlogPost, GiftCardProduct, MinutePack, Role, SiteSettings, 
 from ..placeholder import TESTIMONIALS
 from ..utils import get_moon_phase_index
 
-
 logger = get_logger(__name__)
 
 
@@ -55,7 +54,7 @@ def _homepage_ctx() -> dict:
 
     try:
         ejecutivos = _json.loads(current_app.config.get("FT_EJECUTIVOS", []))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
         ejecutivos = []
 
@@ -256,9 +255,10 @@ def promo_exito():
 
 @content_bp.route("/test-emails")
 def test_emails():
-    from ..models import Order
-    from ..extensions import db
     from flask import render_template_string
+
+    from ..extensions import db
+    from ..models import Order
 
     order = db.session.get(Order, 50)
     site_url = (

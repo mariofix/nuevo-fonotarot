@@ -3,34 +3,20 @@
 {% block title %}{{ _("Canjear Tarjeta Prepago") }} - Fonotarot{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <h1 class="fw-bold mb-3">{{ _("Canjear tarjeta prepago") }}</h1>
-      <p class="text-secondary">{{ _("Ingresa tu código y acreditaremos los minutos en tu cuenta.") }}</p>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <h1 class="fw-bold mb-3">{{ _("Canjear tarjeta prepago") }}</h1>
+        <p class="text-secondary">{{ _("Ingresa tu código y acreditaremos los minutos en tu cuenta.") }}</p>
 
-      <form method="post" class="card p-4">
-        <label class="form-label" for="code">{{ _("Código de tarjeta") }}</label>
-        <input id="code" name="code" class="form-control form-control-lg" required placeholder="{{ _('Ej: AB12CD34EF56') }}" />
-        <button type="submit" class="btn btn-primary mt-3">
-          <i class="ti ti-ticket me-1"></i>{{ _("Canjear ahora") }}
-        </button>
-      </form>
-
-      {% if recent_redeemed %}
-      <div class="card p-3 mt-4">
-        <div class="fw-semibold mb-2">{{ _("Canjes recientes") }}</div>
-        <ul class="mb-0">
-          {% for gc in recent_redeemed %}
-          <li class="small">
-            <strong>{{ gc.code }}</strong> — {{ gc.gift_card_product.name if gc.gift_card_product else _("Tarjeta") }}
-            ({{ gc.gift_card_product.minutes if gc.gift_card_product else 0 }} {{ _("minutos") }})
-          </li>
-          {% endfor %}
-        </ul>
+        <form method="post" class="card p-4">
+          <label class="form-label" for="code">{{ _("Teléfono") }}</label>
+          <input id="telefono" type="tel" name="telefono" class="form-control form-control-lg" required placeholder="{{ _('Ej: 56987654321') }}" />
+          <label class="form-label" for="code">{{ _("Código de tarjeta") }}</label>
+          <input id="code" name="code" class="form-control form-control-lg" required placeholder="{{ _('Ej: AB12CD34EF56') }}" />
+          <button type="submit" class="btn btn-primary mt-3"><i class="ti ti-ticket me-1"></i>{{ _("Canjear ahora") }}</button>
+        </form>
       </div>
-      {% endif %}
     </div>
   </div>
-</div>
 {% endblock %}
