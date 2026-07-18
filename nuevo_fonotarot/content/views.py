@@ -192,6 +192,7 @@ def index():
        render its database content via ``pages/page.html``.
     3. Default → the hardcoded ``index.html`` template.
     """
+    logger.info(f"{request.cookies.get('existing_user')=}")
     if SiteSettings.get("homepage_type") == "blog":
         posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
         return render_template("blog/index.html", posts=posts)
