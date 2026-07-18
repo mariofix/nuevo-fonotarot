@@ -2105,7 +2105,8 @@
     <div class="packs-wrap">
       <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
       <div class="packs-track" id="packsSlider">
-        {% if not current_user or request.cookies.get('existing_user') %}
+
+        {% if not current_user or not request.cookies.get('existing_user') %}
         <div class="pack-item">
           <div class="plan-card featured" style="height:100%;">
             <div><span class="plan-popular">🔥 Oferta de Bienvenida 🔥</span></div>
