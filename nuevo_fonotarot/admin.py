@@ -308,6 +308,7 @@ class UserAdminView(SecureModelView):
     column_searchable_list = ("email", "username")
     column_filters = ("firenze_client_id", "email", "username")
     form_excluded_columns = ("password", "fs_uniquifier", "created_at")
+    column_relationship_links = True
 
     @action(
         "reprocess_registration",
@@ -379,8 +380,9 @@ class UserAdminView(SecureModelView):
 class RoleAdminView(SecureModelView):
     """Admin view for the Role model."""
 
-    column_list = ("name", "description")
+    column_list = ("name", "description",)
     column_searchable_list = ("name",)
+    column_relationship_links = True
 
 
 class StaticPageAdminView(SecureModelView):
@@ -459,6 +461,7 @@ class MinutePackAdminView(SecureModelView):
     column_searchable_list = ("description",)
     column_filters = ("is_active", "is_featured")
     form_excluded_columns = ("created_at",)
+    column_relationship_links = True
 
 
 class SubscriptionPlanAdminView(SecureModelView):
@@ -487,6 +490,7 @@ class ProductAdminView(SecureModelView):
     form_excluded_columns = ("created_at", "updated_at", "images")
     create_template = "admin/product/create.html"
     edit_template = "admin/product/create.html"
+    column_relationship_links = True
 
     def on_model_change(self, form, model, is_created):
         from .models import Product
@@ -534,6 +538,7 @@ class GiftCardProductAdminView(SecureModelView):
     }
     create_template = "admin/giftcard_product/create.html"
     edit_template = "admin/giftcard_product/create.html"
+    column_relationship_links = True
 
     def on_model_change(self, form, model, is_created):
         from .models import GiftCardProduct
@@ -560,6 +565,7 @@ class GiftCardAdminView(SecureModelView):
         "redeemed_at",
         "created_at",
     )
+    column_relationship_links = True
     column_searchable_list = ("code", "purchaser_email", "recipient_email")
     column_filters = ("status", "gift_card_product.name", "created_at", "redeemed_at")
     column_descriptions = {
@@ -869,6 +875,7 @@ class DiscountCodeAdminView(SecureModelView):
         "valid_to",
         "max_uses",
     ]
+    column_relationship_links = True
 
 
 class ModelLinkRowAction(EndpointLinkRowAction):
@@ -923,6 +930,7 @@ class OrderAdminView(SecureModelView):
     column_sortable_list = ("firenze_client_id", "created_at", "provider")
     column_searchable_list = ("firenze_client_id", "email", "shipping_phone", "transaction_id", "merchants_id")
     page_size = 50
+    column_relationship_links = True
     column_default_sort = ("id", True)
     column_extra_row_actions = [
         ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id"})

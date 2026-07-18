@@ -38,6 +38,9 @@ class Role(db.Model, fsqla.FsRoleMixin):
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class User(db.Model, fsqla.FsUserMixin):
     """Application user managed by Flask-Security."""

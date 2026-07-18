@@ -93,35 +93,35 @@
           <div class="row g-3">
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Provider') }}</span>
-              <div>{{ model.provider or '—' }}</div>
+              <div>{{ model.provider or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Transaction ID') }}</span>
-              <div class="text-break">{{ model.transaction_id.lower() or '—' }}</div>
+              <div class="text-break">{{ model.transaction_id.lower() or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Merchant ID') }}</span>
-              <div class="text-break">{{ model.merchants_id or '—' }}</div>
+              <div class="text-break">{{ model.merchants_id or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Email') }}</span>
-              <div>{{ model.email or model.shipping_email or '—' }}</div>
+              <div>{{ model.email or model.shipping_email or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Phone') }}</span>
-              <div>{{ model.shipping_phone or '—' }}</div>
+              <div>{{ model.shipping_phone or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Firenze client') }}</span>
-              <div>{{ model.firenze_client_id or '—' }}</div>
+              <div>{{ model.firenze_client_id or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Codigo Descuento') }}</span>
-              <div>{{ model.applied_discount_code or '—' }}</div>
+              <div>{{ model.applied_discount_code or '-' }}</div>
             </div>
             <div class="col-md-6">
               <span class="text-muted small">{{ _gettext('Monto Descuento') }}</span>
-              <div>{{ model.discount_display or '—' }}</div>
+              <div>{{ model.discount_display or '-' }}</div>
             </div>
           </div>
         </div>
