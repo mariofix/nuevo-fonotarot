@@ -9,7 +9,7 @@ function urlBase64ToUint8Array(base64) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-async function registerPush() {
+async function registerPush(retries = 3) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
   const permission = await Notification.requestPermission();
@@ -17,7 +17,6 @@ async function registerPush() {
 
   const reg = await navigator.serviceWorker.register('/sw.js');
 
-  // Wait for THIS registration to be active, not just any SW
   await new Promise(resolve => {
     if (reg.active) return resolve();
     const sw = reg.installing || reg.waiting;
@@ -28,13 +27,23 @@ async function registerPush() {
 
   let sub = await reg.pushManager.getSubscription();
   if (!sub) {
-    sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(_VAPID_PUBLIC_KEY)
-    });
+    for (let i = 0; i < retries; i++) {
+      try {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(_VAPID_PUBLIC_KEY)
+        });
+        break;
+      } catch (e) {
+        if (i === retries - 1) throw e;
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
   }
 
-  await fetch(_VAPID_API_SUBSCRIBE, {
+  console.log('subscription:', JSON.stringify(sub.toJSON()));  // check this
+
+  const response = await fetch(_VAPID_API_SUBSCRIBE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -42,6 +51,13 @@ async function registerPush() {
     },
     body: JSON.stringify(sub.toJSON())
   });
+
+  console.log('subscribe response:', response.status, response.statusText);
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('subscribe error body:', text);
+  }
 }
 
 // Call after user interaction (button click or login) — browsers block
