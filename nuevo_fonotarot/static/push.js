@@ -1,11 +1,7 @@
 // static/push.js
 
-const VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 const csrf = () =>
     document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-
-const subscribeUrl = () =>
-    "{{ url_for(\"api.subscribe\") }}";
 
 function urlBase64ToUint8Array(base64) {
   const pad = '='.repeat((4 - base64.length % 4) % 4);
@@ -26,11 +22,11 @@ async function registerPush() {
   if (!sub) {
     sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      applicationServerKey: urlBase64ToUint8Array(_VAPID_PUBLIC_KEY)
     });
   }
 
-  await fetch(subscribeUrl(), {
+  await fetch(_VAPID_API_SUBSCRIBE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
