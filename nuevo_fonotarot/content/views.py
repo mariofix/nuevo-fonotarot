@@ -192,7 +192,6 @@ def index():
        render its database content via ``pages/page.html``.
     3. Default → the hardcoded ``index.html`` template.
     """
-    logger.info(f"{request.cookies.get('existing_user')=}")
     if SiteSettings.get("homepage_type") == "blog":
         posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).all()
         return render_template("blog/index.html", posts=posts)
@@ -205,6 +204,21 @@ def index():
 
     # Default: hardcoded home template.
     return render_template("index.html", **_homepage_ctx())
+
+
+@content_bp.route("/sw.js")
+def sw():
+    import os
+    from flask import Response
+
+    sw_path = os.path.join(current_app.root_path, "static", "sw.js")
+    with open(sw_path) as f:
+        js = f.read()
+    return Response(
+        js,
+        mimetype="application/javascript",
+        headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache, no-store, must-revalidate"},
+    )
 
 
 # ---------------------------------------------------------------------------

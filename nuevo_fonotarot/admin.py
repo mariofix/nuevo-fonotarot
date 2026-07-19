@@ -380,7 +380,10 @@ class UserAdminView(SecureModelView):
 class RoleAdminView(SecureModelView):
     """Admin view for the Role model."""
 
-    column_list = ("name", "description",)
+    column_list = (
+        "name",
+        "description",
+    )
     column_searchable_list = ("name",)
     column_relationship_links = True
 

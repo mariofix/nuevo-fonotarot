@@ -861,3 +861,30 @@ class SiteSettings(db.Model):
         else:
             row.value = value
         db.session.commit()
+
+
+class PushSubscriptionType(enum.StrEnum):
+    """Status values for a WebPush."""
+
+    DEFAULT = "notificacion-push"
+    CLIENTE_AGENTE_INGRESO = "cliente-agente-ingreso"
+    ADMIN_NUEVA_ORDEN = "admin-nueva-orden"
+
+
+class PushSubscription(db.Model):
+    __tablename__ = "push_subscriptions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    push_type: Mapped[str] = mapped_column(String(64), nullable=False, default=PushSubscriptionType.DEFAULT.value)
+    endpoint: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    p256dh: Mapped[str] = mapped_column(Text, nullable=False)
+    auth: Mapped[str] = mapped_column(Text, nullable=False)
+    user_agent: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
+
+    def __str__(self):
+        return f"{self.push_type}-{self.id}-{self.client_id}"
+
+    def __repr__(self) -> str:
+        return f"<PushSubscription id={self.id}, push_type={self.push_type}, client_id={self.client_id}>"

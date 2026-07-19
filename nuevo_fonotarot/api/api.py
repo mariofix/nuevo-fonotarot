@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, session, url_for
+from flask_login import login_required
 
 from ..extensions import csrf, db, limiter
 from ..firenze import search_client, search_client_data, search_credits
@@ -9,6 +10,7 @@ from ..promo_helpers import (
     _promo_claim_remaining,
     _send_admin_promo_notification,
 )
+
 
 logger = get_logger(__name__)
 
@@ -177,3 +179,38 @@ def preview_discount():
             "currency": currency,
         }
     )
+
+
+@api_bp.route("/push/subscribe", methods=["POST"])
+@login_required
+def subscribe():
+    from ..models import PushSubscription, PushSubscriptionType
+
+    data = request.get_json()
+    sub = PushSubscription.query.filter_by(endpoint=data["endpoint"]).first()
+    if sub:
+        sub.p256dh = data["keys"]["p256dh"]
+        sub.auth = data["keys"]["auth"]
+    else:
+        sub = PushSubscription(
+            client_id=current_user.firenze_client_id,
+            push_type=PushSubscriptionType.DEFAULT.value,
+            endpoint=data["endpoint"],
+            p256dh=data["keys"]["p256dh"],
+            auth=data["keys"]["auth"],
+            user_agent=request.user_agent.string[:256],
+        )
+        db.session.add(sub)
+    db.session.commit()
+    return jsonify({"ok": True})
+
+
+@api_bp.route("/push/unsubscribe", methods=["POST"])
+@login_required
+def unsubscribe():
+    from ..models import PushSubscription
+
+    data = request.get_json()
+    PushSubscription.query.filter_by(client_id=current_user.firenze_client_id, endpoint=data.get("endpoint")).delete()
+    db.session.commit()
+    return jsonify({"ok": True})

@@ -2563,7 +2563,7 @@
 </button>
 
 <!-- ── PROMO MODAL ──────────────────────────────── -->
-{% if not current_user.is_authenticated %}
+{% if not current_user %}
 <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-modal="true" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
