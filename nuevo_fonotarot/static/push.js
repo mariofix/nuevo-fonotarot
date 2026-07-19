@@ -16,7 +16,15 @@ async function registerPush() {
   if (permission !== 'granted') return;
 
   const reg = await navigator.serviceWorker.register('/sw.js');
-  await navigator.serviceWorker.ready;
+
+  // Wait for THIS registration to be active, not just any SW
+  await new Promise(resolve => {
+    if (reg.active) return resolve();
+    const sw = reg.installing || reg.waiting;
+    sw.addEventListener('statechange', e => {
+      if (e.target.state === 'activated') resolve();
+    });
+  });
 
   let sub = await reg.pushManager.getSubscription();
   if (!sub) {
