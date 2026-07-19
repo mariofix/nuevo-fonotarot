@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session, url_for
 from flask_login import login_required
+from flask_security import current_user
 
 from ..extensions import csrf, db, limiter
 from ..firenze import search_client, search_client_data, search_credits
