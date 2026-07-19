@@ -87,6 +87,11 @@
 {% endblock %}
 
 {% block body %}
+<script>
+var _VAPID_API_SUBSCRIBE = "{{ url_for("api.subscribe") }}";
+var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
+</script>
+<script src="{{ url_for('static', filename='push.js') }}"></script>
 <div class="row row-cards">
 
   {# Carrier report widget #}
@@ -97,7 +102,7 @@
           <i class="ti ti-chart-bar me-2"></i>
           {{ months_es[latest_month] }} {{ latest_year }} — Reporte 3 Carriers
         </h3>
-        <a href="#" class="btn btn-sm btn-outline-primary ms-auto enable-notifications">
+        <a href="#" class="btn btn-sm btn-outline-primary ms-auto enable-notifications" onclick="registerPush()">
           <i class="ti ti-external-link me-1"></i>Habilitar Notificaciones
         </a>
         <a href="{{ url_for('monthly_report.index') }}" class="btn btn-sm btn-outline-primary ms-auto">
@@ -215,4 +220,7 @@
   </div>
 
 </div>
+
 {% endblock %}
+
+
