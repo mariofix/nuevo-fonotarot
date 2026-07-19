@@ -875,7 +875,7 @@ class PushSubscription(db.Model):
     __tablename__ = "push_subscriptions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    client_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    client_id: Mapped[int] = mapped_column(Integer, nullable=False)
     push_type: Mapped[str] = mapped_column(String(64), nullable=False, default=PushSubscriptionType.DEFAULT.value)
     endpoint: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     p256dh: Mapped[str] = mapped_column(Text, nullable=False)
