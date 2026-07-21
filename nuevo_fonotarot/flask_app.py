@@ -61,9 +61,9 @@ def create_flask(config_name: str | None = None) -> Flask:
         sentry_sdk.init(
             dsn=os.environ.get("SENTRY_DSN"),
             send_default_pii=True,
-            enable_logs=True,
-            traces_sample_rate=1.0,
-            profile_session_sample_rate=1.0,
+            enable_logs=False,
+            traces_sample_rate=0.1,
+            profile_session_sample_rate=0.1,
             profile_lifecycle="trace",
         )
 
