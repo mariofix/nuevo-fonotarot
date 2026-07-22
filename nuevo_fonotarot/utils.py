@@ -359,11 +359,12 @@ def import_legacy_sales(
                     currency=pack.currency,
                     payment_status="succeeded",
                     email=row.get("correo"),
+                    shipping_phone=row.get("telefono") or None,
                     status=OrderStatus.DELIVERED,  # verify against your actual OrderStatus values
                     created_at=created_at,
                     request_payload=json.loads(row["broker_payload"]) if row.get("broker_payload") else {},
                     response_payload=json.loads(row["broker_response"]) if row.get("broker_response") else {},
-                    firenze_client_id=int(row["cliente_id"]) if row.get("cliente_id") else None,
+                    firenze_client_id=int(row["client_id"]) if row.get("client_id") else None,
                 )
                 db.session.add(order)
                 db.session.flush()  # populate order.id for the FK below
