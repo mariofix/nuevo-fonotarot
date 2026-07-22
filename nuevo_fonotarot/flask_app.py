@@ -159,18 +159,8 @@ def _init_extensions(app: Flask) -> None:
     if app.config.get("TESTING") and admin.app is not None and admin.app is not app:
         _reset_admin_for_factory_reuse()
 
-    admin.init_app(app, index_view=SecureAdminIndexView(url="/ft-admin"))
+    admin.init_app(app, index_view=SecureAdminIndexView(url="/ft-admin", menu_icon_type="ti", menu_icon_value="home"))
     init_admin(app, admin)
-
-    # Apply a per-IP rate limit to every Flask-Admin route.  The decorator
-    # wraps the check directly into the function body, so registering it as a
-    # blueprint before_request handler is enough — Flask-Limiter's automatic
-    # endpoint scanning is not required.
-    @limiter.limit("120 per hour; 20 per minute")
-    def _admin_rate_limit() -> None:
-        """Rate-limit guard for the Flask-Admin panel."""
-
-    app.before_request_funcs.setdefault("admin", []).append(_admin_rate_limit)
 
     @app.before_request
     def _inject_site_settings():
