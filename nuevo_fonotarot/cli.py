@@ -366,3 +366,30 @@ def user_sync_email_signin(filter_by: str) -> None:
             fg="green",
         )
     )
+
+
+@click.group("legacy")
+def legacy_cli() -> None:
+    """Import Data from old systems."""
+
+
+@legacy_cli.command("ventas-portal")
+@click.argument("json_path")
+@click.option("--dry-run", is_flag=True, help="Count what would be imported without writing anything.")
+@click.option("--offset", default=0, show_default=True, help="Skip this many rows before processing starts.")
+@click.option("--limit", type=int, default=None, help="Stop after considering this many rows.")
+@click.option("--max-bytes", type=int, default=None, help="Stop once cumulative row size (UTF-8 bytes) exceeds this.")
+@with_appcontext
+def import_legacy_sales_cmd(json_path, dry_run, offset, limit, max_bytes):
+    #SELECT * FROM `zvn_compra` c JOIN zvn_cliente cl on c.cliente_id = cl.id JOIN zvn_producto p on p.id = c.producto_id where c.estado = "Pagado" and cl.servicio_id = 1;
+    from .utils import import_legacy_sales
+
+    stats = import_legacy_sales(json_path, dry_run=dry_run, offset=offset, limit=limit, max_bytes=max_bytes)
+    click.echo(f"{'[DRY RUN] ' if dry_run else ''}{stats}")
+    if stats["next_offset"] is not None:
+        click.echo(
+            click.style(
+                f"→ Stopped early ({stats['stopped_reason']}). Resume with: --offset {stats['next_offset']}",
+                fg="yellow",
+            )
+        )

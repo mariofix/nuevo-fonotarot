@@ -5,85 +5,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  /* ── Fonotarot Admin Brand Overrides ────────────────────────────────── */
-  :root {
-    --ft-plum: #6b3fa0;
-    --ft-plum-dk: #4a2872;
-    --ft-plum-light: rgba(107,63,160,.12);
-    --ft-gold: #c9a84c;
-    --ft-gold-light: rgba(201,168,76,.18);
-    --ft-rose: #c06080;
-  }
-
-  /* Sidebar accent — active nav items */
-  .navbar-vertical .nav-link.active,
-  .navbar-vertical .nav-link:focus,
-  .navbar-vertical .nav-item.active > .nav-link {
-    color: var(--ft-gold) !important;
-    background: rgba(201,168,76,.1) !important;
-    border-radius: 6px;
-  }
-  .navbar-vertical .nav-link.active .nav-link-icon,
-  .navbar-vertical .nav-item.active > .nav-link .nav-link-icon {
-    color: var(--ft-gold) !important;
-  }
-
-  /* Primary buttons → plum */
-  .btn-primary,
-  .btn-outline-primary:hover {
-    background-color: var(--ft-plum) !important;
-    border-color: var(--ft-plum) !important;
-    color: #fff !important;
-  }
-  .btn-outline-primary {
-    border-color: var(--ft-plum) !important;
-    color: var(--ft-plum) !important;
-  }
-
-  /* Table hover → plum tint */
-  .table-hover > tbody > tr:hover > * {
-    background-color: var(--ft-plum-light);
-  }
-
-  /* Card headers — subtle left-border accent */
-  .card-header {
-    border-left: 3px solid var(--ft-plum);
-  }
-  [data-bs-theme="dark"] .card-header {
-    border-left-color: var(--ft-gold);
-  }
-
-  /* Page title */
-  .page-title {
-    font-family: 'Playfair Display', Georgia, serif;
+<style>.page-title
+  {
+    font-family: 'Montserrat', Georgia, serif;
     font-weight: 700;
     letter-spacing: -.01em;
   }
+  </style>
+{% endblock %}
 
-  /* Selected rows and active table rows */
-  .table-active td, .table-active th {
-    background-color: var(--ft-plum-light) !important;
-  }
-
-  /* Badges */
-  .badge.bg-primary { background-color: var(--ft-plum) !important; }
-  .badge.bg-success { background-color: #2a8c55 !important; }
-  .badge.bg-warning { background-color: var(--ft-gold) !important; color: #1a1a1a !important; }
-
-  /* Footer tfoot totals */
-  tfoot .table-active {
-    background: var(--ft-plum-light) !important;
-    color: var(--ft-gold);
-    font-weight: 700;
-  }
-
-  /* "Ver todos" / outline-primary links in card headers */
-  .card-header .btn-outline-primary {
-    font-size: .78rem;
-    padding: .25rem .75rem;
-  }
-</style>
+{% block page_title %}
+<h2 class="page-title">
+  Panel Fonotarot
+</h2>
 {% endblock %}
 
 {% block body %}
@@ -92,138 +26,285 @@ var _VAPID_API_SUBSCRIBE = "{{ url_for("api.subscribe") }}";
 var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 </script>
 <script src="{{ url_for('static', filename='push.js') }}"></script>
-<div class="row row-cards">
+<script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js', v='0.1.5') }}"></script>
 
-  {# Carrier report widget #}
-  <div class="col-12 col-lg-7">
-    <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <h3 class="card-title">
-          <i class="ti ti-chart-bar me-2"></i>
-          {{ months_es[latest_month] }} {{ latest_year }} — Reporte 3 Carriers
-        </h3>
-        <a href="#" class="btn btn-sm btn-outline-primary ms-auto" onclick="registerPush()">
-          <i class="ti ti-external-link me-1"></i>Habilitar Notificaciones
-        </a>
-        <a href="#" class="btn btn-sm btn-outline-primary ms-auto" onclick="unregisterPush()">
-          <i class="ti ti-external-link me-1"></i>Eliminar Notificaciones
-        </a>
-        <a href="{{ url_for('monthly_report.index') }}" class="btn btn-sm btn-outline-primary ms-auto">
-          <i class="ti ti-external-link me-1"></i>Ver todos los períodos
-        </a>
-      </div>
+{% if order_stats_error %}
+<div class="alert alert-danger">Error cargando estadísticas de órdenes: {{ order_stats_error }}</div>
+{% elif order_stats %}
+<div class="row row-cards mb-2">
 
-      {% if latest_error %}
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
       <div class="card-body">
-        <div class="alert alert-warning mb-0">
-          <i class="ti ti-alert-circle me-2"></i>
-          Base de datos legacy no disponible: <code>{{ latest_error }}</code>
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-today"
+                 data-graph-paid="{{ order_stats.today.paid }}"
+                 data-graph-unpaid="{{ order_stats.today.unpaid }}"></div>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.today.total }} Ordenes</div>
+            <div class="text-secondary">Hoy ({{ order_stats.today.label }})</div>
+          </div>
         </div>
       </div>
-
-      {% elif latest_data %}
-      <div class="table-responsive">
-        <table class="table table-sm table-vcenter card-table">
-          <thead>
-            <tr>
-              <th>Día</th>
-              <th class="text-end">Fonotarot</th>
-              <th class="text-end">Alotarot</th>
-              <th class="text-end">Latam</th>
-              <th class="text-end fw-bold">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in latest_data.days %}
-            {% if row.total > 0 %}
-            <tr>
-              <td class="text-muted small">{{ row.date }}</td>
-              <td class="text-end">{% if row.entel %}{{ row.entel }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
-              <td class="text-end">{% if row.alotarot %}{{ row.alotarot }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
-              <td class="text-end">{% if row.latam %}{{ row.latam }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
-              <td class="text-end fw-bold">{{ row.total }}</td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-          </tbody>
-          <tfoot>
-            <tr class="table-active fw-bold">
-              <td>Totales</td>
-              <td class="text-end">{{ latest_data.totals.entel }}</td>
-              <td class="text-end">{{ latest_data.totals.alotarot }}</td>
-              <td class="text-end">{{ latest_data.totals.latam }}</td>
-              <td class="text-end">{{ latest_data.totals.total }}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      {% else %}
-      <div class="card-body text-muted">Sin datos para este período.</div>
-      {% endif %}
     </div>
   </div>
 
-  {# Agent totals widget — sorted by minutes desc for quick top-performer scan #}
-  <div class="col-12 col-lg-5">
-    <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <h3 class="card-title">
-          <i class="ti ti-users me-2"></i>
-          {{ months_es[latest_month] }} {{ latest_year }} — Agentes
-        </h3>
-        <a href="{{ url_for('monthly_agent_report.index') }}" class="btn btn-sm btn-outline-primary ms-auto">
-          <i class="ti ti-external-link me-1"></i>Ver detalle
-        </a>
-      </div>
-
-      {% if agent_error %}
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
       <div class="card-body">
-        <div class="alert alert-warning mb-0">
-          <i class="ti ti-alert-circle me-2"></i>
-          Base de datos legacy no disponible: <code>{{ agent_error }}</code>
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-week"
+                 data-graph-paid="{{ order_stats.week.paid }}"
+                 data-graph-unpaid="{{ order_stats.week.unpaid }}"></div>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.week.total }} Ordenes</div>
+            <div class="text-secondary">Semana ({{ order_stats.week.label }})</div>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      {% elif agent_data %}
-      <div class="table-responsive">
-        <table class="table table-sm table-vcenter card-table">
-          <thead>
-            <tr>
-              <th>Ext.</th>
-              <th>Agente</th>
-              <th class="text-end fw-bold">Minutos</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for agent in agent_data.agents | sort(attribute='ext') %}
-            {% set total_mins = agent_data.totals[agent.ext] %}
-            <tr{% if total_mins == 0 %} class="text-muted"{% endif %}>
-              <td class="small fw-bold">{{ agent.ext }}</td>
-              <td class="small">{{ agent.name }}</td>
-              <td class="text-end">
-                {% if total_mins %}<strong>{{ total_mins }}</strong>{% else %}<span class="text-muted">—</span>{% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-          <tfoot>
-            <tr class="table-active fw-bold">
-              <td colspan="2">Total</td>
-              <td class="text-end">{{ agent_data.totals.values() | sum }}</td>
-            </tr>
-          </tfoot>
-        </table>
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-month"
+                 data-graph-paid="{{ order_stats.month.paid }}"
+                 data-graph-unpaid="{{ order_stats.month.unpaid }}"></div>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.month.total }} Ordenes</div>
+            <div class="text-secondary">Mes ({{ order_stats.month.label }})</div>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
 
-      {% else %}
-      <div class="card-body text-muted">Sin datos para este período.</div>
-      {% endif %}
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-cyan text-white avatar"><i class="ti ti-receipt-dollar icon icon-1"></i></span>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.alltime.total }}</div>
+            <div class="text-secondary">Ordenes desde 2018</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
 </div>
 
+<div class="row row-cards">
+
+  {% for period, label in [("today", "Ventas del dia " ~ order_stats.today.label),
+                            ("week", "Ventas de la Semana (" ~ order_stats.week.label ~ ")"),
+                            ("month", "Ventas del mes (" ~ order_stats.month.label ~ ")")] %}
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            {% set pct = order_stats[period].sales_pct %}
+            <span class="{{ 'bg-green-lt' if pct is none or pct >= 0 else 'bg-red-lt' }} avatar">
+              <i class="ti ti-arrow-{{ 'up' if pct is none or pct >= 0 else 'down' }} icon icon-1"></i>
+            </span>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">
+              {{ '${:,.0f}'.format(order_stats[period].sales).replace(',', '.') }}
+              {% if pct is not none %}
+              <span class="float-end font-weight-medium {{ 'text-green' if pct >= 0 else 'text-red' }}">{{ '%+.1f'|format(pct) }}%</span>
+              {% endif %}
+            </div>
+            <div class="text-secondary">{{ label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="col-md-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-cyan text-white avatar"><i class="ti ti-currency-dollar icon icon-1"></i></span>
+          </div>
+          <div class="col">
+            <div class="font-weight-strong">{{ '${:,.0f}'.format(order_stats.alltime.sales).replace(',', '.') }}</div>
+            <div class="text-secondary">Desde: 2018</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endif %}
+<div class="row row-cards mt-2">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Ventas — <span id="sales-chart-granularity-label">vista semanal</span></h3>
+        <div class="card-actions">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="sales-chart-reset">
+            Restablecer zoom
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="sales-chart" style="min-height: 300px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.ApexCharts) return;
+
+  var SALES_SERIES_URL = "{{ url_for('admin.sales_series') }}";
+  var granularityLabels = { week: "vista semanal", day: "vista diaria", hour: "vista por hora" };
+  var chartEl = document.getElementById("sales-chart");
+  var labelEl = document.getElementById("sales-chart-granularity-label");
+  var fetchController = null;
+  var chart = null;
+
+  function formatCLP(val) {
+    return "$" + Math.round(val).toLocaleString("es-CL");
+  }
+
+  function fetchSeries(startMs, endMs, granularity) {
+    if (fetchController) fetchController.abort();
+    fetchController = new AbortController();
+
+    var url = new URL(SALES_SERIES_URL, window.location.origin);
+    if (startMs) url.searchParams.set("start", startMs);
+    if (endMs) url.searchParams.set("end", endMs);
+    if (granularity) url.searchParams.set("granularity", granularity);
+
+    return fetch(url, { signal: fetchController.signal })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { console.error("sales-series error:", data.error); return; }
+        labelEl.textContent = granularityLabels[data.granularity] || data.granularity;
+        var points = data.series.map(function (pt) { return [pt.x, pt.y]; });
+        chart.updateOptions({
+          series: [{ name: "Ventas", data: points }],
+          xaxis: { min: startMs || undefined, max: endMs || undefined },
+        }, false, true);
+      })
+      .catch(function (err) {
+        if (err.name !== "AbortError") console.error("sales-series fetch failed:", err);
+      });
+  }
+
+  var options = {
+    series: [{ name: "Ventas", data: [] }],
+    chart: {
+      type: "area",
+      stacked: false,
+      height: 300,
+      fontFamily: "inherit",
+      animations: { enabled: false },
+      zoom: { type: "x", enabled: true, autoScaleYaxis: true },
+      toolbar: { autoSelected: "zoom", tools: { zoom: true, zoomin: true, zoomout: true, reset: true, pan: false } },
+      events: {
+        zoomed: function (chartCtx, opts) {
+          var min = opts.xaxis.min, max = opts.xaxis.max;
+          if (!Number.isFinite(min) || !Number.isFinite(max)) return;
+          fetchSeries(min, max, null);
+        },
+        beforeResetZoom: function () {
+          fetchSeries(null, null, null);
+          return { xaxis: {} };
+        },
+      },
+    },
+    dataLabels: { enabled: false },
+    markers: { size: 0 },
+    fill: {
+      type: "gradient",
+      gradient: { shadeIntensity: 1, inverseColors: false, opacityFrom: 0.5, opacityTo: 0, stops: [0, 90, 100] },
+    },
+    colors: ["var(--tblr-primary)"],
+    yaxis: {
+      labels: { formatter: formatCLP },
+      title: { text: "Ventas" },
+    },
+    xaxis: { type: "datetime" },
+    tooltip: {
+      shared: false,
+      x: { format: "dd MMM yyyy HH:mm" },
+      y: { formatter: formatCLP },
+    },
+  };
+
+  function initChart() {
+    chart = new ApexCharts(chartEl, options);
+    chart.render().then(function () {
+      fetchSeries(null, null, null);
+    });
+  }
+
+  // Wait for webfonts so ApexCharts measures the container at final width,
+  // not the fallback-font width (Playfair/Montserrat load async in head_css).
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(initChart);
+  } else {
+    initChart();
+  }
+
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(function () {
+      if (chart) chart.windowResize();
+    });
+    ro.observe(chartEl);
+  }
+
+  document.getElementById("sales-chart-reset").addEventListener("click", function () {
+    fetchSeries(null, null, null);
+  });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.ApexCharts) return;
+    document.querySelectorAll(".chart-sparkline[data-graph-paid]").forEach(function (el) {
+      var paid = parseInt(el.dataset.graphPaid, 10) || 0;
+      var unpaid = parseInt(el.dataset.graphUnpaid, 10) || 0;
+      var total = paid + unpaid;
+      var pct = total ? Math.round((paid / total) * 100) : 0;
+      new ApexCharts(el, {
+        chart: {
+          type: "radialBar", fontFamily: "inherit", height: 40, width: 40,
+          animations: { enabled: false }, sparkline: { enabled: true },
+        },
+        tooltip: { enabled: false },
+        plotOptions: {
+          radialBar: {
+            hollow: { margin: 0, size: "75%" },
+            track: { margin: 0 },
+            dataLabels: { show: false },
+          },
+        },
+        colors: ["var(--tblr-green)"],
+        series: [pct],
+      }).render();
+    });
+  });
+</script>
 {% endblock %}
 
 

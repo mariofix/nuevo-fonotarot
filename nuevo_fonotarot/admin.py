@@ -13,7 +13,10 @@ from flask_admin.menu import MenuLink
 from flask_admin.model.template import EndpointLinkRowAction
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
+from datetime import date, datetime, timedelta
 
+from flask import jsonify, request
+from sqlalchemy import func
 from .extensions import db
 
 # Spanish month names used in legacy CDR report views
@@ -33,14 +36,95 @@ _MONTHS_ES = {
 }
 
 
+
 class SecureAdminIndexView(AdminIndexView):
     """Admin index view that requires an authenticated user with the 'admin' role."""
+
+    PAID_STATUS = "succeeded"
+
+    # Bucket-size thresholds, in days of visible range. Tune to taste.
+    GRANULARITY_THRESHOLDS = (
+        (15, "week"),   # visible span > 15 days -> weekly buckets
+        (2, "day"),     # 2-15 days -> daily buckets
+        (0, "hour"),    # < 2 days -> hourly buckets
+    )
 
     def is_accessible(self):
         return current_user and current_user.is_authenticated and current_user.has_role("admin")
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("security.login", next=request.url))
+
+    @staticmethod
+    def _pick_granularity(span_days: float) -> str:
+        for threshold, granularity in SecureAdminIndexView.GRANULARITY_THRESHOLDS:
+            if span_days > threshold:
+                return granularity
+        return "hour"
+
+    @staticmethod
+    def _bucket_expr(granularity: str):
+        from .models import Order
+
+        if granularity == "hour":
+            return func.date_format(Order.created_at, "%Y-%m-%d %H:00:00")
+        if granularity == "day":
+            return func.date(Order.created_at)
+        if granularity == "week":
+            # Monday of the ISO week, via MariaDB's SUBDATE/WEEKDAY
+            return func.subdate(func.date(Order.created_at), func.weekday(Order.created_at))
+        raise ValueError(f"Unknown granularity: {granularity}")
+
+    @expose("/api/sales-series")
+    def sales_series(self):
+        from .models import Order
+        import math
+
+        now = datetime.now()
+        try:
+            start_ms = request.args.get("start", type=float)
+            end_ms = request.args.get("end", type=float)
+
+            if start_ms is not None and not math.isfinite(start_ms):
+                start_ms = None
+            if end_ms is not None and not math.isfinite(end_ms):
+                end_ms = None
+
+            start_dt = datetime.fromtimestamp(start_ms / 1000) if start_ms else now.replace(
+                day=1, hour=0, minute=0, second=0, microsecond=0
+            )
+            end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms else now
+        except (TypeError, ValueError, OSError):
+            return jsonify({"error": "invalid start/end"}), 400
+
+        if end_dt <= start_dt:
+            return jsonify({"error": "end must be after start"}), 400
+
+        span_days = (end_dt - start_dt).total_seconds() / 86400
+        granularity = request.args.get("granularity") or self._pick_granularity(span_days)
+
+        bucket = self._bucket_expr(granularity).label("bucket")
+        rows = (
+            db.session.query(bucket, func.coalesce(func.sum(Order.amount), 0).label("total"))
+            .filter(
+                Order.payment_status == self.PAID_STATUS,
+                Order.created_at >= start_dt,
+                Order.created_at < end_dt,
+            )
+            .group_by(bucket)
+            .order_by(bucket)
+            .all()
+        )
+
+        def to_ms(value) -> int:
+            if isinstance(value, datetime):
+                return int(value.timestamp() * 1000)
+            if isinstance(value, str):
+                return int(datetime.strptime(value, "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
+            return int(datetime(value.year, value.month, value.day).timestamp() * 1000)
+
+        series = [{"x": to_ms(r.bucket), "y": float(r.total)} for r in rows]
+        return jsonify({"granularity": granularity, "series": series})
 
     @expose("/")
     def index(self):
@@ -49,6 +133,8 @@ class SecureAdminIndexView(AdminIndexView):
         latest_error = None
         agent_data = None
         agent_error = None
+        order_stats = None
+        order_stats_error = None
         try:
             from .legacy.views import _fetch_monthly_3carrier
 
@@ -61,7 +147,11 @@ class SecureAdminIndexView(AdminIndexView):
             agent_data = _fetch_all_agents_monthly_cdr(today.year, today.month)
         except Exception as exc:
             agent_error = str(exc)
-
+        try:
+            from .utils import _fetch_order_stats
+            order_stats = _fetch_order_stats()
+        except Exception as exc:
+            order_stats_error = str(exc)
         return self.render(
             "admin/index.html",
             latest_year=today.year,
@@ -71,7 +161,11 @@ class SecureAdminIndexView(AdminIndexView):
             latest_error=latest_error,
             agent_data=agent_data,
             agent_error=agent_error,
+            order_stats=order_stats,
+            order_stats_error=order_stats_error,
         )
+
+
 
 
 # Earliest year available in the legacy CDR database

@@ -116,6 +116,290 @@ def _normalize_agent(raw: dict) -> dict:
 _STATUS_ORDER = {"available": 0, "busy": 1, "offline": 2}
 
 
+
+def _fetch_order_stats() -> dict:
+    from datetime import date, timedelta
+    from sqlalchemy import case, func
+
+    from .extensions import db
+    from .models import Order
+
+    PAID_STATUS = "succeeded"
+    _MONTHS_ES = {
+        1: "Enero",
+        2: "Febrero",
+        3: "Marzo",
+        4: "Abril",
+        5: "Mayo",
+        6: "Junio",
+        7: "Julio",
+        8: "Agosto",
+        9: "Septiembre",
+        10: "Octubre",
+        11: "Noviembre",
+        12: "Diciembre",
+    }
+
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    month_start = today.replace(day=1)
+    epoch = date(2018, 1, 1)
+
+    paid_case = case((Order.payment_status == PAID_STATUS, 1), else_=0)
+
+    def counts(start, end=None):
+        q = db.session.query(
+            func.count(Order.id),
+            func.coalesce(func.sum(paid_case), 0),
+        ).filter(Order.created_at >= start)
+        if end:
+            q = q.filter(Order.created_at < end)
+        total, paid = q.one()
+        total, paid = total or 0, int(paid or 0)
+        return total, paid, total - paid
+
+    def sales(start, end=None):
+        q = db.session.query(func.coalesce(func.sum(Order.amount), 0)).filter(
+            Order.payment_status == PAID_STATUS, Order.created_at >= start
+        )
+        if end:
+            q = q.filter(Order.created_at < end)
+        return q.scalar() or 0
+
+    def pct_change(current, previous):
+        if not previous:
+            return None
+        return round((current - previous) / previous * 100, 1)
+
+    prev_week_start = week_start - timedelta(days=7)
+    if month_start.month == 1:
+        prev_month_start = month_start.replace(year=month_start.year - 1, month=12)
+    else:
+        prev_month_start = month_start.replace(month=month_start.month - 1)
+    yesterday = today - timedelta(days=1)
+
+    today_total, today_paid, today_unpaid = counts(today)
+    week_total, week_paid, week_unpaid = counts(week_start)
+    month_total, month_paid, month_unpaid = counts(month_start)
+    alltime_total, _, _ = counts(epoch)
+
+    today_sales = sales(today)
+    week_sales = sales(week_start)
+    month_sales = sales(month_start)
+    alltime_sales = sales(epoch)
+
+    return {
+        "today": {
+            "total": today_total, "paid": today_paid, "unpaid": today_unpaid,
+            "sales": today_sales,
+            "sales_pct": pct_change(today_sales, sales(yesterday, today)),
+            "label": today.strftime("%d/%m"),
+        },
+        "week": {
+            "total": week_total, "paid": week_paid, "unpaid": week_unpaid,
+            "sales": week_sales,
+            "sales_pct": pct_change(week_sales, sales(prev_week_start, week_start)),
+            "label": f"{week_start.strftime('%d/%m')} - {today.strftime('%d/%m')}",
+        },
+        "month": {
+            "total": month_total, "paid": month_paid, "unpaid": month_unpaid,
+            "sales": month_sales,
+            "sales_pct": pct_change(month_sales, sales(prev_month_start, month_start)),
+            "label": _MONTHS_ES[month_start.month].capitalize() + f" {month_start.year}",
+        },
+        "alltime": {"total": alltime_total, "sales": alltime_sales},
+    }
+
+
+import json
+import uuid
+from datetime import datetime
+from decimal import Decimal
+
+
+PAID_LEGACY_STATUS = "Pagado"
+
+# Legacy `valor` -> MinutePack.id. Fixed mapping, no DB lookup needed.
+LEGACY_PRICE_TO_PACK_ID = {
+    Decimal("5000"): 1,
+    Decimal("10000"): 2,
+    Decimal("30000"): 3,
+    Decimal("75000"): 4,
+}
+
+
+def _dashed_uuid(raw_hex: str) -> str:
+    """Legacy `transaccion` is a 32-char hex UUID without dashes — reformat properly."""
+    return str(uuid.UUID(hex=raw_hex))
+
+
+def _extract_rows(dump: list) -> list:
+    """The phpMyAdmin export is a flat list of typed blocks; only the
+    table block named 'c' holds actual sale rows."""
+    for block in dump:
+        if block.get("type") == "table" and block.get("name") == "c":
+            return block.get("data", [])
+    return []
+
+
+def import_legacy_sales(
+    json_path: str,
+    *,
+    dry_run: bool = False,
+    offset: int = 0,
+    limit: int | None = None,
+    max_bytes: int | None = None,
+) -> dict:
+    """Import legacy sales dump into Order/OrderItem as fulfilled minute-pack purchases.
+
+    Idempotent: rows whose merchants_id (derived from `transaccion`) already
+    exists are skipped, so this can be safely re-run against the same file.
+    Each row is wrapped in its own SAVEPOINT so one bad row doesn't roll back
+    the rest of the batch.
+
+    Batching: `offset` skips the first N rows of the source (post-extraction,
+    pre-filtering) before processing starts. `limit` stops after N rows have
+    been considered (counts every row inspected, not just imported ones — so
+    batch size is predictable regardless of how many are paid/matched).
+    `max_bytes` stops once the cumulative UTF-8 size of the raw JSON rows
+    processed in this call exceeds the given budget, whichever of the two
+    limits is hit first. Both are optional; omit both to process to EOF.
+
+    Returns stats with a "next_offset" key so callers can chain invocations:
+    the next call's --offset should be this run's row_index + 1 (or the
+    returned "next_offset" directly) to continue where this run stopped.
+    """
+    from .extensions import db
+    from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus
+
+    with open(json_path, encoding="utf-8") as f:
+        dump = json.load(f)
+
+    rows = _extract_rows(dump)
+    total_rows = len(rows)
+
+    pack_ids = set(LEGACY_PRICE_TO_PACK_ID.values())
+    packs_by_id = {p.id: p for p in MinutePack.query.filter(MinutePack.id.in_(pack_ids)).all()}
+    missing_ids = pack_ids - packs_by_id.keys()
+    if missing_ids:
+        print(f"WARNING: MinutePack id(s) {sorted(missing_ids)} not found in DB — matching legacy sales will be skipped.")
+
+    stats = {
+        "imported": 0,
+        "skipped_unpaid": 0,
+        "skipped_price": 0,
+        "skipped_duplicate": 0,
+        "skipped_no_pack": 0,
+        "errors": 0,
+        "rows_considered": 0,
+        "bytes_considered": 0,
+        "total_rows_in_file": total_rows,
+        "stopped_reason": None,   # "limit" | "max_bytes" | "eof"
+        "next_offset": None,      # set only if stopped early
+    }
+
+    bytes_seen = 0
+
+    for i, row in enumerate(rows):
+        if i < offset:
+            continue
+
+        row_bytes = len(json.dumps(row, ensure_ascii=False).encode("utf-8"))
+
+        # Check stop conditions BEFORE processing this row, so a run that
+        # would exceed the budget stops cleanly at the prior row's boundary
+        # rather than exceeding it and reporting an inaccurate byte count.
+        if limit is not None and stats["rows_considered"] >= limit:
+            stats["stopped_reason"] = "limit"
+            stats["next_offset"] = i
+            break
+        if max_bytes is not None and bytes_seen + row_bytes > max_bytes and stats["rows_considered"] > 0:
+            stats["stopped_reason"] = "max_bytes"
+            stats["next_offset"] = i
+            break
+
+        stats["rows_considered"] += 1
+        bytes_seen += row_bytes
+
+        try:
+            if row.get("estado") != PAID_LEGACY_STATUS:
+                stats["skipped_unpaid"] += 1
+                continue
+
+            valor = Decimal(str(row["valor"]))
+            pack_id = LEGACY_PRICE_TO_PACK_ID.get(valor)
+            if pack_id is None:
+                stats["skipped_price"] += 1
+                continue
+
+            pack = packs_by_id.get(pack_id)
+            if pack is None:
+                stats["skipped_no_pack"] += 1
+                continue
+
+            merchants_id = _dashed_uuid(row["transaccion"])
+
+            if db.session.query(Order.id).filter_by(merchants_id=merchants_id).first():
+                stats["skipped_duplicate"] += 1
+                continue
+
+            if dry_run:
+                stats["imported"] += 1
+                continue
+
+            created_at = datetime.fromisoformat(row["creado"])
+            fulfilled_at = datetime.fromisoformat(row["modificado"])
+
+            with db.session.begin_nested():  # SAVEPOINT — isolates this row's failure
+                order = Order(
+                    merchants_id=merchants_id,
+                    transaction_id=row["broker_pago_id"],
+                    provider=row.get("broker") or "legacy",
+                    amount=valor,
+                    currency=pack.currency,
+                    payment_status="succeeded",
+                    email=row.get("correo"),
+                    status=OrderStatus.DELIVERED,  # verify against your actual OrderStatus values
+                    created_at=created_at,
+                    request_payload=json.loads(row["broker_payload"]) if row.get("broker_payload") else {},
+                    response_payload=json.loads(row["broker_response"]) if row.get("broker_response") else {},
+                    firenze_client_id=int(row["cliente_id"]) if row.get("cliente_id") else None,
+                )
+                db.session.add(order)
+                db.session.flush()  # populate order.id for the FK below
+
+                item = OrderItem(
+                    order_id=order.id,
+                    item_type=OrderItemType.MINUTE_PACK,
+                    item_id=pack.id,
+                    name=f"{pack.minutes} minutos de tarot",
+                    quantity=1,
+                    unit_price=Decimal(str(pack.price)),
+                    currency=pack.currency,
+                    fulfillment_status=OrderItemFulfillmentStatus.FULFILLED,
+                    fulfilled_at=fulfilled_at,
+                    fulfillment_attempts=1,
+                    fulfillment_reference=row.get("broker_pago_id"),
+                )
+                db.session.add(item)
+            print(f"{order=} {item=}")
+            stats["imported"] += 1
+
+        except Exception as exc:
+            stats["errors"] += 1
+            print(f"Row transaccion={row.get('transaccion')}: {exc}")
+            continue
+    else:
+        stats["stopped_reason"] = "eof"
+
+    stats["bytes_considered"] = bytes_seen
+
+    if not dry_run:
+        db.session.commit()
+
+    return stats
+
+
 __all__ = [
     "_flag_class",
     "_LangEntry",
