@@ -220,6 +220,11 @@ document.addEventListener("DOMContentLoaded", function () {
       animations: { enabled: false },
       zoom: { type: "x", enabled: true, autoScaleYaxis: true },
       toolbar: { autoSelected: "zoom", tools: { zoom: true, zoomin: true, zoomout: true, reset: true, pan: false } },
+      // Built-in resize handling — replaces the manual ResizeObserver entirely.
+      // redrawOnParentResize covers layout shifts (e.g. sidebar collapse, webfont
+      // swap pushing the card around); redrawOnWindowResize covers viewport changes.
+      redrawOnParentResize: true,
+      redrawOnWindowResize: true,
       events: {
         zoomed: function (chartCtx, opts) {
           var min = opts.xaxis.min, max = opts.xaxis.max;
@@ -258,19 +263,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Wait for webfonts so ApexCharts measures the container at final width,
-  // not the fallback-font width (Playfair/Montserrat load async in head_css).
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(initChart);
   } else {
     initChart();
-  }
-
-  if (window.ResizeObserver) {
-    var ro = new ResizeObserver(function () {
-      if (chart) chart.windowResize();
-    });
-    ro.observe(chartEl);
   }
 
   document.getElementById("sales-chart-reset").addEventListener("click", function () {
