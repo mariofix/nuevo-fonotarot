@@ -8,7 +8,7 @@ from flask import current_app, redirect, render_template, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
 from ...actions import sync_firenze_topup
-from ...extensions import db
+from ...extensions import csrf, db
 from ...log import get_logger
 from ...models import (
     GiftCard,
@@ -602,6 +602,7 @@ def cart_checkout():
 
 
 @pagos_bp.route("/pago/retorno/<order_id>", methods=["GET", "POST"])
+@csrf.exempt
 def pago_retorno(order_id: str):
     """User-facing return page after payment (success or cancel)."""
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
@@ -627,11 +628,9 @@ def make_giftcard_token(card_id, order_id, item_id):
 
 
 @pagos_bp.route("/orden/<order_id>", methods=["GET", "POST"])
+@csrf.exempt
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
-
-    from json import dumps as json_dumps
-
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     items = _materialize_order_items(order)

@@ -2,7 +2,7 @@
 
 import json
 import os
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from flask import jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
@@ -13,10 +13,8 @@ from flask_admin.menu import MenuLink
 from flask_admin.model.template import EndpointLinkRowAction
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
-from datetime import date, datetime, timedelta
-
-from flask import jsonify, request
 from sqlalchemy import func
+
 from .extensions import db
 
 # Spanish month names used in legacy CDR report views
@@ -36,7 +34,6 @@ _MONTHS_ES = {
 }
 
 
-
 class SecureAdminIndexView(AdminIndexView):
     """Admin index view that requires an authenticated user with the 'admin' role."""
 
@@ -44,9 +41,9 @@ class SecureAdminIndexView(AdminIndexView):
 
     # Bucket-size thresholds, in days of visible range. Tune to taste.
     GRANULARITY_THRESHOLDS = (
-        (15, "week"),   # visible span > 15 days -> weekly buckets
-        (2, "day"),     # 2-15 days -> daily buckets
-        (0, "hour"),    # < 2 days -> hourly buckets
+        (15, "week"),  # visible span > 15 days -> weekly buckets
+        (2, "day"),  # 2-15 days -> daily buckets
+        (0, "hour"),  # < 2 days -> hourly buckets
     )
 
     def is_accessible(self):
@@ -77,8 +74,10 @@ class SecureAdminIndexView(AdminIndexView):
 
     @expose("/api/sales-series")
     def sales_series(self):
-        from .models import Order
         import math
+
+        from .models import Order
+
         now = datetime.now()
         try:
             start_ms = request.args.get("start", type=float)
@@ -89,11 +88,13 @@ class SecureAdminIndexView(AdminIndexView):
             if end_ms is not None and not math.isfinite(end_ms):
                 end_ms = None
 
-            start_dt = datetime.fromtimestamp(start_ms / 1000) if start_ms else now.replace(
-                day=1, hour=0, minute=0, second=0, microsecond=0
+            start_dt = (
+                datetime.fromtimestamp(start_ms / 1000)
+                if start_ms
+                else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
             )
             end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms else now
-        except (TypeError, ValueError, OSError):
+        except TypeError, ValueError, OSError:
             return jsonify({"error": "invalid start/end"}), 400
 
         if end_dt <= start_dt:
@@ -107,7 +108,6 @@ class SecureAdminIndexView(AdminIndexView):
             # back to span-based guessing when a custom range was requested
             # without telling us the intended bucket size.
             granularity = "day" if start_ms is None and end_ms is None else self._pick_granularity(span_days)
-
 
         bucket = self._bucket_expr(granularity).label("bucket")
         rows = (
@@ -179,19 +179,21 @@ class SecureAdminIndexView(AdminIndexView):
             .filter(GiftCard.status == "redeemed")
             .group_by(GiftCard.gift_card_product_id)
             .all()
-        ) # type: ignore
+        )  # type: ignore
         gc_products = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
 
         gift_card_rows = []
         for gp in gc_products:
             issued = gc_issued.get(gp.id, 0)
             redeemed = gc_redeemed.get(gp.id, 0)
-            pct_used = round(redeemed / issued * 100, 1) if issued else None # type: ignore
-            gift_card_rows.append({
-                "name": gp.name,
-                "sales": issued,
-                "pct_used": pct_used,
-            })
+            pct_used = round(redeemed / issued * 100, 1) if issued else None  # type: ignore
+            gift_card_rows.append(
+                {
+                    "name": gp.name,
+                    "sales": issued,
+                    "pct_used": pct_used,
+                }
+            )
 
         # --- Discount codes --------------------------------------------
         # Most-used first; capped so a long promo history doesn't blow up the card.
@@ -209,12 +211,14 @@ class SecureAdminIndexView(AdminIndexView):
                 # the busiest code in this list, purely for relative visual weight.
                 pct = None
                 width = round(c.uses_count / max_uses_seen * 100, 1)
-            discount_rows.append({
-                "code": c.code,
-                "uses": c.uses_count,
-                "pct": pct,
-                "width_pct": width,
-            })
+            discount_rows.append(
+                {
+                    "code": c.code,
+                    "uses": c.uses_count,
+                    "pct": pct,
+                    "width_pct": width,
+                }
+            )
 
         return {
             "minute_packs": minute_pack_rows,
@@ -247,6 +251,7 @@ class SecureAdminIndexView(AdminIndexView):
             agent_error = str(exc)
         try:
             from .utils import _fetch_order_stats
+
             order_stats = _fetch_order_stats()
         except Exception as exc:
             order_stats_error = str(exc)
@@ -266,10 +271,9 @@ class SecureAdminIndexView(AdminIndexView):
             agent_error=agent_error,
             order_stats=order_stats,
             order_stats_error=order_stats_error,
-            catalog_stats=catalog_stats, catalog_stats_error=catalog_stats_error,
+            catalog_stats=catalog_stats,
+            catalog_stats_error=catalog_stats_error,
         )
-
-
 
 
 # Earliest year available in the legacy CDR database

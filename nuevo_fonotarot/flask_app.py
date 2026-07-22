@@ -293,7 +293,7 @@ def _register_blueprints(app: Flask) -> None:
     # app.register_blueprint(legacy_bp)
     app.register_blueprint(create_passwordless_blueprint())
 
-    from .cli import lang_cli, seed_promo_cli, user_cli, legacy_cli
+    from .cli import lang_cli, legacy_cli, seed_promo_cli, user_cli
 
     app.cli.add_command(lang_cli)
     app.cli.add_command(seed_promo_cli)

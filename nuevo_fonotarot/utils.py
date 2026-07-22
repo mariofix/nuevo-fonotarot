@@ -116,9 +116,9 @@ def _normalize_agent(raw: dict) -> dict:
 _STATUS_ORDER = {"available": 0, "busy": 1, "offline": 2}
 
 
-
 def _fetch_order_stats() -> dict:
     from datetime import date, timedelta
+
     from sqlalchemy import case, func
 
     from .extensions import db
@@ -190,19 +190,25 @@ def _fetch_order_stats() -> dict:
 
     return {
         "today": {
-            "total": today_total, "paid": today_paid, "unpaid": today_unpaid,
+            "total": today_total,
+            "paid": today_paid,
+            "unpaid": today_unpaid,
             "sales": today_sales,
             "sales_pct": pct_change(today_sales, sales(yesterday, today)),
             "label": today.strftime("%d/%m"),
         },
         "week": {
-            "total": week_total, "paid": week_paid, "unpaid": week_unpaid,
+            "total": week_total,
+            "paid": week_paid,
+            "unpaid": week_unpaid,
             "sales": week_sales,
             "sales_pct": pct_change(week_sales, sales(prev_week_start, week_start)),
             "label": f"{week_start.strftime('%d/%m')} - {today.strftime('%d/%m')}",
         },
         "month": {
-            "total": month_total, "paid": month_paid, "unpaid": month_unpaid,
+            "total": month_total,
+            "paid": month_paid,
+            "unpaid": month_unpaid,
             "sales": month_sales,
             "sales_pct": pct_change(month_sales, sales(prev_month_start, month_start)),
             "label": _MONTHS_ES[month_start.month].capitalize() + f" {month_start.year}",
@@ -215,7 +221,6 @@ import json
 import uuid
 from datetime import datetime
 from decimal import Decimal
-
 
 PAID_LEGACY_STATUS = "Pagado"
 
@@ -282,7 +287,9 @@ def import_legacy_sales(
     packs_by_id = {p.id: p for p in MinutePack.query.filter(MinutePack.id.in_(pack_ids)).all()}
     missing_ids = pack_ids - packs_by_id.keys()
     if missing_ids:
-        print(f"WARNING: MinutePack id(s) {sorted(missing_ids)} not found in DB — matching legacy sales will be skipped.")
+        print(
+            f"WARNING: MinutePack id(s) {sorted(missing_ids)} not found in DB — matching legacy sales will be skipped."
+        )
 
     stats = {
         "imported": 0,
@@ -294,8 +301,8 @@ def import_legacy_sales(
         "rows_considered": 0,
         "bytes_considered": 0,
         "total_rows_in_file": total_rows,
-        "stopped_reason": None,   # "limit" | "max_bytes" | "eof"
-        "next_offset": None,      # set only if stopped early
+        "stopped_reason": None,  # "limit" | "max_bytes" | "eof"
+        "next_offset": None,  # set only if stopped early
     }
 
     bytes_seen = 0

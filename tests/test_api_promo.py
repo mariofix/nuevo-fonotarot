@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pytest
 from flask import url_for
-from unittest.mock import patch
 
 from nuevo_fonotarot.extensions import db
 from nuevo_fonotarot.flask_app import create_flask

@@ -209,6 +209,7 @@ def index():
 @content_bp.route("/sw.js")
 def sw():
     import os
+
     from flask import Response
 
     sw_path = os.path.join(current_app.root_path, "static", "sw.js")

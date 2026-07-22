@@ -268,7 +268,7 @@ class Config:
     # VAPID
     VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "vapid_private.pem")
     VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
-    VAPID_CLAIMS = {"sub": f"mailto:{os.environ.get("MAIL_DEFAULT_SENDER", "user@email.com")}"}
+    VAPID_CLAIMS = {"sub": f"mailto:{os.environ.get('MAIL_DEFAULT_SENDER', 'user@email.com')}"}
 
 
 class DevelopmentConfig(Config):
