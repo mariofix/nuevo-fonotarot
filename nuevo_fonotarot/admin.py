@@ -1034,7 +1034,7 @@ class OrderAdminView(SecureModelView):
     column_searchable_list = ("firenze_client_id", "email", "shipping_phone", "transaction_id", "merchants_id")
     page_size = 50
     column_relationship_links = True
-    column_default_sort = ("created_at", False)
+    column_default_sort = ("created_at", True)
     column_extra_row_actions = [
         ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id"})
     ]
