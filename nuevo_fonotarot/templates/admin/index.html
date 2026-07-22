@@ -175,14 +175,27 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!window.ApexCharts) return;
 
   var SALES_SERIES_URL = "{{ url_for('admin.sales_series') }}";
+  var GRANULARITY_LEVELS = ["week", "day", "hour"];
+  var DEFAULT_LEVEL_INDEX = 1; // "day"
   var granularityLabels = { week: "vista semanal", day: "vista diaria", hour: "vista por hora" };
+
   var chartEl = document.getElementById("sales-chart");
   var labelEl = document.getElementById("sales-chart-granularity-label");
   var fetchController = null;
   var chart = null;
 
+  var levelIndex = DEFAULT_LEVEL_INDEX;
+  var currentSpanMs = null; // visible range width, used to detect zoom direction
+
   function formatCLP(val) {
     return "$" + Math.round(val).toLocaleString("es-CL");
+  }
+
+  function monthStartMs() {
+    var d = new Date();
+    d.setDate(1);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
   }
 
   function fetchSeries(startMs, endMs, granularity) {
@@ -210,6 +223,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  function resetLadder() {
+    levelIndex = DEFAULT_LEVEL_INDEX;
+    currentSpanMs = Date.now() - monthStartMs(); // approximate default full-month span
+    fetchSeries(null, null, "day");
+  }
+
   var options = {
     series: [{ name: "Ventas", data: [] }],
     chart: {
@@ -220,19 +239,28 @@ document.addEventListener("DOMContentLoaded", function () {
       animations: { enabled: false },
       zoom: { type: "x", enabled: true, autoScaleYaxis: true },
       toolbar: { autoSelected: "zoom", tools: { zoom: true, zoomin: true, zoomout: true, reset: true, pan: false } },
-      // Built-in resize handling — replaces the manual ResizeObserver entirely.
-      // redrawOnParentResize covers layout shifts (e.g. sidebar collapse, webfont
-      // swap pushing the card around); redrawOnWindowResize covers viewport changes.
       redrawOnParentResize: true,
       redrawOnWindowResize: true,
       events: {
         zoomed: function (chartCtx, opts) {
           var min = opts.xaxis.min, max = opts.xaxis.max;
           if (!Number.isFinite(min) || !Number.isFinite(max)) return;
-          fetchSeries(min, max, null);
+
+          var newSpan = max - min;
+          if (currentSpanMs !== null) {
+            // small epsilon tolerance to avoid float-noise false positives
+            if (newSpan < currentSpanMs - 1000) {
+              levelIndex = Math.min(levelIndex + 1, GRANULARITY_LEVELS.length - 1); // zoomed in -> finer
+            } else if (newSpan > currentSpanMs + 1000) {
+              levelIndex = Math.max(levelIndex - 1, 0); // zoomed out -> coarser
+            }
+          }
+          currentSpanMs = newSpan;
+
+          fetchSeries(min, max, GRANULARITY_LEVELS[levelIndex]);
         },
         beforeResetZoom: function () {
-          fetchSeries(null, null, null);
+          resetLadder();
           return { xaxis: {} };
         },
       },
@@ -259,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function initChart() {
     chart = new ApexCharts(chartEl, options);
     chart.render().then(function () {
-      fetchSeries(null, null, null);
+      resetLadder();
     });
   }
 
@@ -270,7 +298,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.getElementById("sales-chart-reset").addEventListener("click", function () {
-    fetchSeries(null, null, null);
+    chart.resetSeries(true, true); // clears Apex's internal zoom state
+    resetLadder();
   });
 });
 </script>

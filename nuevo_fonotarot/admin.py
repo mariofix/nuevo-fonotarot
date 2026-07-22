@@ -79,7 +79,6 @@ class SecureAdminIndexView(AdminIndexView):
     def sales_series(self):
         from .models import Order
         import math
-
         now = datetime.now()
         try:
             start_ms = request.args.get("start", type=float)
@@ -101,7 +100,14 @@ class SecureAdminIndexView(AdminIndexView):
             return jsonify({"error": "end must be after start"}), 400
 
         span_days = (end_dt - start_dt).total_seconds() / 86400
-        granularity = request.args.get("granularity") or self._pick_granularity(span_days)
+        granularity = request.args.get("granularity")
+        if not granularity:
+            # No explicit granularity from the client (e.g. direct API call,
+            # not the dashboard's own JS) — default view is "day"; only fall
+            # back to span-based guessing when a custom range was requested
+            # without telling us the intended bucket size.
+            granularity = "day" if start_ms is None and end_ms is None else self._pick_granularity(span_days)
+
 
         bucket = self._bucket_expr(granularity).label("bucket")
         rows = (
