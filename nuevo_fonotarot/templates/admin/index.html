@@ -105,7 +105,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 
 </div>
 
-<div class="row row-cards">
+<div class="row row-cards mb-2">
 
   {% for period, label in [("today", "Ventas del dia " ~ order_stats.today.label),
                             ("week", "Ventas de la Semana (" ~ order_stats.week.label ~ ")"),
@@ -152,8 +152,9 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
   </div>
 
 </div>
+
 {% endif %}
-<div class="row row-cards mt-2">
+<div class="row row-cards mb-2">
   <div class="col-12">
     <div class="card">
       <div class="card-header">
@@ -170,6 +171,101 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
     </div>
   </div>
 </div>
+
+{% if catalog_stats_error %}
+<div class="alert alert-danger">Error cargando estadísticas de catálogo: {{ catalog_stats_error }}</div>
+{% elif catalog_stats %}
+<div class="row row-cards mb-2">
+
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Planes de Minutos</h3>
+      </div>
+      <table class="table card-table table-vcenter">
+        <thead>
+          <tr><th>Plan</th><th>Ventas (mes)</th><th>Ventas (tot)</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for row in catalog_stats.minute_packs %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.month }}</td>
+            <td>{{ row.total }}</td>
+            <td class="w-25">
+              <div class="progress progress-xs">
+                <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-secondary">Sin planes activos.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Tarjetas de Regalo</h3>
+      </div>
+      <table class="table card-table table-vcenter">
+        <thead>
+          <tr><th>Tarjeta</th><th>Ventas</th><th>% Uso</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for row in catalog_stats.gift_cards %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.sales }}</td>
+            <td>{{ (row.pct_used ~ '%') if row.pct_used is not none else '-' }}</td>
+            <td class="w-25">
+              <div class="progress progress-xs">
+                <div class="progress-bar bg-primary" style="width: {{ row.pct_used or 0 }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-secondary">Sin tarjetas activas.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Códigos Promocionales</h3>
+      </div>
+      <table class="table card-table table-vcenter">
+        <thead>
+          <tr><th>Código</th><th>Usos</th><th>% Uso</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for row in catalog_stats.discount_codes %}
+          <tr>
+            <td>{{ row.code }}</td>
+            <td>{{ row.uses }}</td>
+            <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
+            <td class="w-25">
+              <div class="progress progress-xs">
+                <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-secondary">Sin códigos registrados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endif %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   if (!window.ApexCharts) return;

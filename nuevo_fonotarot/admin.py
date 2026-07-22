@@ -132,6 +132,96 @@ class SecureAdminIndexView(AdminIndexView):
         series = [{"x": to_ms(r.bucket), "y": float(r.total)} for r in rows]
         return jsonify({"granularity": granularity, "series": series})
 
+    def _fetch_catalog_stats(self) -> dict:
+        """Real sales figures for MinutePacks, GiftCardProducts, and DiscountCodes,
+        replacing the hardcoded dashboard table rows."""
+        from .models import DiscountCode, GiftCard, GiftCardProduct, MinutePack, Order, OrderItem, OrderItemType
+
+        today = date.today()
+        month_start = today.replace(day=1)
+
+        # --- Minute packs ------------------------------------------------
+        def _pack_sales(since=None):
+            q = (
+                db.session.query(OrderItem.item_id, func.coalesce(func.sum(OrderItem.quantity), 0))
+                .join(Order, Order.id == OrderItem.order_id)
+                .filter(OrderItem.item_type == OrderItemType.MINUTE_PACK, Order.payment_status == self.PAID_STATUS)
+            )
+            if since:
+                q = q.filter(Order.created_at >= since)
+            return dict(q.group_by(OrderItem.item_id).all())
+
+        pack_month_sales = _pack_sales(since=month_start)
+        pack_total_sales = _pack_sales()
+
+        packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+        max_pack_total = max(pack_total_sales.values(), default=0) or 1
+
+        minute_pack_rows = [
+            {
+                "name": f"{p.minutes} Minutos",
+                "month": pack_month_sales.get(p.id, 0),
+                "total": pack_total_sales.get(p.id, 0),
+                "width_pct": round(pack_total_sales.get(p.id, 0) / max_pack_total * 100, 1),
+            }
+            for p in packs
+        ]
+
+        # --- Gift cards ----------------------------------------------------
+        # "Ventas" = cards issued (i.e. sold) per product. "% Uso" = redeemed / issued.
+        gc_issued = dict(
+            db.session.query(GiftCard.gift_card_product_id, func.count(GiftCard.id))
+            .group_by(GiftCard.gift_card_product_id)
+            .all()
+        )
+        gc_redeemed = dict(
+            db.session.query(GiftCard.gift_card_product_id, func.count(GiftCard.id))
+            .filter(GiftCard.status == "redeemed")
+            .group_by(GiftCard.gift_card_product_id)
+            .all()
+        ) # type: ignore
+        gc_products = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
+
+        gift_card_rows = []
+        for gp in gc_products:
+            issued = gc_issued.get(gp.id, 0)
+            redeemed = gc_redeemed.get(gp.id, 0)
+            pct_used = round(redeemed / issued * 100, 1) if issued else None # type: ignore
+            gift_card_rows.append({
+                "name": gp.name,
+                "sales": issued,
+                "pct_used": pct_used,
+            })
+
+        # --- Discount codes --------------------------------------------
+        # Most-used first; capped so a long promo history doesn't blow up the card.
+        codes = DiscountCode.query.order_by(DiscountCode.uses_count.desc()).limit(10).all()
+        max_uses_seen = max((c.uses_count for c in codes), default=0) or 1
+
+        discount_rows = []
+        for c in codes:
+            if c.max_uses:
+                pct = round(c.uses_count / c.max_uses * 100, 1)
+                width = min(pct, 100.0)
+            else:
+                # Unlimited codes have no natural denominator for a % — shown as "-"
+                # per your own mockup (NAVIDAD26). Bar width instead scales against
+                # the busiest code in this list, purely for relative visual weight.
+                pct = None
+                width = round(c.uses_count / max_uses_seen * 100, 1)
+            discount_rows.append({
+                "code": c.code,
+                "uses": c.uses_count,
+                "pct": pct,
+                "width_pct": width,
+            })
+
+        return {
+            "minute_packs": minute_pack_rows,
+            "gift_cards": gift_card_rows,
+            "discount_codes": discount_rows,
+        }
+
     @expose("/")
     def index(self):
         today = date.today()
@@ -141,6 +231,8 @@ class SecureAdminIndexView(AdminIndexView):
         agent_error = None
         order_stats = None
         order_stats_error = None
+        catalog_stats = None
+        catalog_stats_error = None
         try:
             from .legacy.views import _fetch_monthly_3carrier
 
@@ -158,6 +250,11 @@ class SecureAdminIndexView(AdminIndexView):
             order_stats = _fetch_order_stats()
         except Exception as exc:
             order_stats_error = str(exc)
+        try:
+            catalog_stats = self._fetch_catalog_stats()
+        except Exception as exc:
+            catalog_stats_error = str(exc)
+
         return self.render(
             "admin/index.html",
             latest_year=today.year,
@@ -169,6 +266,7 @@ class SecureAdminIndexView(AdminIndexView):
             agent_error=agent_error,
             order_stats=order_stats,
             order_stats_error=order_stats_error,
+            catalog_stats=catalog_stats, catalog_stats_error=catalog_stats_error,
         )
 
 
