@@ -252,7 +252,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
             <td>{{ row.uses }}</td>
             <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
             <td class="w-25">
-              <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Utilizado: {{ row.discounted_display }}%">
+              <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Utilizado: {{ row.discounted_display }}">
                 <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
               </div>
             </td>

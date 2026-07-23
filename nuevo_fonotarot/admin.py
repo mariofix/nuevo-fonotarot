@@ -269,7 +269,7 @@ class SecureAdminIndexView(AdminIndexView):
                 "uses": c.uses_count,
                 "pct": pct,
                 "width_pct": width,
-                "discounted_display": format_currency(discount_totals.get(c.id, 134235), c.currency or "CLP"),
+                "discounted_display": format_currency(discount_totals.get(c.id, 0), c.currency or "CLP"),
                 "color": colors.pop(),
             })
 
