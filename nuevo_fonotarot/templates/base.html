@@ -574,6 +574,53 @@
                         rgba(192, 96, 128, .07));
             }
 
+            .credits-strip.is-call {
+                border-bottom-color: rgba(116, 184, 22, .35);
+                background: linear-gradient(90deg, rgba(116, 184, 22, .10), rgba(116, 184, 22, .05));
+            }
+
+            [data-theme="dark"] .credits-strip.is-call {
+                border-bottom-color: rgba(169, 227, 75, .35);
+                background: linear-gradient(90deg, rgba(169, 227, 75, .16), rgba(169, 227, 75, .08));
+            }
+
+            .credits-badge.is-live {
+                border-color: rgba(116, 184, 22, .45);
+                background: rgba(116, 184, 22, .16);
+                color: #5c9210;
+            }
+
+            [data-theme="dark"] .credits-badge.is-live {
+                border-color: rgba(169, 227, 75, .45);
+                background: rgba(169, 227, 75, .18);
+                color: #a9e34b;
+            }
+
+            .credits-badge.is-live .live-dot {
+                width: .5rem;
+                height: .5rem;
+                border-radius: 50%;
+                background: currentColor;
+                animation: credits-pulse 1.6s ease-in-out infinite;
+            }
+
+            @keyframes credits-pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: .35; }
+            }
+
+            .credits-strip.is-call .call-timer {
+                color: #5c9210;
+            }
+
+            [data-theme="dark"] .credits-strip.is-call .call-timer {
+                color: #a9e34b;
+            }
+
+            .credits-value.is-low {
+                color: var(--tblr-red, #d63939);
+            }
+
             [data-theme="dark"] .credits-strip {
                 background: linear-gradient(90deg,
                         rgba(168, 125, 212, .18),
@@ -1263,15 +1310,30 @@
         </div>
 
         <!-- PAGE CONTENT -->
-        {% if current_user.is_authenticated %}
-        <section class="credits-strip" aria-label="{{ _('Estado de créditos') }}">
+        {% if current_user.is_authenticated and current_user.firenze_client_id %}
+        <section class="credits-strip" id="credits-strip" data-client-id="{{ current_user.firenze_client_id }}"
+            aria-label="{{ _('Estado de créditos') }}">
             <div class="container py-2">
                 <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="credits-badge"><i class="ti ti-wallet"></i>{{ _("Créditos") }}</span>
-                        <span class="credits-copy">{{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}</span>
+                    <div class="d-flex align-items-center gap-2" id="credits-strip-left">
+                        <span class="credits-badge" id="credits-badge-idle">
+                            <i class="ti ti-wallet"></i>{{ _("Créditos") }}
+                        </span>
+                        <span class="credits-copy" id="credits-copy-idle">
+                            {{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}
+                        </span>
+
+                        <span class="credits-badge is-live d-none" id="credits-badge-call">
+                            <span class="live-dot" aria-hidden="true"></span>{{ _("En llamada") }}
+                        </span>
+                        <span class="credits-copy d-none" id="credits-copy-call">
+                            {{ _("Con") }} <strong id="call-operator-name"></strong>
+                            · {{ _("marcada") }} <span id="call-since"></span>
+                        </span>
                     </div>
                     <div class="credits-actions d-flex align-items-center gap-2">
+                        <span id="call-timer" class="credits-value call-timer d-none"
+                            aria-live="polite" title="{{ _('Tiempo conectado') }}">00:00</span>
                         <span id="global-credits-value" class="credits-value"
                             aria-live="polite">{{ _("Consultando saldo...") }}</span>
                         <button id="global-credits-refresh" type="button" class="btn btn-outline-secondary btn-sm"
@@ -1285,6 +1347,7 @@
                 </div>
             </div>
         </section>
+        <script>var _CURRENT_CLIENT_ID = {{ current_user.firenze_client_id | tojson }};</script>
         {% endif %}
 
         <div class="page-content">
@@ -1715,10 +1778,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ── Agent list ────────────────────────────────────────────────────────────────
+// ── Agent list + call-state credits strip ──────────────────────────────────
 (function () {
-    if (document.getElementById('hero-agent-rows')) return;
-
     var PHONE = 'tel:+{{ _("56222301515") }}';
 
     function statusBadge(status) {
@@ -1737,56 +1798,39 @@ document.addEventListener('DOMContentLoaded', function () {
     function rowElement(agent) {
         var row = document.createElement('div');
         row.className = 'oc-row';
-
         var avatar = document.createElement('div');
         avatar.className = 'oc-avatar';
         avatar.textContent = (agent.name || '★').slice(0, 1);
-
         var info = document.createElement('div');
         info.className = 'oc-info';
-
         var nameEl = document.createElement('div');
         nameEl.className = 'oc-name';
         nameEl.textContent = agent.name || '★';
-
         var specEl = document.createElement('div');
         specEl.className = 'oc-spec';
         specEl.textContent = '{{ _("Opción") }} ' + agent.option;
-
         var statusWrap = document.createElement('div');
         statusWrap.className = 'mt-1';
         statusWrap.innerHTML = statusBadge(agent.status);
-
         var actionWrap = document.createElement('span');
         actionWrap.className = 'agent-action-wrap';
         actionWrap.innerHTML = actionHtml(agent.status);
-
-        info.appendChild(nameEl);
-        info.appendChild(specEl);
-        info.appendChild(statusWrap);
-        row.appendChild(avatar);
-        row.appendChild(info);
-        row.appendChild(actionWrap);
+        info.appendChild(nameEl); info.appendChild(specEl); info.appendChild(statusWrap);
+        row.appendChild(avatar); row.appendChild(info); row.appendChild(actionWrap);
         return row;
     }
 
     function normalizeAgents(data) {
         var statusOrder = { available: 0, busy: 1, offline: 2 };
         var list = (Array.isArray(data) ? data : []).map(function (raw) {
-            var opcion = parseInt(raw && raw.opcion != null ? raw.opcion : (raw.option || 0), 10);
+            var opcion = parseInt(raw && raw.opcion != null ? raw.opcion : 0, 10);
             if (Number.isNaN(opcion)) opcion = 0;
-            var ingreso    = Boolean(raw && (raw.ingreso    != null ? raw.ingreso    : raw.status !== 'offline'));
-            var disponible = Boolean(raw && (raw.disponible != null ? raw.disponible : raw.status === 'available'));
+            var ingreso    = Boolean(raw && raw.ingreso);
+            var disponible = Boolean(raw && raw.disponible);
             var status = !ingreso ? 'offline' : (disponible ? 'available' : 'busy');
-            return {
-                name  : (raw && (raw.nombre || raw.name)) || '★',
-                option: ('0' + opcion).slice(-2),
-                status: status,
-            };
+            return { name: (raw && raw.nombre) || '★', option: ('0' + opcion).slice(-2), status: status };
         });
-        return list.sort(function (a, b) {
-            return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
-        });
+        return list.sort(function (a, b) { return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99); });
     }
 
     function renderList(id, agents, emptyMessage) {
@@ -1805,39 +1849,95 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showError() {
         var msg = '{{ _("Listado de agentes no disponible por ahora.") }}';
-        renderList('oc-all',    [], msg);
+        renderList('oc-all', [], msg);
         renderList('oc-online', [], msg);
-        renderList('oc-busy',   [], msg);
+        renderList('oc-busy', [], msg);
     }
 
     function applyAgents(agents) {
         var available = agents.filter(function (a) { return a.status === 'available'; });
         var busy      = agents.filter(function (a) { return a.status === 'busy'; });
-        renderList('oc-all',    agents,    '{{ _("No hay especialistas disponibles ahora.") }}');
+        renderList('oc-all', agents, '{{ _("No hay especialistas disponibles ahora.") }}');
         renderList('oc-online', available, '{{ _("Todas las especialistas están ocupadas. Inténtalo pronto.") }}');
-        renderList('oc-busy',   busy,      '{{ _("No hay especialistas en consulta ahora.") }}');
+        renderList('oc-busy', busy, '{{ _("No hay especialistas en consulta ahora.") }}');
     }
+
+    // ── Call-state credits strip ────────────────────────────────────────
+    var callTimerHandle = null;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function fmtTime(d) {
+        return pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function enterCallState(callInfo, operatorName) {
+        var strip = document.getElementById('credits-strip');
+        if (!strip) return;
+        strip.classList.add('is-call');
+        document.getElementById('credits-badge-idle').classList.add('d-none');
+        document.getElementById('credits-copy-idle').classList.add('d-none');
+        document.getElementById('credits-badge-call').classList.remove('d-none');
+        document.getElementById('credits-copy-call').classList.remove('d-none');
+        document.getElementById('call-timer').classList.remove('d-none');
+        document.getElementById('call-operator-name').textContent = operatorName;
+        document.getElementById('call-since').textContent = fmtTime(new Date(callInfo.since));
+
+        var connectedAt = new Date(callInfo.connected);
+        var timerEl = document.getElementById('call-timer');
+
+        function tick() {
+            var diff = Math.max(0, Math.floor((Date.now() - connectedAt.getTime()) / 1000));
+            timerEl.textContent = pad(Math.floor(diff / 60)) + ':' + pad(diff % 60);
+        }
+        tick();
+        if (callTimerHandle) clearInterval(callTimerHandle);
+        callTimerHandle = setInterval(tick, 1000);
+
+        // Credits are the call's fuel — poll balance every 10s while connected.
+        if (window.startCallCreditsPolling) window.startCallCreditsPolling();
+    }
+
+    function exitCallState() {
+        var strip = document.getElementById('credits-strip');
+        if (!strip) return;
+        if (!strip.classList.contains('is-call')) return; // already idle, nothing to do
+        strip.classList.remove('is-call');
+        document.getElementById('credits-badge-idle').classList.remove('d-none');
+        document.getElementById('credits-copy-idle').classList.remove('d-none');
+        document.getElementById('credits-badge-call').classList.add('d-none');
+        document.getElementById('credits-copy-call').classList.add('d-none');
+        document.getElementById('call-timer').classList.add('d-none');
+        if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
+        if (window.stopCallCreditsPolling) window.stopCallCreditsPolling();
+    }
+
+    function checkActiveCall(rawList) {
+        if (typeof _CURRENT_CLIENT_ID === 'undefined' || _CURRENT_CLIENT_ID == null) return;
+        var match = (Array.isArray(rawList) ? rawList : []).find(function (raw) {
+            return raw && raw.llamada && raw.llamada.client_id === _CURRENT_CLIENT_ID;
+        });
+        if (match) {
+            enterCallState(match.llamada, match.nombre || '');
+        } else {
+            exitCallState();
+        }
+    }
+
     var agentsUrl = {{ firenze_ejecutivos_url | tojson }};
 
     function pollAgents() {
-        if (!agentsUrl) {
-            showError();
-            return;
-        }
-        fetch(agentsUrl, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-        })
-        .then(function (response) {
-            if (!response.ok) throw new Error('status-' + response.status);
-            return response.json();
-        })
-        .then(function (payload) {
-            applyAgents(normalizeAgents(payload));
-        })
-        .catch(function () {
-            showError();
-        });
+        if (!agentsUrl) { showError(); return; }
+        fetch(agentsUrl, { method: 'GET', headers: { 'Accept': 'application/json' } })
+            .then(function (response) {
+                if (!response.ok) throw new Error('status-' + response.status);
+                return response.json();
+            })
+            .then(function (payload) {
+                applyAgents(normalizeAgents(payload));
+                checkActiveCall(payload);
+            })
+            .catch(function () { showError(); });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -1845,6 +1945,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.setInterval(pollAgents, 9000);
     });
 })();
+
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 (function () {
@@ -1881,7 +1982,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!creditsEl) return;
 
     var refreshButton = document.getElementById('global-credits-refresh');
-    var CREDITS_URL   = {{ url_for('account.profile_credits') | tojson }};
+    var CREDITS_URL    = {{ url_for('account.profile_credits') | tojson }};
+    var callPollHandle = null;
 
     function intFrom(value) {
         var parsed = parseInt(value, 10);
@@ -1918,37 +2020,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function refreshCredits() {
-        if (!CREDITS_URL) {
-            creditsEl.textContent = '{{ _("Saldo no disponible") }}';
-            return;
-        }
+        if (!CREDITS_URL) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
         try {
-            var response = await fetch(CREDITS_URL, {
-                method : 'GET',
-                headers: { 'Accept': 'application/json' },
-            });
+            var response = await fetch(CREDITS_URL, { method: 'GET', headers: { 'Accept': 'application/json' } });
             if (!response.ok) throw new Error('credits-status-' + response.status);
             var payload = await response.json();
-            if (!payload || payload.ok !== true) {
-                creditsEl.textContent = '{{ _("Saldo no disponible") }}';
-                return;
-            }
-            if (payload.found === false) {
-                creditsEl.textContent = '00:00';
-                return;
-            }
+            if (!payload || payload.ok !== true) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
+            if (payload.found === false) { creditsEl.textContent = '00:00'; creditsEl.classList.add('is-low'); return; }
             var seconds = extractSeconds(payload);
-            creditsEl.textContent = formatSecondsClock(seconds == null ? 0 : seconds);
+            var safeSeconds = seconds == null ? 0 : seconds;
+            creditsEl.textContent = formatSecondsClock(safeSeconds);
+            creditsEl.classList.toggle('is-low', safeSeconds < 60);
         } catch (err) {
             creditsEl.textContent = '{{ _("Saldo no disponible") }}';
         }
     }
 
+    window.startCallCreditsPolling = function () {
+        if (callPollHandle) return;
+        refreshCredits();
+        callPollHandle = setInterval(refreshCredits, 10000);
+    };
+    window.stopCallCreditsPolling = function () {
+        if (callPollHandle) { clearInterval(callPollHandle); callPollHandle = null; }
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         refreshCredits();
-        if (refreshButton) {
-            refreshButton.addEventListener('click', refreshCredits);
-        }
+        if (refreshButton) refreshButton.addEventListener('click', refreshCredits);
     });
 })();
         </script>
