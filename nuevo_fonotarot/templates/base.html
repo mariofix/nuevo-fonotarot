@@ -1893,15 +1893,12 @@ document.addEventListener('DOMContentLoaded', function () {
         tick();
         if (callTimerHandle) clearInterval(callTimerHandle);
         callTimerHandle = setInterval(tick, 1000);
-
-        // Credits are the call's fuel — poll balance every 10s while connected.
-        if (window.startCallCreditsPolling) window.startCallCreditsPolling();
     }
 
-    function exitCallState() {
+    function exitCallState(wasInCall) {
         var strip = document.getElementById('credits-strip');
         if (!strip) return;
-        if (!strip.classList.contains('is-call')) return; // already idle, nothing to do
+        if (!strip.classList.contains('is-call')) return;
         strip.classList.remove('is-call');
         document.getElementById('credits-badge-idle').classList.remove('d-none');
         document.getElementById('credits-copy-idle').classList.remove('d-none');
@@ -1909,18 +1906,21 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('credits-copy-call').classList.add('d-none');
         document.getElementById('call-timer').classList.add('d-none');
         if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
-        if (window.stopCallCreditsPolling) window.stopCallCreditsPolling();
+        // Balance only changes server-side once the call is billed at hangup — refresh once, here.
+        if (wasInCall && window.refreshCredits) window.refreshCredits();
     }
 
     function checkActiveCall(rawList) {
         if (typeof _CURRENT_CLIENT_ID === 'undefined' || _CURRENT_CLIENT_ID == null) return;
+        var strip = document.getElementById('credits-strip');
+        var wasInCall = strip ? strip.classList.contains('is-call') : false;
         var match = (Array.isArray(rawList) ? rawList : []).find(function (raw) {
             return raw && raw.llamada && raw.llamada.client_id === _CURRENT_CLIENT_ID;
         });
         if (match) {
             enterCallState(match.llamada, match.nombre || '');
         } else {
-            exitCallState();
+            exitCallState(wasInCall);
         }
     }
 
@@ -2036,14 +2036,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    window.startCallCreditsPolling = function () {
-        if (callPollHandle) return;
-        refreshCredits();
-        callPollHandle = setInterval(refreshCredits, 10000);
-    };
-    window.stopCallCreditsPolling = function () {
-        if (callPollHandle) { clearInterval(callPollHandle); callPollHandle = null; }
-    };
+    window.refreshCredits = refreshCredits;
 
     document.addEventListener('DOMContentLoaded', function () {
         refreshCredits();
