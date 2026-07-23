@@ -274,9 +274,10 @@ def import_legacy_sales(
     the next call's --offset should be this run's row_index + 1 (or the
     returned "next_offset" directly) to continue where this run stopped.
     """
+    from zoneinfo import ZoneInfo
+
     from .extensions import db
     from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus
-    from zoneinfo import ZoneInfo
 
     with open(json_path, encoding="utf-8") as f:
         dump = json.load(f)

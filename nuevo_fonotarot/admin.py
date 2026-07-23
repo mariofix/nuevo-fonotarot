@@ -4,7 +4,7 @@ import json
 import os
 from datetime import date, datetime, timedelta
 
-from flask import jsonify, redirect, request, url_for
+from flask import current_app, jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.actions import action
 from flask_admin.contrib.fileadmin import FileAdmin
@@ -135,64 +135,104 @@ class SecureAdminIndexView(AdminIndexView):
     def _fetch_catalog_stats(self) -> dict:
         """Real sales figures for MinutePacks, GiftCardProducts, and DiscountCodes,
         replacing the hardcoded dashboard table rows."""
+        from flask_babel import format_currency
+
         from .models import DiscountCode, GiftCard, GiftCardProduct, MinutePack, Order, OrderItem, OrderItemType
 
         today = date.today()
         month_start = today.replace(day=1)
 
-        # --- Minute packs ------------------------------------------------
         def _pack_sales(since=None):
+            subtotal = OrderItem.unit_price * OrderItem.quantity
             q = (
-                db.session.query(OrderItem.item_id, func.coalesce(func.sum(OrderItem.quantity), 0))
+                db.session.query(
+                    OrderItem.item_id,
+                    func.coalesce(func.sum(OrderItem.quantity), 0),
+                    func.coalesce(func.sum(subtotal), 0),
+                )
                 .join(Order, Order.id == OrderItem.order_id)
                 .filter(OrderItem.item_type == OrderItemType.MINUTE_PACK, Order.payment_status == self.PAID_STATUS)
             )
             if since:
                 q = q.filter(Order.created_at >= since)
-            return dict(q.group_by(OrderItem.item_id).all())
+            rows = q.group_by(OrderItem.item_id).all()
+            return {item_id: {"qty": qty, "revenue": revenue} for item_id, qty, revenue in rows}
 
         pack_month_sales = _pack_sales(since=month_start)
         pack_total_sales = _pack_sales()
 
         packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-        max_pack_total = max(pack_total_sales.values(), default=0) or 1
-        max_pack_month = max(pack_month_sales.values(), default=0) or 1
 
+        # Bar width = share of THIS MONTH's revenue, per pack — rows sum to ~100%.
+        total_pack_month_revenue = sum(v["revenue"] for v in pack_month_sales.values()) or 1
+        colors = ["primary", "indigo", "cyan", "pink", "lime", "azure", "orange", "teal", "indigo"]
         minute_pack_rows = [
             {
                 "name": f"{p.minutes} Minutos",
-                "month": pack_month_sales.get(p.id, 0),
-                "total": pack_total_sales.get(p.id, 0),
-                "width_pct": round(pack_month_sales.get(p.id, 0) / max_pack_month * 100, 1),
+                "color": colors.pop(),
+                "month_qty": pack_month_sales.get(p.id, {}).get("qty", 0),
+                "total_qty": pack_total_sales.get(p.id, {}).get("qty", 0),
+                "month_revenue_display": format_currency(pack_month_sales.get(p.id, {}).get("revenue", 0), p.currency),
+                "total_revenue_display": format_currency(pack_total_sales.get(p.id, {}).get("revenue", 0), p.currency),
+                "width_pct": round(
+                    float(pack_month_sales.get(p.id, {}).get("revenue", 0)) / float(total_pack_month_revenue) * 100, 1
+                ),
             }
             for p in packs
         ]
 
         # --- Gift cards ----------------------------------------------------
-        # "Ventas" = cards issued (i.e. sold) per product. "% Uso" = redeemed / issued.
-        gc_issued = dict(
-            db.session.query(GiftCard.gift_card_product_id, func.count(GiftCard.id))
-            .group_by(GiftCard.gift_card_product_id)
-            .all()
-        )
+        def _giftcard_sales(since=None):
+            subtotal = OrderItem.unit_price * OrderItem.quantity
+            q = (
+                db.session.query(
+                    OrderItem.item_id,
+                    func.coalesce(func.sum(OrderItem.quantity), 0),
+                    func.coalesce(func.sum(subtotal), 0),
+                )
+                .join(Order, Order.id == OrderItem.order_id)
+                .filter(OrderItem.item_type == OrderItemType.GIFT_CARD, Order.payment_status == self.PAID_STATUS)
+            )
+            if since:
+                q = q.filter(Order.created_at >= since)
+            rows = q.group_by(OrderItem.item_id).all()
+            return {item_id: {"qty": qty, "revenue": revenue} for item_id, qty, revenue in rows}
+
+        gc_month_sales = _giftcard_sales(since=month_start)
+        gc_total_sales = _giftcard_sales()
+
+        # "% Uso" = redeemed / issued, all-time — a distinct lifetime metric from
+        # month-vs-total sales volume, so it's tracked separately via GiftCard.status
+        # rather than derived from the OrderItem revenue query above.
         gc_redeemed = dict(
             db.session.query(GiftCard.gift_card_product_id, func.count(GiftCard.id))
             .filter(GiftCard.status == "redeemed")
             .group_by(GiftCard.gift_card_product_id)
             .all()
-        )  # type: ignore
+        )
+
         gc_products = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
+
+        total_gc_month_revenue = sum(v["revenue"] for v in gc_month_sales.values()) or 1
+        colors = ["lime", "cyan", "pink", "azure", "orange", "teal", "indigo"]
 
         gift_card_rows = []
         for gp in gc_products:
-            issued = gc_issued.get(gp.id, 0)
+            month = gc_month_sales.get(gp.id, {}).get("qty", 0)
+            total = gc_total_sales.get(gp.id, {}).get("qty", 0)
+            month_revenue = gc_month_sales.get(gp.id, {}).get("revenue", 0)
             redeemed = gc_redeemed.get(gp.id, 0)
-            pct_used = round(redeemed / issued * 100, 1) if issued else None  # type: ignore
+            pct_used = round(redeemed / total * 100, 1) if total else None
+
             gift_card_rows.append(
                 {
                     "name": gp.name,
-                    "sales": issued,
+                    "color": colors.pop(0),
+                    "month_qty": month,
+                    "total_qty": total,
                     "pct_used": pct_used,
+                    "month_revenue_display": format_currency(month_revenue, gp.currency),
+                    "width_pct": round(float(month_revenue) / float(total_gc_month_revenue) * 100, 1),
                 }
             )
 
@@ -200,6 +240,7 @@ class SecureAdminIndexView(AdminIndexView):
         # Most-used first; capped so a long promo history doesn't blow up the card.
         codes = DiscountCode.query.order_by(DiscountCode.uses_count.desc()).limit(10).all()
         max_uses_seen = max((c.uses_count for c in codes), default=0) or 1
+        colors = ["orange", "pink", "azure", "orange", "teal", "indigo", "blue", "purple", "success", "danger"]
 
         discount_rows = []
         for c in codes:
@@ -218,6 +259,7 @@ class SecureAdminIndexView(AdminIndexView):
                     "uses": c.uses_count,
                     "pct": pct,
                     "width_pct": width,
+                    "color": colors.pop(),
                 }
             )
 

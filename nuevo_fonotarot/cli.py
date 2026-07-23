@@ -381,7 +381,7 @@ def legacy_cli() -> None:
 @click.option("--max-bytes", type=int, default=None, help="Stop once cumulative row size (UTF-8 bytes) exceeds this.")
 @with_appcontext
 def import_legacy_sales_cmd(json_path, dry_run, offset, limit, max_bytes):
-    # SELECT c.*, cl.client_id, p.valor FROM `zvn_compra` c JOIN zvn_cliente cl on c.cliente_id = cl.id JOIN zvn_producto p on p.id = c.producto_id where c.estado = "Pagado" and cl.servicio_id = 1 and c.creado <= '2026-07-21 23:59:59' ORDER BY c.id ASC;
+    # SELECT c.*, cl.client_id, p.valor FROM `zvn_compra` c JOIN zvn_cliente cl on c.cliente_id = cl.id JOIN zvn_producto p on p.id = c.producto_id where c.estado = "Pagado" and cl.servicio_id = 1 and c.creado BETWEEN '2026-07-01 00:00:00' and '2026-07-31 23:59:59' ORDER BY c.id ASC;
     from .utils import import_legacy_sales
 
     stats = import_legacy_sales(json_path, dry_run=dry_run, offset=offset, limit=limit, max_bytes=max_bytes)
