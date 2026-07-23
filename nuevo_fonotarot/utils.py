@@ -276,6 +276,7 @@ def import_legacy_sales(
     """
     from .extensions import db
     from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus
+    from zoneinfo import ZoneInfo
 
     with open(json_path, encoding="utf-8") as f:
         dump = json.load(f)
@@ -354,8 +355,11 @@ def import_legacy_sales(
                 stats["imported"] += 1
                 continue
 
-            created_at = datetime.fromisoformat(row["creado"])
-            fulfilled_at = datetime.fromisoformat(row["modificado"])
+            utc_created_at = datetime.fromisoformat(row["creado"]).replace(tzinfo=ZoneInfo("UTC"))
+            utc_fulfilled_at = datetime.fromisoformat(row["modificado"]).replace(tzinfo=ZoneInfo("UTC"))
+
+            created_at = utc_created_at.astimezone(ZoneInfo("America/Santiago"))
+            fulfilled_at = utc_fulfilled_at.astimezone(ZoneInfo("America/Santiago"))
 
             with db.session.begin_nested():  # SAVEPOINT — isolates this row's failure
                 order = Order(
