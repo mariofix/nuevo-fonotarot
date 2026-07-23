@@ -170,6 +170,7 @@ class SecureAdminIndexView(AdminIndexView):
             {
                 "name": f"{p.minutes} Minutos",
                 "color": colors.pop(),
+                "is_featured": p.is_featured,
                 "month_qty": pack_month_sales.get(p.id, {}).get("qty", 0),
                 "total_qty": pack_total_sales.get(p.id, {}).get("qty", 0),
                 "month_revenue_display": format_currency(pack_month_sales.get(p.id, {}).get("revenue", 0), p.currency),
@@ -227,6 +228,7 @@ class SecureAdminIndexView(AdminIndexView):
             gift_card_rows.append(
                 {
                     "name": gp.name,
+                    "is_featured": gp.is_featured,
                     "color": colors.pop(0),
                     "month_qty": month,
                     "total_qty": total,
@@ -267,16 +269,62 @@ class SecureAdminIndexView(AdminIndexView):
             discount_rows.append({
                 "code": c.code,
                 "uses": c.uses_count,
+                "max_uses": c.max_uses,
                 "pct": pct,
                 "width_pct": width,
                 "discounted_display": format_currency(discount_totals.get(c.id, 0), c.currency or "CLP"),
                 "color": colors.pop(),
             })
 
+        # --- Payment providers ------------------------------------------------
+        def _provider_sales(since=None):
+            q = (
+                db.session.query(
+                    Order.provider,
+                    func.coalesce(func.count(Order.id), 0),
+                    func.coalesce(func.sum(Order.amount), 0),
+                )
+                .filter(Order.payment_status == self.PAID_STATUS)
+            )
+            if since:
+                q = q.filter(Order.created_at >= since)
+            rows = q.group_by(Order.provider).all()
+            return {provider: {"qty": qty, "amount": amount} for provider, qty, amount in rows}
+
+        provider_month_sales = _provider_sales(since=month_start)
+        provider_total_sales = _provider_sales()
+
+        # Union of providers seen in either window, sorted by total amount desc.
+        all_providers = sorted(
+            set(provider_month_sales) | set(provider_total_sales),
+            key=lambda p: provider_total_sales.get(p, {}).get("amount", 0),
+            reverse=True,
+        )
+        total_month_amount = sum(v["amount"] for v in provider_month_sales.values()) or 1
+
+
+        pay_provider_rows = [
+            {
+                "name": provider or "—",
+                "month_qty": provider_month_sales.get(provider, {}).get("qty", 0),
+                "month_amount_display": format_currency(
+                    provider_month_sales.get(provider, {}).get("amount", 0), "CLP"
+                ),
+                "total_qty": provider_total_sales.get(provider, {}).get("qty", 0),
+                "total_amount_display": format_currency(
+                    provider_total_sales.get(provider, {}).get("amount", 0), "CLP"
+                ),
+                "width_pct": round(
+                    float(provider_month_sales.get(provider, {}).get("amount", 0)) / float(total_month_amount) * 100, 1
+                ),
+            }
+            for provider in all_providers
+        ]
         return {
             "minute_packs": minute_pack_rows,
             "gift_cards": gift_card_rows,
             "discount_codes": discount_rows,
+            "pay_providers": pay_provider_rows,
         }
 
     @expose("/")

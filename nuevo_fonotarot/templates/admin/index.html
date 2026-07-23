@@ -33,8 +33,13 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 {% elif order_stats %}
 <div class="row row-cards mb-2">
 
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
+    <div class="card-stamp">
+                    <div class="card-stamp-icon bg-success">
+                      <i class="ti ti-credit-card-hand"></i>
+                    </div>
+                  </div>
       <div class="card-body">
         <div class="row align-items-center">
           <div class="col-auto">
@@ -51,7 +56,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
       <div class="card-body">
         <div class="row align-items-center">
@@ -69,7 +74,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
       <div class="card-body">
         <div class="row align-items-center">
@@ -87,7 +92,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
       <div class="card-body">
         <div class="row align-items-center">
@@ -110,7 +115,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
   {% for period, label in [("today", "Ventas del dia " ~ order_stats.today.label),
                             ("week", "Ventas de la Semana (" ~ order_stats.week.label ~ ")"),
                             ("month", "Ventas del mes (" ~ order_stats.month.label ~ ")")] %}
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
       <div class="card-body">
         <div class="row align-items-center">
@@ -135,8 +140,13 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
   </div>
   {% endfor %}
 
-  <div class="col-md-6 col-xl-3">
+  <div class="col-sm-6 col-xl-3">
     <div class="card card-sm">
+    <div class="card-stamp">
+                    <div class="card-stamp-icon bg-pink">
+                      <i class="ti ti-currency-dollar"></i>
+                    </div>
+                  </div>
       <div class="card-body">
         <div class="row align-items-center">
           <div class="col-auto">
@@ -155,7 +165,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 
 {% endif %}
 <div class="row row-cards mb-2">
-  <div class="col-12">
+  <div class="col-xl-7 col-md-12">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Ventas — <span id="sales-chart-granularity-label">vista semanal</span></h3>
@@ -170,6 +180,41 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
       </div>
     </div>
   </div>
+  <div class="col-xl-5  col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Ventas por Pasarela de Pago</h3>
+      </div>
+      <table class="table card-table table-vcenter">
+        <thead>
+          <tr>
+            <th>Pasarela</th>
+            <th>Ventas (mes)</th>
+            <th>Monto (mes)</th>
+            <th>Monto (tot)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in catalog_stats.pay_providers %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.month_qty }}</td>
+            <td>{{ row.month_amount_display }}</td>
+            <td>{{ row.total_amount_display }}</td>
+            <td class="w-25">
+              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Mes: {{ row.month_amount_display }} ({{ row.width_pct }}% del total)">
+                <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-secondary">Sin pagos.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 {% if catalog_stats_error %}
@@ -177,7 +222,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
 {% elif catalog_stats %}
 <div class="row row-cards mb-2">
 
-  <div class="col-md-6 col-lg-4">
+  <div class="col-sm-12 col-lg-4">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Planes de Minutos</h3>
@@ -188,8 +233,8 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
         </thead>
         <tbody>
           {% for row in catalog_stats.minute_packs %}
-          <tr>
-            <td>{{ row.name }}</td>
+          <tr {% if row.is_featured %}class="table-success"{% endif %}>
+            <td>{{ row.name }}</td></td>
             <td>{{ row.month_qty }}</td>
             <td>{{ row.total_qty }}</td>
             <td class="w-25">
@@ -206,7 +251,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
     </div>
   </div>
 
-  <div class="col-md-6 col-lg-4">
+  <div class="col-sm-12 col-lg-4">
   <div class="card">
     <div class="card-header">
       <h3 class="card-title">Tarjetas de Regalo</h3>
@@ -217,7 +262,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
       </thead>
       <tbody>
         {% for row in catalog_stats.gift_cards %}
-        <tr>
+        <tr {% if row.is_featured %}class="table-success"{% endif %}>
           <td>{{ row.name }}</td>
           <td>{{ row.month_qty }}</td>
           <td>{{ row.total_qty }}</td>
@@ -236,7 +281,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
   </div>
 </div>
 
-  <div class="col-md-6 col-lg-4">
+  <div class="col-sm-12 col-lg-4">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Códigos Promocionales</h3>
@@ -249,7 +294,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
           {% for row in catalog_stats.discount_codes %}
           <tr>
             <td>{{ row.code }}</td>
-            <td>{{ row.uses }}</td>
+            <td>{{ row.uses }} de {{ row.max_uses }}</td>
             <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
             <td class="w-25">
               <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Utilizado: {{ row.discounted_display }}">
