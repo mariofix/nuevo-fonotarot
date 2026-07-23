@@ -156,13 +156,14 @@ class SecureAdminIndexView(AdminIndexView):
 
         packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
         max_pack_total = max(pack_total_sales.values(), default=0) or 1
+        max_pack_month = max(pack_month_sales.values(), default=0) or 1
 
         minute_pack_rows = [
             {
                 "name": f"{p.minutes} Minutos",
                 "month": pack_month_sales.get(p.id, 0),
                 "total": pack_total_sales.get(p.id, 0),
-                "width_pct": round(pack_total_sales.get(p.id, 0) / max_pack_total * 100, 1),
+                "width_pct": round(pack_month_sales.get(p.id, 0) / max_pack_month * 100, 1),
             }
             for p in packs
         ]

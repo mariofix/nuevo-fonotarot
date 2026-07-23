@@ -193,7 +193,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
             <td>{{ row.month }}</td>
             <td>{{ row.total }}</td>
             <td class="w-25">
-              <div class="progress progress-xs">
+              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.width_pct }}%">
                 <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
               </div>
             </td>
@@ -222,7 +222,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
             <td>{{ row.sales }}</td>
             <td>{{ (row.pct_used ~ '%') if row.pct_used is not none else '-' }}</td>
             <td class="w-25">
-              <div class="progress progress-xs">
+              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.pct_used or 0 }}%">
                 <div class="progress-bar bg-primary" style="width: {{ row.pct_used or 0 }}%"></div>
               </div>
             </td>
@@ -251,7 +251,7 @@ var _VAPID_PUBLIC_KEY = '{{ config.VAPID_PUBLIC_KEY }}';
             <td>{{ row.uses }}</td>
             <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
             <td class="w-25">
-              <div class="progress progress-xs">
+              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ row.width_pct }}%">
                 <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
               </div>
             </td>
