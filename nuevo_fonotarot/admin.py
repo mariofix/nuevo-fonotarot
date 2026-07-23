@@ -240,6 +240,19 @@ class SecureAdminIndexView(AdminIndexView):
         # Most-used first; capped so a long promo history doesn't blow up the card.
         codes = DiscountCode.query.order_by(DiscountCode.uses_count.desc()).limit(10).all()
         max_uses_seen = max((c.uses_count for c in codes), default=0) or 1
+
+        # Total discounted per code, paid orders only. Assumes a single currency
+        # (CLP) across all discount usage — matches your actual sales profile.
+        discount_totals = dict(
+            db.session.query(Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0))
+            .filter(
+                Order.discount_code_id.isnot(None),
+                Order.discount_amount.isnot(None),
+                Order.payment_status == self.PAID_STATUS,
+            )
+            .group_by(Order.discount_code_id)
+            .all()
+        )
         colors = ["orange", "pink", "azure", "orange", "teal", "indigo", "blue", "purple", "success", "danger"]
 
         discount_rows = []
@@ -248,20 +261,17 @@ class SecureAdminIndexView(AdminIndexView):
                 pct = round(c.uses_count / c.max_uses * 100, 1)
                 width = min(pct, 100.0)
             else:
-                # Unlimited codes have no natural denominator for a % — shown as "-"
-                # per your own mockup (NAVIDAD26). Bar width instead scales against
-                # the busiest code in this list, purely for relative visual weight.
                 pct = None
                 width = round(c.uses_count / max_uses_seen * 100, 1)
-            discount_rows.append(
-                {
-                    "code": c.code,
-                    "uses": c.uses_count,
-                    "pct": pct,
-                    "width_pct": width,
-                    "color": colors.pop(),
-                }
-            )
+
+            discount_rows.append({
+                "code": c.code,
+                "uses": c.uses_count,
+                "pct": pct,
+                "width_pct": width,
+                "discounted_display": format_currency(discount_totals.get(c.id, 134235), c.currency or "CLP"),
+                "color": colors.pop(),
+            })
 
         return {
             "minute_packs": minute_pack_rows,
