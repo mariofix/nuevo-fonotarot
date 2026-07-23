@@ -371,6 +371,7 @@ def import_legacy_sales(
                     payment_status="succeeded",
                     email=row.get("correo"),
                     shipping_phone=row.get("telefono") or None,
+                    shipping_name=row.get("nombre") or None,
                     status=OrderStatus.DELIVERED,  # verify against your actual OrderStatus values
                     created_at=created_at,
                     request_payload=json.loads(row["broker_payload"]) if row.get("broker_payload") else {},
