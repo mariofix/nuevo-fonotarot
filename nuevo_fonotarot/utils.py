@@ -326,6 +326,7 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
                 db.session.add(order)
                 db.session.flush()  # populate order.id for the FK below
 
+
                 item = OrderItem(
                     order_id=order.id,
                     item_type=OrderItemType.MINUTE_PACK,
@@ -340,10 +341,6 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
                     fulfillment_reference=row.get("broker_pago_id"),
                 )
                 db.session.add(item)
-
-                if not dry_run:
-                    db.session.commit()
-
                 print(f"{order=} {item=}")
             stats["imported"] += 1
 
@@ -352,8 +349,10 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
             print(f"Row transaccion={row.get('transaccion')}: {exc}")
             continue
 
-    return stats
+    if not dry_run:
+        db.session.commit()
 
+    return stats
 
 __all__ = [
     "_flag_class",
