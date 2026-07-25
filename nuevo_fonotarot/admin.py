@@ -266,26 +266,25 @@ class SecureAdminIndexView(AdminIndexView):
                 pct = None
                 width = round(c.uses_count / max_uses_seen * 100, 1)
 
-            discount_rows.append({
-                "code": c.code,
-                "uses": c.uses_count,
-                "max_uses": c.max_uses,
-                "pct": pct,
-                "width_pct": width,
-                "discounted_display": format_currency(discount_totals.get(c.id, 0), c.currency or "CLP"),
-                "color": colors.pop(),
-            })
+            discount_rows.append(
+                {
+                    "code": c.code,
+                    "uses": c.uses_count,
+                    "max_uses": c.max_uses,
+                    "pct": pct,
+                    "width_pct": width,
+                    "discounted_display": format_currency(discount_totals.get(c.id, 0), c.currency or "CLP"),
+                    "color": colors.pop(),
+                }
+            )
 
         # --- Payment providers ------------------------------------------------
         def _provider_sales(since=None):
-            q = (
-                db.session.query(
-                    Order.provider,
-                    func.coalesce(func.count(Order.id), 0),
-                    func.coalesce(func.sum(Order.amount), 0),
-                )
-                .filter(Order.payment_status == self.PAID_STATUS)
-            )
+            q = db.session.query(
+                Order.provider,
+                func.coalesce(func.count(Order.id), 0),
+                func.coalesce(func.sum(Order.amount), 0),
+            ).filter(Order.payment_status == self.PAID_STATUS)
             if since:
                 q = q.filter(Order.created_at >= since)
             rows = q.group_by(Order.provider).all()
@@ -301,7 +300,6 @@ class SecureAdminIndexView(AdminIndexView):
             reverse=True,
         )
         total_month_amount = sum(v["amount"] for v in provider_month_sales.values()) or 1
-
 
         pay_provider_rows = [
             {

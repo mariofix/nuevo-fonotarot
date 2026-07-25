@@ -373,23 +373,64 @@ def legacy_cli() -> None:
     """Import Data from old systems."""
 
 
+def row_to_dict(row):
+    return {column.name: getattr(row, column.name) for column in row.__table__.columns}
+
+
 @legacy_cli.command("ventas-portal")
-@click.argument("json_path")
 @click.option("--dry-run", is_flag=True, help="Count what would be imported without writing anything.")
-@click.option("--offset", default=0, show_default=True, help="Skip this many rows before processing starts.")
-@click.option("--limit", type=int, default=None, help="Stop after considering this many rows.")
-@click.option("--max-bytes", type=int, default=None, help="Stop once cumulative row size (UTF-8 bytes) exceeds this.")
+@click.option("--offset", default=0, show_default=True, help="SQL OFFSET into the legacy table.")
+@click.option("--limit", type=int, default=None, help="SQL LIMIT — max rows fetched for this batch.")
+@click.option(
+    "--from-date",
+    "from_date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
+    required=True,
+    help="Start date (inclusive), format YYYY-MM-DD.",
+)
+@click.option(
+    "--to-date",
+    "to_date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
+    required=True,
+    help="End date (inclusive), format YYYY-MM-DD.",
+)
 @with_appcontext
-def import_legacy_sales_cmd(json_path, dry_run, offset, limit, max_bytes):
-    # SELECT c.*, cl.client_id, p.valor FROM `zvn_compra` c JOIN zvn_cliente cl on c.cliente_id = cl.id JOIN zvn_producto p on p.id = c.producto_id where c.estado = "Pagado" and cl.servicio_id = 1 and c.creado BETWEEN '2026-07-01 00:00:00' and '2026-07-31 23:59:59' ORDER BY c.id ASC;
+def import_legacy_sales_cmd(dry_run, offset, limit, from_date, to_date):
+    from datetime import datetime, time
+
+    from sqlalchemy import text
+
+    from .extensions import db
     from .utils import import_legacy_sales
 
-    stats = import_legacy_sales(json_path, dry_run=dry_run, offset=offset, limit=limit, max_bytes=max_bytes)
-    click.echo(f"{'[DRY RUN] ' if dry_run else ''}{stats}")
-    if stats["next_offset"] is not None:
-        click.echo(
-            click.style(
-                f"→ Stopped early ({stats['stopped_reason']}). Resume with: --offset {stats['next_offset']}",
-                fg="yellow",
-            )
-        )
+    if from_date > to_date:
+        raise click.UsageError(f"--from-date ({from_date.date()}) is after --to-date ({to_date.date()}).")
+
+    range_start = from_date  # 00:00:00
+    range_end = datetime.combine(to_date.date(), time(23, 59, 59))
+
+    query = text("""
+        SELECT c.*, cl.client_id, p.valor
+        FROM zvn_portal.zvn_compra c
+        JOIN zvn_portal.zvn_cliente cl ON c.cliente_id = cl.id
+        JOIN zvn_portal.zvn_producto p ON p.id = c.producto_id
+        WHERE c.estado IN ('Pagado')
+          AND cl.servicio_id = 1
+          AND c.creado BETWEEN :range_start AND :range_end
+        ORDER BY c.id ASC
+        LIMIT :limit OFFSET :offset
+        """)
+    result = db.session.execute(
+        query,
+        {
+            "range_start": range_start,
+            "range_end": range_end,
+            "offset": offset,
+            "limit": limit or 9999999999,
+        },
+    )
+    rows = result.mappings().all()
+
+    stats = import_legacy_sales(rows, dry_run=dry_run)
+    click.echo(f"{'[DRY RUN] ' if dry_run else ''}date_range={range_start.date()}..{range_end.date()} {stats}")

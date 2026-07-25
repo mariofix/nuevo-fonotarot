@@ -1,3 +1,5 @@
+from typing import Any
+
 import ephem
 
 _EJECUTIVOS_URL = "https://firenze.156.cl/audiotex/ejecutivos"
@@ -219,7 +221,6 @@ def _fetch_order_stats() -> dict:
 
 import json
 import uuid
-from datetime import datetime
 from decimal import Decimal
 
 PAID_LEGACY_STATUS = "Pagado"
@@ -238,60 +239,27 @@ def _dashed_uuid(raw_hex: str) -> str:
     return str(uuid.UUID(hex=raw_hex))
 
 
-def _extract_rows(dump: list) -> list:
-    """The phpMyAdmin export is a flat list of typed blocks; only the
-    table block named 'c' holds actual sale rows."""
-    for block in dump:
-        if block.get("type") == "table" and block.get("name") == "c":
-            return block.get("data", [])
-    return []
+def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
+    """Import legacy `zvn_portal` sale rows into Order/OrderItem.
 
-
-def import_legacy_sales(
-    json_path: str,
-    *,
-    dry_run: bool = False,
-    offset: int = 0,
-    limit: int | None = None,
-    max_bytes: int | None = None,
-) -> dict:
-    """Import legacy sales dump into Order/OrderItem as fulfilled minute-pack purchases.
+    `rows` is any iterable of dict-like rows (mapping access via `row["col"]`
+    / `row.get("col")`) — pass in exactly the batch you want processed;
+    pagination is the caller's job (SQL LIMIT/OFFSET), not this function's.
 
     Idempotent: rows whose merchants_id (derived from `transaccion`) already
-    exists are skipped, so this can be safely re-run against the same file.
-    Each row is wrapped in its own SAVEPOINT so one bad row doesn't roll back
-    the rest of the batch.
-
-    Batching: `offset` skips the first N rows of the source (post-extraction,
-    pre-filtering) before processing starts. `limit` stops after N rows have
-    been considered (counts every row inspected, not just imported ones — so
-    batch size is predictable regardless of how many are paid/matched).
-    `max_bytes` stops once the cumulative UTF-8 size of the raw JSON rows
-    processed in this call exceeds the given budget, whichever of the two
-    limits is hit first. Both are optional; omit both to process to EOF.
-
-    Returns stats with a "next_offset" key so callers can chain invocations:
-    the next call's --offset should be this run's row_index + 1 (or the
-    returned "next_offset" directly) to continue where this run stopped.
+    exist as an Order are skipped, so a batch can be safely re-run. Each row
+    is wrapped in its own SAVEPOINT so one bad row doesn't roll back the rest.
     """
     from zoneinfo import ZoneInfo
 
     from .extensions import db
     from .models import MinutePack, Order, OrderItem, OrderItemFulfillmentStatus, OrderItemType, OrderStatus
 
-    with open(json_path, encoding="utf-8") as f:
-        dump = json.load(f)
-
-    rows = _extract_rows(dump)
-    total_rows = len(rows)
-
     pack_ids = set(LEGACY_PRICE_TO_PACK_ID.values())
     packs_by_id = {p.id: p for p in MinutePack.query.filter(MinutePack.id.in_(pack_ids)).all()}
     missing_ids = pack_ids - packs_by_id.keys()
     if missing_ids:
-        print(
-            f"WARNING: MinutePack id(s) {sorted(missing_ids)} not found in DB — matching legacy sales will be skipped."
-        )
+        print(f"WARNING: MinutePack id(s) {sorted(missing_ids)} not found in DB — matching sales will be skipped.")
 
     stats = {
         "imported": 0,
@@ -301,34 +269,10 @@ def import_legacy_sales(
         "skipped_no_pack": 0,
         "errors": 0,
         "rows_considered": 0,
-        "bytes_considered": 0,
-        "total_rows_in_file": total_rows,
-        "stopped_reason": None,  # "limit" | "max_bytes" | "eof"
-        "next_offset": None,  # set only if stopped early
     }
 
-    bytes_seen = 0
-
-    for i, row in enumerate(rows):
-        if i < offset:
-            continue
-
-        row_bytes = len(json.dumps(row, ensure_ascii=False).encode("utf-8"))
-
-        # Check stop conditions BEFORE processing this row, so a run that
-        # would exceed the budget stops cleanly at the prior row's boundary
-        # rather than exceeding it and reporting an inaccurate byte count.
-        if limit is not None and stats["rows_considered"] >= limit:
-            stats["stopped_reason"] = "limit"
-            stats["next_offset"] = i
-            break
-        if max_bytes is not None and bytes_seen + row_bytes > max_bytes and stats["rows_considered"] > 0:
-            stats["stopped_reason"] = "max_bytes"
-            stats["next_offset"] = i
-            break
-
+    for row in rows:
         stats["rows_considered"] += 1
-        bytes_seen += row_bytes
 
         try:
             if row.get("estado") != PAID_LEGACY_STATUS:
@@ -356,8 +300,8 @@ def import_legacy_sales(
                 stats["imported"] += 1
                 continue
 
-            utc_created_at = datetime.fromisoformat(row["creado"]).replace(tzinfo=ZoneInfo("UTC"))
-            utc_fulfilled_at = datetime.fromisoformat(row["modificado"]).replace(tzinfo=ZoneInfo("UTC"))
+            utc_created_at = row["creado"].replace(tzinfo=ZoneInfo("UTC"))
+            utc_fulfilled_at = row["modificado"].replace(tzinfo=ZoneInfo("UTC"))
 
             created_at = utc_created_at.astimezone(ZoneInfo("America/Santiago"))
             fulfilled_at = utc_fulfilled_at.astimezone(ZoneInfo("America/Santiago"))
@@ -396,20 +340,17 @@ def import_legacy_sales(
                     fulfillment_reference=row.get("broker_pago_id"),
                 )
                 db.session.add(item)
-            print(f"{order=} {item=}")
+
+                if not dry_run:
+                    db.session.commit()
+
+                print(f"{order=} {item=}")
             stats["imported"] += 1
 
         except Exception as exc:
             stats["errors"] += 1
             print(f"Row transaccion={row.get('transaccion')}: {exc}")
             continue
-    else:
-        stats["stopped_reason"] = "eof"
-
-    stats["bytes_considered"] = bytes_seen
-
-    if not dry_run:
-        db.session.commit()
 
     return stats
 
