@@ -305,12 +305,13 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
 
             created_at = utc_created_at.astimezone(ZoneInfo("America/Santiago"))
             fulfilled_at = utc_fulfilled_at.astimezone(ZoneInfo("America/Santiago"))
+            broker = row.get("broker").split("-")[0]
 
             with db.session.begin_nested():  # SAVEPOINT — isolates this row's failure
                 order = Order(
                     merchants_id=merchants_id,
                     transaction_id=row["broker_pago_id"],
-                    provider=row.get("broker") or "legacy",
+                    provider=broker or "legacy",
                     amount=valor,
                     currency=pack.currency,
                     payment_status="succeeded",
