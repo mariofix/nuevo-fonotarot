@@ -94,7 +94,7 @@ class SecureAdminIndexView(AdminIndexView):
                 else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
             )
             end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms else now
-        except TypeError, ValueError, OSError:
+        except (TypeError, ValueError, OSError):
             return jsonify({"error": "invalid start/end"}), 400
 
         if end_dt <= start_dt:
@@ -132,17 +132,25 @@ class SecureAdminIndexView(AdminIndexView):
         series = [{"x": to_ms(r.bucket), "y": float(r.total)} for r in rows]
         return jsonify({"granularity": granularity, "series": series})
 
-    def _fetch_catalog_stats(self) -> dict:
+    def _fetch_catalog_stats(self, year: int | None = None, month: int | None = None) -> dict:
         """Real sales figures for MinutePacks, GiftCardProducts, and DiscountCodes,
         replacing the hardcoded dashboard table rows."""
         from flask_babel import format_currency
 
         from .models import DiscountCode, GiftCard, GiftCardProduct, MinutePack, Order, OrderItem, OrderItemType
 
-        today = date.today()
-        month_start = today.replace(day=1)
+        if year and month:
+            month_start = date(year, month, 1)
+            if month == 12:
+                month_end = date(year + 1, 1, 1)
+            else:
+                month_end = date(year, month + 1, 1)
+        else:
+            today = date.today()
+            month_start = today.replace(day=1)
+            month_end = None
 
-        def _pack_sales(since=None):
+        def _pack_sales(since=None, until=None):
             subtotal = OrderItem.unit_price * OrderItem.quantity
             q = (
                 db.session.query(
@@ -155,10 +163,12 @@ class SecureAdminIndexView(AdminIndexView):
             )
             if since:
                 q = q.filter(Order.created_at >= since)
+            if until:
+                q = q.filter(Order.created_at < until)
             rows = q.group_by(OrderItem.item_id).all()
             return {item_id: {"qty": qty, "revenue": revenue} for item_id, qty, revenue in rows}
 
-        pack_month_sales = _pack_sales(since=month_start)
+        pack_month_sales = _pack_sales(since=month_start, until=month_end)
         pack_total_sales = _pack_sales()
 
         packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
@@ -183,7 +193,7 @@ class SecureAdminIndexView(AdminIndexView):
         ]
 
         # --- Gift cards ----------------------------------------------------
-        def _giftcard_sales(since=None):
+        def _giftcard_sales(since=None, until=None):
             subtotal = OrderItem.unit_price * OrderItem.quantity
             q = (
                 db.session.query(
@@ -196,10 +206,12 @@ class SecureAdminIndexView(AdminIndexView):
             )
             if since:
                 q = q.filter(Order.created_at >= since)
+            if until:
+                q = q.filter(Order.created_at < until)
             rows = q.group_by(OrderItem.item_id).all()
             return {item_id: {"qty": qty, "revenue": revenue} for item_id, qty, revenue in rows}
 
-        gc_month_sales = _giftcard_sales(since=month_start)
+        gc_month_sales = _giftcard_sales(since=month_start, until=month_end)
         gc_total_sales = _giftcard_sales()
 
         # "% Uso" = redeemed / issued, all-time — a distinct lifetime metric from
@@ -245,20 +257,29 @@ class SecureAdminIndexView(AdminIndexView):
 
         # Total discounted per code, paid orders only. Assumes a single currency
         # (CLP) across all discount usage — matches your actual sales profile.
-        discount_totals = dict(
-            db.session.query(Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0))
-            .filter(
-                Order.discount_code_id.isnot(None),
-                Order.discount_amount.isnot(None),
-                Order.payment_status == self.PAID_STATUS,
-            )
-            .group_by(Order.discount_code_id)
-            .all()
+        q_discount = db.session.query(Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0)).filter(
+            Order.discount_code_id.isnot(None),
+            Order.discount_amount.isnot(None),
+            Order.payment_status == self.PAID_STATUS,
         )
+        if year and month:
+            q_discount = q_discount.filter(Order.created_at >= month_start, Order.created_at < month_end)
+
+        discount_totals = dict(q_discount.group_by(Order.discount_code_id).all())
         colors = ["orange", "pink", "azure", "orange", "teal", "indigo", "blue", "purple", "success", "danger"]
+
+        q_discount_count = db.session.query(Order.discount_code_id, func.count(Order.id)).filter(
+            Order.discount_code_id.isnot(None),
+            Order.payment_status == self.PAID_STATUS,
+        )
+        if year and month:
+            q_discount_count = q_discount_count.filter(Order.created_at >= month_start, Order.created_at < month_end)
+        
+        discount_month_uses = dict(q_discount_count.group_by(Order.discount_code_id).all())
 
         discount_rows = []
         for c in codes:
+            month_uses = discount_month_uses.get(c.id, 0)
             if c.max_uses:
                 pct = round(c.uses_count / c.max_uses * 100, 1)
                 width = min(pct, 100.0)
@@ -270,6 +291,7 @@ class SecureAdminIndexView(AdminIndexView):
                 {
                     "code": c.code,
                     "uses": c.uses_count,
+                    "month_uses": month_uses,
                     "max_uses": c.max_uses,
                     "pct": pct,
                     "width_pct": width,
@@ -279,7 +301,7 @@ class SecureAdminIndexView(AdminIndexView):
             )
 
         # --- Payment providers ------------------------------------------------
-        def _provider_sales(since=None):
+        def _provider_sales(since=None, until=None):
             q = db.session.query(
                 Order.provider,
                 func.coalesce(func.count(Order.id), 0),
@@ -287,10 +309,12 @@ class SecureAdminIndexView(AdminIndexView):
             ).filter(Order.payment_status == self.PAID_STATUS)
             if since:
                 q = q.filter(Order.created_at >= since)
+            if until:
+                q = q.filter(Order.created_at < until)
             rows = q.group_by(Order.provider).all()
             return {provider: {"qty": qty, "amount": amount} for provider, qty, amount in rows}
 
-        provider_month_sales = _provider_sales(since=month_start)
+        provider_month_sales = _provider_sales(since=month_start, until=month_end)
         provider_total_sales = _provider_sales()
 
         # Union of providers seen in either window, sorted by total amount desc.
@@ -398,7 +422,7 @@ class MonthlyCarrierReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -425,6 +449,63 @@ class MonthlyCarrierReportView(BaseView):
         )
 
 
+class MonthlyStoreReportView(BaseView):
+    """Flask-Admin view for interactive monthly store/sales reports.
+
+    Displays sales by provider, minute packs, gift cards and discount codes
+    for any selected month/year.
+    """
+
+    def is_accessible(self):
+        return current_user and current_user.is_authenticated and current_user.has_role("admin")
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("security.login", next=request.url))
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        today = date.today()
+        try:
+            year = int(request.args.get("year", today.year))
+            month = int(request.args.get("month", today.month))
+        except (ValueError, TypeError):
+            year, month = today.year, today.month
+
+        month = max(1, min(12, month))
+        year = max(_REPORT_MIN_YEAR, min(today.year + 1, year))
+
+        catalog_stats = None
+        catalog_stats_error = None
+        try:
+            catalog_stats = self.admin.index_view._fetch_catalog_stats(year, month)
+        except Exception as exc:
+            catalog_stats_error = str(exc)
+
+        # Calculate month timestamps for the chart
+        import datetime
+        month_start_dt = datetime.datetime(year, month, 1)
+        if month == 12:
+            month_end_dt = datetime.datetime(year + 1, 1, 1)
+        else:
+            month_end_dt = datetime.datetime(year, month + 1, 1)
+            
+        start_ms = int(month_start_dt.timestamp() * 1000)
+        end_ms = int(month_end_dt.timestamp() * 1000)
+
+        return self.render(
+            "admin/monthly_store_report.html",
+            year=year,
+            month=month,
+            months_es=_MONTHS_ES,
+            min_year=_REPORT_MIN_YEAR,
+            catalog_stats=catalog_stats,
+            catalog_stats_error=catalog_stats_error,
+            start_ms=start_ms,
+            end_ms=end_ms,
+            today=today,
+        )
+
+
 class MonthlyAgentReportView(BaseView):
     """Flask-Admin view for interactive monthly per-agent CDR reports.
 
@@ -446,7 +527,7 @@ class MonthlyAgentReportView(BaseView):
         try:
             year = int(request.args.get("year", today.year))
             month = int(request.args.get("month", today.month))
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             year, month = today.year, today.month
 
         month = max(1, min(12, month))
@@ -1499,6 +1580,15 @@ def init_admin(app, admin_ext):
             category=_l("Sitio"),
             menu_icon_type="ti",
             menu_icon_value="chart-dots",
+        )
+    )
+    admin_ext.add_view(
+        MonthlyStoreReportView(
+            name=_l("Reporte Tienda"),
+            endpoint="monthly_store_report",
+            category=_l("Reportes"),
+            menu_icon_type="ti",
+            menu_icon_value="shopping-cart",
         )
     )
     admin_ext.add_view(
