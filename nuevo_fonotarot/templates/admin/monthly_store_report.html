@@ -39,6 +39,86 @@
   </div>
 </div>
 
+{% if order_stats_error %}
+<div class="alert alert-danger">Error cargando estadísticas de órdenes: {{ order_stats_error }}</div>
+{% elif order_stats %}
+<div class="row row-cards mb-2">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-month"
+                 data-graph-paid="{{ order_stats.month.paid }}"
+                 data-graph-unpaid="{{ order_stats.month.unpaid }}"></div>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.month.total }} Ordenes</div>
+            <div class="text-secondary">Mes ({{ order_stats.month.label }})</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-cyan text-white avatar"><i class="ti ti-receipt-dollar icon icon-1"></i></span>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">{{ order_stats.alltime.total }}</div>
+            <div class="text-secondary">Ordenes Totales</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            {% set pct = order_stats.month.sales_pct %}
+            <span class="{{ 'bg-green-lt' if pct is none or pct >= 0 else 'bg-red-lt' }} avatar">
+              <i class="ti ti-arrow-{{ 'up' if pct is none or pct >= 0 else 'down' }} icon icon-1"></i>
+            </span>
+          </div>
+          <div class="col">
+            <div class="font-weight-medium">
+              {{ '${:,.0f}'.format(order_stats.month.sales).replace(',', '.') }}
+              {% if pct is not none %}
+              <span class="float-end font-weight-medium {{ 'text-green' if pct >= 0 else 'text-red' }}">{{ '%+.1f'|format(pct) }}%</span>
+              {% endif %}
+            </div>
+            <div class="text-secondary">Ventas del mes ({{ order_stats.month.label }})</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card card-sm">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="bg-cyan text-white avatar"><i class="ti ti-currency-dollar icon icon-1"></i></span>
+          </div>
+          <div class="col">
+            <div class="font-weight-strong">{{ '${:,.0f}'.format(order_stats.alltime.sales).replace(',', '.') }}</div>
+            <div class="text-secondary">Ventas Totales</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% if catalog_stats_error %}
 <div class="alert alert-danger">Error cargando estadísticas de catálogo: {{ catalog_stats_error }}</div>
 {% elif catalog_stats %}
@@ -323,6 +403,33 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
 });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.ApexCharts) return;
+    document.querySelectorAll(".chart-sparkline[data-graph-paid]").forEach(function (el) {
+      var paid = parseInt(el.dataset.graphPaid, 10) || 0;
+      var unpaid = parseInt(el.dataset.graphUnpaid, 10) || 0;
+      var total = paid + unpaid;
+      var pct = total ? Math.round((paid / total) * 100) : 0;
+      new ApexCharts(el, {
+        chart: {
+          type: "radialBar", fontFamily: "inherit", height: 40, width: 40,
+          animations: { enabled: true }, sparkline: { enabled: true },
+        },
+        tooltip: { enabled: false },
+        plotOptions: {
+          radialBar: {
+            hollow: { margin: 0, size: "75%" },
+            track: { margin: 0 },
+            dataLabels: { show: false },
+          },
+        },
+        colors: ["var(--tblr-green)"],
+        series: [pct],
+      }).render();
+    });
+  });
 </script>
 {% endif %}
 {% endblock %}

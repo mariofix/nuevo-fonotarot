@@ -118,7 +118,7 @@ def _normalize_agent(raw: dict) -> dict:
 _STATUS_ORDER = {"available": 0, "busy": 1, "offline": 2}
 
 
-def _fetch_order_stats() -> dict:
+def _fetch_order_stats(year: int | None = None, month: int | None = None) -> dict:
     from datetime import date, timedelta
 
     from sqlalchemy import case, func
@@ -144,7 +144,15 @@ def _fetch_order_stats() -> dict:
 
     today = date.today()
     week_start = today - timedelta(days=today.weekday())
-    month_start = today.replace(day=1)
+    if year is not None and month is not None:
+        month_start = date(year, month, 1)
+        if month == 12:
+            month_end = date(year + 1, 1, 1)
+        else:
+            month_end = date(year, month + 1, 1)
+    else:
+        month_start = today.replace(day=1)
+        month_end = None
     epoch = date(2018, 1, 1)
 
     paid_case = case((Order.payment_status == PAID_STATUS, 1), else_=0)
@@ -182,12 +190,12 @@ def _fetch_order_stats() -> dict:
 
     today_total, today_paid, today_unpaid = counts(today)
     week_total, week_paid, week_unpaid = counts(week_start)
-    month_total, month_paid, month_unpaid = counts(month_start)
+    month_total, month_paid, month_unpaid = counts(month_start, month_end)
     alltime_total, _, _ = counts(epoch)
 
     today_sales = sales(today)
     week_sales = sales(week_start)
-    month_sales = sales(month_start)
+    month_sales = sales(month_start, month_end)
     alltime_sales = sales(epoch)
 
     return {
