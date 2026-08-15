@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
@@ -20,6 +20,8 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    func,
+    select,
     text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
@@ -421,6 +423,8 @@ class DiscountCode(db.Model):
     discount_value: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
     currency: Mapped[str | None] = mapped_column(String(3), nullable=True)  # Required if type is FIXED
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    auto_apply: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    auto_apply_criteria: Mapped[dict | None] = mapped_column(JSON, default=dict, server_default=text("'{}'"), nullable=True)
     valid_from: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     valid_to: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     max_uses: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -435,6 +439,12 @@ class DiscountCode(db.Model):
 
     def __str__(self) -> str:
         return self.code
+
+    @property
+    def auto_apply_rules(self) -> dict:
+        """Normalise the JSON criteria used to auto-apply this code."""
+        raw = self.auto_apply_criteria or {}
+        return raw if isinstance(raw, dict) else {}
 
     def is_valid(self) -> bool:
         """Check if the code is currently active and valid."""
@@ -453,6 +463,84 @@ class DiscountCode(db.Model):
         if self.max_uses is not None and self.uses_count >= self.max_uses:
             return False
         return True
+
+    def _customer_order_filters(self, user, days: int | None = None) -> list:
+        """Build the SQLAlchemy filters used for a customer's successful orders."""
+        if user is None or getattr(user, "id", None) is None:
+            return []
+
+        filters = [Order.user_id == user.id, Order.payment_status == "succeeded"]
+        if days is not None:
+            cutoff = datetime.now() - timedelta(days=max(0, int(days)))
+            filters.append(Order.created_at >= cutoff)
+        return filters
+
+    def _customer_total_spend(self, user, days: int | None = None) -> Decimal:
+        """Total spend for a customer in the selected rolling window."""
+        filters = self._customer_order_filters(user, days)
+        if not filters:
+            return Decimal("0")
+
+        total = db.session.execute(
+            select(func.coalesce(func.sum(Order.amount), 0)).where(*filters)
+        ).scalar()
+        if total is None:
+            return Decimal("0")
+        return Decimal(str(total))
+
+    def _customer_order_count(self, user, days: int | None = None) -> int:
+        """Count successful orders for a customer in a rolling window."""
+        filters = self._customer_order_filters(user, days)
+        if not filters:
+            return 0
+
+        count = db.session.execute(select(func.count()).select_from(Order).where(*filters)).scalar()
+        return int(count or 0)
+
+    def matches_user(self, user) -> bool:
+        """Return True when the supplied user satisfies the code's auto-apply rules."""
+        if not self.auto_apply or user is None:
+            return False
+
+        criteria = self.auto_apply_rules
+        if not criteria:
+            return False
+
+        checks: list[bool] = []
+
+        roles = criteria.get("roles") or []
+        if isinstance(roles, str):
+            roles = [roles]
+        if roles:
+            user_roles = {role.name for role in getattr(user, "roles", [])}
+            checks.append(bool(set(roles).intersection(user_roles)))
+
+        if criteria.get("min_total_spent") is not None:
+            spend_limit = Decimal(str(criteria["min_total_spent"]))
+            window_days = int(criteria.get("total_spend_window_days") or criteria.get("purchase_window_days") or 365)
+            checks.append(self._customer_total_spend(user, days=window_days) >= spend_limit)
+
+        if criteria.get("min_recent_spend") is not None:
+            spend_limit = Decimal(str(criteria["min_recent_spend"]))
+            window_days = int(criteria.get("recent_spend_window_days") or criteria.get("recent_days") or 30)
+            checks.append(self._customer_total_spend(user, days=window_days) >= spend_limit)
+
+        if criteria.get("min_orders") is not None:
+            minimum_orders = int(criteria["min_orders"])
+            window_days = int(criteria.get("order_window_days") or criteria.get("purchase_window_days") or 365)
+            checks.append(self._customer_order_count(user, days=window_days) >= minimum_orders)
+
+        for key in ("customer_group", "segment"):
+            if criteria.get(key):
+                user_groups = set(getattr(user, "groups", []) or [])
+                values = criteria[key] if isinstance(criteria[key], list) else [criteria[key]]
+                checks.append(bool(set(values).intersection(user_groups)))
+
+        if not checks:
+            return False
+
+        match_mode = str(criteria.get("match_mode", "any")).lower()
+        return all(checks) if match_mode == "all" else any(checks)
 
 
 class Order(db.Model, PaymentMixin):

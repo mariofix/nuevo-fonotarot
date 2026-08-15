@@ -12,7 +12,7 @@ from ...actions import register_checkout_account
 from ...extensions import db
 from ...log import get_logger
 from ...models import DiscountCode, MinutePack, Order, OrderItem, OrderItemType, OrderStatus
-from ..utils import _get_cart, apply_discount, create_payment_and_redirect
+from ..utils import _get_cart, apply_discount, create_payment_and_redirect, find_auto_discount_code_for_user
 from . import minutos_bp
 
 logger = get_logger(__name__)
@@ -58,7 +58,7 @@ def comprar_minutos(pack_slug: str):
             flash(_("El email es obligatorio."), "danger")
             return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
-        # Check for discount code
+        # Check for discount code or auto-applied rule-based promotion.
         discount_code_str = request.form.get("discount_code", "").strip()
         discount_obj = None
         discount_amount = Decimal("0")
@@ -72,6 +72,12 @@ def comprar_minutos(pack_slug: str):
             if discount_amount <= 0:
                 flash(_("El código de descuento no es aplicable a este producto."), "danger")
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
+        elif is_authenticated_user:
+            auto_discount = find_auto_discount_code_for_user(current_user, pack.price, pack.currency)
+            if auto_discount is not None:
+                discount_obj = auto_discount
+                discount_amount = apply_discount(pack.price, pack.currency, discount_obj)
+                flash(_("Se aplicó automáticamente el código %(code)s.", code=discount_obj.code), "success")
 
         duplicate_cutoff = datetime.now() - timedelta(minutes=2)
         duplicate_filter = and_(

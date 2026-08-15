@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
 from flask import url_for
 
-from nuevo_fonotarot.extensions import db
+from nuevo_fonotarot.extensions import db, user_datastore
 from nuevo_fonotarot.flask_app import create_flask
 
 
@@ -94,3 +96,61 @@ def test_promo_actualizar_email_invalid_email(client, app):
     response = client.post("/api/v1/promo/actualizar-email", json={"email": "invalid-email"})
     assert response.status_code == 400
     assert response.get_json()["error"] == "invalid_email"
+
+
+def test_auto_discount_matches_role_and_recent_spend(app):
+    from nuevo_fonotarot.models import DiscountCode, Order, Role
+    from nuevo_fonotarot.tienda.utils import find_auto_discount_code_for_user
+
+    with app.app_context():
+        from nuevo_fonotarot.models import User
+
+        role = user_datastore.find_role("vip-customer") or Role(name="vip-customer")
+        db.session.add(role)
+
+        user = User(email="vip@example.com", username="56987654321", active=True)
+        user.password = "test-password-123"
+        user.roles.append(role)
+        db.session.add(user)
+
+        discount = DiscountCode(
+            code="VIP10",
+            discount_type="percentage",
+            discount_value=Decimal("10"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"roles": ["vip-customer"], "match_mode": "any"},
+        )
+        db.session.add(discount)
+
+        order = Order(
+            user_id=user.id,
+            amount=Decimal("15000"),
+            currency="CLP",
+            email=user.email,
+            provider="flow",
+            payment_status="succeeded",
+            status="paid",
+            created_at=datetime.now() - timedelta(days=5),
+        )
+        db.session.add(order)
+        db.session.commit()
+
+        assert discount.matches_user(user) is True
+        assert find_auto_discount_code_for_user(user, Decimal("12000"), "CLP") == discount
+
+        spend_discount = DiscountCode(
+            code="SPEND15",
+            discount_type="fixed",
+            discount_value=Decimal("1500"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"min_recent_spend": "10000", "recent_spend_window_days": 30, "match_mode": "all"},
+        )
+        db.session.add(spend_discount)
+        db.session.commit()
+
+        assert spend_discount.matches_user(user) is True
+        assert find_auto_discount_code_for_user(user, Decimal("20000"), "CLP").code == "VIP10"

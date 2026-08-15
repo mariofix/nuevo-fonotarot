@@ -1255,6 +1255,7 @@ class DiscountCodeAdminView(SecureModelView):
         "discount_value",
         "currency",
         "is_active",
+        "auto_apply",
         "uses_count",
         "max_uses",
     ]
@@ -1264,6 +1265,8 @@ class DiscountCodeAdminView(SecureModelView):
         "discount_value",
         "currency",
         "is_active",
+        "auto_apply",
+        "auto_apply_criteria",
         "valid_from",
         "valid_to",
         "max_uses",

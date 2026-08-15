@@ -6,13 +6,15 @@ from urllib.parse import urlparse
 
 from flask import flash, redirect, request, session
 from flask_babel import _
+from sqlalchemy import select
 
+from ..extensions import db
 from ..log import get_logger
-from ..models import Order
+from ..models import DiscountCode, Order
 from ..notifications import send_new_order_admin_email
 
 if TYPE_CHECKING:
-    from ..models import DiscountCode
+    from ..models import User
 
 logger = get_logger(__name__)
 
@@ -62,6 +64,25 @@ def apply_discount(amount: Decimal, currency: str, discount_code: "DiscountCode 
     elif discount_code.discount_type == "percentage":
         return min(amount, amount * (discount_code.discount_value / Decimal("100")))
     return Decimal("0")
+
+
+def find_auto_discount_code_for_user(user: "User | None", amount: Decimal, currency: str) -> "DiscountCode | None":
+    """Return the best auto-applicable discount for *user* given the current cart value."""
+    if user is None or not getattr(user, "is_authenticated", False):
+        return None
+
+    candidates = []
+    stmt = select(DiscountCode).where(DiscountCode.is_active.is_(True), DiscountCode.auto_apply.is_(True))
+    for discount_code in db.session.scalars(stmt).all():
+        if not discount_code.is_valid() or not discount_code.matches_user(user):
+            continue
+        discount_amount = apply_discount(amount, currency, discount_code)
+        if discount_amount > 0:
+            candidates.append((discount_amount, discount_code))
+
+    if not candidates:
+        return None
+    return max(candidates, key=lambda item: item[0])[1]
 
 
 def create_payment_and_redirect(
