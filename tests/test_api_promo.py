@@ -154,3 +154,24 @@ def test_auto_discount_matches_role_and_recent_spend(app):
 
         assert spend_discount.matches_user(user) is True
         assert find_auto_discount_code_for_user(user, Decimal("20000"), "CLP").code == "VIP10"
+
+        non_vip_user = User(email="regular@example.com", username="56912345678", active=True)
+        non_vip_user.password = "test-password-123"
+        db.session.add(non_vip_user)
+        db.session.commit()
+
+        order = Order(
+            user_id=non_vip_user.id,
+            amount=Decimal("20000"),
+            currency="CLP",
+            email=non_vip_user.email,
+            provider="flow",
+            payment_status="succeeded",
+            status="paid",
+            created_at=datetime.now() - timedelta(days=10),
+        )
+        db.session.add(order)
+        db.session.commit()
+
+        assert spend_discount.matches_user(non_vip_user) is True
+        assert find_auto_discount_code_for_user(non_vip_user, Decimal("20000"), "CLP").code == "SPEND15"

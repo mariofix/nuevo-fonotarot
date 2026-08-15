@@ -464,7 +464,7 @@ class DiscountCode(db.Model):
             return False
         return True
 
-    def _customer_order_filters(self, user, days: int | None = None) -> list:
+    def _customer_order_filters(self, user: "User | None", days: int | None = None) -> list:
         """Build the SQLAlchemy filters used for a customer's successful orders."""
         if user is None or getattr(user, "id", None) is None:
             return []
@@ -475,20 +475,18 @@ class DiscountCode(db.Model):
             filters.append(Order.created_at >= cutoff)
         return filters
 
-    def _customer_total_spend(self, user, days: int | None = None) -> Decimal:
+    def _customer_total_spend(self, user: "User | None", days: int | None = None) -> Decimal:
         """Total spend for a customer in the selected rolling window."""
         filters = self._customer_order_filters(user, days)
         if not filters:
             return Decimal("0")
 
-        total = db.session.execute(
-            select(func.coalesce(func.sum(Order.amount), 0)).where(*filters)
-        ).scalar()
+        total = db.session.execute(select(func.sum(Order.amount)).where(*filters)).scalar()
         if total is None:
             return Decimal("0")
         return Decimal(str(total))
 
-    def _customer_order_count(self, user, days: int | None = None) -> int:
+    def _customer_order_count(self, user: "User | None", days: int | None = None) -> int:
         """Count successful orders for a customer in a rolling window."""
         filters = self._customer_order_filters(user, days)
         if not filters:
@@ -497,7 +495,7 @@ class DiscountCode(db.Model):
         count = db.session.execute(select(func.count()).select_from(Order).where(*filters)).scalar()
         return int(count or 0)
 
-    def matches_user(self, user) -> bool:
+    def matches_user(self, user: "User | None") -> bool:
         """Return True when the supplied user satisfies the code's auto-apply rules."""
         if not self.auto_apply or user is None:
             return False
@@ -530,11 +528,18 @@ class DiscountCode(db.Model):
             window_days = int(criteria.get("order_window_days") or criteria.get("purchase_window_days") or 365)
             checks.append(self._customer_order_count(user, days=window_days) >= minimum_orders)
 
+        group_values: list[str] = []
         for key in ("customer_group", "segment"):
-            if criteria.get(key):
-                user_groups = set(getattr(user, "groups", []) or [])
-                values = criteria[key] if isinstance(criteria[key], list) else [criteria[key]]
-                checks.append(bool(set(values).intersection(user_groups)))
+            value = criteria.get(key)
+            if value is None:
+                continue
+            if isinstance(value, list):
+                group_values.extend(str(item) for item in value)
+            else:
+                group_values.append(str(value))
+        if group_values:
+            user_groups = {str(group) for group in getattr(user, "groups", []) or []}
+            checks.append(bool(set(group_values).intersection(user_groups)))
 
         if not checks:
             return False
