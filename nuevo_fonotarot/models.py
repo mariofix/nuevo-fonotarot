@@ -2,7 +2,7 @@
 
 import enum
 import uuid
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
@@ -446,6 +446,218 @@ class DiscountCode(db.Model):
         raw = self.auto_apply_criteria or {}
         return raw if isinstance(raw, dict) else {}
 
+    @property
+    def auto_apply_criteria_help(self) -> dict[str, str]:
+        """Friendly examples for filling ``auto_apply_criteria`` JSON."""
+        return {
+            "roles": "Lista de roles, por ejemplo: {'roles': ['vip-customer']} ",
+            "min_total_spent": "Gasto acumulado mínimo, por ejemplo: {'min_total_spent': '10000', 'total_spend_window_days': 365}",
+            "min_recent_spend": "Gasto reciente mínimo, por ejemplo: {'min_recent_spend': '5000', 'recent_spend_window_days': 30}",
+            "date": "Un día específico: {'date': '2025-01-15'}",
+            "dates": "Varios días específicos: {'dates': ['2025-01-15', '2025-02-15']}",
+            "start_date": "Rango de fechas: {'start_date': '2025-01-01', 'end_date': '2025-01-31'}",
+            "days_of_week": "Días repetitivos por semana: {'days_of_week': ['monday', 'wednesday']} o {'days_of_week': 'monday'}",
+            "days_of_month": "Días relativos del mes: {'days_of_month': '1-5'} o {'days_of_month': [1, 2, 3, 4, 5]}",
+            "match_mode": "Cómo combinar las condiciones: 'any' (cualquiera) o 'all' (todas).",
+        }
+
+    @staticmethod
+    def _coerce_date(value: object) -> date | None:
+        """Convert common date-like inputs to a ``date`` instance."""
+        if value is None or value == "":
+            return None
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
+        if isinstance(value, str):
+            text = value.strip()
+            if not text or text.lower() in {"today", "now"}:
+                return datetime.now().date()
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d", "%m/%d/%Y"):
+                try:
+                    return datetime.strptime(text, fmt).date()
+                except ValueError:
+                    continue
+        return None
+
+    @classmethod
+    def _normalise_string_list(cls, value: object) -> list[str]:
+        """Convert a value like a string or list into a clean list of strings."""
+        if value is None:
+            return []
+        if isinstance(value, str):
+            text = value.strip()
+            if not text:
+                return []
+            if "," in text:
+                return [part.strip() for part in text.split(",") if part.strip()]
+            return [text]
+        if isinstance(value, (list, tuple, set)):
+            return [str(item).strip() for item in value if str(item).strip()]
+        return [str(value).strip()]
+
+    @classmethod
+    def _match_day_of_week(cls, current_day: date, value: object) -> bool:
+        """Return True when the given selector matches the current weekday."""
+        weekday_names = {
+            "monday": 1,
+            "tuesday": 2,
+            "wednesday": 3,
+            "thursday": 4,
+            "friday": 5,
+            "saturday": 6,
+            "sunday": 7,
+        }
+        for raw in cls._normalise_string_list(value):
+            name = raw.lower().replace("all ", "").strip()
+            if name.endswith("s") and len(name) > 2 and not name.endswith("ss"):
+                name = name[:-1]
+            candidate = name.replace("-", " ").replace("_", " ")
+            if candidate.isdigit():
+                day_number = int(candidate)
+                if 1 <= day_number <= 7 and current_day.isoweekday() == day_number:
+                    return True
+            if candidate in weekday_names:
+                if current_day.isoweekday() == weekday_names[candidate]:
+                    return True
+            if candidate in {"mon", "lunes"}:
+                if current_day.isoweekday() == 1:
+                    return True
+            if candidate in {"tue", "tuesday", "martes"}:
+                if current_day.isoweekday() == 2:
+                    return True
+            if candidate in {"wed", "wednesday", "miercoles", "miércoles"}:
+                if current_day.isoweekday() == 3:
+                    return True
+            if candidate in {"thu", "thursday", "jueves"}:
+                if current_day.isoweekday() == 4:
+                    return True
+            if candidate in {"fri", "friday", "viernes"}:
+                if current_day.isoweekday() == 5:
+                    return True
+            if candidate in {"sat", "saturday", "sabado", "sábado"}:
+                if current_day.isoweekday() == 6:
+                    return True
+            if candidate in {"sun", "sunday", "domingo"}:
+                if current_day.isoweekday() == 7:
+                    return True
+        return False
+
+    @classmethod
+    def _match_day_of_month(cls, current_day: date, value: object) -> bool:
+        """Return True when the current day is within the selection for the month."""
+        if value in (None, "", "*", "all"):
+            return True
+        numbers: set[int] = set()
+        for raw in cls._normalise_string_list(value):
+            text = str(raw).strip().lower().replace("to", "-").replace("..", "-").strip()
+            if text in {"*", "all", "every day"}:
+                return True
+            if "-" in text:
+                try:
+                    left, right = (segment.strip() for segment in text.split("-", 1))
+                    start = int(left)
+                    end = int(right)
+                    if start > end:
+                        start, end = end, start
+                    numbers.update(range(start, end + 1))
+                except ValueError:
+                    continue
+            else:
+                try:
+                    numbers.add(int(text))
+                except ValueError:
+                    continue
+        return current_day.day in numbers
+
+    @classmethod
+    def _matches_date_criteria(cls, criteria: dict) -> bool | None:
+        """Check if the current date matches the configured date-related criteria."""
+        if not criteria:
+            return None
+
+        today = datetime.now().date()
+        date_checks: list[bool] = []
+
+        for key in ("date", "dates", "exact_date", "exact_dates", "day", "days"):
+            if key not in criteria:
+                continue
+            selector = criteria.get(key)
+            if isinstance(selector, dict):
+                if "start" in selector or "end" in selector:
+                    start = cls._coerce_date(selector.get("start"))
+                    end = cls._coerce_date(selector.get("end"))
+                    if start is not None and end is not None:
+                        date_checks.append(start <= today <= end)
+                    elif start is not None:
+                        date_checks.append(today >= start)
+                    elif end is not None:
+                        date_checks.append(today <= end)
+                if "days_of_week" in selector:
+                    date_checks.append(cls._match_day_of_week(today, selector.get("days_of_week")))
+                if "days_of_month" in selector:
+                    date_checks.append(cls._match_day_of_month(today, selector.get("days_of_month")))
+                continue
+
+            if isinstance(selector, (list, tuple, set)):
+                date_checks.extend(cls._coerce_date(item) == today for item in selector if cls._coerce_date(item) is not None)
+                continue
+
+            exact_date = cls._coerce_date(selector)
+            if exact_date is not None:
+                date_checks.append(exact_date == today)
+
+        for key in ("start_date", "date_start", "start", "date_from"):
+            if key in criteria:
+                start = cls._coerce_date(criteria.get(key))
+                if start is not None:
+                    end = cls._coerce_date(criteria.get("end_date") or criteria.get("date_end") or criteria.get("end"))
+                    if end is not None:
+                        date_checks.append(start <= today <= end)
+                    else:
+                        date_checks.append(today >= start)
+        for key in ("end_date", "date_end", "end"):
+            if key in criteria and "start_date" not in criteria and "date_start" not in criteria and "start" not in criteria:
+                end = cls._coerce_date(criteria.get(key))
+                if end is not None:
+                    date_checks.append(today <= end)
+
+        for key in ("days_of_week", "weekday", "weekdays"):
+            if key in criteria:
+                date_checks.append(cls._match_day_of_week(today, criteria.get(key)))
+
+        for key in ("days_of_month", "day_of_month", "days_in_month", "dom"):
+            if key in criteria:
+                date_checks.append(cls._match_day_of_month(today, criteria.get(key)))
+
+        date_keys = {
+            "date",
+            "dates",
+            "exact_date",
+            "exact_dates",
+            "day",
+            "days",
+            "start_date",
+            "date_start",
+            "end_date",
+            "date_end",
+            "start",
+            "end",
+            "days_of_week",
+            "weekday",
+            "weekdays",
+            "days_of_month",
+            "day_of_month",
+            "days_in_month",
+            "dom",
+        }
+        if not any(key in criteria for key in date_keys):
+            return None
+        if not date_checks:
+            return False
+        return any(date_checks) if str(criteria.get("match_mode", "any")).lower() != "all" else all(date_checks)
+
     def is_valid(self) -> bool:
         """Check if the code is currently active and valid."""
         if not self.is_active:
@@ -540,6 +752,10 @@ class DiscountCode(db.Model):
         if group_values:
             user_groups = {str(group) for group in getattr(user, "groups", []) or []}
             checks.append(bool(set(group_values).intersection(user_groups)))
+
+        date_check = self._matches_date_criteria(criteria)
+        if date_check is not None:
+            checks.append(date_check)
 
         if not checks:
             return False

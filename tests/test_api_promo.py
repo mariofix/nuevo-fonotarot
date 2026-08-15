@@ -175,3 +175,69 @@ def test_auto_discount_matches_role_and_recent_spend(app):
 
         assert spend_discount.matches_user(non_vip_user) is True
         assert find_auto_discount_code_for_user(non_vip_user, Decimal("20000"), "CLP").code == "SPEND15"
+
+
+def test_auto_discount_matches_date_criteria(app):
+    from nuevo_fonotarot.models import DiscountCode, User
+
+    with app.app_context():
+        user = User(email="date-rules@example.com", username="56900000000", active=True)
+        user.password = "test-password-123"
+        db.session.add(user)
+        db.session.commit()
+
+        today = datetime.now().date()
+
+        exact_discount = DiscountCode(
+            code="TODAY10",
+            discount_type="percentage",
+            discount_value=Decimal("10"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"date": today.isoformat(), "match_mode": "any"},
+        )
+        db.session.add(exact_discount)
+
+        range_discount = DiscountCode(
+            code="RANGE10",
+            discount_type="percentage",
+            discount_value=Decimal("10"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={
+                "start_date": (today - timedelta(days=1)).isoformat(),
+                "end_date": (today + timedelta(days=1)).isoformat(),
+                "match_mode": "any",
+            },
+        )
+        db.session.add(range_discount)
+
+        weekly_discount = DiscountCode(
+            code="MONDAY10",
+            discount_type="percentage",
+            discount_value=Decimal("10"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"days_of_week": ["monday"], "match_mode": "any"},
+        )
+        db.session.add(weekly_discount)
+
+        monthly_discount = DiscountCode(
+            code="FIRST5",
+            discount_type="percentage",
+            discount_value=Decimal("10"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"days_of_month": "1-5", "match_mode": "any"},
+        )
+        db.session.add(monthly_discount)
+        db.session.commit()
+
+        assert exact_discount.matches_user(user) is True
+        assert range_discount.matches_user(user) is True
+        assert weekly_discount.matches_user(user) is (today.weekday() == 0)
+        assert monthly_discount.matches_user(user) is (1 <= today.day <= 5)
