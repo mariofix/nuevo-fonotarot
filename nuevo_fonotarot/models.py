@@ -749,9 +749,9 @@ class DiscountCode(db.Model):
         count = db.session.execute(select(func.count()).select_from(Order).where(*filters)).scalar()
         return int(count or 0)
 
-    def matches_user(self, user: "User | None") -> bool:
+    def user_meets_auto_apply_criteria(self, user: "User | None") -> bool:
         """Return True when the supplied user satisfies the code's auto-apply rules."""
-        if not self.auto_apply or user is None:
+        if user is None:
             return False
 
         criteria = self.auto_apply_rules
@@ -764,8 +764,9 @@ class DiscountCode(db.Model):
         if isinstance(roles, str):
             roles = [roles]
         if roles:
-            user_roles = {role.name for role in getattr(user, "roles", [])}
-            checks.append(bool(set(roles).intersection(user_roles)))
+            configured_roles = {str(role).strip().lower() for role in self._normalise_string_list(roles)}
+            user_roles = {str(role.name).strip().lower() for role in getattr(user, "roles", []) or []}
+            checks.append(bool(configured_roles.intersection(user_roles)))
 
         if criteria.get("min_total_spent") is not None:
             spend_limit = Decimal(str(criteria["min_total_spent"]))
@@ -792,8 +793,9 @@ class DiscountCode(db.Model):
             else:
                 group_values.append(str(value))
         if group_values:
-            user_groups = {str(group) for group in getattr(user, "groups", []) or []}
-            checks.append(bool(set(group_values).intersection(user_groups)))
+            configured_groups = {str(group).strip().lower() for group in self._normalise_string_list(group_values)}
+            user_groups = {str(group).strip().lower() for group in getattr(user, "groups", []) or []}
+            checks.append(bool(configured_groups.intersection(user_groups)))
 
         date_check = self._matches_date_criteria(criteria)
         if date_check is not None:
@@ -804,6 +806,18 @@ class DiscountCode(db.Model):
 
         match_mode = str(criteria.get("match_mode", "any")).lower()
         return all(checks) if match_mode == "all" else any(checks)
+
+    def matches_user(self, user: "User | None") -> bool:
+        """Return True when the supplied user qualifies for this auto-apply code.
+
+        This helper is intentionally restricted to codes with ``auto_apply`` enabled.
+        Manual discount validation should call ``user_meets_auto_apply_criteria``
+        whenever the code defines ``auto_apply_criteria`` so that the same
+        eligibility rules are enforced consistently for both flows.
+        """
+        if not self.auto_apply or user is None:
+            return False
+        return self.user_meets_auto_apply_criteria(user)
 
 
 class Order(db.Model, PaymentMixin):

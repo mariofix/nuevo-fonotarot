@@ -187,6 +187,39 @@ def test_discount_code_coerce_date_uses_locale(app):
         assert DiscountCode._coerce_date("02/03/2026") == date(2026, 2, 3)
 
 
+def test_auto_discount_matches_case_insensitive_roles_and_manual_eligibility(app):
+    from nuevo_fonotarot.models import DiscountCode, Role, User
+
+    with app.app_context():
+        admin_role = user_datastore.find_role("Admin") or Role(name="Admin")
+        db.session.add(admin_role)
+
+        admin_user = User(email="admin-case@example.com", username="56911111111", active=True)
+        admin_user.password = "test-password-123"
+        admin_user.roles.append(admin_role)
+        db.session.add(admin_user)
+
+        regular_user = User(email="regular-case@example.com", username="56922222222", active=True)
+        regular_user.password = "test-password-123"
+        db.session.add(regular_user)
+        db.session.commit()
+
+        admin_discount = DiscountCode(
+            code="ADMIN100",
+            discount_type="percentage",
+            discount_value=Decimal("100"),
+            currency="CLP",
+            is_active=True,
+            auto_apply=True,
+            auto_apply_criteria={"roles": ["admin"], "match_mode": "any"},
+        )
+        db.session.add(admin_discount)
+        db.session.commit()
+
+        assert admin_discount.matches_user(admin_user) is True
+        assert admin_discount.user_meets_auto_apply_criteria(regular_user) is False
+
+
 def test_auto_discount_matches_date_criteria(app):
     from nuevo_fonotarot.models import DiscountCode, User
 

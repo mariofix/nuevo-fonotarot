@@ -68,6 +68,12 @@ def comprar_minutos(pack_slug: str):
                 flash(_("Código de descuento inválido o expirado."), "danger")
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
+            if discount_obj.auto_apply_criteria and not discount_obj.user_meets_auto_apply_criteria(
+                current_user if is_authenticated_user else None
+            ):
+                flash(_("El código de descuento no cumple las condiciones de uso."), "danger")
+                return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
+
             discount_amount = apply_discount(pack.price, pack.currency, discount_obj)
             if discount_amount <= 0:
                 flash(_("El código de descuento no es aplicable a este producto."), "danger")

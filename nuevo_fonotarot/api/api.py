@@ -145,6 +145,10 @@ def preview_discount():
     if not discount_obj or not discount_obj.is_valid():
         return jsonify({"error": _("Código de descuento inválido o expirado.")}), 400
 
+    customer = current_user if getattr(current_user, "is_authenticated", False) else None
+    if discount_obj.auto_apply_criteria and not discount_obj.user_meets_auto_apply_criteria(customer):
+        return jsonify({"error": _("El código de descuento no cumple las condiciones de uso.")}), 400
+
     price = None
     currency = None
 
