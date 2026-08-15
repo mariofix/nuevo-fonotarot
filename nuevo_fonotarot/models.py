@@ -462,6 +462,24 @@ class DiscountCode(db.Model):
         }
 
     @staticmethod
+    def _preferred_date_formats() -> tuple[str, str]:
+        """Return the preferred order for ambiguous slash-delimited dates."""
+        locale_name = ""
+        try:
+            locale = get_locale()
+        except RuntimeError:
+            locale = None
+        if locale is not None:
+            locale_name = str(locale).lower()
+
+        # ``es_*`` and most European locales use DD/MM/YYYY. ``en_*`` usually uses
+        # MM/DD/YYYY. When both values are valid, prefer the active locale; if the
+        # locale is unknown, keep the app's default (Spanish/Chile) convention.
+        if locale_name.startswith("en"):
+            return "%m/%d/%Y", "%d/%m/%Y"
+        return "%d/%m/%Y", "%m/%d/%Y"
+
+    @staticmethod
     def _coerce_date(value: object) -> date | None:
         """Convert common date-like inputs to a ``date`` instance."""
         if value is None or value == "":
@@ -471,12 +489,36 @@ class DiscountCode(db.Model):
         if isinstance(value, date):
             return value
         if isinstance(value, str):
-            text = value.strip()
-            if not text or text.lower() in {"today", "now"}:
+            date_text = value.strip()
+            if not date_text or date_text.lower() in {"today", "now"}:
                 return datetime.now().date()
-            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d", "%m/%d/%Y"):
+
+            if "/" in date_text:
+                parts = [part.strip() for part in date_text.split("/")]
+                if len(parts) == 3 and all(part.isdigit() for part in parts):
+                    first, second, _ = (int(part) for part in parts)
+                    if first > 12 and second <= 12:
+                        return datetime.strptime(date_text, "%d/%m/%Y").date()
+                    if second > 12 and first <= 12:
+                        return datetime.strptime(date_text, "%m/%d/%Y").date()
+
+                    preferred, fallback = DiscountCode._preferred_date_formats()
+                    for fmt in (preferred, fallback):
+                        try:
+                            return datetime.strptime(date_text, fmt).date()
+                        except ValueError:
+                            continue
+
+            for fmt in ("%Y-%m-%d", "%Y/%m/%d"):
                 try:
-                    return datetime.strptime(text, fmt).date()
+                    return datetime.strptime(date_text, fmt).date()
+                except ValueError:
+                    continue
+
+            preferred, fallback = DiscountCode._preferred_date_formats()
+            for fmt in (preferred, fallback):
+                try:
+                    return datetime.strptime(date_text, fmt).date()
                 except ValueError:
                     continue
         return None

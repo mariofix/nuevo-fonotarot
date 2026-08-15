@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -175,6 +175,16 @@ def test_auto_discount_matches_role_and_recent_spend(app):
 
         assert spend_discount.matches_user(non_vip_user) is True
         assert find_auto_discount_code_for_user(non_vip_user, Decimal("20000"), "CLP").code == "SPEND15"
+
+
+def test_discount_code_coerce_date_uses_locale(app):
+    from nuevo_fonotarot.models import DiscountCode
+
+    with app.test_request_context("/"):
+        assert DiscountCode._coerce_date("02/03/2026") == date(2026, 3, 2)
+
+    with app.test_request_context("/", headers={"Accept-Language": "en-US"}):
+        assert DiscountCode._coerce_date("02/03/2026") == date(2026, 2, 3)
 
 
 def test_auto_discount_matches_date_criteria(app):
