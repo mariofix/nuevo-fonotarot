@@ -1,435 +1,435 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-<script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js', v='0.1.5') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js', v='0.1.5') }}"></script>
 
-<div class="row row-cards">
+  <div class="row row-cards">
   {# Month / year selector form #}
-  <div class="col-12 mb-3">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">
-          <i class="ti ti-calendar-stats me-2"></i>Seleccionar período
-        </h3>
-      </div>
-      <div class="card-body">
-        <form method="GET" class="row g-3 align-items-end">
-          <div class="col-auto">
-            <label class="form-label">Mes</label>
-            <select name="month" class="form-select">
-              {% for m_num, m_name in months_es.items() %}
-              <option value="{{ m_num }}"{% if m_num == month %} selected{% endif %}>{{ m_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-auto">
-            <label class="form-label">Año</label>
-            <input type="number" name="year" value="{{ year }}"
-                   min="{{ min_year }}" max="{{ today.year + 1 }}"
-                   class="form-control" style="width:100px">
-          </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary">
-              <i class="ti ti-search me-1"></i>Ver reporte
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% if order_stats_error %}
-<div class="alert alert-danger">Error cargando estadísticas de órdenes: {{ order_stats_error }}</div>
-{% elif order_stats %}
-<div class="row row-cards mb-2">
-  <div class="col-sm-6 col-xl-3">
-    <div class="card card-sm">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-auto">
-            <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-month"
-                 data-graph-paid="{{ order_stats.month.paid }}"
-                 data-graph-unpaid="{{ order_stats.month.unpaid }}"></div>
-          </div>
-          <div class="col">
-            <div class="font-weight-medium">{{ order_stats.month.total }} Ordenes</div>
-            <div class="text-secondary">Mes ({{ order_stats.month.label }})</div>
-          </div>
+    <div class="col-12 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="ti ti-calendar-stats me-2"></i>Seleccionar período
+          </h3>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-xl-3">
-    <div class="card card-sm">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-auto">
-            <span class="bg-cyan text-white avatar"><i class="ti ti-receipt-dollar icon icon-1"></i></span>
-          </div>
-          <div class="col">
-            <div class="font-weight-medium">{{ order_stats.alltime.total }}</div>
-            <div class="text-secondary">Ordenes Totales</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-xl-3">
-    <div class="card card-sm">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-auto">
-            {% set pct = order_stats.month.sales_pct %}
-            <span class="{{ 'bg-green-lt' if pct is none or pct >= 0 else 'bg-red-lt' }} avatar">
-              <i class="ti ti-arrow-{{ 'up' if pct is none or pct >= 0 else 'down' }} icon icon-1"></i>
-            </span>
-          </div>
-          <div class="col">
-            <div class="font-weight-medium">
-              {{ '${:,.0f}'.format(order_stats.month.sales).replace(',', '.') }}
-              {% if pct is not none %}
-              <span class="float-end font-weight-medium {{ 'text-green' if pct >= 0 else 'text-red' }}">{{ '%+.1f'|format(pct) }}%</span>
-              {% endif %}
+        <div class="card-body">
+          <form method="GET" class="row g-3 align-items-end">
+            <div class="col-auto">
+              <label class="form-label">Mes</label>
+              <select name="month" class="form-select">
+                {% for m_num, m_name in months_es.items() %}
+                  <option value="{{ m_num }}"{% if m_num == month %} selected{% endif %}>{{ m_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="text-secondary">Ventas del mes ({{ order_stats.month.label }})</div>
-          </div>
+            <div class="col-auto">
+              <label class="form-label">Año</label>
+              <input type="number" name="year" value="{{ year }}"
+                     min="{{ min_year }}" max="{{ today.year + 1 }}"
+                     class="form-control" style="width:100px">
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary">
+                <i class="ti ti-search me-1"></i>Ver reporte
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-6 col-xl-3">
-    <div class="card card-sm">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-auto">
-            <span class="bg-cyan text-white avatar"><i class="ti ti-currency-dollar icon icon-1"></i></span>
+  {% if order_stats_error %}
+    <div class="alert alert-danger">Error cargando estadísticas de órdenes: {{ order_stats_error }}</div>
+  {% elif order_stats %}
+    <div class="row row-cards mb-2">
+      <div class="col-sm-6 col-xl-3">
+        <div class="card card-sm">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-month"
+                     data-graph-paid="{{ order_stats.month.paid }}"
+                     data-graph-unpaid="{{ order_stats.month.unpaid }}"></div>
+              </div>
+              <div class="col">
+                <div class="font-weight-medium">{{ order_stats.month.total }} Ordenes</div>
+                <div class="text-secondary">Mes ({{ order_stats.month.label }})</div>
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <div class="font-weight-strong">{{ '${:,.0f}'.format(order_stats.alltime.sales).replace(',', '.') }}</div>
-            <div class="text-secondary">Ventas Totales</div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xl-3">
+        <div class="card card-sm">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <span class="bg-cyan text-white avatar"><i class="ti ti-receipt-dollar icon icon-1"></i></span>
+              </div>
+              <div class="col">
+                <div class="font-weight-medium">{{ order_stats.alltime.total }}</div>
+                <div class="text-secondary">Ordenes Totales</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xl-3">
+        <div class="card card-sm">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                {% set pct = order_stats.month.sales_pct %}
+                <span class="{{ 'bg-green-lt' if pct is none or pct >= 0 else 'bg-red-lt' }} avatar">
+                  <i class="ti ti-arrow-{{ 'up' if pct is none or pct >= 0 else 'down' }} icon icon-1"></i>
+                </span>
+              </div>
+              <div class="col">
+                <div class="font-weight-medium">
+                  {{ '${:,.0f}'.format(order_stats.month.sales).replace(',', '.') }}
+                  {% if pct is not none %}
+                    <span class="float-end font-weight-medium {{ 'text-green' if pct >= 0 else 'text-red' }}">{{ '%+.1f'|format(pct) }}%</span>
+                  {% endif %}
+                </div>
+                <div class="text-secondary">Ventas del mes ({{ order_stats.month.label }})</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-xl-3">
+        <div class="card card-sm">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <span class="bg-cyan text-white avatar"><i class="ti ti-currency-dollar icon icon-1"></i></span>
+              </div>
+              <div class="col">
+                <div class="font-weight-strong">{{ '${:,.0f}'.format(order_stats.alltime.sales).replace(',', '.') }}</div>
+                <div class="text-secondary">Ventas Totales</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-{% endif %}
+  {% endif %}
 
-{% if catalog_stats_error %}
-<div class="alert alert-danger">Error cargando estadísticas de catálogo: {{ catalog_stats_error }}</div>
-{% elif catalog_stats %}
-<div class="row row-cards mb-2">
-  <div class="col-xl-7 col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Ventas — <span id="sales-chart-granularity-label">vista diaria</span></h3>
-        <div class="card-actions">
-          <button type="button" class="btn btn-sm btn-outline-secondary" id="sales-chart-reset">
-            Restablecer zoom
-          </button>
+  {% if catalog_stats_error %}
+    <div class="alert alert-danger">Error cargando estadísticas de catálogo: {{ catalog_stats_error }}</div>
+  {% elif catalog_stats %}
+    <div class="row row-cards mb-2">
+      <div class="col-xl-7 col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Ventas — <span id="sales-chart-granularity-label">vista diaria</span></h3>
+            <div class="card-actions">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="sales-chart-reset">
+                Restablecer zoom
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="sales-chart" style="min-height: 300px;"></div>
+          </div>
         </div>
       </div>
-      <div class="card-body">
-        <div id="sales-chart" style="min-height: 300px;"></div>
+      <div class="col-xl-5 col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Ventas por Pasarela de Pago ({{ months_es[month] }} {{ year }})</h3>
+          </div>
+          <table class="table card-table table-vcenter">
+            <thead>
+              <tr>
+                <th>Pasarela</th>
+                <th>Ventas (mes)</th>
+                <th>Monto (mes)</th>
+                <th>Monto (tot)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in catalog_stats.pay_providers %}
+                <tr>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.month_qty }}</td>
+                  <td>{{ row.month_amount_display }}</td>
+                  <td>{{ row.total_amount_display }}</td>
+                  <td class="w-25">
+                    <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Mes: {{ row.month_amount_display }} ({{ row.width_pct }}% del total)">
+                      <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="6" class="text-secondary">Sin pagos.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="col-xl-5 col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Ventas por Pasarela de Pago ({{ months_es[month] }} {{ year }})</h3>
+
+    <div class="row row-cards mb-2">
+      <div class="col-sm-12 col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Planes de Minutos ({{ months_es[month] }} {{ year }})</h3>
+          </div>
+          <table class="table card-table table-vcenter">
+            <thead>
+              <tr><th>Plan</th><th>Ventas (mes)</th><th>Ventas (tot)</th><th></th></tr>
+            </thead>
+            <tbody>
+              {% for row in catalog_stats.minute_packs %}
+                <tr {% if row.is_featured %}class="table-success"{% endif %}>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.month_qty }}</td>
+                  <td>{{ row.total_qty }}</td>
+                  <td class="w-25">
+                    <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="Ventas Mes: {{ row.month_revenue_display }} ({{ row.width_pct }}%)">
+                      <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="4" class="text-secondary">Sin planes activos.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table class="table card-table table-vcenter">
-        <thead>
-          <tr>
-            <th>Pasarela</th>
-            <th>Ventas (mes)</th>
-            <th>Monto (mes)</th>
-            <th>Monto (tot)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in catalog_stats.pay_providers %}
-          <tr>
-            <td>{{ row.name }}</td>
-            <td>{{ row.month_qty }}</td>
-            <td>{{ row.month_amount_display }}</td>
-            <td>{{ row.total_amount_display }}</td>
-            <td class="w-25">
-              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Mes: {{ row.month_amount_display }} ({{ row.width_pct }}% del total)">
-                <div class="progress-bar bg-primary" style="width: {{ row.width_pct }}%"></div>
-              </div>
-            </td>
-          </tr>
-          {% else %}
-          <tr><td colspan="6" class="text-secondary">Sin pagos.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
-<div class="row row-cards mb-2">
-  <div class="col-sm-12 col-lg-4">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Planes de Minutos ({{ months_es[month] }} {{ year }})</h3>
+      <div class="col-sm-12 col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Tarjetas de Regalo ({{ months_es[month] }} {{ year }})</h3>
+          </div>
+          <table class="table card-table table-vcenter">
+            <thead>
+              <tr><th>Tarjeta</th><th>Ventas (mes)</th><th>Ventas (tot)</th><th>% Uso</th><th></th></tr>
+            </thead>
+            <tbody>
+              {% for row in catalog_stats.gift_cards %}
+                <tr {% if row.is_featured %}class="table-success"{% endif %}>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.month_qty }}</td>
+                  <td>{{ row.total_qty }}</td>
+                  <td>{{ (row.pct_used ~ '%') if row.pct_used is not none else '-' }}</td>
+                  <td class="w-25">
+                    <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Ventas Mes: {{ row.month_revenue_display }} ({{ row.width_pct }}%)">
+                      <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="5" class="text-secondary">Sin tarjetas activas.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table class="table card-table table-vcenter">
-        <thead>
-          <tr><th>Plan</th><th>Ventas (mes)</th><th>Ventas (tot)</th><th></th></tr>
-        </thead>
-        <tbody>
-          {% for row in catalog_stats.minute_packs %}
-          <tr {% if row.is_featured %}class="table-success"{% endif %}>
-            <td>{{ row.name }}</td>
-            <td>{{ row.month_qty }}</td>
-            <td>{{ row.total_qty }}</td>
-            <td class="w-25">
-              <div class="progress progress-xs" data-bs-toggle="tooltip" data-bs-placement="top" title="Ventas Mes: {{ row.month_revenue_display }} ({{ row.width_pct }}%)">
-                <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
-              </div>
-            </td>
-          </tr>
-          {% else %}
-          <tr><td colspan="4" class="text-secondary">Sin planes activos.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="col-sm-12 col-lg-4">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Tarjetas de Regalo ({{ months_es[month] }} {{ year }})</h3>
+      <div class="col-sm-12 col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Códigos Promocionales ({{ months_es[month] }} {{ year }})</h3>
+          </div>
+          <table class="table card-table table-vcenter">
+            <thead>
+              <tr><th>Código</th><th>Usos (mes)</th><th>Usos (tot)</th><th>% Uso (tot)</th><th></th></tr>
+            </thead>
+            <tbody>
+              {% for row in catalog_stats.discount_codes %}
+                <tr>
+                  <td>{{ row.code }}</td>
+                  <td>{{ row.month_uses }}</td>
+                  <td>{{ row.uses }} de {{ row.max_uses }}</td>
+                  <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
+                  <td class="w-25">
+                    <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Utilizado: {{ row.discounted_display }}">
+                      <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="4" class="text-secondary">Sin códigos registrados.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table class="table card-table table-vcenter">
-        <thead>
-          <tr><th>Tarjeta</th><th>Ventas (mes)</th><th>Ventas (tot)</th><th>% Uso</th><th></th></tr>
-        </thead>
-        <tbody>
-          {% for row in catalog_stats.gift_cards %}
-          <tr {% if row.is_featured %}class="table-success"{% endif %}>
-            <td>{{ row.name }}</td>
-            <td>{{ row.month_qty }}</td>
-            <td>{{ row.total_qty }}</td>
-            <td>{{ (row.pct_used ~ '%') if row.pct_used is not none else '-' }}</td>
-            <td class="w-25">
-              <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Ventas Mes: {{ row.month_revenue_display }} ({{ row.width_pct }}%)">
-                <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
-              </div>
-            </td>
-          </tr>
-          {% else %}
-          <tr><td colspan="5" class="text-secondary">Sin tarjetas activas.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
-  </div>
 
-  <div class="col-sm-12 col-lg-4">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Códigos Promocionales ({{ months_es[month] }} {{ year }})</h3>
-      </div>
-      <table class="table card-table table-vcenter">
-        <thead>
-          <tr><th>Código</th><th>Usos (mes)</th><th>Usos (tot)</th><th>% Uso (tot)</th><th></th></tr>
-        </thead>
-        <tbody>
-          {% for row in catalog_stats.discount_codes %}
-          <tr>
-            <td>{{ row.code }}</td>
-            <td>{{ row.month_uses }}</td>
-            <td>{{ row.uses }} de {{ row.max_uses }}</td>
-            <td>{{ (row.pct ~ '%') if row.pct is not none else '-' }}</td>
-            <td class="w-25">
-              <div class="progress progress-xs " data-bs-toggle="tooltip" data-bs-placement="top" title="Monto Utilizado: {{ row.discounted_display }}">
-                <div class="progress-bar bg-{{ row.color }} progress-bar-striped progress-bar-animated" style="width: {{ row.width_pct }}%"></div>
-              </div>
-            </td>
-          </tr>
-          {% else %}
-          <tr><td colspan="4" class="text-secondary">Sin códigos registrados.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!window.ApexCharts) return;
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  if (!window.ApexCharts) return;
+        var SALES_SERIES_URL = "{{ url_for('admin.sales_series') }}";
+        var GRANULARITY_LEVELS = ["week", "day", "hour"];
+        var DEFAULT_LEVEL_INDEX = 1; // "day"
+        var granularityLabels = { week: "vista semanal", day: "vista diaria", hour: "vista por hora" };
 
-  var SALES_SERIES_URL = "{{ url_for('admin.sales_series') }}";
-  var GRANULARITY_LEVELS = ["week", "day", "hour"];
-  var DEFAULT_LEVEL_INDEX = 1; // "day"
-  var granularityLabels = { week: "vista semanal", day: "vista diaria", hour: "vista por hora" };
+        var chartEl = document.getElementById("sales-chart");
+        var labelEl = document.getElementById("sales-chart-granularity-label");
+        var fetchController = null;
+        var chart = null;
 
-  var chartEl = document.getElementById("sales-chart");
-  var labelEl = document.getElementById("sales-chart-granularity-label");
-  var fetchController = null;
-  var chart = null;
+        var levelIndex = DEFAULT_LEVEL_INDEX;
+        var currentSpanMs = null;
 
-  var levelIndex = DEFAULT_LEVEL_INDEX;
-  var currentSpanMs = null;
+        var startMs = {{ start_ms }};
+        var endMs = {{ end_ms }};
 
-  var startMs = {{ start_ms }};
-  var endMs = {{ end_ms }};
+        function formatCLP(val) {
+          return "$" + Math.round(val).toLocaleString("es-CL");
+        }
 
-  function formatCLP(val) {
-    return "$" + Math.round(val).toLocaleString("es-CL");
-  }
+        function currentThemeMode() {
+          var theme = document.documentElement.getAttribute("data-bs-theme");
+          return theme === "dark" ? "dark" : "light";
+        }
 
-  function currentThemeMode() {
-    var theme = document.documentElement.getAttribute("data-bs-theme");
-    return theme === "dark" ? "dark" : "light";
-  }
+        function fetchSeries(t_startMs, t_endMs, granularity) {
+          if (fetchController) fetchController.abort();
+          fetchController = new AbortController();
 
-  function fetchSeries(t_startMs, t_endMs, granularity) {
-    if (fetchController) fetchController.abort();
-    fetchController = new AbortController();
+          var url = new URL(SALES_SERIES_URL, window.location.origin);
+          if (t_startMs) url.searchParams.set("start", t_startMs);
+          if (t_endMs) url.searchParams.set("end", t_endMs);
+          if (granularity) url.searchParams.set("granularity", granularity);
 
-    var url = new URL(SALES_SERIES_URL, window.location.origin);
-    if (t_startMs) url.searchParams.set("start", t_startMs);
-    if (t_endMs) url.searchParams.set("end", t_endMs);
-    if (granularity) url.searchParams.set("granularity", granularity);
+          return fetch(url, { signal: fetchController.signal })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data.error) { console.error("sales-series error:", data.error); return; }
+              labelEl.textContent = granularityLabels[data.granularity] || data.granularity;
+              var points = data.series.map(function (pt) { return [pt.x, pt.y]; });
+              chart.updateOptions({
+                series: [{ name: "Ventas", data: points }],
+                xaxis: { min: t_startMs || undefined, max: t_endMs || undefined },
+              }, false, true);
+            })
+            .catch(function (err) {
+              if (err.name !== "AbortError") console.error("sales-series fetch failed:", err);
+            });
+        }
 
-    return fetch(url, { signal: fetchController.signal })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (data.error) { console.error("sales-series error:", data.error); return; }
-        labelEl.textContent = granularityLabels[data.granularity] || data.granularity;
-        var points = data.series.map(function (pt) { return [pt.x, pt.y]; });
-        chart.updateOptions({
-          series: [{ name: "Ventas", data: points }],
-          xaxis: { min: t_startMs || undefined, max: t_endMs || undefined },
-        }, false, true);
-      })
-      .catch(function (err) {
-        if (err.name !== "AbortError") console.error("sales-series fetch failed:", err);
-      });
-  }
+        function resetLadder() {
+          levelIndex = DEFAULT_LEVEL_INDEX;
+          currentSpanMs = endMs - startMs;
+          fetchSeries(startMs, endMs, "day");
+        }
 
-  function resetLadder() {
-    levelIndex = DEFAULT_LEVEL_INDEX;
-    currentSpanMs = endMs - startMs;
-    fetchSeries(startMs, endMs, "day");
-  }
-
-  var options = {
-    series: [{ name: "Ventas", data: [] }],
-    chart: {
-      type: "area",
-      stacked: false,
-      height: 300,
-      fontFamily: "inherit",
-      animations: { enabled: true },
-      background: "transparent",
-      zoom: { type: "x", enabled: true, autoScaleYaxis: true },
-      toolbar: { autoSelected: "zoom", tools: { zoom: true, zoomin: true, zoomout: true, reset: true, pan: false } },
-      redrawOnParentResize: true,
-      redrawOnWindowResize: true,
-      events: {
-        zoomed: function (chartCtx, opts) {
-          var min = opts.xaxis.min, max = opts.xaxis.max;
-          if (!Number.isFinite(min) || !Number.isFinite(max)) return;
-          var newSpan = max - min;
-          if (currentSpanMs !== null) {
-            if (newSpan < currentSpanMs - 1000) {
-              levelIndex = Math.min(levelIndex + 1, GRANULARITY_LEVELS.length - 1);
-            } else if (newSpan > currentSpanMs + 1000) {
-              levelIndex = Math.max(levelIndex - 1, 0);
-            }
-          }
-          currentSpanMs = newSpan;
-          fetchSeries(min, max, GRANULARITY_LEVELS[levelIndex]);
-        },
-        beforeResetZoom: function () {
-          resetLadder();
-          return { xaxis: {} };
-        },
-      },
-    },
-    theme: { mode: currentThemeMode() },
-    dataLabels: { enabled: false },
-    markers: { size: 0 },
-    fill: {
-      type: "gradient",
-      gradient: { shadeIntensity: 1, inverseColors: false, opacityFrom: 0.5, opacityTo: 0, stops: [0, 90, 100] },
-    },
-    colors: ["var(--tblr-purple)"],
-    yaxis: {
-      labels: { formatter: formatCLP },
-      title: { text: "Ventas" },
-    },
-    xaxis: { type: "datetime" },
-    tooltip: {
-      shared: false,
-      x: { format: "dd MMM yyyy HH:mm" },
-      y: { formatter: formatCLP },
-    },
-  };
-
-  function initChart() {
-    chart = new ApexCharts(chartEl, options);
-    chart.render().then(function () {
-      resetLadder();
-    });
-  }
-
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(initChart);
-  } else {
-    initChart();
-  }
-
-  document.getElementById("sales-chart-reset").addEventListener("click", function () {
-    chart.resetSeries(true, true);
-    resetLadder();
-  });
-
-  var themeObserver = new MutationObserver(function () {
-    if (chart) chart.updateOptions({ theme: { mode: currentThemeMode() } }, false, false);
-  });
-  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
-});
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (!window.ApexCharts) return;
-    document.querySelectorAll(".chart-sparkline[data-graph-paid]").forEach(function (el) {
-      var paid = parseInt(el.dataset.graphPaid, 10) || 0;
-      var unpaid = parseInt(el.dataset.graphUnpaid, 10) || 0;
-      var total = paid + unpaid;
-      var pct = total ? Math.round((paid / total) * 100) : 0;
-      new ApexCharts(el, {
-        chart: {
-          type: "radialBar", fontFamily: "inherit", height: 40, width: 40,
-          animations: { enabled: true }, sparkline: { enabled: true },
-        },
-        tooltip: { enabled: false },
-        plotOptions: {
-          radialBar: {
-            hollow: { margin: 0, size: "75%" },
-            track: { margin: 0 },
-            dataLabels: { show: false },
+        var options = {
+          series: [{ name: "Ventas", data: [] }],
+          chart: {
+            type: "area",
+            stacked: false,
+            height: 300,
+            fontFamily: "inherit",
+            animations: { enabled: true },
+            background: "transparent",
+            zoom: { type: "x", enabled: true, autoScaleYaxis: true },
+            toolbar: { autoSelected: "zoom", tools: { zoom: true, zoomin: true, zoomout: true, reset: true, pan: false } },
+            redrawOnParentResize: true,
+            redrawOnWindowResize: true,
+            events: {
+              zoomed: function (chartCtx, opts) {
+                var min = opts.xaxis.min, max = opts.xaxis.max;
+                if (!Number.isFinite(min) || !Number.isFinite(max)) return;
+                var newSpan = max - min;
+                if (currentSpanMs !== null) {
+                  if (newSpan < currentSpanMs - 1000) {
+                    levelIndex = Math.min(levelIndex + 1, GRANULARITY_LEVELS.length - 1);
+                  } else if (newSpan > currentSpanMs + 1000) {
+                    levelIndex = Math.max(levelIndex - 1, 0);
+                  }
+                }
+                currentSpanMs = newSpan;
+                fetchSeries(min, max, GRANULARITY_LEVELS[levelIndex]);
+              },
+              beforeResetZoom: function () {
+                resetLadder();
+                return { xaxis: {} };
+              },
+            },
           },
-        },
-        colors: ["var(--tblr-green)"],
-        series: [pct],
-      }).render();
-    });
-  });
-</script>
-{% endif %}
+          theme: { mode: currentThemeMode() },
+          dataLabels: { enabled: false },
+          markers: { size: 0 },
+          fill: {
+            type: "gradient",
+            gradient: { shadeIntensity: 1, inverseColors: false, opacityFrom: 0.5, opacityTo: 0, stops: [0, 90, 100] },
+          },
+          colors: ["var(--tblr-purple)"],
+          yaxis: {
+            labels: { formatter: formatCLP },
+            title: { text: "Ventas" },
+          },
+          xaxis: { type: "datetime" },
+          tooltip: {
+            shared: false,
+            x: { format: "dd MMM yyyy HH:mm" },
+            y: { formatter: formatCLP },
+          },
+        };
+
+        function initChart() {
+          chart = new ApexCharts(chartEl, options);
+          chart.render().then(function () {
+            resetLadder();
+          });
+        }
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(initChart);
+        } else {
+          initChart();
+        }
+
+        document.getElementById("sales-chart-reset").addEventListener("click", function () {
+          chart.resetSeries(true, true);
+          resetLadder();
+        });
+
+        var themeObserver = new MutationObserver(function () {
+          if (chart) chart.updateOptions({ theme: { mode: currentThemeMode() } }, false, false);
+        });
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!window.ApexCharts) return;
+        document.querySelectorAll(".chart-sparkline[data-graph-paid]").forEach(function (el) {
+          var paid = parseInt(el.dataset.graphPaid, 10) || 0;
+          var unpaid = parseInt(el.dataset.graphUnpaid, 10) || 0;
+          var total = paid + unpaid;
+          var pct = total ? Math.round((paid / total) * 100) : 0;
+          new ApexCharts(el, {
+            chart: {
+              type: "radialBar", fontFamily: "inherit", height: 40, width: 40,
+              animations: { enabled: true }, sparkline: { enabled: true },
+            },
+            tooltip: { enabled: false },
+            plotOptions: {
+              radialBar: {
+                hollow: { margin: 0, size: "75%" },
+                track: { margin: 0 },
+                dataLabels: { show: false },
+              },
+            },
+            colors: ["var(--tblr-green)"],
+            series: [pct],
+          }).render();
+        });
+      });
+    </script>
+  {% endif %}
 {% endblock %}

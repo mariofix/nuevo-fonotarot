@@ -485,6 +485,7 @@ class MonthlyStoreReportView(BaseView):
 
         try:
             from .utils import _fetch_order_stats
+
             order_stats = _fetch_order_stats(year=year, month=month)
         except Exception as exc:
             order_stats_error = str(exc)
@@ -509,8 +510,8 @@ class MonthlyStoreReportView(BaseView):
             min_year=_REPORT_MIN_YEAR,
             catalog_stats=catalog_stats,
             catalog_stats_error=catalog_stats_error,
-            order_stats=order_stats if 'order_stats' in locals() else None,
-            order_stats_error=order_stats_error if 'order_stats_error' in locals() else None,
+            order_stats=order_stats if "order_stats" in locals() else None,
+            order_stats_error=order_stats_error if "order_stats_error" in locals() else None,
             start_ms=start_ms,
             end_ms=end_ms,
             today=today,
