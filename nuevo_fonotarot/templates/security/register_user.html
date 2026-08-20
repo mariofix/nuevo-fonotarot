@@ -1,63 +1,63 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>{{ _("Crear cuenta — Fonotarot") }}</title>
-  <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{{ _("Crear cuenta — Fonotarot") }}</title>
+    <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/playfair-display.css') }}" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --plum:    #6b3fa0;
-      --plum-dk: #4a2872;
-      --gold:    #c9a84c;
-      --gold-lt: #e8c56a;
-      --ink:     #0d0818;
-      --panel:   #130b24;
-      --field:   #1c1038;
-      --border:  #2d1a52;
-      --text:    #f0e8ff;
-      --muted:   #8a7aaa;
-      --error:   #f87171;
-    }
+      :root {
+        --plum:    #6b3fa0;
+        --plum-dk: #4a2872;
+        --gold:    #c9a84c;
+        --gold-lt: #e8c56a;
+        --ink:     #0d0818;
+        --panel:   #130b24;
+        --field:   #1c1038;
+        --border:  #2d1a52;
+        --text:    #f0e8ff;
+        --muted:   #8a7aaa;
+        --error:   #f87171;
+      }
 
-    html, body { height: 100%; }
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--ink);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-    }
+      html, body { height: 100%; }
+      body {
+        font-family: 'Montserrat', sans-serif;
+        background: var(--ink);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+      }
 
-    .auth-split {
-      flex: 1;
-      display: flex;
-      min-height: 100vh;
-    }
+      .auth-split {
+        flex: 1;
+        display: flex;
+        min-height: 100vh;
+      }
 
-    .auth-panel {
-      width: 100%;
-      max-width: 520px;
-      flex-shrink: 0;
-      background: var(--ink);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 3rem 2.5rem;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-    }
+      .auth-panel {
+        width: 100%;
+        max-width: 520px;
+        flex-shrink: 0;
+        background: var(--ink);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 3rem 2.5rem;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+      }
 
-    .auth-panel::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
+      .auth-panel::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
         radial-gradient(circle 1.5px at 12% 15%, rgba(201,168,76,.65) 0%, transparent 100%),
         radial-gradient(circle 1px   at 28% 70%, rgba(255,255,255,.3)  0%, transparent 100%),
         radial-gradient(circle 1px   at 45% 30%, rgba(201,168,76,.4)   0%, transparent 100%),
@@ -68,332 +68,332 @@
         radial-gradient(circle 1.5px at 55% 60%, rgba(255,255,255,.2)  0%, transparent 100%),
         radial-gradient(circle 1px   at 35% 92%, rgba(201,168,76,.35)  0%, transparent 100%),
         radial-gradient(circle 1px   at 72% 42%, rgba(255,255,255,.3)  0%, transparent 100%);
-      pointer-events: none;
-    }
+        pointer-events: none;
+      }
 
-    .auth-panel-inner {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 380px;
-      margin: 0 auto;
-    }
+      .auth-panel-inner {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+      }
 
-    .auth-brand {
-      display: block;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--gold);
-      text-decoration: none;
-      margin-bottom: 2rem;
-      letter-spacing: -.01em;
-    }
-    .auth-brand span { color: rgba(201,168,76,.5); font-size: 1.1rem; margin-right: .3rem; }
+      .auth-brand {
+        display: block;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--gold);
+        text-decoration: none;
+        margin-bottom: 2rem;
+        letter-spacing: -.01em;
+      }
+      .auth-brand span { color: rgba(201,168,76,.5); font-size: 1.1rem; margin-right: .3rem; }
 
-    .auth-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.15;
-      margin-bottom: .4rem;
-    }
-    .auth-sub {
-      font-size: .85rem;
-      color: var(--muted);
-      margin-bottom: 1.75rem;
-      font-weight: 400;
-    }
+      .auth-heading {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.15;
+        margin-bottom: .4rem;
+      }
+      .auth-sub {
+        font-size: .85rem;
+        color: var(--muted);
+        margin-bottom: 1.75rem;
+        font-weight: 400;
+      }
 
-    .auth-alerts { margin-bottom: 1.1rem; }
-    .auth-alert {
-      display: flex;
-      align-items: flex-start;
-      gap: .5rem;
-      background: rgba(248,113,113,.08);
-      border: 1px solid rgba(248,113,113,.25);
-      border-radius: 10px;
-      color: var(--error);
-      padding: .65rem .85rem;
-      font-size: .82rem;
-      margin-bottom: .5rem;
-      line-height: 1.45;
-    }
-    .auth-alert i { flex-shrink: 0; margin-top: .05rem; }
+      .auth-alerts { margin-bottom: 1.1rem; }
+      .auth-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+        background: rgba(248,113,113,.08);
+        border: 1px solid rgba(248,113,113,.25);
+        border-radius: 10px;
+        color: var(--error);
+        padding: .65rem .85rem;
+        font-size: .82rem;
+        margin-bottom: .5rem;
+        line-height: 1.45;
+      }
+      .auth-alert i { flex-shrink: 0; margin-top: .05rem; }
 
-    .auth-field { margin-bottom: .95rem; }
-    .auth-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: .78rem;
-      font-weight: 600;
-      color: rgba(240,232,255,.7);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      margin-bottom: .4rem;
-    }
-    .auth-hint {
-      font-size: .7rem;
-      color: var(--muted);
-      text-transform: none;
-      letter-spacing: 0;
-      font-weight: 400;
-    }
+      .auth-field { margin-bottom: .95rem; }
+      .auth-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: .78rem;
+        font-weight: 600;
+        color: rgba(240,232,255,.7);
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin-bottom: .4rem;
+      }
+      .auth-hint {
+        font-size: .7rem;
+        color: var(--muted);
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 400;
+      }
 
-    .auth-input {
-      width: 100%;
-      background: var(--field);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: 'Montserrat', sans-serif;
-      font-size: .95rem;
-      padding: .75rem 1rem;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      -webkit-appearance: none;
-    }
-    .auth-input::placeholder { color: rgba(138,122,170,.5); }
-    .auth-input:focus {
-      border-color: var(--plum);
-      box-shadow: 0 0 0 3px rgba(107,63,160,.22);
-    }
-    .auth-input.is-invalid { border-color: rgba(248,113,113,.5); }
+      .auth-input {
+        width: 100%;
+        background: var(--field);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-family: 'Montserrat', sans-serif;
+        font-size: .95rem;
+        padding: .75rem 1rem;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        -webkit-appearance: none;
+      }
+      .auth-input::placeholder { color: rgba(138,122,170,.5); }
+      .auth-input:focus {
+        border-color: var(--plum);
+        box-shadow: 0 0 0 3px rgba(107,63,160,.22);
+      }
+      .auth-input.is-invalid { border-color: rgba(248,113,113,.5); }
 
-    .field-errors {
-      margin-top: .35rem;
-      font-size: .75rem;
-      color: var(--error);
-    }
+      .field-errors {
+        margin-top: .35rem;
+        font-size: .75rem;
+        color: var(--error);
+      }
 
-    .auth-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-lt) 100%);
-      color: #1a0a2e;
-      border: none;
-      border-radius: 30px;
-      padding: .85rem 1.5rem;
-      font-family: 'Montserrat', sans-serif;
-      font-size: .95rem;
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-top: 1.25rem;
-      transition: opacity .2s, box-shadow .2s, transform .15s;
-    }
-    .auth-btn:hover {
-      opacity: .9;
-      box-shadow: 0 8px 24px rgba(201,168,76,.35);
-      transform: translateY(-1px);
-    }
+      .auth-btn {
+        display: block;
+        width: 100%;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-lt) 100%);
+        color: #1a0a2e;
+        border: none;
+        border-radius: 30px;
+        padding: .85rem 1.5rem;
+        font-family: 'Montserrat', sans-serif;
+        font-size: .95rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-top: 1.25rem;
+        transition: opacity .2s, box-shadow .2s, transform .15s;
+      }
+      .auth-btn:hover {
+        opacity: .9;
+        box-shadow: 0 8px 24px rgba(201,168,76,.35);
+        transform: translateY(-1px);
+      }
 
-    .auth-footer {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .6rem;
-    }
-    .auth-footer-link {
-      font-size: .83rem;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .2s;
-    }
-    .auth-footer-link strong { color: var(--gold); font-weight: 600; }
-    .auth-footer-link:hover { color: var(--text); }
+      .auth-footer {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .6rem;
+      }
+      .auth-footer-link {
+        font-size: .83rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color .2s;
+      }
+      .auth-footer-link strong { color: var(--gold); font-weight: 600; }
+      .auth-footer-link:hover { color: var(--text); }
 
-    .auth-cover {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      display: none;
-    }
-    @media (min-width: 1024px) { .auth-cover { display: block; } }
+      .auth-cover {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        display: none;
+      }
+      @media (min-width: 1024px) { .auth-cover { display: block; } }
 
-    .auth-cover-img {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-    }
-    .auth-cover-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to right,
-        rgba(13,8,24,.85) 0%,
-        rgba(13,8,24,.35) 40%,
-        rgba(13,8,24,.1)  100%
-      );
-    }
-    .auth-cover-text {
-      position: absolute;
-      bottom: 3rem;
-      left: 3rem;
-      right: 3rem;
-    }
-    .auth-cover-quote {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-style: italic;
-      color: rgba(240,232,255,.9);
-      line-height: 1.5;
-      margin-bottom: .75rem;
-      text-shadow: 0 2px 12px rgba(0,0,0,.6);
-    }
-    .auth-cover-credit {
-      font-size: .78rem;
-      color: rgba(201,168,76,.8);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-<div class="auth-split">
+      .auth-cover-img {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+      }
+      .auth-cover-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to right,
+          rgba(13,8,24,.85) 0%,
+          rgba(13,8,24,.35) 40%,
+          rgba(13,8,24,.1)  100%
+        );
+      }
+      .auth-cover-text {
+        position: absolute;
+        bottom: 3rem;
+        left: 3rem;
+        right: 3rem;
+      }
+      .auth-cover-quote {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-style: italic;
+        color: rgba(240,232,255,.9);
+        line-height: 1.5;
+        margin-bottom: .75rem;
+        text-shadow: 0 2px 12px rgba(0,0,0,.6);
+      }
+      .auth-cover-credit {
+        font-size: .78rem;
+        color: rgba(201,168,76,.8);
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="auth-split">
 
   <!-- Form panel -->
-  <div class="auth-panel">
-    <div class="auth-panel-inner">
+      <div class="auth-panel">
+        <div class="auth-panel-inner">
 
-      <a href="{{ url_for('content.index') }}" class="auth-brand">
-        <span>✦</span>Fonotarot
-      </a>
+          <a href="{{ url_for('content.index') }}" class="auth-brand">
+            <span>✦</span>Fonotarot
+          </a>
 
-      <h1 class="auth-heading">{{ _("Comienza tu viaje") }}</h1>
-      <p class="auth-sub">{{ _("Crea tu cuenta y accede a tu primera consulta") }}</p>
+          <h1 class="auth-heading">{{ _("Comienza tu viaje") }}</h1>
+          <p class="auth-sub">{{ _("Crea tu cuenta y accede a tu primera consulta") }}</p>
 
-      <div class="auth-alerts">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="auth-alert">
-                <i class="ti ti-alert-circle"></i>
-                <span>{{ message }}</span>
-              </div>
+          <div class="auth-alerts">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="auth-alert">
+                    <i class="ti ti-alert-circle"></i>
+                    <span>{{ message }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            {% for field, errors in register_user_form.errors.items() %}
+              {% if field not in ('username', 'email', 'password', 'password_confirm') %}
+                {% for error in errors %}
+                  <div class="auth-alert">
+                    <i class="ti ti-alert-circle"></i>
+                    <span>{{ error }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
             {% endfor %}
-          {% endif %}
-        {% endwith %}
-        {% for field, errors in register_user_form.errors.items() %}
-          {% if field not in ('username', 'email', 'password', 'password_confirm') %}
-            {% for error in errors %}
-              <div class="auth-alert">
-                <i class="ti ti-alert-circle"></i>
-                <span>{{ error }}</span>
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
+          </div>
+
+          <form method="POST" action="{{ url_for_security('register') }}" novalidate>
+            {{ register_user_form.hidden_tag() }}
+
+            <div class="auth-field">
+              <label class="auth-label" for="username">
+                {{ _("Teléfono") }}
+                <span class="auth-hint">{{ _("solo dígitos, sin +") }}</span>
+              </label>
+              <input
+                class="auth-input{% if register_user_form.username.errors %} is-invalid{% endif %}"
+                type="tel"
+                id="username"
+                name="username"
+                placeholder="56912345678"
+                autocomplete="tel"
+                value="{{ register_user_form.username.data or '' }}"
+              />
+              {% if register_user_form.username.errors %}
+                <div class="field-errors">
+                  {% for e in register_user_form.username.errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="email">{{ _("Email") }}</label>
+              <input
+                class="auth-input{% if register_user_form.email.errors %} is-invalid{% endif %}"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="tu@email.com"
+                autocomplete="email"
+                value="{{ register_user_form.email.data or '' }}"
+              />
+              {% if register_user_form.email.errors %}
+                <div class="field-errors">
+                  {% for e in register_user_form.email.errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="password">{{ _("Contraseña") }}</label>
+              <input
+                class="auth-input{% if register_user_form.password.errors %} is-invalid{% endif %}"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+              {% if register_user_form.password.errors %}
+                <div class="field-errors">
+                  {% for e in register_user_form.password.errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="password_confirm">{{ _("Confirmar contraseña") }}</label>
+              <input
+                class="auth-input{% if register_user_form.password_confirm.errors %} is-invalid{% endif %}"
+                type="password"
+                id="password_confirm"
+                name="password_confirm"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+              {% if register_user_form.password_confirm.errors %}
+                <div class="field-errors">
+                  {% for e in register_user_form.password_confirm.errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="auth-btn">{{ _("Crear cuenta") }}</button>
+          </form>
+
+          <div class="auth-footer">
+            <a href="{{ url_for_security('login') }}" class="auth-footer-link">
+              {{ _('¿Ya tienes cuenta?') }} <strong>{{ _('Ingresa aquí') }}</strong>
+            </a>
+            <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
+              {{ _('¿Ya eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso aquí') }}</strong>
+            </a>
+            <a href="{{ url_for('content.index') }}" class="auth-footer-link">{{ _('← Volver al inicio') }}</a>
+          </div>
+
+        </div>
       </div>
-
-      <form method="POST" action="{{ url_for_security('register') }}" novalidate>
-        {{ register_user_form.hidden_tag() }}
-
-        <div class="auth-field">
-          <label class="auth-label" for="username">
-            {{ _("Teléfono") }}
-            <span class="auth-hint">{{ _("solo dígitos, sin +") }}</span>
-          </label>
-          <input
-            class="auth-input{% if register_user_form.username.errors %} is-invalid{% endif %}"
-            type="tel"
-            id="username"
-            name="username"
-            placeholder="56912345678"
-            autocomplete="tel"
-            value="{{ register_user_form.username.data or '' }}"
-          />
-          {% if register_user_form.username.errors %}
-            <div class="field-errors">
-              {% for e in register_user_form.username.errors %}<div>{{ e }}</div>{% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" for="email">{{ _("Email") }}</label>
-          <input
-            class="auth-input{% if register_user_form.email.errors %} is-invalid{% endif %}"
-            type="email"
-            id="email"
-            name="email"
-            placeholder="tu@email.com"
-            autocomplete="email"
-            value="{{ register_user_form.email.data or '' }}"
-          />
-          {% if register_user_form.email.errors %}
-            <div class="field-errors">
-              {% for e in register_user_form.email.errors %}<div>{{ e }}</div>{% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" for="password">{{ _("Contraseña") }}</label>
-          <input
-            class="auth-input{% if register_user_form.password.errors %} is-invalid{% endif %}"
-            type="password"
-            id="password"
-            name="password"
-            placeholder="••••••••"
-            autocomplete="new-password"
-          />
-          {% if register_user_form.password.errors %}
-            <div class="field-errors">
-              {% for e in register_user_form.password.errors %}<div>{{ e }}</div>{% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" for="password_confirm">{{ _("Confirmar contraseña") }}</label>
-          <input
-            class="auth-input{% if register_user_form.password_confirm.errors %} is-invalid{% endif %}"
-            type="password"
-            id="password_confirm"
-            name="password_confirm"
-            placeholder="••••••••"
-            autocomplete="new-password"
-          />
-          {% if register_user_form.password_confirm.errors %}
-            <div class="field-errors">
-              {% for e in register_user_form.password_confirm.errors %}<div>{{ e }}</div>{% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
-        <button type="submit" class="auth-btn">{{ _("Crear cuenta") }}</button>
-      </form>
-
-      <div class="auth-footer">
-        <a href="{{ url_for_security('login') }}" class="auth-footer-link">
-          {{ _('¿Ya tienes cuenta?') }} <strong>{{ _('Ingresa aquí') }}</strong>
-        </a>
-        <a href="{{ url_for('account.claim_account') }}" class="auth-footer-link">
-          {{ _('¿Ya eres cliente por teléfono?') }} <strong>{{ _('Activa tu acceso aquí') }}</strong>
-        </a>
-        <a href="{{ url_for('content.index') }}" class="auth-footer-link">{{ _('← Volver al inicio') }}</a>
-      </div>
-
-    </div>
-  </div>
 
   <!-- Cover -->
-  <div class="auth-cover">
-    <div class="auth-cover-img" style="background-image: url('{{ url_for('static', filename='login-cover.jpg') }}')"></div>
-    <div class="auth-cover-overlay"></div>
-    <div class="auth-cover-text">
-      <p class="auth-cover-quote">{{ _('"Cada consulta es un primer paso<br>hacia tu propio camino."') | safe }}</p>
-      <p class="auth-cover-credit">Fonotarot · Chile</p>
-    </div>
-  </div>
+      <div class="auth-cover">
+        <div class="auth-cover-img" style="background-image: url('{{ url_for('static', filename='login-cover.jpg') }}')"></div>
+        <div class="auth-cover-overlay"></div>
+        <div class="auth-cover-text">
+          <p class="auth-cover-quote">{{ _('"Cada consulta es un primer paso<br>hacia tu propio camino."') | safe }}</p>
+          <p class="auth-cover-credit">Fonotarot · Chile</p>
+        </div>
+      </div>
 
-</div>
-</body>
+    </div>
+  </body>
 </html>

@@ -150,22 +150,22 @@
       <div class="offcanvas-body">
         <p style="color:var(--warm); font-size:.85rem; margin-bottom:1.25rem;">Revisa la disponibilidad actual y llama cuando estés lista/o.</p>
         {% for agent in agents %}
-        <div class="agent-oc-card">
-          <div class="agent-oc-av">{{ agent.name[0] }}</div>
-          <div class="flex-grow-1">
-            <div class="agent-oc-nm">{{ agent.name }}</div>
-            <div class="agent-oc-sp">{{ agent.specialty }}</div>
-            <div class="mt-1">
-              {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
-              {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+          <div class="agent-oc-card">
+            <div class="agent-oc-av">{{ agent.name[0] }}</div>
+            <div class="flex-grow-1">
+              <div class="agent-oc-nm">{{ agent.name }}</div>
+              <div class="agent-oc-sp">{{ agent.specialty }}</div>
+              <div class="mt-1">
+                {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+              </div>
             </div>
+            {% if agent.status == 'online' %}
+              <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+            {% else %}
+              <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
+            {% endif %}
           </div>
-          {% if agent.status == 'online' %}
-          <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-          {% else %}
-          <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
-          {% endif %}
-        </div>
         {% endfor %}
         <div class="mt-4">
           <a href="tel:600XXXXXXX" class="btn btn-hero-cta w-100"><i class="ti ti-phone me-2"></i>Llama Ahora – 600 XXX XXX</a>
@@ -212,15 +212,15 @@
         <div class="hero-widget">
           <div class="hw-title">En línea ahora</div>
           {% for agent in agents %}
-          <div class="hw-row">
-            <div class="hw-av">{{ agent.name[0] }}</div>
-            <div class="flex-grow-1">
-              <div class="hw-name">{{ agent.name }}</div>
-              <div class="hw-spec">{{ agent.specialty }}</div>
+            <div class="hw-row">
+              <div class="hw-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="hw-name">{{ agent.name }}</div>
+                <div class="hw-spec">{{ agent.specialty }}</div>
+              </div>
+              {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+              {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
             </div>
-            {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
-            {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -260,23 +260,23 @@
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}<div><span class="plan-ribbon">✨ Más popular</span></div>{% endif %}
-              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
-              <ul class="plan-features">
-                <li>Consulta de {{ plan.minutes }} minutos</li>
-                <li>Conexión directa con especialista</li>
-                <li>100% confidencial</li>
-                {% if plan.minutes >= 60 %}<li>Análisis en profundidad</li>{% endif %}
-                {% if plan.minutes >= 30 %}<li>Saldo sin vencimiento</li>{% endif %}
-              </ul>
-              <a href="#" class="btn {% if plan.featured %}btn-plan-wine{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
+            <div class="col-sm-6 col-lg-3">
+              <div class="plan-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}<div><span class="plan-ribbon">✨ Más popular</span></div>{% endif %}
+                <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+                <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                <ul class="plan-features">
+                  <li>Consulta de {{ plan.minutes }} minutos</li>
+                  <li>Conexión directa con especialista</li>
+                  <li>100% confidencial</li>
+                  {% if plan.minutes >= 60 %}<li>Análisis en profundidad</li>{% endif %}
+                  {% if plan.minutes >= 30 %}<li>Saldo sin vencimiento</li>{% endif %}
+                </ul>
+                <a href="#" class="btn {% if plan.featured %}btn-plan-wine{% else %}btn-plan-outline{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -292,21 +292,21 @@
         <div id="tc6" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testi-card">
-                <div class="t-stars">★★★★★</div>
-                <p class="t-quote">"{{ t.text }}"</p>
-                <div class="t-author">{{ t.author }}</div>
-                <div class="t-city">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testi-card">
+                  <div class="t-stars">★★★★★</div>
+                  <p class="t-quote">"{{ t.text }}"</p>
+                  <div class="t-author">{{ t.author }}</div>
+                  <div class="t-city">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#tc6" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
           <button class="carousel-control-next" type="button" data-bs-target="#tc6" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
           <div class="carousel-indicators" style="position:static;margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#tc6" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#tc6" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>
@@ -350,11 +350,11 @@
               <h2 class="sec-h">Resolvemos tus dudas</h2>
             </div>
             {% for q, a in [
-              ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una especialista disponible."),
-              ("¿Está disponible las 24 horas?","Sí. Contamos con especialistas disponibles todos los días, incluidos fines de semana y festivos."),
-              ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan en tu cuenta sin fecha de vencimiento. Úsalos cuando lo necesites."),
-              ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. No compartimos información con terceros."),
-              ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile.")
+            ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a de inmediato con una especialista disponible."),
+            ("¿Está disponible las 24 horas?","Sí. Contamos con especialistas disponibles todos los días, incluidos fines de semana y festivos."),
+            ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan en tu cuenta sin fecha de vencimiento. Úsalos cuando lo necesites."),
+            ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. No compartimos información con terceros."),
+            ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile.")
             ] %}
             <div class="faq-item">
               <div class="faq-q">{{ q }}</div>

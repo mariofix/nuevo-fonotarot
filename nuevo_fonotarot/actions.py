@@ -1,7 +1,5 @@
 """User-related actions that can be run independently or during lifecycle events."""
 
-from __future__ import annotations
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Any

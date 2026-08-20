@@ -51,7 +51,7 @@ def _cart_total(cart: list) -> Decimal:
     )
 
 
-def apply_discount(amount: Decimal, currency: str, discount_code: "DiscountCode | None") -> Decimal:
+def apply_discount(amount: Decimal, currency: str, discount_code: DiscountCode | None) -> Decimal:
     """Calculate the discount amount for a given code and total amount."""
     if not discount_code or not discount_code.is_valid():
         return Decimal("0")

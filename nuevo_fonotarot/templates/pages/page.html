@@ -3,86 +3,86 @@
 {% block title %}{{ page.title }} — Fonotarot{% endblock %}
 
 {% block extra_head %}
-{% if page.featured_image_url %}
-  <meta property="og:image" content="{{ page.featured_image_url }}" />
-  <meta name="twitter:image" content="{{ page.featured_image_url }}" />
-{% endif %}
+  {% if page.featured_image_url %}
+    <meta property="og:image" content="{{ page.featured_image_url }}" />
+    <meta name="twitter:image" content="{{ page.featured_image_url }}" />
+  {% endif %}
 {% endblock %}
 
 {% block extra_css %}
-<style>
+  <style>
   /* ── Page hero ────────────────────────────────────────────────────────── */
-  .page-hero {
-    position: relative;
-    width: 100%;
-    min-height: 320px;
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--plum-dk) 0%, #0a0618 50%, var(--plum) 100%);
-    margin-bottom: 0;
-  }
-  .page-hero__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(.6) saturate(1.05);
-  }
-  .page-hero__gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      0deg,
-      rgba(0,0,0,.8) 0%,
-      rgba(0,0,0,.4) 50%,
-      rgba(0,0,0,.1) 100%
-    );
-  }
-  .page-hero__content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 3rem;
-    color: white;
-  }
-  .page-hero__title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(1.75rem, 4vw, 3rem);
-    font-weight: 700;
-    line-height: 1.15;
-    color: white;
-    margin: 0;
-    text-shadow: 0 2px 20px rgba(0,0,0,.4);
-  }
+    .page-hero {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--plum-dk) 0%, #0a0618 50%, var(--plum) 100%);
+      margin-bottom: 0;
+    }
+    .page-hero__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(.6) saturate(1.05);
+    }
+    .page-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        0deg,
+        rgba(0,0,0,.8) 0%,
+        rgba(0,0,0,.4) 50%,
+        rgba(0,0,0,.1) 100%
+      );
+    }
+    .page-hero__content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 3rem;
+      color: white;
+    }
+    .page-hero__title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: white;
+      margin: 0;
+      text-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
 
   /* ── Page content ─────────────────────────────────────────────────────── */
-  .page-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
-  }
-</style>
+    .page-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-{% if page.featured_image_url %}
-<div class="page-hero">
-  <img class="page-hero__image" src="{{ page.featured_image_url }}" alt="{{ page.title }}" />
-  <div class="page-hero__gradient"></div>
-  <div class="page-hero__content">
-    <h1 class="page-hero__title">{{ page.title }}</h1>
-  </div>
-</div>
-{% endif %}
-
-<div class="page-content">
-  {% if not page.featured_image_url %}
-  <h1 class="mb-4">{{ page.title }}</h1>
+  {% if page.featured_image_url %}
+    <div class="page-hero">
+      <img class="page-hero__image" src="{{ page.featured_image_url }}" alt="{{ page.title }}" />
+      <div class="page-hero__gradient"></div>
+      <div class="page-hero__content">
+        <h1 class="page-hero__title">{{ page.title }}</h1>
+      </div>
+    </div>
   {% endif %}
-  {{ page.content | safe }}
-</div>
+
+  <div class="page-content">
+    {% if not page.featured_image_url %}
+      <h1 class="mb-4">{{ page.title }}</h1>
+    {% endif %}
+    {{ page.content | safe }}
+  </div>
 {% endblock %}

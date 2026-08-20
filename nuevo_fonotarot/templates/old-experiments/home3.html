@@ -83,8 +83,8 @@
       .hero-grid-bg {
         position: absolute; inset: 0;
         background-image:
-          linear-gradient(rgba(13,148,136,.08) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(13,148,136,.08) 1px, transparent 1px);
+        linear-gradient(rgba(13,148,136,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,.08) 1px, transparent 1px);
         background-size: 48px 48px;
         pointer-events: none;
       }
@@ -339,8 +339,8 @@
         content: '';
         position: absolute; inset: 0;
         background-image:
-          linear-gradient(rgba(13,148,136,.06) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(13,148,136,.06) 1px, transparent 1px);
+        linear-gradient(rgba(13,148,136,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,.06) 1px, transparent 1px);
         background-size: 40px 40px;
         pointer-events: none;
       }
@@ -433,19 +433,19 @@
             <div class="hero-visual">
               <div class="section-kicker mb-3">En línea ahora</div>
               {% for agent in agents %}
-              {% if loop.index <= 4 %}
-              <div class="mini-card">
-                <div>
-                  <div class="mini-card-name">{{ agent.name }}</div>
-                  <div class="mini-card-spec">{{ agent.specialty }}</div>
-                </div>
-                {% if agent.status == 'online' %}
-                <span class="dot-online"></span>
-                {% else %}
-                <span class="dot-busy"></span>
+                {% if loop.index <= 4 %}
+                  <div class="mini-card">
+                    <div>
+                      <div class="mini-card-name">{{ agent.name }}</div>
+                      <div class="mini-card-spec">{{ agent.specialty }}</div>
+                    </div>
+                    {% if agent.status == 'online' %}
+                      <span class="dot-online"></span>
+                    {% else %}
+                      <span class="dot-busy"></span>
+                    {% endif %}
+                  </div>
                 {% endif %}
-              </div>
-              {% endif %}
               {% endfor %}
               <div class="text-center mt-3" style="color:rgba(255,255,255,.4); font-size:.8rem;">Ver todos los especialistas ↓</div>
             </div>
@@ -523,33 +523,33 @@
         </div>
         <div class="row g-3">
           {% for agent in agents %}
-          <div class="col-md-6">
-            <div class="agent-row-card">
-              <div class="agent-row-avatar">{{ agent.name[0] }}</div>
-              <div class="agent-row-info">
-                <div class="agent-row-name">{{ agent.name }}</div>
-                <div class="agent-row-spec">{{ agent.specialty }}</div>
-                <div class="mt-1">
-                  {% if agent.status == 'online' %}
-                  <span class="badge-pro-online">● Disponible</span>
-                  {% elif agent.status == 'busy' %}
-                  <span class="badge-pro-busy">● En consulta</span>
-                  {% else %}
-                  <span class="badge-pro-offline">● No disponible</span>
-                  {% endif %}
+            <div class="col-md-6">
+              <div class="agent-row-card">
+                <div class="agent-row-avatar">{{ agent.name[0] }}</div>
+                <div class="agent-row-info">
+                  <div class="agent-row-name">{{ agent.name }}</div>
+                  <div class="agent-row-spec">{{ agent.specialty }}</div>
+                  <div class="mt-1">
+                    {% if agent.status == 'online' %}
+                      <span class="badge-pro-online">● Disponible</span>
+                    {% elif agent.status == 'busy' %}
+                      <span class="badge-pro-busy">● En consulta</span>
+                    {% else %}
+                      <span class="badge-pro-offline">● No disponible</span>
+                    {% endif %}
+                  </div>
                 </div>
+                {% if agent.status == 'online' %}
+                  <a href="tel:600XXXXXXX" class="btn btn-call-teal">
+                    <i class="ti ti-phone me-1"></i>Llama Ahora
+                  </a>
+                {% elif agent.status == 'busy' %}
+                  <button class="btn-call-disabled" disabled>
+                    <i class="ti ti-clock me-1"></i>Ocupada
+                  </button>
+                {% endif %}
               </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn btn-call-teal">
-                <i class="ti ti-phone me-1"></i>Llama Ahora
-              </a>
-              {% elif agent.status == 'busy' %}
-              <button class="btn-call-disabled" disabled>
-                <i class="ti ti-clock me-1"></i>Ocupada
-              </button>
-              {% endif %}
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -565,19 +565,19 @@
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-pro-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="pro-badge">Más popular</span></div>
-              {% endif %}
-              <div class="pro-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="pro-price">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="pro-desc">{{ plan.description }}</p>
-              <a href="#" class="btn {% if plan.featured %}btn-pro-solid{% else %}btn-pro-ghost{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
+            <div class="col-sm-6 col-lg-3">
+              <div class="plan-pro-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}
+                  <div><span class="pro-badge">Más popular</span></div>
+                {% endif %}
+                <div class="pro-mins">{{ plan.minutes }}<small> min</small></div>
+                <div class="pro-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                <p class="pro-desc">{{ plan.description }}</p>
+                <a href="#" class="btn {% if plan.featured %}btn-pro-solid{% else %}btn-pro-ghost{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
         <p class="text-center mt-4" style="color:var(--slate); font-size:.88rem;">
@@ -598,19 +598,19 @@
         <div id="tProCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testi-pro">
-                <div class="stars-pro">★★★★★</div>
-                <p class="t-body">{{ t.text }}</p>
-                <div class="t-meta">
-                  <div class="t-initials">{{ t.author[0] }}</div>
-                  <div>
-                    <div class="t-name">{{ t.author }}</div>
-                    <div class="t-loc">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testi-pro">
+                  <div class="stars-pro">★★★★★</div>
+                  <p class="t-body">{{ t.text }}</p>
+                  <div class="t-meta">
+                    <div class="t-initials">{{ t.author[0] }}</div>
+                    <div>
+                      <div class="t-name">{{ t.author }}</div>
+                      <div class="t-loc">{{ t.city }}</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#tProCarousel" data-bs-slide="prev">
@@ -623,8 +623,8 @@
           </button>
           <div class="carousel-indicators" style="position:static; margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#tProCarousel" data-bs-slide-to="{{ loop.index0 }}"
-                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#tProCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                      {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>

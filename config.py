@@ -39,6 +39,7 @@ setting.  If you need ``FLASK_DEBUG`` to toggle debug mode, use the
 ``DEBUG`` config attribute or set ``LOG_LEVEL`` / ``FLASK_ENV`` instead.
 """
 
+import json
 import os
 from pathlib import Path
 
@@ -188,21 +189,17 @@ class Config:
     # Each entry is a [short_code, locale, label] triple.
     # Managed here (not in SiteSettings) so Flask-Admin Babel and Babel
     # locale negotiation know the list before any DB request is made.
-    AVAILABLE_LANGUAGES: list = [
-        ["es", "es_CL", "Chile"],
-        ["es", "es_US", "EEUU"],
-    ]
-
+    AVAILABLE_LANGUAGES: list = json.loads(os.environ.get("AVAILABLE_LANGUAGES", '[["es", "es_CL", "Chile"]]'))
     # merchants
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
-    # Flow payment gateway
+    MERCHANTS_AUTOLOAD_PROVIDERS: list = os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",")
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
     FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
     FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
-
-    # Khipu payment gateway
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
+    STRIPE_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
+    PAYPAL_ACCESS_TOKEN: str = os.environ.get("FLOW_API_KEY", "")
 
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")

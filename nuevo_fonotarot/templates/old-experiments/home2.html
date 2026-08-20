@@ -461,31 +461,31 @@
         </div>
         <div class="row g-4">
           {% for agent in agents %}
-          <div class="col-sm-6 col-lg-4">
-            <div class="agent-card">
-              <div class="agent-avatar">{{ agent.name[0] }}</div>
-              <div class="agent-name">{{ agent.name }}</div>
-              <div class="agent-spec">{{ agent.specialty }}</div>
-              <div class="mb-2">
+            <div class="col-sm-6 col-lg-4">
+              <div class="agent-card">
+                <div class="agent-avatar">{{ agent.name[0] }}</div>
+                <div class="agent-name">{{ agent.name }}</div>
+                <div class="agent-spec">{{ agent.specialty }}</div>
+                <div class="mb-2">
+                  {% if agent.status == 'online' %}
+                    <span class="s-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}
+                    <span class="s-busy">● En consulta</span>
+                  {% else %}
+                    <span class="s-offline">● No disponible</span>
+                  {% endif %}
+                </div>
                 {% if agent.status == 'online' %}
-                <span class="s-online">● Disponible</span>
+                  <a href="tel:600XXXXXXX" class="btn-call-rose">
+                    <i class="ti ti-phone me-1"></i>Llama Ahora
+                  </a>
                 {% elif agent.status == 'busy' %}
-                <span class="s-busy">● En consulta</span>
-                {% else %}
-                <span class="s-offline">● No disponible</span>
+                  <button class="btn-busy-soft" disabled>
+                    <i class="ti ti-clock me-1"></i>En consulta ahora
+                  </button>
                 {% endif %}
               </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn-call-rose">
-                <i class="ti ti-phone me-1"></i>Llama Ahora
-              </a>
-              {% elif agent.status == 'busy' %}
-              <button class="btn-busy-soft" disabled>
-                <i class="ti ti-clock me-1"></i>En consulta ahora
-              </button>
-              {% endif %}
             </div>
-          </div>
           {% endfor %}
         </div>
         <div class="text-center mt-5">
@@ -527,19 +527,19 @@
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="plan-popular">✨ Más popular</span></div>
-              {% endif %}
-              <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="plan-desc-txt">{{ plan.description }}</p>
-              <a href="#" class="btn {% if plan.featured %}btn-plan-rose{% else %}btn-plan-outline-rose{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
+            <div class="col-sm-6 col-lg-3">
+              <div class="plan-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}
+                  <div><span class="plan-popular">✨ Más popular</span></div>
+                {% endif %}
+                <div class="plan-min-num">{{ plan.minutes }}<small> min</small></div>
+                <div class="plan-clp">${{ plan.price }} CLP<span> / sesión</span></div>
+                <p class="plan-desc-txt">{{ plan.description }}</p>
+                <a href="#" class="btn {% if plan.featured %}btn-plan-rose{% else %}btn-plan-outline-rose{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -556,14 +556,14 @@
         <div id="tCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testi-card">
-                <div class="stars-sm">★★★★★</div>
-                <p class="t-quote">"{{ t.text }}"</p>
-                <div class="t-who">{{ t.author }}</div>
-                <div class="t-where">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testi-card">
+                  <div class="stars-sm">★★★★★</div>
+                  <p class="t-quote">"{{ t.text }}"</p>
+                  <div class="t-who">{{ t.author }}</div>
+                  <div class="t-where">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#tCarousel" data-bs-slide="prev">
@@ -576,8 +576,8 @@
           </button>
           <div class="carousel-indicators" style="position:static; margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#tCarousel" data-bs-slide-to="{{ loop.index0 }}"
-                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#tCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                      {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>

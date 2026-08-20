@@ -3,134 +3,134 @@
 {% block title %}{{ _("Checkout - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
-<style>
-  .payment-option { cursor:pointer; border:2px solid var(--border); border-radius:8px; padding:1rem; transition:border-color .2s,background .2s; }
-  .payment-option:hover { border-color:var(--plum); }
-  .payment-option.selected { border-color:var(--plum); background:var(--blush); }
-  .total-display { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:800; color:var(--plum); }
-  .anonymous-note { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
-</style>
+  <style>
+    .payment-option { cursor:pointer; border:2px solid var(--border); border-radius:8px; padding:1rem; transition:border-color .2s,background .2s; }
+    .payment-option:hover { border-color:var(--plum); }
+    .payment-option.selected { border-color:var(--plum); background:var(--blush); }
+    .total-display { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:800; color:var(--plum); }
+    .anonymous-note { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.75rem 1rem; font-size:.85rem; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible mb-4">
-              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible mb-4">
+          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
 
-        <h1 class="fw-bold mb-4">{{ _("Finalizar compra") }}</h1>
+    <h1 class="fw-bold mb-4">{{ _("Finalizar compra") }}</h1>
 
-        <form method="post" action="{{ url_for('productos.checkout') }}">
-          <div class="row g-4">
+    <form method="post" action="{{ url_for('productos.checkout') }}">
+      <div class="row g-4">
 
             <!-- Left: shipping + payment -->
-            <div class="col-md-7">
+        <div class="col-md-7">
 
-              {% if has_physical %}
+          {% if has_physical %}
               <!-- Physical goods: shipping from profile -->
-              <div class="card p-4 mb-4">
-                <h5 class="mb-3"><i class="ti ti-truck me-2"></i>{{ _("Datos de envío") }}</h5>
-                <div class="anonymous-note mb-3">
-                  <i class="ti ti-eye-off me-1"></i>
-                  <strong>{{ _("Envío anónimo:") }}</strong> {{ _("La caja llega sin marcas ni etiquetas que identifiquen el contenido.") }}
-                </div>
-                <div class="text-secondary small">
-                  <div><i class="ti ti-user me-1"></i>{{ current_user.full_name }}</div>
-                  <div><i class="ti ti-map-pin me-1"></i>{{ current_user.address }}, {{ current_user.commune }} {{ current_user.postal_code }}</div>
-                  <div class="mt-1">
-                    <a href="{{ url_for('account.settings') }}" class="text-secondary">
-                      <i class="ti ti-pencil me-1"></i>{{ _("Cambiar datos de envío") }}
-                    </a>
-                  </div>
+            <div class="card p-4 mb-4">
+              <h5 class="mb-3"><i class="ti ti-truck me-2"></i>{{ _("Datos de envío") }}</h5>
+              <div class="anonymous-note mb-3">
+                <i class="ti ti-eye-off me-1"></i>
+                <strong>{{ _("Envío anónimo:") }}</strong> {{ _("La caja llega sin marcas ni etiquetas que identifiquen el contenido.") }}
+              </div>
+              <div class="text-secondary small">
+                <div><i class="ti ti-user me-1"></i>{{ current_user.full_name }}</div>
+                <div><i class="ti ti-map-pin me-1"></i>{{ current_user.address }}, {{ current_user.commune }} {{ current_user.postal_code }}</div>
+                <div class="mt-1">
+                  <a href="{{ url_for('account.settings') }}" class="text-secondary">
+                    <i class="ti ti-pencil me-1"></i>{{ _("Cambiar datos de envío") }}
+                  </a>
                 </div>
               </div>
-              {% else %}
+            </div>
+          {% else %}
               <!-- Digital products: only need email -->
-              <div class="card p-4 mb-4">
-                <h5 class="mb-3"><i class="ti ti-mail me-2"></i>{{ _("Datos de contacto") }}</h5>
-                <div class="mb-3">
-                  <label class="form-label" for="shipping_email">{{ _("Email *") }}</label>
-                  <input type="email" id="shipping_email" name="shipping_email" class="form-control" required
-                         value="{{ prefilled_email }}"
-                         placeholder="Para enviarte el comprobante"/>
-                </div>
+            <div class="card p-4 mb-4">
+              <h5 class="mb-3"><i class="ti ti-mail me-2"></i>{{ _("Datos de contacto") }}</h5>
+              <div class="mb-3">
+                <label class="form-label" for="shipping_email">{{ _("Email *") }}</label>
+                <input type="email" id="shipping_email" name="shipping_email" class="form-control" required
+                       value="{{ prefilled_email }}"
+                       placeholder="Para enviarte el comprobante"/>
               </div>
-              {% endif %}
+            </div>
+          {% endif %}
 
               <!-- Payment method -->
-              <div class="card p-4">
-                <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>{{ _("Método de pago") }}</h5>
-                <div class="row g-3">
-                  <div class="col-6">
-                    <label class="d-block">
-                      <input type="radio" name="payment_method" value="flow" class="d-none payment-radio" id="pay_flow" required/>
-                      <div class="payment-option text-center" id="flow_box">
-                        <div class="fw-bold mb-1">Flow</div>
-                        <div class="small text-secondary">{{ _("Tarjeta débito / crédito / transferencia") }}</div>
-                      </div>
-                    </label>
+          <div class="card p-4">
+            <h5 class="mb-3"><i class="ti ti-credit-card me-2"></i>{{ _("Método de pago") }}</h5>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="flow" class="d-none payment-radio" id="pay_flow" required/>
+                  <div class="payment-option text-center" id="flow_box">
+                    <div class="fw-bold mb-1">Flow</div>
+                    <div class="small text-secondary">{{ _("Tarjeta débito / crédito / transferencia") }}</div>
                   </div>
-                  <div class="col-6">
-                    <label class="d-block">
-                      <input type="radio" name="payment_method" value="khipu" class="d-none payment-radio" id="pay_khipu"/>
-                      <div class="payment-option text-center" id="khipu_box">
-                        <div class="fw-bold mb-1">Khipu</div>
-                        <div class="small text-secondary">{{ _("Transferencia bancaria simplificada") }}</div>
-                      </div>
-                    </label>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="d-block">
+                  <input type="radio" name="payment_method" value="khipu" class="d-none payment-radio" id="pay_khipu"/>
+                  <div class="payment-option text-center" id="khipu_box">
+                    <div class="fw-bold mb-1">Khipu</div>
+                    <div class="small text-secondary">{{ _("Transferencia bancaria simplificada") }}</div>
                   </div>
-                </div>
+                </label>
               </div>
             </div>
+          </div>
+        </div>
 
             <!-- Right: order summary -->
-            <div class="col-md-5">
-              <div class="card p-4 sticky-top" style="top:80px">
-                <h5 class="mb-3">{{ _("Resumen del pedido") }}</h5>
-                {% for item in cart %}
-                <div class="d-flex justify-content-between text-secondary small mb-2">
-                  <span>{{ item.name }} x{{ item.quantity }}</span>
-                  <span>${{ "{:,}".format(item.unit_price * item.quantity).replace(",", ".") }}</span>
-                </div>
-                {% endfor %}
-                <hr style="border-color:var(--border)"/>
-                <div class="mb-3">
-                  <label class="form-label" for="discount_code"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</label>
-                  <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
-                </div>
-                <div class="d-flex justify-content-between total-display mb-4">
-                  <span>{{ _("Total") }}</span>
-                  <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                  <i class="ti ti-lock me-2"></i>{{ _("Pagar ahora") }}
-                </button>
-                <p class="text-secondary small text-center mt-3 mb-0">
-                  <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro via Flow o Khipu") }}
-                </p>
+        <div class="col-md-5">
+          <div class="card p-4 sticky-top" style="top:80px">
+            <h5 class="mb-3">{{ _("Resumen del pedido") }}</h5>
+            {% for item in cart %}
+              <div class="d-flex justify-content-between text-secondary small mb-2">
+                <span>{{ item.name }} x{{ item.quantity }}</span>
+                <span>${{ "{:,}".format(item.unit_price * item.quantity).replace(",", ".") }}</span>
               </div>
+            {% endfor %}
+            <hr style="border-color:var(--border)"/>
+            <div class="mb-3">
+              <label class="form-label" for="discount_code"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</label>
+              <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
             </div>
-
+            <div class="d-flex justify-content-between total-display mb-4">
+              <span>{{ _("Total") }}</span>
+              <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+              <i class="ti ti-lock me-2"></i>{{ _("Pagar ahora") }}
+            </button>
+            <p class="text-secondary small text-center mt-3 mb-0">
+              <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro via Flow o Khipu") }}
+            </p>
           </div>
-        </form>
+        </div>
 
-</div>
+      </div>
+    </form>
+
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
+  <script>
   // Highlight selected payment method
-  document.querySelectorAll('.payment-radio').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('.payment-option').forEach(function(box) { box.classList.remove('selected'); });
-      if (this.id === 'pay_flow') document.getElementById('flow_box').classList.add('selected');
-      if (this.id === 'pay_khipu') document.getElementById('khipu_box').classList.add('selected');
+    document.querySelectorAll('.payment-radio').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.payment-option').forEach(function(box) { box.classList.remove('selected'); });
+        if (this.id === 'pay_flow') document.getElementById('flow_box').classList.add('selected');
+        if (this.id === 'pay_khipu') document.getElementById('khipu_box').classList.add('selected');
+      });
     });
-  });
-</script>
+  </script>
 {% endblock %}

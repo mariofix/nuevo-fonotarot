@@ -13,14 +13,14 @@
 
   {# ── Heading ── #}
   <h1 style="margin:0 0 8px; font-family:Georgia,serif; font-size:26px;
-              font-weight:700; color:#4a2872; line-height:1.2;">
+             font-weight:700; color:#4a2872; line-height:1.2;">
     ¡Orden recibida!
   </h1>
   <div style="width:40px; height:3px; background:#c9a84c;
-               border-radius:2px; margin:0 0 20px;"></div>
+              border-radius:2px; margin:0 0 20px;"></div>
 
   <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:15px;
-             line-height:1.7; color:#2d2233;">
+            line-height:1.7; color:#2d2233;">
     Hola{% if recipient_name %}, <strong>{{ recipient_name }}</strong>{% endif %}.
     Confirmamos que hemos recibido tu orden.
     Cuando el pago sea validado, recibirás otro correo con la confirmación final.
@@ -36,7 +36,7 @@
           style="background-color:#f5f0fa; padding:12px 20px;
                  border-bottom:1px solid #e0d4e8;">
         <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
-                   font-weight:700; color:#4a2872; letter-spacing:.5px;">
+                  font-weight:700; color:#4a2872; letter-spacing:.5px;">
           RESUMEN DE ORDEN&nbsp;
           <span style="color:#8a7a8e; font-weight:400;">#{{ order.id }}</span>
         </p>
@@ -45,31 +45,31 @@
 
     {# Line items #}
     {% for item in order.items %}
-    <tr style="border-bottom:1px solid #f0e8f8;">
-      <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
-                  color:#2d2233;">
-        {{ item.name }}
-        {% if item.quantity > 1 %}
-          <span style="color:#8a7a8e; font-size:12px;">× {{ item.quantity }}</span>
-        {% endif %}
-      </td>
-      <td align="right"
-          style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
-                  color:#2d2233; white-space:nowrap;">
-        {{ item.subtotal_display }}&nbsp;CLP
-      </td>
-    </tr>
+      <tr style="border-bottom:1px solid #f0e8f8;">
+        <td style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                   color:#2d2233;">
+          {{ item.name }}
+          {% if item.quantity > 1 %}
+            <span style="color:#8a7a8e; font-size:12px;">× {{ item.quantity }}</span>
+          {% endif %}
+        </td>
+        <td align="right"
+            style="padding:11px 20px; font-family:Arial,sans-serif; font-size:14px;
+                   color:#2d2233; white-space:nowrap;">
+          {{ item.subtotal_display }}&nbsp;CLP
+        </td>
+      </tr>
     {% endfor %}
 
     {# Total row #}
     <tr>
       <td style="padding:14px 20px; font-family:Arial,sans-serif; font-size:15px;
-                  font-weight:700; color:#4a2872;">
+                 font-weight:700; color:#4a2872;">
         Total
       </td>
       <td align="right"
           style="padding:14px 20px; font-family:Georgia,serif; font-size:18px;
-                  font-weight:700; color:#6b3fa0; white-space:nowrap;">
+                 font-weight:700; color:#6b3fa0; white-space:nowrap;">
         {{ order.total_display }}&nbsp;CLP
       </td>
     </tr>
@@ -77,13 +77,13 @@
 
   {# ── Payment method info ── #}
   {% if order.provider %}
-  <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:14px;
-             color:#8a7a8e;">
-    Método de pago:
-    <strong style="color:#2d2233;">
-      {{ order.provider | capitalize }}
-    </strong>
-  </p>
+    <p style="margin:0 0 20px; font-family:Arial,sans-serif; font-size:14px;
+              color:#8a7a8e;">
+      Método de pago:
+      <strong style="color:#2d2233;">
+        {{ order.provider | capitalize }}
+      </strong>
+    </p>
   {% endif %}
 
   {# ── CTA ── #}
@@ -104,7 +104,7 @@
   <hr style="border:none; border-top:1px solid #e0d4e8; margin:0 0 20px;" />
 
   <p style="margin:0; font-family:Arial,sans-serif; font-size:13px;
-             color:#8a7a8e; line-height:1.7;">
+            color:#8a7a8e; line-height:1.7;">
     ¿Tienes dudas? Visita
     <a href="{{ site_url }}/#faq"
        style="color:#6b3fa0; text-decoration:none;">nuestras preguntas frecuentes</a>

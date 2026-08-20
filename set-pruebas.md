@@ -6,7 +6,7 @@ Nunca habia interactuado con FonoTarot
 
 
 **telefono**: 56099919999
-~~**telefono**: 56099929999~~ 
+~~**telefono**: 56099929999~~
 **telefono**: 56099939999
 **telefono**: 56099949999
 **telefono**: 56099959999
@@ -75,4 +75,3 @@ Ya existe client_id para el ANI
 **correo-flow**: `usuario-flow@mariofix.com`
 **telefono-khipu**: 56099999990
 **correo-khipu**: `usuario-khipu@mariofix.com`
-

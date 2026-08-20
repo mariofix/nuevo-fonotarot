@@ -3,162 +3,163 @@
 {% block title %}Intrucciones {{ _("Tarjeta de Regalo") }} - Fonotarot{% endblock title %}
 
 {% block content %}
-<div class="page-wrapper">
-    <div class="container-xl py-4 py-md-5">
-        <div class="row justify-content-center">
-            <div class="col-12">
+    <div class="page-wrapper">
+        <div class="container-xl py-4 py-md-5">
+            <div class="row justify-content-center">
+                <div class="col-12">
                 <!-- Header -->
-                <div class="card card-body shadow-sm border-0 mb-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div>
-                            <div class="text-muted small mb-1">Gracias por tu compra!</div>
-                            <h1 class="h2 mb-2">Tu tarjeta de regalo esta lista</h1>
-                            <p class="mb-0 text-muted">
-                                Descarga ahora en PDF, o enviala por Correo directamente a esa
-                                persona.
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <span class="badge bg-success-lt text-success">Estado Orden: {{ order.status }}</span>
-                            <span class="badge bg-primary-lt text-primary">Instrucciones Tarjetas de Regalo</span>
+                    <div class="card card-body shadow-sm border-0 mb-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                            <div>
+                                <div class="text-muted small mb-1">Gracias por tu compra!</div>
+                                <h1 class="h2 mb-2">Tu tarjeta de regalo esta lista</h1>
+                                <p class="mb-0 text-muted">
+                                    Descarga ahora en PDF, o enviala por Correo directamente a esa
+                                    persona.
+                                </p>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="badge bg-success-lt text-success">Estado Orden: {{ order.status }}</span>
+                                <span class="badge bg-primary-lt text-primary">Instrucciones Tarjetas de Regalo</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row g-4">
+                    <div class="row g-4">
                     <!-- Left column -->
-                    <div class="col-12 col-lg-7">
+                        <div class="col-12 col-lg-7">
                         <!-- Gift card summary -->
-                        <div class="card shadow-sm border-0 mb-4">
-                            <div class="card-header bg-transparent">
-                                <h3 class="card-title mb-0">Detalles</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <div>
-                                        <div class="text-muted small">Tarjeta Comprada</div>
-                                        <div class="h1 mb-0">{{ item.name }}</div>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="text-muted small">Número de Orden</div>
-                                        <div class="fw-medium">{{ order.merchants_id[:13] }}</div>
-                                    </div>
+                            <div class="card shadow-sm border-0 mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h3 class="card-title mb-0">Detalles</h3>
                                 </div>
-
-                                <div class="row g-3">
-                                    <div class="col-12 col-md-6">
-                                        <div class="border rounded-3 p-3 bg-body-tertiary">
-                                            <div class="text-muted small mb-1">Remitente</div>
-                                            <div class="fw-medium">
-                                                <div class="input-icon">
-                                                    <span class="input-icon-addon">
-                                                        <i class="ti ti-user"></i>
-                                                    </span>
-                                                    <input type="text" id="input-remitente" class="form-control"
-                                                        placeholder="Tu Nombre (opcional)" />
-                                                </div>
-                                            </div>
-                                            <div class="text-muted small"></div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <div class="text-muted small">Tarjeta Comprada</div>
+                                            <div class="h1 mb-0">{{ item.name }}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="text-muted small">Número de Orden</div>
+                                            <div class="fw-medium">{{ order.merchants_id[:13] }}</div>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-md-6">
-                                        <div class="border rounded-3 p-3 bg-body-tertiary">
-                                            <div class="text-muted small mb-1">Destinatario</div>
-                                            <div class="fw-medium mb-2">
-                                                <div class="input-icon">
-                                                    <span class="input-icon-addon">
-                                                        <i class="ti ti-user"></i>
-                                                    </span>
-                                                    <input type="text" id="input-recipiente" class="form-control"
-                                                        placeholder="Nombre (opcional)" />
 
+                                    <div class="row g-3">
+                                        <div class="col-12 col-md-6">
+                                            <div class="border rounded-3 p-3 bg-body-tertiary">
+                                                <div class="text-muted small mb-1">Remitente</div>
+                                                <div class="fw-medium">
+                                                    <div class="input-icon">
+                                                        <span class="input-icon-addon">
+                                                            <i class="ti ti-user"></i>
+                                                        </span>
+                                                        <input type="text" id="input-remitente" class="form-control"
+                                                               placeholder="Tu Nombre (opcional)" />
+                                                    </div>
                                                 </div>
+                                                <div class="text-muted small"></div>
                                             </div>
-                                            <div class="fw-medium">
-                                                <div class="input-icon">
-                                                    <span class="input-icon-addon">
-                                                        <i class="ti ti-at"></i>
-                                                    </span>
-                                                    <input type="email" class="form-control"
-                                                        placeholder="Correo (obligatorio)" id="input-email-to" />
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="border rounded-3 p-3 bg-body-tertiary">
+                                                <div class="text-muted small mb-1">Destinatario</div>
+                                                <div class="fw-medium mb-2">
+                                                    <div class="input-icon">
+                                                        <span class="input-icon-addon">
+                                                            <i class="ti ti-user"></i>
+                                                        </span>
+                                                        <input type="text" id="input-recipiente" class="form-control"
+                                                               placeholder="Nombre (opcional)" />
+
+                                                    </div>
                                                 </div>
+                                                <div class="fw-medium">
+                                                    <div class="input-icon">
+                                                        <span class="input-icon-addon">
+                                                            <i class="ti ti-at"></i>
+                                                        </span>
+                                                        <input type="email" class="form-control"
+                                                               placeholder="Correo (obligatorio)" id="input-email-to" />
+                                                    </div>
+                                                </div>
+                                                <div class="text-muted small"></div>
                                             </div>
-                                            <div class="text-muted small"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
                         <!-- Actions -->
-                        <div class="card shadow-sm border-0">
-                            <div class="card-header bg-transparent">
-                                <h3 class="card-title mb-0">Siguientes pasos</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-grid gap-3">
-                                    <a href="{{ url_for('static', filename='pdfs-cache/' ~ gc_info.file_name) }}"
-                                        class="btn btn-primary btn-lg">
-                                        Descarga la Tarjeta de Regalo en PDF y enviala por otro medio.
-                                    </a>
-
-                                    <button class="btn btn-outline-primary btn-lg">
-                                        Envia la Tarjeta de Regalo por Correo (Ver Siguiente
-                                        Sección)
-                                    </button>
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-transparent">
+                                    <h3 class="card-title mb-0">Siguientes pasos</h3>
                                 </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-3">
+                                        <a href="{{ url_for('static', filename='pdfs-cache/' ~ gc_info.file_name) }}"
+                                           class="btn btn-primary btn-lg">
+                                            Descarga la Tarjeta de Regalo en PDF y enviala por otro medio.
+                                        </a>
 
-                                <div class="alert alert-info mt-4 mb-0">
-                                    <strong>Tip:</strong> La descarga es instantánea. El envio de
-                                    correo puedes cambiar el destinatario.
+                                        <button class="btn btn-outline-primary btn-lg">
+                                            Envia la Tarjeta de Regalo por Correo (Ver Siguiente
+                                            Sección)
+                                        </button>
+                                    </div>
+
+                                    <div class="alert alert-info mt-4 mb-0">
+                                        <strong>Tip:</strong> La descarga es instantánea. El envio de
+                                        correo puedes cambiar el destinatario.
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     <!-- Right column -->
-                    <div class="col-12 col-lg-5">
+                        <div class="col-12 col-lg-5">
                         <!-- Email preview card -->
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-header bg-transparent">
-                                <h3 class="card-title mb-0">Enviar Tarjeta por Correo</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <div class="text-muted small mb-1">Asunto</div>
-                                    <div class="fw-medium" id="text-subject">
-                                        Hola! Te han enviado un regalo.
-                                    </div>
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-header bg-transparent">
+                                    <h3 class="card-title mb-0">Enviar Tarjeta por Correo</h3>
                                 </div>
-
-                                <div class="mb-3">
-                                    <div class="text-muted small mb-1">De</div>
-                                    <div class="fw-medium" id="text-email-to">"Fonotarot" &lt;hola@fonotarot.cl&gt;
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <div class="text-muted small mb-1">Mensaje</div>
-                                    <div class="p-3 border rounded-3 bg-body-tertiary">
-                                        <div>
-                                            <textarea id="input-mensaje" placeholder="Ingresa un mensaje (opcional)"
-                                                rows="6" class="form-control bg-body-tertiary"></textarea>
-
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Asunto</div>
+                                        <div class="fw-medium" id="text-subject">
+                                            Hola! Te han enviado un regalo.
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3">
-                                    <div class="text-muted small mb-1">Incluir</div>
-                                    <ul class="list-unstyled mb-0-0">
-                                        <li>✓ Tarjeta en PDF</li>
-                                        <li>✓ Instrucciones de Uso</li>
-                                    </ul>
-                                </div>
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">De</div>
+                                        <div class="fw-medium" id="text-email-to">"Fonotarot" &lt;hola@fonotarot.cl&gt;
+                                        </div>
+                                    </div>
 
-                                <button id="btn-preview" class="btn btn-success w-100">
-                                    Previsualizar y Enviar
-                                </button>
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Mensaje</div>
+                                        <div class="p-3 border rounded-3 bg-body-tertiary">
+                                            <div>
+                                                <textarea id="input-mensaje" placeholder="Ingresa un mensaje (opcional)"
+                                                          rows="6" class="form-control bg-body-tertiary"></textarea>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="text-muted small mb-1">Incluir</div>
+                                        <ul class="list-unstyled mb-0-0">
+                                            <li>✓ Tarjeta en PDF</li>
+                                            <li>✓ Instrucciones de Uso</li>
+                                        </ul>
+                                    </div>
+
+                                    <button id="btn-preview" class="btn btn-success w-100">
+                                        Previsualizar y Enviar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,123 +167,122 @@
             </div>
         </div>
     </div>
-</div>
 
 <!-- Email preview modal -->
-<div class="modal modal-blur fade" style="max-height: 60rem" id="emailPreview" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Vista Previa Correo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="modal-email-body"></div>
-                <div id="card_template">{{ card_template|safe }}</div>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-link link-secondary btn-3" data-bs-dismiss="modal">
-                    Cancelar
-                </a>
-                <a href="#" id="btn-send" class="btn btn-primary btn-5 ms-auto">
-                    <i class="ti ti-mail-spark icon icon-2"></i>
-                    Enviar Correo
-                </a>
+    <div class="modal modal-blur fade" style="max-height: 60rem" id="emailPreview" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vista Previa Correo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-email-body"></div>
+                    <div id="card_template">{{ card_template|safe }}</div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary btn-3" data-bs-dismiss="modal">
+                        Cancelar
+                    </a>
+                    <a href="#" id="btn-send" class="btn btn-primary btn-5 ms-auto">
+                        <i class="ti ti-mail-spark icon icon-2"></i>
+                        Enviar Correo
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 {% block extra_js %}
-<script>
+    <script>
     // -- refs --
-    const remitente = document.getElementById('input-remitente');
-    const emailTo = document.getElementById('input-email-to');
-    const textEmailTo = document.getElementById('text-email-to');
-    const recipiente = document.getElementById('input-recipiente');
-    const mensaje = document.getElementById('input-mensaje');
-    const mensajebox = document.getElementById('mensaje-text-box');
-    const remitentebox = document.getElementById('remitente-text-box');
-    const subject = document.getElementById('text-subject');
-    const btnPreview = document.getElementById('btn-preview');
-    const btnSend = document.getElementById('btn-send');
-    const modalBody = document.getElementById('modal-email-body');
+        const remitente = document.getElementById('input-remitente');
+        const emailTo = document.getElementById('input-email-to');
+        const textEmailTo = document.getElementById('text-email-to');
+        const recipiente = document.getElementById('input-recipiente');
+        const mensaje = document.getElementById('input-mensaje');
+        const mensajebox = document.getElementById('mensaje-text-box');
+        const remitentebox = document.getElementById('remitente-text-box');
+        const subject = document.getElementById('text-subject');
+        const btnPreview = document.getElementById('btn-preview');
+        const btnSend = document.getElementById('btn-send');
+        const modalBody = document.getElementById('modal-email-body');
 
     // -- subject update --
-    const DEFAULT_SUBJECT = '¡Hola! Te han enviado un regalo.';
-    const DEFAULT_TO = '"Fonotarot" <hola@fonotarot.cl>';
+        const DEFAULT_SUBJECT = '¡Hola! Te han enviado un regalo.';
+        const DEFAULT_TO = '"Fonotarot" <hola@fonotarot.cl>';
 
-    remitente.addEventListener('input', () => {
-        subject.textContent = remitente.value.trim()
-            ? `¡Sorpresa! ${remitente.value.trim()} te ha enviado un regalo`
-            : DEFAULT_SUBJECT;
-        textEmailTo.textContent = remitente.value.trim()
-            ? `"${remitente.value.trim()}" <hola@fonotarot.cl>`
-            : DEFAULT_TO;
-    });
+        remitente.addEventListener('input', () => {
+            subject.textContent = remitente.value.trim()
+                ? `¡Sorpresa! ${remitente.value.trim()} te ha enviado un regalo`
+                : DEFAULT_SUBJECT;
+            textEmailTo.textContent = remitente.value.trim()
+                ? `"${remitente.value.trim()}" <hola@fonotarot.cl>`
+                : DEFAULT_TO;
+        });
 
     // -- email validation --
-    function validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
 
     // -- preview modal --
-    btnPreview.addEventListener('click', () => {
-        if (!validateEmail(emailTo.value)) {
-            emailTo.classList.add('is-invalid');
-            emailTo.focus();
-            return;
-        }
-        emailTo.classList.remove('is-invalid');
+        btnPreview.addEventListener('click', () => {
+            if (!validateEmail(emailTo.value)) {
+                emailTo.classList.add('is-invalid');
+                emailTo.focus();
+                return;
+            }
+            emailTo.classList.remove('is-invalid');
 
-        mensajebox.innerHTML = mensaje.value.trim();
-        remitentebox.innerHTML = remitente.value.trim();
-        tabler.bootstrap.Modal.getOrCreateInstance(
-            document.getElementById('emailPreview')
-        ).show();
-    });
+            mensajebox.innerHTML = mensaje.value.trim();
+            remitentebox.innerHTML = remitente.value.trim();
+            tabler.bootstrap.Modal.getOrCreateInstance(
+                document.getElementById('emailPreview')
+            ).show();
+        });
 
     // -- send --
-    btnSend.addEventListener('click', () => {
-        const csrfToken = document
-            .querySelector('meta[name="csrf-token"]')
+        btnSend.addEventListener('click', () => {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
             ?.getAttribute('content');
 
         // Disable + show sending state
-        btnSend.disabled = true;
-        btnSend.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Enviando correo...';
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Enviando correo...';
 
-        fetch(window.location.href, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({
-                email_from_name: remitente.value.trim(),
-                email_from: recipiente.value.trim(),
-                email_to: emailTo.value.trim(),
-                email_message: mensaje.value.trim(),
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    email_from_name: remitente.value.trim(),
+                    email_from: recipiente.value.trim(),
+                    email_to: emailTo.value.trim(),
+                    email_message: mensaje.value.trim(),
 
-            }),
-        })
-            .then(r => r.json())
-            .then(data => {
-                showToast("Correo enviado Correctamente", "success");
-                tabler.bootstrap.Modal.getInstance(
-                    document.getElementById('emailPreview')
-                )?.hide();
+                }),
             })
-            .catch(() => {
+                .then(r => r.json())
+                .then(data => {
+                    showToast("Correo enviado Correctamente", "success");
+                    tabler.bootstrap.Modal.getInstance(
+                        document.getElementById('emailPreview')
+                    )?.hide();
+                })
+                .catch(() => {
                 // Re-enable on error so user can retry
-                showToast("Correo no pudo ser enviado.", "danger");
-                btnSend.disabled = false;
-                btnSend.innerHTML = '<i class="ti ti-mail-spark icon icon-2"></i> Enviar Correo';
-            })
-            .finally(() => {
-                btnSend.disabled = false;
-                btnSend.innerHTML = '<i class="ti ti-mail-spark icon icon-2"></i> Enviar Correo';
-            });
-    });
-</script>
+                    showToast("Correo no pudo ser enviado.", "danger");
+                    btnSend.disabled = false;
+                    btnSend.innerHTML = '<i class="ti ti-mail-spark icon icon-2"></i> Enviar Correo';
+                })
+                .finally(() => {
+                    btnSend.disabled = false;
+                    btnSend.innerHTML = '<i class="ti ti-mail-spark icon icon-2"></i> Enviar Correo';
+                });
+        });
+    </script>
 {% endblock extra_js %}

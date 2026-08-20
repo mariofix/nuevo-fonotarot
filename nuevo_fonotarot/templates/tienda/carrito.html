@@ -3,42 +3,42 @@
 {% block title %}{{ _("Mi Carrito - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
-<style>
-  .price { color:var(--plum); font-weight:700; }
-  .total-row { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:800; color:var(--plum); }
-</style>
+  <style>
+    .price { color:var(--plum); font-weight:700; }
+    .total-row { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:800; color:var(--plum); }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible mb-4">
-              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible mb-4">
+          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
 
-        <h1 class="fw-bold mb-4">{{ _("Mi Carrito") }}</h1>
+    <h1 class="fw-bold mb-4">{{ _("Mi Carrito") }}</h1>
 
-        {% if cart %}
-        <div class="row g-4">
-          <div class="col-md-8">
-            <div class="card">
-              <div class="table-responsive">
-                <table class="table mb-0">
-                  <thead>
-                    <tr>
-                      <th>{{ _("Producto") }}</th>
-                      <th class="text-center">{{ _("Cantidad") }}</th>
-                      <th class="text-end">{{ _("Precio") }}</th>
-                      <th class="text-end">{{ _("Subtotal") }}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for item in cart %}
+    {% if cart %}
+      <div class="row g-4">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>{{ _("Producto") }}</th>
+                    <th class="text-center">{{ _("Cantidad") }}</th>
+                    <th class="text-end">{{ _("Precio") }}</th>
+                    <th class="text-end">{{ _("Subtotal") }}</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in cart %}
                     <tr>
                       <td>
                         <div class="fw-bold">{{ item.name }}</div>
@@ -59,57 +59,57 @@
                         </form>
                       </td>
                     </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="mt-3 d-flex justify-content-between">
-              <a href="{{ url_for('pagos.index') }}" class="btn btn-outline-primary btn-sm">
-                <i class="ti ti-arrow-left me-1"></i>{{ _("Seguir comprando") }}
-              </a>
-              <form action="{{ url_for('productos.vaciar') }}" method="post">
-                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('{{ _('¿Vaciar el carrito?') }}')">
-                  <i class="ti ti-trash me-1"></i>{{ _("Vaciar carrito") }}
-                </button>
-              </form>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
+          <div class="mt-3 d-flex justify-content-between">
+            <a href="{{ url_for('pagos.index') }}" class="btn btn-outline-primary btn-sm">
+              <i class="ti ti-arrow-left me-1"></i>{{ _("Seguir comprando") }}
+            </a>
+            <form action="{{ url_for('productos.vaciar') }}" method="post">
+              <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('{{ _('¿Vaciar el carrito?') }}')">
+                <i class="ti ti-trash me-1"></i>{{ _("Vaciar carrito") }}
+              </button>
+            </form>
+          </div>
+        </div>
 
-          <div class="col-md-4">
-            <div class="card p-4">
-              <h5 class="mb-3">{{ _("Resumen del pedido") }}</h5>
-              <div class="d-flex justify-content-between text-secondary mb-2">
-                <span>{{ _("Subtotal") }}</span>
-                <span>${{ "{:,}".format(total).replace(",", ".") }} CLP</span>
-              </div>
-              <hr style="border-color:var(--border)"/>
-              <div class="d-flex justify-content-between total-row mb-4">
-                <span>{{ _("Total") }}</span>
-                <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
-              </div>
-              <a href="{{ url_for('productos.checkout') }}" class="btn btn-primary w-100">
-                <i class="ti ti-lock me-1"></i>{{ _("Proceder al pago") }}
-              </a>
-              <div class="text-center mt-3">
-                <small class="text-secondary d-block mb-1">{{ _("Métodos de pago") }}</small>
-                <div class="d-flex justify-content-center gap-2">
-                  <span class="badge border px-2" style="border-color:var(--border)!important;color:var(--text);background:var(--sand)">Flow</span>
-                  <span class="badge border px-2" style="border-color:var(--border)!important;color:var(--text);background:var(--sand)">Khipu</span>
-                </div>
+        <div class="col-md-4">
+          <div class="card p-4">
+            <h5 class="mb-3">{{ _("Resumen del pedido") }}</h5>
+            <div class="d-flex justify-content-between text-secondary mb-2">
+              <span>{{ _("Subtotal") }}</span>
+              <span>${{ "{:,}".format(total).replace(",", ".") }} CLP</span>
+            </div>
+            <hr style="border-color:var(--border)"/>
+            <div class="d-flex justify-content-between total-row mb-4">
+              <span>{{ _("Total") }}</span>
+              <span>${{ "{:,}".format(total).replace(",", ".") }}</span>
+            </div>
+            <a href="{{ url_for('productos.checkout') }}" class="btn btn-primary w-100">
+              <i class="ti ti-lock me-1"></i>{{ _("Proceder al pago") }}
+            </a>
+            <div class="text-center mt-3">
+              <small class="text-secondary d-block mb-1">{{ _("Métodos de pago") }}</small>
+              <div class="d-flex justify-content-center gap-2">
+                <span class="badge border px-2" style="border-color:var(--border)!important;color:var(--text);background:var(--sand)">Flow</span>
+                <span class="badge border px-2" style="border-color:var(--border)!important;color:var(--text);background:var(--sand)">Khipu</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {% else %}
-        <div class="text-center py-5 text-secondary">
-          <i class="ti ti-shopping-cart-off" style="font-size:4rem"></i>
-          <h4 class="mt-3">{{ _("Tu carrito está vacío") }}</h4>
-          <p>{{ _("Agrega minutos, suscripciones o productos esotéricos.") }}</p>
-          <a href="{{ url_for('pagos.index') }}" class="btn btn-primary mt-2">{{ _("Ir a la tienda") }}</a>
-        </div>
-        {% endif %}
+    {% else %}
+      <div class="text-center py-5 text-secondary">
+        <i class="ti ti-shopping-cart-off" style="font-size:4rem"></i>
+        <h4 class="mt-3">{{ _("Tu carrito está vacío") }}</h4>
+        <p>{{ _("Agrega minutos, suscripciones o productos esotéricos.") }}</p>
+        <a href="{{ url_for('pagos.index') }}" class="btn btn-primary mt-2">{{ _("Ir a la tienda") }}</a>
+      </div>
+    {% endif %}
 
-</div>
+  </div>
 {% endblock %}

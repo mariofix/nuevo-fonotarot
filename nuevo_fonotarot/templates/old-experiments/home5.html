@@ -160,35 +160,35 @@
         <div class="tab-content">
           <div class="tab-pane fade show active" id="oc-all">
             {% for agent in agents %}
-            <div class="agent-oc-row">
-              <div class="agent-oc-av">{{ agent.name[0] }}</div>
-              <div class="flex-grow-1">
-                <div class="agent-oc-name">{{ agent.name }}</div>
-                <div class="agent-oc-spec">{{ agent.specialty }}</div>
-                <div class="mt-1">
-                  {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
-                  {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+              <div class="agent-oc-row">
+                <div class="agent-oc-av">{{ agent.name[0] }}</div>
+                <div class="flex-grow-1">
+                  <div class="agent-oc-name">{{ agent.name }}</div>
+                  <div class="agent-oc-spec">{{ agent.specialty }}</div>
+                  <div class="mt-1">
+                    {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                    {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+                  </div>
                 </div>
+                {% if agent.status == 'online' %}
+                  <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+                {% else %}
+                  <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
+                {% endif %}
               </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-              {% else %}
-              <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>
-              {% endif %}
-            </div>
             {% endfor %}
           </div>
           <div class="tab-pane fade" id="oc-online">
             {% for agent in agents if agent.status == 'online' %}
-            <div class="agent-oc-row">
-              <div class="agent-oc-av">{{ agent.name[0] }}</div>
-              <div class="flex-grow-1">
-                <div class="agent-oc-name">{{ agent.name }}</div>
-                <div class="agent-oc-spec">{{ agent.specialty }}</div>
-                <span class="b-on">● Disponible ahora</span>
+              <div class="agent-oc-row">
+                <div class="agent-oc-av">{{ agent.name[0] }}</div>
+                <div class="flex-grow-1">
+                  <div class="agent-oc-name">{{ agent.name }}</div>
+                  <div class="agent-oc-spec">{{ agent.specialty }}</div>
+                  <span class="b-on">● Disponible ahora</span>
+                </div>
+                <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
               </div>
-              <a href="tel:600XXXXXXX" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-            </div>
             {% endfor %}
           </div>
         </div>
@@ -236,15 +236,15 @@
             <div class="live-widget">
               <div class="live-header"><span class="pulse"></span>Especialistas disponibles ahora</div>
               {% for agent in agents %}
-              <div class="live-agent-row">
-                <div class="av-sm">{{ agent.name[0] }}</div>
-                <div class="flex-grow-1">
-                  <div class="la-name">{{ agent.name }}</div>
-                  <div class="la-spec">{{ agent.specialty }}</div>
+                <div class="live-agent-row">
+                  <div class="av-sm">{{ agent.name[0] }}</div>
+                  <div class="flex-grow-1">
+                    <div class="la-name">{{ agent.name }}</div>
+                    <div class="la-spec">{{ agent.specialty }}</div>
+                  </div>
+                  {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
+                  {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
                 </div>
-                {% if agent.status == 'online' %}<span class="b-on">● Disponible</span>
-                {% elif agent.status == 'busy' %}<span class="b-busy">● Ocupada</span>{% endif %}
-              </div>
               {% endfor %}
             </div>
           </div>
@@ -274,17 +274,17 @@
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}<div><span class="plan-badge">Más popular</span></div>{% endif %}
-              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="plan-desc">{{ plan.description }}</p>
-              <a href="#" class="btn {% if plan.featured %}btn-plan-solid{% else %}btn-plan-ghost{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
+            <div class="col-sm-6 col-lg-3">
+              <div class="plan-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}<div><span class="plan-badge">Más popular</span></div>{% endif %}
+                <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+                <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                <p class="plan-desc">{{ plan.description }}</p>
+                <a href="#" class="btn {% if plan.featured %}btn-plan-solid{% else %}btn-plan-ghost{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -300,21 +300,21 @@
         <div id="tc5" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testi-box">
-                <div class="t-stars">★★★★★</div>
-                <p class="t-quote">"{{ t.text }}"</p>
-                <div class="t-who">{{ t.author }}</div>
-                <div class="t-where">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testi-box">
+                  <div class="t-stars">★★★★★</div>
+                  <p class="t-quote">"{{ t.text }}"</p>
+                  <div class="t-who">{{ t.author }}</div>
+                  <div class="t-where">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#tc5" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
           <button class="carousel-control-next" type="button" data-bs-target="#tc5" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
           <div class="carousel-indicators" style="position:static;margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#tc5" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#tc5" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>
@@ -365,11 +365,11 @@
             </div>
             <div class="accordion faq-accordion" id="faq5">
               {% for q, a, id in [
-                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a con una especialista disponible. Todo es privado y confidencial.","f1"),
-                ("¿Está disponible las 24 horas?","Sí, contamos con especialistas disponibles todos los días del año, sin excepción.","f2"),
-                ("¿Los minutos vencen?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento.","f3"),
-                ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato es compartido con terceros.","f4"),
-                ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú y elige con quien quieras consultar.","f5")
+              ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al 600 XXX XXX. Serás conectado/a con una especialista disponible. Todo es privado y confidencial.","f1"),
+              ("¿Está disponible las 24 horas?","Sí, contamos con especialistas disponibles todos los días del año, sin excepción.","f2"),
+              ("¿Los minutos vencen?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento.","f3"),
+              ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato es compartido con terceros.","f4"),
+              ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú y elige con quien quieras consultar.","f5")
               ] %}
               <div class="accordion-item">
                 <h2 class="accordion-header">

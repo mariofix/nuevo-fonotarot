@@ -2,7 +2,7 @@
 {% from "macros/analytics.html" import umami_script, gtm_head, gtm_body, ga_script, meta_pixel, segment_head with context %}
 <!doctype html>
 <html lang="{{ get_locale() | replace('_', '-') }}" prefix="og: https://ogp.me/ns#" data-theme="{{ default_theme }}"
-    data-bs-theme="{{ default_theme }}">
+      data-bs-theme="{{ default_theme }}">
 
     <head>
         <meta charset="utf-8" />
@@ -15,12 +15,12 @@
             {% block title %}{{ config.FT_SEO_SITE_TITLE or _("Fonotarot - El universo marca un camino... Descúbrelo! | Chile") }}{% endblock %}
         </title>
         <meta name="description"
-            content="{% block description %}{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+              content="{% block description %}{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
         <meta name="keywords"
-            content="{% block keywords %}{{ config.FT_SEO_SITE_KEYWORDS or _(" tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
+              content="{% block keywords %}{{ config.FT_SEO_SITE_KEYWORDS or _(" tarot telefónico, tarot por teléfono, tarot Chile, tarotistas Chile, consulta tarot") }}{% endblock %}" />
         <meta name="author" content="{{ config.FT_SEO_SITE_AUTHOR or " Fonotarot" }}" />
         <meta name="robots"
-            content="{{ config.FT_SEO_ROBOTS or " index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" }}" />
+              content="{{ config.FT_SEO_ROBOTS or " index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" }}" />
         <meta name="googlebot" content="{{ config.FT_SEO_ROBOTS or " index, follow" }}" />
         <meta name="bingbot" content="{{ config.FT_SEO_ROBOTS or " index, follow" }}" />
         <meta name="language" content="{{ config.FT_SEO_LANGUAGE or " Spanish" }}" />
@@ -29,26 +29,26 @@
         <meta name="geo.placename" content="{{ config.FT_SEO_GEO_PLACENAME or " Chile" }}" />
         <meta name="copyright" content="{{ config.FT_SEO_COPYRIGHT or " Fonotarot" }}" />
         {% if config.FT_SEO_GOOGLE_VERIFICATION %}
-        <meta name="google-site-verification" content="{{ config.FT_SEO_GOOGLE_VERIFICATION }}" />{% endif %}
+            <meta name="google-site-verification" content="{{ config.FT_SEO_GOOGLE_VERIFICATION }}" />{% endif %}
         {% if config.FT_SEO_BING_VERIFICATION %}
-        <meta name="msvalidate.01" content="{{ config.FT_SEO_BING_VERIFICATION }}" />{% endif %}
-        <link rel="canonical" href="https://{{ site_domain }}{{ request.path }}" />
-        <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.path }}" />
-        <link rel="alternate" hreflang="es-US" href="https://{{ site_domain }}{{ request.path }}" />
-        <link rel="alternate" hreflang="x-default" href="https://{{ site_domain }}{{ request.path }}" />
+            <meta name="msvalidate.01" content="{{ config.FT_SEO_BING_VERIFICATION }}" />{% endif %}
+        <link rel="canonical" href="https://{{ site_domain }}{{ request.script_root }}{{ request.path }}" />
+        <link rel="alternate" hreflang="es-CL" href="https://{{ site_domain }}{{ request.script_root }}{{ request.path }}" />
+        <link rel="alternate" hreflang="es-US" href="https://{{ site_domain }}{{ request.script_root }}{{ request.path }}" />
+        <link rel="alternate" hreflang="x-default" href="https://{{ site_domain }}{{ request.script_root }}{{ request.path }}" />
 
         <!-- ── Open Graph / Facebook ──────────────────────────────────── -->
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://{{ site_domain }}{{ request.path }}" />
+        <meta property="og:url" content="https://{{ site_domain }}{{ request.script_root }}{{ request.path }}" />
         <meta property="og:site_name" content="{{ config.FT_SEO_OG_SITE_NAME or " Fonotarot" }}" />
         <meta property="og:locale" content="{{ get_locale() }}" />
         <meta property="og:locale:alternate" content="es_US" />
         <meta property="og:title"
-            content="{% block og_title %}{{ config.FT_SEO_SITE_TITLE or _(" Fonotarot - El universo marca un camino... Descúbrelo! | Chile") }}{% endblock %}" />
+              content="{% block og_title %}{{ config.FT_SEO_SITE_TITLE or _(" Fonotarot - El universo marca un camino... Descúbrelo! | Chile") }}{% endblock %}" />
         <meta property="og:description"
-            content="{% block og_description %}{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
+              content="{% block og_description %}{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7. Amor, trabajo, salud y más.") }}{% endblock %}" />
         <meta property="og:image"
-            content="{{ config.FT_SEO_OG_IMAGE_URL or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
+              content="{{ config.FT_SEO_OG_IMAGE_URL or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
 
@@ -57,21 +57,21 @@
         <meta name="twitter:site" content="@{{ config.FT_SEO_TWITTER_HANDLE or " fonotarot" }}" />
         <meta name="twitter:creator" content="@{{ config.FT_SEO_TWITTER_HANDLE or " fonotarot" }}" />
         <meta name="twitter:title"
-            content="{{ config.FT_SEO_SITE_TITLE or _(" Fonotarot - El universo marca un camino... Descúbrelo!") }}" />
+              content="{{ config.FT_SEO_SITE_TITLE or _(" Fonotarot - El universo marca un camino... Descúbrelo!") }}" />
         <meta name="twitter:description"
-            content="{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
+              content="{{ config.FT_SEO_SITE_DESCRIPTION or _(" Consulta con tarotistas reales por teléfono en Chile. Planes desde 15 min. Disponible 24/7.") }}" />
         <meta name="twitter:image"
-            content="{{ config.FT_SEO_OG_IMAGE_URL or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
+              content="{{ config.FT_SEO_OG_IMAGE_URL or " https://" ~ site_domain ~ "/static/og-image.png" }}" />
 
         <!-- ── Apple / Mobile ────────────────────────────────────────── -->
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style"
-            content="{{ " black-translucent" if default_theme=="dark" else "default" }}" />
+              content="{{ " black-translucent" if default_theme=="dark" else "default" }}" />
         <meta name="apple-mobile-web-app-title" content="{{ config.FT_SEO_APP_TITLE or " Fonotarot" }}" />
         <meta name="theme-color" content="{{ config.FT_SEO_THEME_COLOR_LIGHT or " #faf7f3" }}"
-            media="(prefers-color-scheme: light)" />
+              media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="{{ config.FT_SEO_THEME_COLOR_DARK or " #1a1a2e" }}"
-            media="(prefers-color-scheme: dark)" />
+              media="(prefers-color-scheme: dark)" />
         <meta name="msapplication-TileColor" content="{{ config.FT_SEO_TILE_COLOR or " #6b3fa0" }}" />
         <meta name="msapplication-navbutton-color" content="{{ config.FT_SEO_TILE_COLOR or " #6b3fa0" }}" />
         <meta name="format-detection" content="telephone=yes" />
@@ -570,8 +570,8 @@
             .credits-strip {
                 border-bottom: 1px solid var(--border);
                 background: linear-gradient(90deg,
-                        rgba(107, 63, 160, .08),
-                        rgba(192, 96, 128, .07));
+                    rgba(107, 63, 160, .08),
+                    rgba(192, 96, 128, .07));
             }
 
             .credits-strip.is-call {
@@ -623,8 +623,8 @@
 
             [data-theme="dark"] .credits-strip {
                 background: linear-gradient(90deg,
-                        rgba(168, 125, 212, .18),
-                        rgba(217, 138, 170, .12));
+                    rgba(168, 125, 212, .18),
+                    rgba(217, 138, 170, .12));
             }
 
             .credits-strip-inner {
@@ -1035,9 +1035,9 @@
         <!-- ── NAVBAR ──────────────────────────────────── -->
         <nav class="site-nav">
             <div class="container d-flex align-items-center justify-content-between">
-                <a href="/" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
+                <a href="{{ request.script_root }}" class="brand" style="line-height:1; text-decoration:none; display:inline-block;">
                     <svg height="44" width="85" viewBox="0 0 230 120" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        aria-label="fonotarot">
+                         aria-label="fonotarot">
                         <defs>
                             <linearGradient id="bnb_card" x1="0" y1="0" x2="1" y2="1">
                                 <stop offset="0%" style="stop-color:var(--logo-card-a)" />
@@ -1063,40 +1063,40 @@
                         <!-- Card -->
                         <rect x="5" y="4" width="72" height="112" rx="8" fill="url(#bnb_card)" />
                         <rect x="9" y="8" width="64" height="104" rx="5" fill="none" stroke="url(#bnb_gold)"
-                            stroke-width="1" />
+                              stroke-width="1" />
                         <rect x="12" y="11" width="58" height="98" rx="3" fill="none" stroke="rgba(201,168,76,.3)"
-                            stroke-width=".5" />
+                              stroke-width=".5" />
                         <!-- Eye -->
                         <ellipse cx="41" cy="60" rx="24" ry="24" fill="url(#bnb_glow)" />
                         <path d="M 15 60 Q 28 40 41 40 Q 54 40 67 60 Q 54 80 41 80 Q 28 80 15 60 Z"
-                            style="fill:var(--logo-almond)" stroke="url(#bnb_gold)" stroke-width="1.2" />
+                              style="fill:var(--logo-almond)" stroke="url(#bnb_gold)" stroke-width="1.2" />
                         <circle cx="41" cy="60" r="12" fill="url(#bnb_iris)" />
                         <circle cx="41" cy="60" r="6" style="fill:var(--logo-pupil)" />
                         <circle cx="44" cy="57" r="2.2" fill="white" opacity=".85" />
                         <circle cx="41" cy="60" r="12" fill="none" stroke="url(#bnb_gold)" stroke-width=".6"
-                            stroke-dasharray="2 3" />
+                                stroke-dasharray="2 3" />
                         <!-- Copas NW -->
                         <g transform="translate(17,17)">
                             <path d="M 0,-5 C -5,-3 -5,3 0,5 C 5,3 5,-3 0,-5 Z" fill="url(#bnb_gold)" />
                             <line x1="-1.5" y1="5" x2="-1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                             <line x1="1.5" y1="5" x2="1.5" y2="8" stroke="url(#bnb_gold)" stroke-width="1"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                             <line x1="-3" y1="8" x2="3" y2="8" stroke="url(#bnb_gold)" stroke-width="1"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                         </g>
                         <!-- Bastos NE -->
                         <g transform="translate(65,17)">
                             <line x1="0" y1="8" x2="0" y2="-8" stroke="url(#bnb_gold)" stroke-width="1.5"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                             <path d="M 0,-8 C -3,-12 3,-12 0,-8" fill="url(#bnb_gold)" />
                         </g>
                         <!-- Espadas SW -->
                         <g transform="translate(17,103)">
                             <line x1="0" y1="-8" x2="0" y2="6" stroke="url(#bnb_iris)" stroke-width="1.5"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                             <line x1="-4" y1="-1" x2="4" y2="-1" stroke="url(#bnb_gold)" stroke-width="1.2"
-                                stroke-linecap="round" />
+                                  stroke-linecap="round" />
                             <path d="M -1,6 L 1,6 L 1,9 L -1,9 Z" fill="url(#bnb_gold)" />
                         </g>
                         <!-- Pentáculos SE -->
@@ -1108,55 +1108,55 @@
                         <!-- Wordmark (Fono/Tarot: matches the original modified logo design;
                  the 24px right-offset on "Tarot" is intentional for visual cascade) -->
                         <text x="96" y="40" font-family="'Playfair Display', Georgia, serif" font-size="32"
-                            font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
+                              font-weight="400" style="fill:var(--logo-text-a)">Fono</text>
                         <text x="120" y="85" font-family="'Playfair Display', Georgia, serif" font-size="40"
-                            font-weight="600" fill="url(#bnb_text)">Tarot</text>
+                              font-weight="600" fill="url(#bnb_text)">Tarot</text>
                     </svg>
                 </a>
                 <div class="d-flex align-items-center gap-2">
                     {% block nav_links %}
-                    <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
-                    <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
-                    <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
-                    <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
+                        <a href="/#tarotistas" class="nav-link d-none d-md-inline">{{ _("Tarotistas") }}</a>
+                        <a href="/#planes" class="nav-link d-none d-md-inline">{{ _("Planes") }}</a>
+                        <a href="/blog/" class="nav-link d-none d-md-inline">{{ _("Blog") }}</a>
+                        <a href="/#faq" class="nav-link d-none d-md-inline">{{ _("Ayuda") }}</a>
                     {% endblock %}
                     <div class="d-none d-md-block">
                         {% block nav_cta %}<a href="{{ url_for('pagos.index') }}"
-                            class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
+                                              class="btn-gold">{{ _("Carga Minutos") }}</a>{% endblock %}
                     </div>
                     <button class="btn btn-oc-trigger d-none d-lg-inline-flex" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#agentsOffcanvas" aria-controls="agentsOffcanvas">
+                            data-bs-target="#agentsOffcanvas" aria-controls="agentsOffcanvas">
                         <span class="oc-dot-online"></span>{{ _("Especialistas") }}
                     </button>
                     <!-- User menu -->
                     <div class="dropdown">
                         <button class="btn-user-menu" id="userMenuToggle" data-bs-toggle="dropdown"
-                            aria-expanded="false" aria-label="{{ _('Menú de usuario') }}"
-                            title="{{ _('Menú de usuario') }}">
+                                aria-expanded="false" aria-label="{{ _('Menú de usuario') }}"
+                                title="{{ _('Menú de usuario') }}">
                             <i class="ti ti-user-circle"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userMenuToggle">
                             {% if current_user and current_user.has_role('admin') %}
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('admin.index') }}">
-                                    <i class="ti ti-tool"></i> {{ _("Panel de Administración") }}
-                                </a>
-                            </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('admin.index') }}">
+                                        <i class="ti ti-tool"></i> {{ _("Panel de Administración") }}
+                                    </a>
+                                </li>
                             {% endif %}
                             {% if current_user and current_user.is_authenticated %}
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('account.profile') }}">
-                                    <i class="ti ti-user"></i>{{ _("Perfil") }}
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('account.settings') }}">
-                                    <i class="ti ti-settings"></i>{{ _("Editar perfil") }}
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('account.profile') }}">
+                                        <i class="ti ti-user"></i>{{ _("Perfil") }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('account.settings') }}">
+                                        <i class="ti ti-settings"></i>{{ _("Editar perfil") }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                             {% endif %}
                             <!-- Language Switcher -->
                             <li>
@@ -1167,12 +1167,12 @@
                                 <div class="px-3 py-2">
                                     <div class="lang-switcher-dropdown" aria-label="{{ _('Seleccionar idioma') }}">
                                         {%- for lang in site_languages %}
-                                        <a href="{{ url_for('account.set_language', lang=lang.locale, next=request.path) }}"
-                                            title="{{ lang.label }}" aria-label="{{ lang.label }}"
-                                            class="lang-flag-dropdown{% if get_locale() == lang.locale %} active{% endif %}">
-                                            <span class="flag flag-xs {{ lang.flag_class }}" aria-hidden="true"></span>
-                                            <span class="lang-label">{{ lang.label }}</span>
-                                        </a>
+                                            <a href="{{ url_for('account.set_language', lang=lang.locale, next=request.path) }}"
+                                               title="{{ lang.label }}" aria-label="{{ lang.label }}"
+                                               class="lang-flag-dropdown{% if get_locale() == lang.locale %} active{% endif %}">
+                                                <span class="flag flag-xs {{ lang.flag_class }}" aria-hidden="true"></span>
+                                                <span class="lang-label">{{ lang.label }}</span>
+                                            </a>
                                         {%- endfor %}
                                     </div>
                                 </div>
@@ -1183,41 +1183,41 @@
                             <!-- Theme Toggle -->
                             <li>
                                 <button class="dropdown-item btn-theme-toggle-menu" id="theme-toggle-menu"
-                                    aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
+                                        aria-label="{{ _('Cambiar tema') }}" title="{{ _('Cambiar tema') }}">
                                     <span class="theme-icon">🌙</span>
                                     <span class="theme-label">{{ _("Tema oscuro") }}</span>
                                 </button>
                             </li>
                             {% if current_user.is_authenticated %}
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url_for('security.logout') }}">
-                                    <i class="ti ti-logout"></i> {{ _("Cerrar sesión") }}
-                                </a>
-                            </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('security.logout') }}">
+                                        <i class="ti ti-logout"></i> {{ _("Cerrar sesión") }}
+                                    </a>
+                                </li>
                             {% else %}
-                            <li>
-                                <button type="button" class="dropdown-item js-passwordless-trigger"
-                                    data-next="{{ request.full_path.rstrip('?') }}">
-                                    <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
-                                </button>
-                            </li>
+                                <li>
+                                    <button type="button" class="dropdown-item js-passwordless-trigger"
+                                            data-next="{{ request.full_path.rstrip('?') }}">
+                                        <i class="ti ti-login"></i> {{ _("Iniciar sesión") }}
+                                    </button>
+                                </li>
                             {% endif %}
                         </ul>
                     </div>
                     <!-- Cart.js -->
                     <button type="button" class="btn btn-lime" id="cart-trigger" data-bs-toggle="offcanvas"
-                        data-bs-target="#cart-offcanvas" aria-controls="cart-offcanvas"
-                        style="display:none;opacity:0;transition:opacity .25s ease;">
+                            data-bs-target="#cart-offcanvas" aria-controls="cart-offcanvas"
+                            style="display:none;opacity:0;transition:opacity .25s ease;">
                         <i class="ti ti-shopping-cart"></i>
                         <span class="badge badge-notification" id="cart-badge">0</span>
                     </button>
                     <!-- Mobile hamburger (hidden on md+) -->
                     <button class="btn-hamburger d-flex d-md-none" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#mobileNavCanvas" aria-controls="mobileNavCanvas"
-                        aria-label="{{ _('Abrir menú') }}">
+                            data-bs-target="#mobileNavCanvas" aria-controls="mobileNavCanvas"
+                            aria-label="{{ _('Abrir menú') }}">
                         <i class="ti ti-menu-2"></i>
                     </button>
                 </div>
@@ -1227,43 +1227,43 @@
 
         <!--MOBILE NAV OFFCANVAS -->
         <div class="offcanvas offcanvas-end mobile-nav-offcanvas" tabindex="-1" id="mobileNavCanvas"
-            aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
+             aria-labelledby="mobileNavLabel" style="max-width:82vw; width:300px;">
             <div class="offcanvas-header">
                 <span class="offcanvas-title" id="mobileNavLabel">FonoTarot</span>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                    aria-label="{{ _('Cerrar') }}"></button>
+                        aria-label="{{ _('Cerrar') }}"></button>
             </div>
             <div class="offcanvas-body d-flex flex-column gap-0 p-0">
                 <div class="px-3 pt-2">
                     <a href="https://fonotarot.com/nuestro-equipo/" class="mobile-nav-link"
-                        data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
+                       data-bs-dismiss="offcanvas">{{ _("Tarotistas") }}</a>
                     <a href="/#planes" class="mobile-nav-link" data-bs-dismiss="offcanvas">{{ _("Planes") }}</a>
                     <a href="https://fonotarot.com/preguntas-frecuentes/" class="mobile-nav-link"
-                        data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
+                       data-bs-dismiss="offcanvas">{{ _("Ayuda") }}</a>
                     <a href="#" class="mobile-nav-link" data-bs-toggle="modal" data-bs-target="#saldoModal"
-                        data-bs-dismiss="offcanvas">{{ _("Consulta tu saldo") }}</a>
+                       data-bs-dismiss="offcanvas">{{ _("Consulta tu saldo") }}</a>
                 </div>
                 <div class="px-3 pt-3 pb-4 border-top mt-3" style="border-color:var(--border) !important;">
                     <a href="{{ url_for('pagos.index') }}"
-                        class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
+                       class="btn-gold d-block text-center mb-3">{{ _("Carga Minutos") }}</a>
                     <div class="d-flex align-items-center gap-3 mb-3">
                         {{ lang_switcher(get_locale(), site_languages) }}
                     </div>
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('account.profile') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-                        <i class="ti ti-user me-1"></i>{{ _("Perfil") }}
-                    </a>
-                    <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-                        <i class="ti ti-settings me-1"></i>{{ _("Editar perfil") }}
-                    </a>
-                    <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
-                        <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
-                    </a>
+                        <a href="{{ url_for('account.profile') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                            <i class="ti ti-user me-1"></i>{{ _("Perfil") }}
+                        </a>
+                        <a href="{{ url_for('account.settings') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                            <i class="ti ti-settings me-1"></i>{{ _("Editar perfil") }}
+                        </a>
+                        <a href="{{ url_for('security.logout') }}" class="mobile-nav-link" data-bs-dismiss="offcanvas">
+                            <i class="ti ti-logout me-1"></i>{{ _("Cerrar sesión") }}
+                        </a>
                     {% else %}
-                    <a href="#" class="mobile-nav-link js-passwordless-trigger"
-                        data-next="{{ request.full_path.rstrip('?') }}" data-bs-dismiss="offcanvas">
-                        <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
-                    </a>
+                        <a href="#" class="mobile-nav-link js-passwordless-trigger"
+                           data-next="{{ request.full_path.rstrip('?') }}" data-bs-dismiss="offcanvas">
+                            <i class="ti ti-login me-1"></i>{{ _("Iniciar sesión") }}
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -1271,23 +1271,23 @@
 
         <!--AGENTS OFFCANVAS -->
         <div class="offcanvas offcanvas-end offcanvas-agents" tabindex="-1" id="agentsOffcanvas"
-            aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
+             aria-labelledby="agentsOffcanvasLabel" style="width:360px;">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="agentsOffcanvasLabel">
                     <i class="ti ti-stars me-2"></i>{{ _("Especialistas") }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
-                    aria-label="{{ _('Cerrar') }}"></button>
+                        aria-label="{{ _('Cerrar') }}"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="nav oc-tabs mb-4" role="tablist">
                     <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#oc-all"
-                            type="button" role="tab">{{ _("Todas") }}</button></li>
+                                                 type="button" role="tab">{{ _("Todas") }}</button></li>
                     <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-online"
-                            type="button" role="tab"><span class="oc-dot-online"></span>{{ _("Disponibles") }}</button>
+                                                 type="button" role="tab"><span class="oc-dot-online"></span>{{ _("Disponibles") }}</button>
                     </li>
                     <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#oc-busy"
-                            type="button" role="tab"><span class="oc-dot-busy"></span>{{ _("En consulta") }}</button>
+                                                 type="button" role="tab"><span class="oc-dot-busy"></span>{{ _("En consulta") }}</button>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -1311,43 +1311,43 @@
 
         <!-- PAGE CONTENT -->
         {% if current_user.is_authenticated and current_user.firenze_client_id %}
-        <section class="credits-strip" id="credits-strip" data-client-id="{{ current_user.firenze_client_id }}"
-            aria-label="{{ _('Estado de créditos') }}">
-            <div class="container py-2">
-                <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="d-flex align-items-center gap-2" id="credits-strip-left">
-                        <span class="credits-badge" id="credits-badge-idle">
-                            <i class="ti ti-wallet"></i>{{ _("Créditos") }}
-                        </span>
-                        <span class="credits-copy" id="credits-copy-idle">
-                            {{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}
-                        </span>
+            <section class="credits-strip" id="credits-strip" data-client-id="{{ current_user.firenze_client_id }}"
+                     aria-label="{{ _('Estado de créditos') }}">
+                <div class="container py-2">
+                    <div class="credits-strip-inner d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="d-flex align-items-center gap-2" id="credits-strip-left">
+                            <span class="credits-badge" id="credits-badge-idle">
+                                <i class="ti ti-wallet"></i>{{ _("Créditos") }}
+                            </span>
+                            <span class="credits-copy" id="credits-copy-idle">
+                                {{ _("Ve a tu perfil para ver el detalle de tus créditos.") }}
+                            </span>
 
-                        <span class="credits-badge is-live d-none" id="credits-badge-call">
-                            <span class="live-dot" aria-hidden="true"></span>{{ _("En llamada") }}
-                        </span>
-                        <span class="credits-copy d-none" id="credits-copy-call">
-                            {{ _("Con") }} <strong id="call-operator-name"></strong>
-                            · {{ _("marcada") }} <span id="call-since"></span>
-                        </span>
-                    </div>
-                    <div class="credits-actions d-flex align-items-center gap-2">
-                        <span id="call-timer" class="credits-value call-timer d-none"
-                            aria-live="polite" title="{{ _('Tiempo conectado') }}">00:00</span>
-                        <span id="global-credits-value" class="credits-value"
-                            aria-live="polite">{{ _("Consultando saldo...") }}</span>
-                        <button id="global-credits-refresh" type="button" class="btn btn-outline-secondary btn-sm"
-                            aria-label="{{ _('Actualizar saldo') }}" title="{{ _('Actualizar saldo') }}">
-                            <i class="ti ti-refresh me-1"></i>{{ _("Actualizar") }}
-                        </button>
-                        <a href="{{ url_for('account.profile') }}" class="btn btn-primary btn-sm">
-                            <i class="ti ti-user me-1"></i>{{ _("Ir a mi perfil") }}
-                        </a>
+                            <span class="credits-badge is-live d-none" id="credits-badge-call">
+                                <span class="live-dot" aria-hidden="true"></span>{{ _("En llamada") }}
+                            </span>
+                            <span class="credits-copy d-none" id="credits-copy-call">
+                                {{ _("Con") }} <strong id="call-operator-name"></strong>
+                                · {{ _("marcada") }} <span id="call-since"></span>
+                            </span>
+                        </div>
+                        <div class="credits-actions d-flex align-items-center gap-2">
+                            <span id="call-timer" class="credits-value call-timer d-none"
+                                  aria-live="polite" title="{{ _('Tiempo conectado') }}">00:00</span>
+                            <span id="global-credits-value" class="credits-value"
+                                  aria-live="polite">{{ _("Consultando saldo...") }}</span>
+                            <button id="global-credits-refresh" type="button" class="btn btn-outline-secondary btn-sm"
+                                    aria-label="{{ _('Actualizar saldo') }}" title="{{ _('Actualizar saldo') }}">
+                                <i class="ti ti-refresh me-1"></i>{{ _("Actualizar") }}
+                            </button>
+                            <a href="{{ url_for('account.profile') }}" class="btn btn-primary btn-sm">
+                                <i class="ti ti-user me-1"></i>{{ _("Ir a mi perfil") }}
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <script>var _CURRENT_CLIENT_ID = {{ current_user.firenze_client_id | tojson }};</script>
+            </section>
+            <script>var _CURRENT_CLIENT_ID = {{ current_user.firenze_client_id | tojson }};</script>
         {% endif %}
 
         <div class="page-content">
@@ -1356,46 +1356,46 @@
 
         <!-- ── FOOTER ───────────────────────────────────── -->
         {% block footer %}
-        <footer class="site-footer">
-            <div class="container">
-                <div class="row g-5">
-                    <div class="col-md-4">
-                        <a href="/" class="footer-brand">FonoTarot</a>
-                        <p class="footer-tagline">
-                            {{ _("El universo marca un camino... Descúbrelo! · Chile · Desde 2010") }}
-                        </p>
-                        <a href="tel:+{{ _('56222301515') }}" class="footer-phone"><i
+            <footer class="site-footer">
+                <div class="container">
+                    <div class="row g-5">
+                        <div class="col-md-4">
+                            <a href="/" class="footer-brand">FonoTarot</a>
+                            <p class="footer-tagline">
+                                {{ _("El universo marca un camino... Descúbrelo! · Chile · Desde 2010") }}
+                            </p>
+                            <a href="tel:+{{ _('56222301515') }}" class="footer-phone"><i
                                 class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}</a>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <p class="footer-col-title">{{ _("Navegación") }}</p>
-                        <div class="footer-links">
-                            <a href="https://fonotarot.com/nuestro-equipo/">{{ _("Tarotistas") }}</a>
-                            <a href="/#planes">{{ _("Planes y Precios") }}</a>
-                            <a href="https://fonotarot.com/preguntas-frecuentes/">{{ _("Preguntas Frecuentes") }}</a>
-                            <a href="{{ url_for('pagos.index') }}">{{ _("Tienda") }}</a>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <p class="footer-col-title">{{ _("Navegación") }}</p>
+                            <div class="footer-links">
+                                <a href="https://fonotarot.com/nuestro-equipo/">{{ _("Tarotistas") }}</a>
+                                <a href="/#planes">{{ _("Planes y Precios") }}</a>
+                                <a href="https://fonotarot.com/preguntas-frecuentes/">{{ _("Preguntas Frecuentes") }}</a>
+                                <a href="{{ url_for('pagos.index') }}">{{ _("Tienda") }}</a>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <p class="footer-col-title">{{ _("Áreas de consulta") }}</p>
+                            <div class="footer-areas">
+                                💕 {{ _("Amor y Relaciones") }}<br>
+                                💼 {{ _("Trabajo y Finanzas") }}<br>
+                                🏥 {{ _("Salud y Bienestar") }}<br>
+                                👨‍👩‍👧 {{ _("Familia") }}<br>
+                                🌱 {{ _("Crecimiento Personal") }}
+                            </div>
                         </div>
                     </div>
-                    <div class="col-6 col-md-4">
-                        <p class="footer-col-title">{{ _("Áreas de consulta") }}</p>
-                        <div class="footer-areas">
-                            💕 {{ _("Amor y Relaciones") }}<br>
-                            💼 {{ _("Trabajo y Finanzas") }}<br>
-                            🏥 {{ _("Salud y Bienestar") }}<br>
-                            👨‍👩‍👧 {{ _("Familia") }}<br>
-                            🌱 {{ _("Crecimiento Personal") }}
-                        </div>
-                    </div>
-                </div>
-                <hr class="footer-hr">
-                <p class="footer-copy">&copy; 2026 Fonotarot Chile · {{ _("Todos los derechos reservados") }} · <a
+                    <hr class="footer-hr">
+                    <p class="footer-copy">&copy; 2026 Fonotarot Chile · {{ _("Todos los derechos reservados") }} · <a
                         href="https://about.me/mariofix">@mariofix</a></p>
-            </div>
-        </footer>
+                </div>
+            </footer>
         {% endblock %}
 
         <div class="modal fade modal-blur" id="saldoModal" tabindex="-1" aria-labelledby="saldoModalLabel"
-            aria-modal="true" role="dialog">
+             aria-modal="true" role="dialog">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -1410,7 +1410,7 @@
                             <div class="row g-2">
                                 <div class="col">
                                     <input id="telefono-saldo" type="tel" class="form-control"
-                                        placeholder="569123456789" />
+                                           placeholder="569123456789" />
                                 </div>
                                 <div class="col-auto">
                                     <a href="#" class="btn btn-2 btn-icon" aria-label="Button" id="saldo-search">
@@ -1429,14 +1429,14 @@
         </div>
 
         <div class="modal fade modal-blur" id="passwordlessModal" tabindex="-1" aria-labelledby="passwordlessModalLabel"
-            aria-hidden="true">
+             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content modal-ft">
                     <form method="POST" action="{{ url_for('passwordless.request_code') }}" novalidate>
                         <div class="modal-header">
                             <h2 class="modal-title" id="passwordlessModalLabel">{{ _('Ingresa sin contraseña') }}</h2>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="{{ _('Cerrar') }}"></button>
+                                    aria-label="{{ _('Cerrar') }}"></button>
                         </div>
                         <div class="modal-body">
                             <p class="text-secondary mb-3">
@@ -1444,17 +1444,17 @@
                             </p>
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="next" id="passwordless-next"
-                                value="{{ request.full_path.rstrip('?') }}">
+                                   value="{{ request.full_path.rstrip('?') }}">
                             <div>
                                 <label class="form-label" for="passwordless-email">{{ _('Correo electrónico') }}</label>
                                 <input id="passwordless-email" name="identity" type="email" class="form-control"
-                                    placeholder="tu@email.com" autocomplete="email"
-                                    value="{{ request.args.get('identity', '') }}" required>
+                                       placeholder="tu@email.com" autocomplete="email"
+                                       value="{{ request.args.get('identity', '') }}" required>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn me-auto"
-                                data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
+                                    data-bs-dismiss="modal">{{ _('Cancelar') }}</button>
                             <button type="submit" class="btn btn-primary">{{ _('Enviar código') }}</button>
                         </div>
                     </form>
@@ -1462,7 +1462,7 @@
             </div>
         </div>
         <button type="button" id="passwordlessModalLauncher" class="d-none" data-bs-toggle="modal"
-            data-bs-target="#passwordlessModal" aria-hidden="true" tabindex="-1">
+                data-bs-target="#passwordlessModal" aria-hidden="true" tabindex="-1">
         </button>
 
         <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
@@ -1560,11 +1560,11 @@
             // Auto-show flashed messages on page load
             document.addEventListener('DOMContentLoaded', function () {
                 const flashes = {{ get_flashed_messages(with_categories = True) | tojson
-            }};
-            flashes.forEach(([category, message]) => {
-                showToast(message, category);
+                }};
+                flashes.forEach(([category, message]) => {
+                    showToast(message, category);
+                });
             });
-      });
         </script>
 
         <style>
@@ -1753,296 +1753,296 @@
             });
         </script>
         <script>
-        document.addEventListener('click', function (event) {
-    const trigger = event.target.closest('.js-passwordless-trigger');
-    if (!trigger) return;
-    event.preventDefault();
-    openPasswordlessModal(trigger.dataset.next || '{{ request.full_path.rstrip("?") }}');
-});
+            document.addEventListener('click', function (event) {
+                const trigger = event.target.closest('.js-passwordless-trigger');
+                if (!trigger) return;
+                event.preventDefault();
+                openPasswordlessModal(trigger.dataset.next || '{{ request.full_path.rstrip("?") }}');
+            });
 
-function openPasswordlessModal(nextValue) {
-    const modalEl = document.getElementById('passwordlessModal');
-    if (!modalEl) return;
-    const nextInput = document.getElementById('passwordless-next');
-    if (nextInput) {
-        nextInput.value = nextValue || '{{ request.full_path.rstrip("?") }}';
-    }
-    const launcher = document.getElementById('passwordlessModalLauncher');
-    if (launcher) launcher.click();
-}
+            function openPasswordlessModal(nextValue) {
+                const modalEl = document.getElementById('passwordlessModal');
+                if (!modalEl) return;
+                const nextInput = document.getElementById('passwordless-next');
+                if (nextInput) {
+                    nextInput.value = nextValue || '{{ request.full_path.rstrip("?") }}';
+                }
+                const launcher = document.getElementById('passwordlessModalLauncher');
+                if (launcher) launcher.click();
+            }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const query = new URLSearchParams(window.location.search);
-    if (query.get('passwordless') === '1') {
-        openPasswordlessModal(query.get('next') || '{{ request.full_path.rstrip("?") }}');
-    }
-});
+            document.addEventListener('DOMContentLoaded', function () {
+                const query = new URLSearchParams(window.location.search);
+                if (query.get('passwordless') === '1') {
+                    openPasswordlessModal(query.get('next') || '{{ request.full_path.rstrip("?") }}');
+                }
+            });
 
 // ── Agent list + call-state credits strip ──────────────────────────────────
-(function () {
-    var PHONE = 'tel:+{{ _("56222301515") }}';
+            (function () {
+                var PHONE = 'tel:+{{ _("56222301515") }}';
 
-    function statusBadge(status) {
-        if (status === 'available') return '<span class="s-online">● {{ _("Disponible") }}</span>';
-        if (status === 'busy')      return '<span class="s-busy">● {{ _("En consulta") }}</span>';
-        return '<span class="s-offline">● {{ _("No disponible") }}</span>';
-    }
+                function statusBadge(status) {
+                    if (status === 'available') return '<span class="s-online">● {{ _("Disponible") }}</span>';
+                    if (status === 'busy')      return '<span class="s-busy">● {{ _("En consulta") }}</span>';
+                    return '<span class="s-offline">● {{ _("No disponible") }}</span>';
+                }
 
-    function actionHtml(status) {
-        if (status === 'available') {
-            return '<a href="' + PHONE + '" class="btn-oc-call"><i class="ti ti-phone me-1"></i>{{ _("Llamar") }}</a>';
-        }
-        return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>{{ _("Ocupada") }}</button>';
-    }
+                function actionHtml(status) {
+                    if (status === 'available') {
+                        return '<a href="' + PHONE + '" class="btn-oc-call"><i class="ti ti-phone me-1"></i>{{ _("Llamar") }}</a>';
+                    }
+                    return '<button class="btn btn-oc-busy" disabled><i class="ti ti-clock me-1"></i>{{ _("Ocupada") }}</button>';
+                }
 
-    function rowElement(agent) {
-        var row = document.createElement('div');
-        row.className = 'oc-row';
-        var avatar = document.createElement('div');
-        avatar.className = 'oc-avatar';
-        avatar.textContent = (agent.name || '★').slice(0, 1);
-        var info = document.createElement('div');
-        info.className = 'oc-info';
-        var nameEl = document.createElement('div');
-        nameEl.className = 'oc-name';
-        nameEl.textContent = agent.name || '★';
-        var specEl = document.createElement('div');
-        specEl.className = 'oc-spec';
-        specEl.textContent = '{{ _("Opción") }} ' + agent.option;
-        var statusWrap = document.createElement('div');
-        statusWrap.className = 'mt-1';
-        statusWrap.innerHTML = statusBadge(agent.status);
-        var actionWrap = document.createElement('span');
-        actionWrap.className = 'agent-action-wrap';
-        actionWrap.innerHTML = actionHtml(agent.status);
-        info.appendChild(nameEl); info.appendChild(specEl); info.appendChild(statusWrap);
-        row.appendChild(avatar); row.appendChild(info); row.appendChild(actionWrap);
-        return row;
-    }
+                function rowElement(agent) {
+                    var row = document.createElement('div');
+                    row.className = 'oc-row';
+                    var avatar = document.createElement('div');
+                    avatar.className = 'oc-avatar';
+                    avatar.textContent = (agent.name || '★').slice(0, 1);
+                    var info = document.createElement('div');
+                    info.className = 'oc-info';
+                    var nameEl = document.createElement('div');
+                    nameEl.className = 'oc-name';
+                    nameEl.textContent = agent.name || '★';
+                    var specEl = document.createElement('div');
+                    specEl.className = 'oc-spec';
+                    specEl.textContent = '{{ _("Opción") }} ' + agent.option;
+                    var statusWrap = document.createElement('div');
+                    statusWrap.className = 'mt-1';
+                    statusWrap.innerHTML = statusBadge(agent.status);
+                    var actionWrap = document.createElement('span');
+                    actionWrap.className = 'agent-action-wrap';
+                    actionWrap.innerHTML = actionHtml(agent.status);
+                    info.appendChild(nameEl); info.appendChild(specEl); info.appendChild(statusWrap);
+                    row.appendChild(avatar); row.appendChild(info); row.appendChild(actionWrap);
+                    return row;
+                }
 
-    function normalizeAgents(data) {
-        var statusOrder = { available: 0, busy: 1, offline: 2 };
-        var list = (Array.isArray(data) ? data : []).map(function (raw) {
-            var opcion = parseInt(raw && raw.opcion != null ? raw.opcion : 0, 10);
-            if (Number.isNaN(opcion)) opcion = 0;
-            var ingreso    = Boolean(raw && raw.ingreso);
-            var disponible = Boolean(raw && raw.disponible);
-            var status = !ingreso ? 'offline' : (disponible ? 'available' : 'busy');
-            return { name: (raw && raw.nombre) || '★', option: ('0' + opcion).slice(-2), status: status };
-        });
-        return list.sort(function (a, b) { return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99); });
-    }
+                function normalizeAgents(data) {
+                    var statusOrder = { available: 0, busy: 1, offline: 2 };
+                    var list = (Array.isArray(data) ? data : []).map(function (raw) {
+                        var opcion = parseInt(raw && raw.opcion != null ? raw.opcion : 0, 10);
+                        if (Number.isNaN(opcion)) opcion = 0;
+                        var ingreso    = Boolean(raw && raw.ingreso);
+                        var disponible = Boolean(raw && raw.disponible);
+                        var status = !ingreso ? 'offline' : (disponible ? 'available' : 'busy');
+                        return { name: (raw && raw.nombre) || '★', option: ('0' + opcion).slice(-2), status: status };
+                    });
+                    return list.sort(function (a, b) { return (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99); });
+                }
 
-    function renderList(id, agents, emptyMessage) {
-        var container = document.getElementById(id);
-        if (!container) return;
-        while (container.firstChild) container.removeChild(container.firstChild);
-        if (!agents.length) {
-            var msg = document.createElement('p');
-            msg.className = 'text-center py-4 text-secondary mb-0';
-            msg.textContent = emptyMessage;
-            container.appendChild(msg);
-            return;
-        }
-        agents.forEach(function (agent) { container.appendChild(rowElement(agent)); });
-    }
+                function renderList(id, agents, emptyMessage) {
+                    var container = document.getElementById(id);
+                    if (!container) return;
+                    while (container.firstChild) container.removeChild(container.firstChild);
+                    if (!agents.length) {
+                        var msg = document.createElement('p');
+                        msg.className = 'text-center py-4 text-secondary mb-0';
+                        msg.textContent = emptyMessage;
+                        container.appendChild(msg);
+                        return;
+                    }
+                    agents.forEach(function (agent) { container.appendChild(rowElement(agent)); });
+                }
 
-    function showError() {
-        var msg = '{{ _("Listado de agentes no disponible por ahora.") }}';
-        renderList('oc-all', [], msg);
-        renderList('oc-online', [], msg);
-        renderList('oc-busy', [], msg);
-    }
+                function showError() {
+                    var msg = '{{ _("Listado de agentes no disponible por ahora.") }}';
+                    renderList('oc-all', [], msg);
+                    renderList('oc-online', [], msg);
+                    renderList('oc-busy', [], msg);
+                }
 
-    function applyAgents(agents) {
-        var available = agents.filter(function (a) { return a.status === 'available'; });
-        var busy      = agents.filter(function (a) { return a.status === 'busy'; });
-        renderList('oc-all', agents, '{{ _("No hay especialistas disponibles ahora.") }}');
-        renderList('oc-online', available, '{{ _("Todas las especialistas están ocupadas. Inténtalo pronto.") }}');
-        renderList('oc-busy', busy, '{{ _("No hay especialistas en consulta ahora.") }}');
-    }
+                function applyAgents(agents) {
+                    var available = agents.filter(function (a) { return a.status === 'available'; });
+                    var busy      = agents.filter(function (a) { return a.status === 'busy'; });
+                    renderList('oc-all', agents, '{{ _("No hay especialistas disponibles ahora.") }}');
+                    renderList('oc-online', available, '{{ _("Todas las especialistas están ocupadas. Inténtalo pronto.") }}');
+                    renderList('oc-busy', busy, '{{ _("No hay especialistas en consulta ahora.") }}');
+                }
 
     // ── Call-state credits strip ────────────────────────────────────────
-    var callTimerHandle = null;
+                var callTimerHandle = null;
 
-    function pad(n) { return String(n).padStart(2, '0'); }
+                function pad(n) { return String(n).padStart(2, '0'); }
 
-    function fmtTime(d) {
-        return pad(d.getHours()) + ':' + pad(d.getMinutes());
-    }
+                function fmtTime(d) {
+                    return pad(d.getHours()) + ':' + pad(d.getMinutes());
+                }
 
-    function enterCallState(callInfo, operatorName) {
-        var strip = document.getElementById('credits-strip');
-        if (!strip) return;
-        strip.classList.add('is-call');
-        document.getElementById('credits-badge-idle').classList.add('d-none');
-        document.getElementById('credits-copy-idle').classList.add('d-none');
-        document.getElementById('credits-badge-call').classList.remove('d-none');
-        document.getElementById('credits-copy-call').classList.remove('d-none');
-        document.getElementById('call-timer').classList.remove('d-none');
-        document.getElementById('call-operator-name').textContent = operatorName;
-        document.getElementById('call-since').textContent = fmtTime(new Date(callInfo.since));
+                function enterCallState(callInfo, operatorName) {
+                    var strip = document.getElementById('credits-strip');
+                    if (!strip) return;
+                    strip.classList.add('is-call');
+                    document.getElementById('credits-badge-idle').classList.add('d-none');
+                    document.getElementById('credits-copy-idle').classList.add('d-none');
+                    document.getElementById('credits-badge-call').classList.remove('d-none');
+                    document.getElementById('credits-copy-call').classList.remove('d-none');
+                    document.getElementById('call-timer').classList.remove('d-none');
+                    document.getElementById('call-operator-name').textContent = operatorName;
+                    document.getElementById('call-since').textContent = fmtTime(new Date(callInfo.since));
 
-        var connectedAt = new Date(callInfo.connected);
-        var timerEl = document.getElementById('call-timer');
+                    var connectedAt = new Date(callInfo.connected);
+                    var timerEl = document.getElementById('call-timer');
 
-        function tick() {
-            var diff = Math.max(0, Math.floor((Date.now() - connectedAt.getTime()) / 1000));
-            timerEl.textContent = pad(Math.floor(diff / 60)) + ':' + pad(diff % 60);
-        }
-        tick();
-        if (callTimerHandle) clearInterval(callTimerHandle);
-        callTimerHandle = setInterval(tick, 1000);
-    }
+                    function tick() {
+                        var diff = Math.max(0, Math.floor((Date.now() - connectedAt.getTime()) / 1000));
+                        timerEl.textContent = pad(Math.floor(diff / 60)) + ':' + pad(diff % 60);
+                    }
+                    tick();
+                    if (callTimerHandle) clearInterval(callTimerHandle);
+                    callTimerHandle = setInterval(tick, 1000);
+                }
 
-    function exitCallState(wasInCall) {
-        var strip = document.getElementById('credits-strip');
-        if (!strip) return;
-        if (!strip.classList.contains('is-call')) return;
-        strip.classList.remove('is-call');
-        document.getElementById('credits-badge-idle').classList.remove('d-none');
-        document.getElementById('credits-copy-idle').classList.remove('d-none');
-        document.getElementById('credits-badge-call').classList.add('d-none');
-        document.getElementById('credits-copy-call').classList.add('d-none');
-        document.getElementById('call-timer').classList.add('d-none');
-        if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
+                function exitCallState(wasInCall) {
+                    var strip = document.getElementById('credits-strip');
+                    if (!strip) return;
+                    if (!strip.classList.contains('is-call')) return;
+                    strip.classList.remove('is-call');
+                    document.getElementById('credits-badge-idle').classList.remove('d-none');
+                    document.getElementById('credits-copy-idle').classList.remove('d-none');
+                    document.getElementById('credits-badge-call').classList.add('d-none');
+                    document.getElementById('credits-copy-call').classList.add('d-none');
+                    document.getElementById('call-timer').classList.add('d-none');
+                    if (callTimerHandle) { clearInterval(callTimerHandle); callTimerHandle = null; }
         // Balance only changes server-side once the call is billed at hangup — refresh once, here.
-        if (wasInCall && window.refreshCredits) window.refreshCredits();
-    }
+                    if (wasInCall && window.refreshCredits) window.refreshCredits();
+                }
 
-    function checkActiveCall(rawList) {
-        if (typeof _CURRENT_CLIENT_ID === 'undefined' || _CURRENT_CLIENT_ID == null) return;
-        var strip = document.getElementById('credits-strip');
-        var wasInCall = strip ? strip.classList.contains('is-call') : false;
-        var match = (Array.isArray(rawList) ? rawList : []).find(function (raw) {
-            return raw && raw.llamada && raw.llamada.client_id === _CURRENT_CLIENT_ID;
-        });
-        if (match) {
-            enterCallState(match.llamada, match.nombre || '');
-        } else {
-            exitCallState(wasInCall);
-        }
-    }
+                function checkActiveCall(rawList) {
+                    if (typeof _CURRENT_CLIENT_ID === 'undefined' || _CURRENT_CLIENT_ID == null) return;
+                    var strip = document.getElementById('credits-strip');
+                    var wasInCall = strip ? strip.classList.contains('is-call') : false;
+                    var match = (Array.isArray(rawList) ? rawList : []).find(function (raw) {
+                        return raw && raw.llamada && raw.llamada.client_id === _CURRENT_CLIENT_ID;
+                    });
+                    if (match) {
+                        enterCallState(match.llamada, match.nombre || '');
+                    } else {
+                        exitCallState(wasInCall);
+                    }
+                }
 
-    var agentsUrl = {{ firenze_ejecutivos_url | tojson }};
+                var agentsUrl = {{ firenze_ejecutivos_url | tojson }};
 
-    function pollAgents() {
-        if (!agentsUrl) { showError(); return; }
-        fetch(agentsUrl, { method: 'GET', headers: { 'Accept': 'application/json' } })
-            .then(function (response) {
-                if (!response.ok) throw new Error('status-' + response.status);
-                return response.json();
-            })
-            .then(function (payload) {
-                applyAgents(normalizeAgents(payload));
-                checkActiveCall(payload);
-            })
-            .catch(function () { showError(); });
-    }
+                function pollAgents() {
+                    if (!agentsUrl) { showError(); return; }
+                    fetch(agentsUrl, { method: 'GET', headers: { 'Accept': 'application/json' } })
+                        .then(function (response) {
+                            if (!response.ok) throw new Error('status-' + response.status);
+                            return response.json();
+                        })
+                        .then(function (payload) {
+                            applyAgents(normalizeAgents(payload));
+                            checkActiveCall(payload);
+                        })
+                        .catch(function () { showError(); });
+                }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        pollAgents();
-        window.setInterval(pollAgents, 9000);
-    });
-})();
+                document.addEventListener('DOMContentLoaded', function () {
+                    pollAgents();
+                    window.setInterval(pollAgents, 9000);
+                });
+            })();
 
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
-(function () {
-    var html  = document.documentElement;
-    var btn   = document.getElementById('theme-toggle-menu') || document.getElementById('theme-toggle');
-    var saved = localStorage.getItem('ft-theme');
+            (function () {
+                var html  = document.documentElement;
+                var btn   = document.getElementById('theme-toggle-menu') || document.getElementById('theme-toggle');
+                var saved = localStorage.getItem('ft-theme');
 
-    if (saved === 'dark' || saved === 'light') {
-        html.setAttribute('data-theme',    saved);
-        html.setAttribute('data-bs-theme', saved);
-    }
+                if (saved === 'dark' || saved === 'light') {
+                    html.setAttribute('data-theme',    saved);
+                    html.setAttribute('data-bs-theme', saved);
+                }
 
-    if (!btn) return;
+                if (!btn) return;
 
-    btn.addEventListener('click', function () {
-        var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-        var next    = current === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme',    next);
-        html.setAttribute('data-bs-theme', next);
-        localStorage.setItem('ft-theme', next);
+                btn.addEventListener('click', function () {
+                    var current = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                    var next    = current === 'dark' ? 'light' : 'dark';
+                    html.setAttribute('data-theme',    next);
+                    html.setAttribute('data-bs-theme', next);
+                    localStorage.setItem('ft-theme', next);
 
-        if (btn.id === 'theme-toggle-menu') {
-            var label = btn.querySelector('.theme-label');
-            if (label) {
-                label.textContent = next === 'dark' ? '{{ _("Tema claro") }}' : '{{ _("Tema oscuro") }}';
-            }
-        }
-    });
-})();
+                    if (btn.id === 'theme-toggle-menu') {
+                        var label = btn.querySelector('.theme-label');
+                        if (label) {
+                            label.textContent = next === 'dark' ? '{{ _("Tema claro") }}' : '{{ _("Tema oscuro") }}';
+                        }
+                    }
+                });
+            })();
 
 // ── Credits ───────────────────────────────────────────────────────────────────
-(function () {
-    var creditsEl     = document.getElementById('global-credits-value');
-    if (!creditsEl) return;
+            (function () {
+                var creditsEl     = document.getElementById('global-credits-value');
+                if (!creditsEl) return;
 
-    var refreshButton = document.getElementById('global-credits-refresh');
-    var CREDITS_URL    = {{ url_for('account.profile_credits') | tojson }};
-    var callPollHandle = null;
+                var refreshButton = document.getElementById('global-credits-refresh');
+                var CREDITS_URL    = {{ url_for('account.profile_credits') | tojson }};
+                var callPollHandle = null;
 
-    function intFrom(value) {
-        var parsed = parseInt(value, 10);
-        return Number.isFinite(parsed) ? parsed : null;
-    }
+                function intFrom(value) {
+                    var parsed = parseInt(value, 10);
+                    return Number.isFinite(parsed) ? parsed : null;
+                }
 
-    function extractSeconds(payload) {
-        if (!payload || typeof payload !== 'object') return null;
-        var secondKeys = ['seconds', 'segundos', 'available_seconds', 'remaining_seconds', 'credits', 'creditos'];
-        var minuteKeys = ['minutes', 'minutos', 'available_minutes', 'remaining_minutes', 'credit_minutes'];
-        var sources = [payload];
-        ['client', 'data', 'result'].forEach(function (key) {
-            if (payload[key] && typeof payload[key] === 'object') sources.push(payload[key]);
-        });
+                function extractSeconds(payload) {
+                    if (!payload || typeof payload !== 'object') return null;
+                    var secondKeys = ['seconds', 'segundos', 'available_seconds', 'remaining_seconds', 'credits', 'creditos'];
+                    var minuteKeys = ['minutes', 'minutos', 'available_minutes', 'remaining_minutes', 'credit_minutes'];
+                    var sources = [payload];
+                    ['client', 'data', 'result'].forEach(function (key) {
+                        if (payload[key] && typeof payload[key] === 'object') sources.push(payload[key]);
+                    });
 
-        for (var i = 0; i < sources.length; i++) {
-            for (var s = 0; s < secondKeys.length; s++) {
-                var sec = intFrom(sources[i][secondKeys[s]]);
-                if (sec != null) return Math.max(0, sec);
-            }
-            for (var m = 0; m < minuteKeys.length; m++) {
-                var min = intFrom(sources[i][minuteKeys[m]]);
-                if (min != null) return Math.max(0, min * 60);
-            }
-        }
-        return null;
-    }
+                    for (var i = 0; i < sources.length; i++) {
+                        for (var s = 0; s < secondKeys.length; s++) {
+                            var sec = intFrom(sources[i][secondKeys[s]]);
+                            if (sec != null) return Math.max(0, sec);
+                        }
+                        for (var m = 0; m < minuteKeys.length; m++) {
+                            var min = intFrom(sources[i][minuteKeys[m]]);
+                            if (min != null) return Math.max(0, min * 60);
+                        }
+                    }
+                    return null;
+                }
 
-    function formatSecondsClock(totalSeconds) {
-        var safe    = Math.max(0, Number(totalSeconds || 0));
-        var minutes = Math.floor(safe / 60);
-        var seconds = safe % 60;
-        return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-    }
+                function formatSecondsClock(totalSeconds) {
+                    var safe    = Math.max(0, Number(totalSeconds || 0));
+                    var minutes = Math.floor(safe / 60);
+                    var seconds = safe % 60;
+                    return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+                }
 
-    async function refreshCredits() {
-        if (!CREDITS_URL) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
-        try {
-            var response = await fetch(CREDITS_URL, { method: 'GET', headers: { 'Accept': 'application/json' } });
-            if (!response.ok) throw new Error('credits-status-' + response.status);
-            var payload = await response.json();
-            if (!payload || payload.ok !== true) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
-            if (payload.found === false) { creditsEl.textContent = '00:00'; creditsEl.classList.add('is-low'); return; }
-            var seconds = extractSeconds(payload);
-            var safeSeconds = seconds == null ? 0 : seconds;
-            creditsEl.textContent = formatSecondsClock(safeSeconds);
-            creditsEl.classList.toggle('is-low', safeSeconds < 60);
-        } catch (err) {
-            creditsEl.textContent = '{{ _("Saldo no disponible") }}';
-        }
-    }
+                async function refreshCredits() {
+                    if (!CREDITS_URL) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
+                    try {
+                        var response = await fetch(CREDITS_URL, { method: 'GET', headers: { 'Accept': 'application/json' } });
+                        if (!response.ok) throw new Error('credits-status-' + response.status);
+                        var payload = await response.json();
+                        if (!payload || payload.ok !== true) { creditsEl.textContent = '{{ _("Saldo no disponible") }}'; return; }
+                        if (payload.found === false) { creditsEl.textContent = '00:00'; creditsEl.classList.add('is-low'); return; }
+                        var seconds = extractSeconds(payload);
+                        var safeSeconds = seconds == null ? 0 : seconds;
+                        creditsEl.textContent = formatSecondsClock(safeSeconds);
+                        creditsEl.classList.toggle('is-low', safeSeconds < 60);
+                    } catch (err) {
+                        creditsEl.textContent = '{{ _("Saldo no disponible") }}';
+                    }
+                }
 
-    window.refreshCredits = refreshCredits;
+                window.refreshCredits = refreshCredits;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        refreshCredits();
-        if (refreshButton) refreshButton.addEventListener('click', refreshCredits);
-    });
-})();
+                document.addEventListener('DOMContentLoaded', function () {
+                    refreshCredits();
+                    if (refreshButton) refreshButton.addEventListener('click', refreshCredits);
+                });
+            })();
         </script>
         <!-- ── Per-page extra JS ──────────────────────────────────────── -->
         {% block extra_js %}{% endblock %}

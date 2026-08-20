@@ -7,23 +7,23 @@
       <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Posts') }}
     </a>
     {% if admin_view.can_edit %}
-    <a href="{{ get_url('.edit_view', id=model.id, url=return_url) }}"
-       class="btn btn-sm btn-primary ms-auto">
-      <i class="ti ti-pencil me-1"></i>{{ _gettext('Edit') }}
-    </a>
+      <a href="{{ get_url('.edit_view', id=model.id, url=return_url) }}"
+         class="btn btn-sm btn-primary ms-auto">
+        <i class="ti ti-pencil me-1"></i>{{ _gettext('Edit') }}
+      </a>
     {% endif %}
     {% if admin_view.can_delete %}
-    <form method="POST" action="{{ get_url('.delete_view') }}" style="display:inline;" id="delete-form">
-      <input type="hidden" name="id" value="{{ model.id }}" />
-      <input type="hidden" name="url" value="{{ return_url }}" />
-      {% if csrf_token is defined and csrf_token %}
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      {% endif %}
-      <button type="submit" class="btn btn-sm btn-ghost-danger"
-              onclick="return confirm('{{ _gettext('Delete this post?') }}')">
-        <i class="ti ti-trash me-1"></i>{{ _gettext('Delete') }}
-      </button>
-    </form>
+      <form method="POST" action="{{ get_url('.delete_view') }}" style="display:inline;" id="delete-form">
+        <input type="hidden" name="id" value="{{ model.id }}" />
+        <input type="hidden" name="url" value="{{ return_url }}" />
+        {% if csrf_token is defined and csrf_token %}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {% endif %}
+        <button type="submit" class="btn btn-sm btn-ghost-danger"
+                onclick="return confirm('{{ _gettext('Delete this post?') }}')">
+          <i class="ti ti-trash me-1"></i>{{ _gettext('Delete') }}
+        </button>
+      </form>
     {% endif %}
   </div>
 
@@ -35,13 +35,13 @@
       {# Title + status #}
       <div class="mb-1 d-flex align-items-center gap-2">
         {% if model.published %}
-        <span class="badge bg-success-lt">
-          <i class="ti ti-circle-check me-1"></i>{{ _gettext('Published') }}
-        </span>
+          <span class="badge bg-success-lt">
+            <i class="ti ti-circle-check me-1"></i>{{ _gettext('Published') }}
+          </span>
         {% else %}
-        <span class="badge bg-secondary-lt">
-          <i class="ti ti-pencil me-1"></i>{{ _gettext('Draft') }}
-        </span>
+          <span class="badge bg-secondary-lt">
+            <i class="ti ti-pencil me-1"></i>{{ _gettext('Draft') }}
+          </span>
         {% endif %}
       </div>
 
@@ -54,11 +54,11 @@
       </div>
 
       {% if model.excerpt %}
-      <blockquote class="blockquote mb-4"
-                  style="border-left: 3px solid var(--tblr-primary); padding: 0.75rem 1.25rem;
-                         background: var(--tblr-bg-surface-secondary); border-radius: 0 var(--tblr-border-radius) var(--tblr-border-radius) 0;">
-        <p class="mb-0 fst-italic text-muted">{{ model.excerpt }}</p>
-      </blockquote>
+        <blockquote class="blockquote mb-4"
+                    style="border-left: 3px solid var(--tblr-primary); padding: 0.75rem 1.25rem;
+                           background: var(--tblr-bg-surface-secondary); border-radius: 0 var(--tblr-border-radius) var(--tblr-border-radius) 0;">
+          <p class="mb-0 fst-italic text-muted">{{ model.excerpt }}</p>
+        </blockquote>
       {% endif %}
 
       {# Content preview inside a card #}
@@ -116,19 +116,19 @@
               </div>
             </div>
             {% if model.published_at %}
-            <div class="list-group-item">
-              <div class="row align-items-center">
-                <div class="col-auto">
-                  <span class="avatar avatar-sm bg-green-lt rounded">
-                    <i class="ti ti-send"></i>
-                  </span>
-                </div>
-                <div class="col">
-                  <div class="text-truncate small text-muted">{{ _gettext('Published') }}</div>
-                  <div class="small fw-medium">{{ model.published_at.strftime('%d %b %Y, %H:%M') }}</div>
+              <div class="list-group-item">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <span class="avatar avatar-sm bg-green-lt rounded">
+                      <i class="ti ti-send"></i>
+                    </span>
+                  </div>
+                  <div class="col">
+                    <div class="text-truncate small text-muted">{{ _gettext('Published') }}</div>
+                    <div class="small fw-medium">{{ model.published_at.strftime('%d %b %Y, %H:%M') }}</div>
+                  </div>
                 </div>
               </div>
-            </div>
             {% endif %}
           </div>
         </div>

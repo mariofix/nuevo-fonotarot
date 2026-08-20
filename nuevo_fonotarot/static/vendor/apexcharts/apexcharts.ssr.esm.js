@@ -6561,39 +6561,39 @@ class Graphics {
         break;
       }
       case "triangle":
-        d = `M ${x} ${y - size} 
-             L ${x + size} ${y + size} 
-             L ${x - size} ${y + size} 
+        d = `M ${x} ${y - size}
+             L ${x + size} ${y + size}
+             L ${x - size} ${y + size}
              Z`;
         break;
       case "square":
       case "rect":
         size = size / 1.125;
-        d = `M ${x - size} ${y - size} 
-           L ${x + size} ${y - size} 
-           L ${x + size} ${y + size} 
-           L ${x - size} ${y + size} 
+        d = `M ${x - size} ${y - size}
+           L ${x + size} ${y - size}
+           L ${x + size} ${y + size}
+           L ${x - size} ${y + size}
            Z`;
         break;
       case "diamond":
         size = size * 1.05;
-        d = `M ${x} ${y - size} 
-             L ${x + size} ${y} 
-             L ${x} ${y + size} 
-             L ${x - size} ${y} 
+        d = `M ${x} ${y - size}
+             L ${x + size} ${y}
+             L ${x} ${y + size}
+             L ${x - size} ${y}
             Z`;
         break;
       case "line":
         size = size / 1.1;
-        d = `M ${x - size} ${y} 
+        d = `M ${x - size} ${y}
            L ${x + size} ${y}`;
         break;
       case "circle":
       default:
         size = size * 2;
-        d = `M ${x}, ${y} 
-           m -${size / 2}, 0 
-           a ${size / 2},${size / 2} 0 1,0 ${size},0 
+        d = `M ${x}, ${y}
+           m -${size / 2}, 0
+           a ${size / 2},${size / 2} 0 1,0 ${size},0
            a ${size / 2},${size / 2} 0 1,0 -${size},0`;
         break;
     }

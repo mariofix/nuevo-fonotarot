@@ -1,179 +1,179 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>{{ _('Verificar código') }} — Fonotarot</title>
-  <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
-  <style>
-    :root {
-      --ft-plum: #6b3fa0;
-      --ft-plum-dark: #4a2872;
-      --ft-gold: #c9a84c;
-      --ft-ink: #0d0818;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{{ _('Verificar código') }} — Fonotarot</title>
+    <link href="{{ url_for('static', filename='vendor/tabler/css/tabler.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/fonts/montserrat.css') }}" rel="stylesheet" />
+    <style>
+      :root {
+        --ft-plum: #6b3fa0;
+        --ft-plum-dark: #4a2872;
+        --ft-gold: #c9a84c;
+        --ft-ink: #0d0818;
+      }
 
-    body {
-      font-family: "Montserrat", sans-serif;
-      background:
+      body {
+        font-family: "Montserrat", sans-serif;
+        background:
         radial-gradient(1000px 500px at 80% -10%, rgba(201, 168, 76, 0.18), transparent 60%),
         radial-gradient(900px 450px at -20% 100%, rgba(107, 63, 160, 0.25), transparent 65%),
         var(--ft-ink);
-      min-height: 100vh;
-    }
+        min-height: 100vh;
+      }
 
-    .auth-logo {
-      color: var(--ft-gold);
-      font-weight: 700;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-    }
+      .auth-logo {
+        color: var(--ft-gold);
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+      }
 
-    .otp-input {
-      text-align: center;
-      font-size: 1.6rem;
-      line-height: 1;
-      padding-top: 0.85rem;
-      padding-bottom: 0.85rem;
-      font-weight: 700;
-    }
+      .otp-input {
+        text-align: center;
+        font-size: 1.6rem;
+        line-height: 1;
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+        font-weight: 700;
+      }
 
-    .btn-ft-primary {
-      --tblr-btn-bg: var(--ft-plum);
-      --tblr-btn-border-color: var(--ft-plum);
-      --tblr-btn-hover-bg: var(--ft-plum-dark);
-      --tblr-btn-hover-border-color: var(--ft-plum-dark);
-      --tblr-btn-active-bg: var(--ft-plum-dark);
-      --tblr-btn-active-border-color: var(--ft-plum-dark);
-      --tblr-btn-color: #fff;
-      --tblr-btn-hover-color: #fff;
-      --tblr-btn-active-color: #fff;
-    }
-  </style>
-</head>
-<body>
-  <div class="page page-center">
-    <div class="container container-tight py-4">
-      <div class="text-center mb-4">
-        <a href="{{ url_for('content.index') }}" class="auth-logo">Fonotarot</a>
-      </div>
-
-      <form class="card card-md" method="POST" autocomplete="one-time-code" novalidate>
-        <div class="card-body">
-          <h2 class="card-title card-title-lg text-center mb-3">{{ _("Verifica tu cuenta") }}</h2>
-          <p class="text-secondary text-center mb-4">
-            {{ _("Te enviamos un código de 6 dígitos a tu correo. Ingrésalo para continuar.") }}
-          </p>
-
-          {% include "security/_messages.html" %}
-
-          {% if form.passcode.errors %}
-            <div class="alert alert-danger" role="alert">
-              {% for error in form.passcode.errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          {% if form.form_errors %}
-            <div class="alert alert-danger" role="alert">
-              {% for error in form.form_errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          {{ form.hidden_tag() }}
-          {{ form.passcode(type="hidden", id="passcode-hidden") }}
-
-          <div class="my-4">
-            <div class="row g-2">
-              {% for idx in range(6) %}
-                <div class="col">
-                  <input
-                    type="text"
-                    class="form-control otp-input"
-                    maxlength="1"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    autocomplete="one-time-code"
-                    data-code-input
-                    data-code-index="{{ idx }}"
-                    {% if loop.first %}autofocus{% endif %}
-                  />
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-check">
-              {{ form.remember_me(class="form-check-input") }}
-              <span class="form-check-label">{{ form.remember_me.label.text }}</span>
-            </label>
-          </div>
-
-          <div class="form-footer">
-            {{ form.submit(class="btn btn-ft-primary w-100") }}
-          </div>
+      .btn-ft-primary {
+        --tblr-btn-bg: var(--ft-plum);
+        --tblr-btn-border-color: var(--ft-plum);
+        --tblr-btn-hover-bg: var(--ft-plum-dark);
+        --tblr-btn-hover-border-color: var(--ft-plum-dark);
+        --tblr-btn-active-bg: var(--ft-plum-dark);
+        --tblr-btn-active-border-color: var(--ft-plum-dark);
+        --tblr-btn-color: #fff;
+        --tblr-btn-hover-color: #fff;
+        --tblr-btn-active-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page page-center">
+      <div class="container container-tight py-4">
+        <div class="text-center mb-4">
+          <a href="{{ url_for('content.index') }}" class="auth-logo">Fonotarot</a>
         </div>
-      </form>
 
-      <div class="text-center text-secondary mt-3">
-        {{ _("¿No te llegó el código?") }}
-        <a href="{{ url_for('passwordless.request_code', next=request.args.get('next')) }}">{{ _("Solicitar uno nuevo") }}</a>
+        <form class="card card-md" method="POST" autocomplete="one-time-code" novalidate>
+          <div class="card-body">
+            <h2 class="card-title card-title-lg text-center mb-3">{{ _("Verifica tu cuenta") }}</h2>
+            <p class="text-secondary text-center mb-4">
+              {{ _("Te enviamos un código de 6 dígitos a tu correo. Ingrésalo para continuar.") }}
+            </p>
+
+            {% include "security/_messages.html" %}
+
+            {% if form.passcode.errors %}
+              <div class="alert alert-danger" role="alert">
+                {% for error in form.passcode.errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% if form.form_errors %}
+              <div class="alert alert-danger" role="alert">
+                {% for error in form.form_errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {{ form.hidden_tag() }}
+            {{ form.passcode(type="hidden", id="passcode-hidden") }}
+
+            <div class="my-4">
+              <div class="row g-2">
+                {% for idx in range(6) %}
+                  <div class="col">
+                    <input
+                      type="text"
+                      class="form-control otp-input"
+                      maxlength="1"
+                      inputmode="numeric"
+                      pattern="[0-9]*"
+                      autocomplete="one-time-code"
+                      data-code-input
+                      data-code-index="{{ idx }}"
+                      {% if loop.first %}autofocus{% endif %}
+                    />
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-check">
+                {{ form.remember_me(class="form-check-input") }}
+                <span class="form-check-label">{{ form.remember_me.label.text }}</span>
+              </label>
+            </div>
+
+            <div class="form-footer">
+              {{ form.submit(class="btn btn-ft-primary w-100") }}
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center text-secondary mt-3">
+          {{ _("¿No te llegó el código?") }}
+          <a href="{{ url_for('passwordless.request_code', next=request.args.get('next')) }}">{{ _("Solicitar uno nuevo") }}</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const inputs = Array.from(document.querySelectorAll("[data-code-input]"));
-      const hidden = document.getElementById("passcode-hidden");
-      const currentCode = (hidden.value || "").replace(/\D/g, "").slice(0, inputs.length);
+    <script src="{{ url_for('static', filename='vendor/tabler/js/tabler.min.js') }}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const inputs = Array.from(document.querySelectorAll("[data-code-input]"));
+        const hidden = document.getElementById("passcode-hidden");
+        const currentCode = (hidden.value || "").replace(/\D/g, "").slice(0, inputs.length);
 
-      currentCode.split("").forEach((char, idx) => {
-        if (inputs[idx]) inputs[idx].value = char;
-      });
-
-      const syncHidden = function () {
-        hidden.value = inputs.map((input) => input.value.replace(/\D/g, "").slice(0, 1)).join("");
-      };
-
-      inputs.forEach((input, idx) => {
-        input.addEventListener("input", function (event) {
-          const value = event.target.value.replace(/\D/g, "").slice(0, 1);
-          event.target.value = value;
-          syncHidden();
-          if (value && idx + 1 < inputs.length) {
-            inputs[idx + 1].focus();
-          }
+        currentCode.split("").forEach((char, idx) => {
+          if (inputs[idx]) inputs[idx].value = char;
         });
 
-        input.addEventListener("keydown", function (event) {
-          if (event.key === "Backspace" && !event.target.value && idx > 0) {
-            inputs[idx - 1].focus();
-          }
-        });
+        const syncHidden = function () {
+          hidden.value = inputs.map((input) => input.value.replace(/\D/g, "").slice(0, 1)).join("");
+        };
 
-        input.addEventListener("paste", function (event) {
-          event.preventDefault();
-          const pasted = (event.clipboardData || window.clipboardData)
-            .getData("text")
-            .replace(/\D/g, "")
-            .slice(0, inputs.length);
-          pasted.split("").forEach((char, position) => {
-            inputs[position].value = char;
+        inputs.forEach((input, idx) => {
+          input.addEventListener("input", function (event) {
+            const value = event.target.value.replace(/\D/g, "").slice(0, 1);
+            event.target.value = value;
+            syncHidden();
+            if (value && idx + 1 < inputs.length) {
+              inputs[idx + 1].focus();
+            }
           });
-          syncHidden();
-          const next = Math.min(pasted.length, inputs.length - 1);
-          inputs[next].focus();
+
+          input.addEventListener("keydown", function (event) {
+            if (event.key === "Backspace" && !event.target.value && idx > 0) {
+              inputs[idx - 1].focus();
+            }
+          });
+
+          input.addEventListener("paste", function (event) {
+            event.preventDefault();
+            const pasted = (event.clipboardData || window.clipboardData)
+              .getData("text")
+              .replace(/\D/g, "")
+              .slice(0, inputs.length);
+            pasted.split("").forEach((char, position) => {
+              inputs[position].value = char;
+            });
+            syncHidden();
+            const next = Math.min(pasted.length, inputs.length - 1);
+            inputs[next].focus();
+          });
         });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

@@ -3,44 +3,44 @@
 {% block title %}{{ _("Tarjetas Prepago Digitales - Fonotarot") }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-    <div>
-      <h1 class="fw-bold mb-1">{{ _("Tarjetas Prepago Digitales") }}</h1>
-      <p class="text-secondary mb-0">{{ _("Compra, regala y canjea minutos en segundos.") }}</p>
-    </div>
-    <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-outline-primary">
-      <i class="ti ti-ticket me-1"></i>{{ _("Canjear tarjeta") }}
-    </a>
-  </div>
-
-  <div class="row g-4">
-    {% for card in cards %}
-    <div class="col-12 col-sm-6 col-lg-4">
-      <div class="card h-100">
-        {% if card.image_url %}
-        <img src="{{ card.image_url }}" alt="{{ card.name }}" class="card-img-top" style="height:180px;object-fit:cover;" />
-        {% endif %}
-        <div class="card-body d-flex flex-column">
-          <div class="small text-secondary mb-1">{{ _("Tarjeta digital") }}</div>
-          <h5 class="card-title">{{ card.name }}</h5>
-          <div class="h3 mb-1">{{ card.price_display }}</div>
-          <div class="text-secondary">{{ _("%(minutes)s minutos", minutes=card.minutes) }}</div>
-          {% if card.description %}
-          <p class="text-secondary small mt-2 mb-0">{{ card.description }}</p>
-          {% endif %}
-          <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-primary mt-3">
-            <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }}
-          </a>
-        </div>
+  <div class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <div>
+        <h1 class="fw-bold mb-1">{{ _("Tarjetas Prepago Digitales") }}</h1>
+        <p class="text-secondary mb-0">{{ _("Compra, regala y canjea minutos en segundos.") }}</p>
       </div>
+      <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-outline-primary">
+        <i class="ti ti-ticket me-1"></i>{{ _("Canjear tarjeta") }}
+      </a>
     </div>
-    {% else %}
-    <div class="col-12 text-center text-secondary py-5">
-      <i class="ti ti-ticket-off" style="font-size:3rem"></i>
-      <p class="mt-2">{{ _("No hay tarjetas disponibles por el momento.") }}</p>
+
+    <div class="row g-4">
+      {% for card in cards %}
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="card h-100">
+            {% if card.image_url %}
+              <img src="{{ card.image_url }}" alt="{{ card.name }}" class="card-img-top" style="height:180px;object-fit:cover;" />
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <div class="small text-secondary mb-1">{{ _("Tarjeta digital") }}</div>
+              <h5 class="card-title">{{ card.name }}</h5>
+              <div class="h3 mb-1">{{ card.price_display }}</div>
+              <div class="text-secondary">{{ _("%(minutes)s minutos", minutes=card.minutes) }}</div>
+              {% if card.description %}
+                <p class="text-secondary small mt-2 mb-0">{{ card.description }}</p>
+              {% endif %}
+              <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-primary mt-3">
+                <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }}
+              </a>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-12 text-center text-secondary py-5">
+          <i class="ti ti-ticket-off" style="font-size:3rem"></i>
+          <p class="mt-2">{{ _("No hay tarjetas disponibles por el momento.") }}</p>
+        </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
-</div>
 {% endblock %}

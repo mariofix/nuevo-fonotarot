@@ -3,314 +3,314 @@
 {% block title %}{{ _("Estado de tu orden") }} #{{ order.merchants_id[:13] }} - Fonotarot{% endblock %}
 
 {% block extra_css %}
-<style>
-  .status-shell {
-    max-width: 1120px;
-  }
+  <style>
+    .status-shell {
+      max-width: 1120px;
+    }
 
-  .status-hero {
-    border: 1px solid var(--tblr-border-color, var(--border));
-    border-radius: 18px;
-    background: linear-gradient(140deg, rgba(109, 40, 217, .09), rgba(59, 130, 246, .06));
-  }
+    .status-hero {
+      border: 1px solid var(--tblr-border-color, var(--border));
+      border-radius: 18px;
+      background: linear-gradient(140deg, rgba(109, 40, 217, .09), rgba(59, 130, 246, .06));
+    }
 
-  .status-card,
-  .offer-card,
-  .benefit-card {
-    border: 1px solid var(--tblr-border-color, var(--border));
-    border-radius: 16px;
-    background: rgba(0, 0, 0, .015);
-  }
+    .status-card,
+    .offer-card,
+    .benefit-card {
+      border: 1px solid var(--tblr-border-color, var(--border));
+      border-radius: 16px;
+      background: rgba(0, 0, 0, .015);
+    }
 
-  [data-theme="dark"] .status-card,
-  [data-theme="dark"] .offer-card,
-  [data-theme="dark"] .benefit-card {
-    background: rgba(255, 255, 255, .02);
-  }
+    [data-theme="dark"] .status-card,
+    [data-theme="dark"] .offer-card,
+    [data-theme="dark"] .benefit-card {
+      background: rgba(255, 255, 255, .02);
+    }
 
-  .status-icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(109, 40, 217, .12);
-    color: var(--plum);
-  }
+    .status-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(109, 40, 217, .12);
+      color: var(--plum);
+    }
 
-  .status-icon.is-waiting {
-    background: rgba(245, 158, 11, .14);
-    color: #b45309;
-  }
+    .status-icon.is-waiting {
+      background: rgba(245, 158, 11, .14);
+      color: #b45309;
+    }
 
-  .status-icon.is-success {
-    background: rgba(34, 197, 94, .14);
-    color: #15803d;
-  }
+    .status-icon.is-success {
+      background: rgba(34, 197, 94, .14);
+      color: #15803d;
+    }
 
-  .support-phone {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: var(--plum);
-    letter-spacing: -.02em;
-  }
+    .support-phone {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--plum);
+      letter-spacing: -.02em;
+    }
 
-  .benefit-list li {
-    margin-bottom: .55rem;
-  }
+    .benefit-list li {
+      margin-bottom: .55rem;
+    }
 
-  .offer-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: var(--plum);
-  }
+    .offer-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--plum);
+    }
 
-  .status-summary {
-    color: var(--muted);
-    font-size: .92rem;
-  }
+    .status-summary {
+      color: var(--muted);
+      font-size: .92rem;
+    }
 
-  .refresh-hint {
-    border-left: 3px solid rgba(245, 158, 11, .45);
-    background: rgba(245, 158, 11, .08);
-    border-radius: 10px;
-  }
+    .refresh-hint {
+      border-left: 3px solid rgba(245, 158, 11, .45);
+      background: rgba(245, 158, 11, .08);
+      border-radius: 10px;
+    }
 
-  #payment-wait-countdown {
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-  }
-</style>
+    #payment-wait-countdown {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-{% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'fulfilling', 'delivered') %}
-{% set support_phone = '+56 2 2230 1515' %}
-{% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else none %}
+  {% set is_paid = order.payment_status == 'succeeded' or order.status in ('paid', 'fulfilling', 'delivered') %}
+  {% set support_phone = '+56 2 2230 1515' %}
+  {% set account_url = url_for('account.profile') if current_user and current_user.is_authenticated else none %}
 
-<div class="container py-5 status-shell">
-  <div class="status-hero p-4 p-md-5 mb-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <div>
-        <div class="text-secondary small mb-1">{{ _("Estado de tu compra") }}</div>
-        <h1 class="h2 mb-2">{{ _("Orden") }} #{{ order.merchants_id[:13] }}</h1>
-        <div class="d-flex flex-wrap gap-2">
-          <span class="badge {% if is_paid %}bg-success-lt text-success{% else %}bg-warning-lt text-warning{% endif %}">
-            <i class="ti ti-credit-card me-1"></i>
-            {% if is_paid %}
-              {{ _("Pago confirmado") }}
-            {% else %}
-              {{ _("Pago en proceso") }}
-            {% endif %}
-          </span>
-          <span class="badge bg-secondary-lt text-secondary">
-            <i class="ti ti-receipt me-1"></i>{{ _("Transacción") }}:
-            {% if order.transaction_id %}
-              <span id="txn-id">{{ order.transaction_id[:16]|lower }}</span>
-              <i class="ti ti-copy ms-1 cursor-pointer"
-                role="button"
-                title="{{ _('Copiar') }}"
-                onclick="copyToClipboard('{{ order.transaction_id }}', this)"></i>
-            {% else %}
-              {{ _("Pendiente") }}
-            {% endif %}
-          </span>
-          <span class="badge bg-azure-lt text-secondary"><i class="ti ti-building-bank me-1"></i>{{ order.provider|capitalize if order.provider else "—" }}</span>
+  <div class="container py-5 status-shell">
+    <div class="status-hero p-4 p-md-5 mb-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <div>
+          <div class="text-secondary small mb-1">{{ _("Estado de tu compra") }}</div>
+          <h1 class="h2 mb-2">{{ _("Orden") }} #{{ order.merchants_id[:13] }}</h1>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge {% if is_paid %}bg-success-lt text-success{% else %}bg-warning-lt text-warning{% endif %}">
+              <i class="ti ti-credit-card me-1"></i>
+              {% if is_paid %}
+                {{ _("Pago confirmado") }}
+              {% else %}
+                {{ _("Pago en proceso") }}
+              {% endif %}
+            </span>
+            <span class="badge bg-secondary-lt text-secondary">
+              <i class="ti ti-receipt me-1"></i>{{ _("Transacción") }}:
+              {% if order.transaction_id %}
+                <span id="txn-id">{{ order.transaction_id[:16]|lower }}</span>
+                <i class="ti ti-copy ms-1 cursor-pointer"
+                   role="button"
+                   title="{{ _('Copiar') }}"
+                   onclick="copyToClipboard('{{ order.transaction_id }}', this)"></i>
+              {% else %}
+                {{ _("Pendiente") }}
+              {% endif %}
+            </span>
+            <span class="badge bg-azure-lt text-secondary"><i class="ti ti-building-bank me-1"></i>{{ order.provider|capitalize if order.provider else "—" }}</span>
+          </div>
         </div>
-      </div>
-      <div class="text-end">
-        <div class="text-secondary small">{{ _("Total pagado") }}</div>
-        <div class="h3 mb-0">{{ order.total_display }}</div>
+        <div class="text-end">
+          <div class="text-secondary small">{{ _("Total pagado") }}</div>
+          <div class="h3 mb-0">{{ order.total_display }}</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="row g-4">
-    <div class="col-lg-8">
-      <div class="status-card p-4 p-md-5">
-        {% if is_paid %}
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div class="status-icon is-success">
-            <i class="ti ti-circle-check"></i>
-          </div>
-          <div>
-            <h2 class="h3 mb-2">{{ _("Tu compra ya está lista") }}</h2>
-            <p class="status-summary mb-0">
-              {{ _("Ahora puedes llamar al %(phone)s y elegir la tarotista que más te guste o enviar la tarjeta de regalo.", phone=support_phone) }}
-            </p>
-          </div>
-        </div>
-
-        <div class="row g-3 mb-4">
-          {% if order.has_minute_packs() %}
-          <div class="col-md-5">
-            <div class="card border-0 bg-success-lt h-100">
-              <div class="card-body">
-                <div class="text-secondary small mb-1">{{ _("Minutos acreditados") }}</div>
-                <div class="display-6 fw-bold mb-2">{{ purchased_minutes }}</div>
-                <div class="small text-secondary">{{ _("Tus minutos quedan listos para usarlos cuando quieras.") }}</div>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="status-card p-4 p-md-5">
+          {% if is_paid %}
+            <div class="d-flex align-items-start gap-3 mb-4">
+              <div class="status-icon is-success">
+                <i class="ti ti-circle-check"></i>
+              </div>
+              <div>
+                <h2 class="h3 mb-2">{{ _("Tu compra ya está lista") }}</h2>
+                <p class="status-summary mb-0">
+                  {{ _("Ahora puedes llamar al %(phone)s y elegir la tarotista que más te guste o enviar la tarjeta de regalo.", phone=support_phone) }}
+                </p>
               </div>
             </div>
-          </div>
-          <div class="col-md-7">
-            <div class="card border-0">
-              <div class="card-body">
-                <div class="fw-semibold mb-2">{{ _("Cómo empezar") }}</div>
-                <ol class="mb-0 ps-3">
-                  <li>{{ _("Llama al número de atención.") }}</li>
-                  <li>{{ _("Escucha el menú y elige tu tarotista favorita.") }}</li>
-                  <li>{{ _("Habla con calma mientras tus minutos se descuentan.") }}</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-          {% if order.has_giftcards() and issued_gift_cards %}
-        <div class="row p-4 mb-4">
-          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <div>
-              <div class="fw-semibold">{{ _("Tarjetas de regalo emitidas") }}</div>
-              <div class="text-secondary small">{{ _("Comparte estos códigos para que los canjeen en el sitio.") }}</div>
-            </div>
-            <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-outline-primary btn-sm">
-              <i class="ti ti-ticket me-1"></i>{{ _("Sitio de Canje") }}
-            </a>
-          </div>
-          <div class="row g-3">
-            {% for card in issued_gift_cards %}
-            <div class="col-md-12">
-                <div class="card ">
-                  <div class="card-body">
-                    <div class="row g-2 align-items-center">
-                      <div class="col">
-                        <h4 class="card-title m-0">
-                          <a href="#">{{ _("Código") }}: {{ card.code[:2] ~ '*' * (card.code|length - 4) ~ card.code[-2:] }}</a>
-                        </h4>
-                        <div class="text-secondary">{{ card.gift_card_product.name if card.gift_card_product else _("Tarjeta digital") }}</div>
-                        <div class="small mt-1">
-                        {% if card.status == 'redeemed' %}
-                  <span class="badge bg-info-lt text-info">{{ _("Canjeada") }}</span>
-                  {% else %}
-                  <span class="badge bg-success-lt text-success">{{ _("Disponible") }}</span>
-                  {% endif %}
-                      </div>
-                      <div class="col-auto">
-                        <a href="{{ url_for('static', filename='pdfs-cache/gc-' ~ order.merchants_id.lower() ~ '.pdf') }}" class="btn btn-success btn-lg" target="_blank"> Ver PDF </a>
-                        <a href="{{ url_for('tarjetas.instrucciones', data_str=make_giftcard_token(15, 53, 51)) }}" class="btn btn-info btn-sm"> Enviar por Correo </a>
-                        <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pink btn-sm"> Canjear </a>
-                      </div>
+
+            <div class="row g-3 mb-4">
+              {% if order.has_minute_packs() %}
+                <div class="col-md-5">
+                  <div class="card border-0 bg-success-lt h-100">
+                    <div class="card-body">
+                      <div class="text-secondary small mb-1">{{ _("Minutos acreditados") }}</div>
+                      <div class="display-6 fw-bold mb-2">{{ purchased_minutes }}</div>
+                      <div class="small text-secondary">{{ _("Tus minutos quedan listos para usarlos cuando quieras.") }}</div>
                     </div>
                   </div>
                 </div>
+                <div class="col-md-7">
+                  <div class="card border-0">
+                    <div class="card-body">
+                      <div class="fw-semibold mb-2">{{ _("Cómo empezar") }}</div>
+                      <ol class="mb-0 ps-3">
+                        <li>{{ _("Llama al número de atención.") }}</li>
+                        <li>{{ _("Escucha el menú y elige tu tarotista favorita.") }}</li>
+                        <li>{{ _("Habla con calma mientras tus minutos se descuentan.") }}</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if order.has_giftcards() and issued_gift_cards %}
+                <div class="row p-4 mb-4">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                      <div class="fw-semibold">{{ _("Tarjetas de regalo emitidas") }}</div>
+                      <div class="text-secondary small">{{ _("Comparte estos códigos para que los canjeen en el sitio.") }}</div>
+                    </div>
+                    <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-outline-primary btn-sm">
+                      <i class="ti ti-ticket me-1"></i>{{ _("Sitio de Canje") }}
+                    </a>
+                  </div>
+                  <div class="row g-3">
+                    {% for card in issued_gift_cards %}
+                      <div class="col-md-12">
+                        <div class="card ">
+                          <div class="card-body">
+                            <div class="row g-2 align-items-center">
+                              <div class="col">
+                                <h4 class="card-title m-0">
+                                  <a href="#">{{ _("Código") }}: {{ card.code[:2] ~ '*' * (card.code|length - 4) ~ card.code[-2:] }}</a>
+                                </h4>
+                                <div class="text-secondary">{{ card.gift_card_product.name if card.gift_card_product else _("Tarjeta digital") }}</div>
+                                <div class="small mt-1">
+                                  {% if card.status == 'redeemed' %}
+                                    <span class="badge bg-info-lt text-info">{{ _("Canjeada") }}</span>
+                                  {% else %}
+                                    <span class="badge bg-success-lt text-success">{{ _("Disponible") }}</span>
+                                  {% endif %}
+                                </div>
+                                <div class="col-auto">
+                                  <a href="{{ url_for('static', filename='pdfs-cache/gc-' ~ order.merchants_id.lower() ~ '.pdf') }}" class="btn btn-success btn-lg" target="_blank"> Ver PDF </a>
+                                  <a href="{{ url_for('tarjetas.instrucciones', data_str=make_giftcard_token(15, 53, 51)) }}" class="btn btn-info btn-sm"> Enviar por Correo </a>
+                                  <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pink btn-sm"> Canjear </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+
+          {% else %}
+            <div class="d-flex align-items-start gap-3 mb-4">
+              <div class="status-icon is-waiting">
+                <i class="ti ti-loader-2"></i>
               </div>
+              <div>
+                <h2 class="h3 mb-2">{{ _("Estamos esperando la confirmación del pago") }}</h2>
+                <p class="status-summary mb-0">
+                  {{ _("Espera unos momentos y vuelve a revisar esta página en breve.") }}
+                </p>
               </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-        </div>
+            </div>
 
-        {% else %}
-        <div class="d-flex align-items-start gap-3 mb-4">
-          <div class="status-icon is-waiting">
-            <i class="ti ti-loader-2"></i>
-          </div>
-          <div>
-            <h2 class="h3 mb-2">{{ _("Estamos esperando la confirmación del pago") }}</h2>
-            <p class="status-summary mb-0">
-              {{ _("Espera unos momentos y vuelve a revisar esta página en breve.") }}
-            </p>
-          </div>
-        </div>
+            <div class="refresh-hint p-3 mb-4"
+                 id="payment-wait-panel"
+                 data-created-at="{{ order.created_at.strftime('%Y-%m-%dT%H:%M:%S') }}Z"
+                 data-order-id="{{ order.id }}">
+              <div class="fw-semibold mb-1">{{ _("No cierres esta ventana") }}</div>
+              <div class="text-secondary small mb-2">
+                {{ _("Si ya pagaste, no necesitas repetir la compra.") }}
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge bg-secondary-lt text-secondary" id="payment-wait-timer">
+                  <i class="ti ti-clock me-1"></i>
+                  {{ _("Verificación automática en") }}
+                  <span id="payment-wait-countdown">05:00</span>
+                </span>
+                <button type="button"
+                        role="button"
+                        class="btn btn-info btn-sm d-none"
+                        id="btn-status-update"
+                        disabled>
+                  <i class="ti ti-refresh me-1"></i>{{ _("Consultar estado de pago") }}
+                </button>
+              </div>
+            </div>
 
-        <div class="refresh-hint p-3 mb-4"
-             id="payment-wait-panel"
-             data-created-at="{{ order.created_at.strftime('%Y-%m-%dT%H:%M:%S') }}Z"
-             data-order-id="{{ order.id }}">
-          <div class="fw-semibold mb-1">{{ _("No cierres esta ventana") }}</div>
-          <div class="text-secondary small mb-2">
-            {{ _("Si ya pagaste, no necesitas repetir la compra.") }}
-          </div>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge bg-secondary-lt text-secondary" id="payment-wait-timer">
-              <i class="ti ti-clock me-1"></i>
-              {{ _("Verificación automática en") }}
-              <span id="payment-wait-countdown">05:00</span>
-            </span>
-            <button type="button"
-                    role="button"
-                    class="btn btn-info btn-sm d-none"
-                    id="btn-status-update"
-                    disabled>
-              <i class="ti ti-refresh me-1"></i>{{ _("Consultar estado de pago") }}
-            </button>
-          </div>
+            <div class="card border-0 bg-warning-lt">
+              <div class="card-body">
+                <div class="fw-semibold mb-2">{{ _("Mientras tanto") }}</div>
+                <ul class="mb-0 ps-3">
+                  <li>{{ _("Mantén esta pestaña abierta.") }}</li>
+                  <li>{{ _("Si el pago ya fue aprobado, la información aparecerá automáticamente.") }}</li>
+                  <li>{{ _("Cuando se confirme, verás tus minutos listos para llamar.") }}</li>
+                </ul>
+              </div>
+            </div>
+          {% endif %}
         </div>
-
-        <div class="card border-0 bg-warning-lt">
-          <div class="card-body">
-            <div class="fw-semibold mb-2">{{ _("Mientras tanto") }}</div>
-            <ul class="mb-0 ps-3">
-              <li>{{ _("Mantén esta pestaña abierta.") }}</li>
-              <li>{{ _("Si el pago ya fue aprobado, la información aparecerá automáticamente.") }}</li>
-              <li>{{ _("Cuando se confirme, verás tus minutos listos para llamar.") }}</li>
-            </ul>
-          </div>
-        </div>
-        {% endif %}
       </div>
-    </div>
 
-    <div class="col-lg-4">
-      <div class="status-card p-4 mb-4">
-        <div class="fw-semibold mb-3">{{ _("Resumen de Orden") }}</div>
-        {% for item in order.items %}
-        <div class="col">
+      <div class="col-lg-4">
+        <div class="status-card p-4 mb-4">
+          <div class="fw-semibold mb-3">{{ _("Resumen de Orden") }}</div>
+          {% for item in order.items %}
+            <div class="col">
               <div class="card card-sm">
                 <div class="card-body">
                   {% if item.fulfillment_status == "fulfilled" %}
-                  <div class="ribbon ribbon-top bg-lime" data-bs-toggle="tooltip" data-bs-placement="top" title="Entregado a sistema telefónico.">
-                    <i class="ti ti-check icon-2"></i>
-                  </div>
+                    <div class="ribbon ribbon-top bg-lime" data-bs-toggle="tooltip" data-bs-placement="top" title="Entregado a sistema telefónico.">
+                      <i class="ti ti-check icon-2"></i>
+                    </div>
                   {% elif item.fulfillment_status == "failed" %}
-                  <div class="ribbon ribbon-top bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Error en Entrega">
-                    <i class="ti ti-x icon-2"></i>
-                  </div>
+                    <div class="ribbon ribbon-top bg-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Error en Entrega">
+                      <i class="ti ti-x icon-2"></i>
+                    </div>
                   {% else %}
                     <div class="ribbon ribbon-top bg-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Pendiente de Entrega">
-                    <i class="ti ti-question-mark icon-2"></i>
-                  </div>
+                      <i class="ti ti-question-mark icon-2"></i>
+                    </div>
                   {% endif %}
                   <div class="row align-items-center">
                     <div class="col-auto">
                       <span class="bg-primary text-white avatar"><span class="item-name"><i class="ti ti-clock icon icon-1"></i></span>
-                    </div>
-                    <div class="col">
-                      <div class="font-weight-medium">{{ item.name }} x {{ item.quantity }}</div>
-                      <div class="text-secondary">{{ item.subtotal_display }}</div>
+                      </div>
+                      <div class="col">
+                        <div class="font-weight-medium">{{ item.name }} x {{ item.quantity }}</div>
+                        <div class="text-secondary">{{ item.subtotal_display }}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-        {% endfor %}
-      </div>
+          {% endfor %}
+        </div>
 
-      <div class="status-card p-4">
-        <div class="fw-semibold mb-2">{{ _("Servicio al Cliente") }}</div>
-        <p class="status-summary mb-0">
-          {{ _("Si necesitas comunicarte con nosotros.") }} <a target="_blank" href="https://wa.me/56963349072?text=Hola! Tengo una consulta sobre la orden #{{ order.merchants_id[:13] }}" class="btn btn-sm btn-lime"><i class="ti ti-brand-whatsapp icon-2 m-1"></i> Escríbenos por Whatsapp</a>
-        </p>
+        <div class="status-card p-4">
+          <div class="fw-semibold mb-2">{{ _("Servicio al Cliente") }}</div>
+          <p class="status-summary mb-0">
+            {{ _("Si necesitas comunicarte con nosotros.") }} <a target="_blank" href="https://wa.me/56963349072?text=Hola! Tengo una consulta sobre la orden #{{ order.merchants_id[:13] }}" class="btn btn-sm btn-lime"><i class="ti ti-brand-whatsapp icon-2 m-1"></i> Escríbenos por Whatsapp</a>
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  {% if is_paid %}
-  {% if order.has_minute_packs() %}
-      <div class="status-card p-4 mb-4 mt-4">
+    {% if is_paid %}
+      {% if order.has_minute_packs() %}
+        <div class="status-card p-4 mb-4 mt-4">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
               <div class="fw-semibold">{{ _("Puedes ayudar a alguien más a dar el paso.") }}</div>
@@ -323,35 +323,35 @@
 
           <div class="row g-3">
             {% for card in cards %}
-            <div class="col-md-6 col-xl-4">
-              <div class="offer-card h-100 p-3">
-                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                  <div>
-                    <div class="fw-semibold">{{ card.minutes }} {{ _("minutos") }}</div>
-                    {% if card.description %}
-                    <div class="text-secondary small">{{ card.description }}</div>
+              <div class="col-md-6 col-xl-4">
+                <div class="offer-card h-100 p-3">
+                  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                      <div class="fw-semibold">{{ card.minutes }} {{ _("minutos") }}</div>
+                      {% if card.description %}
+                        <div class="text-secondary small">{{ card.description }}</div>
+                      {% endif %}
+                    </div>
+                    {% if card.is_featured %}
+                      <span class="badge badge-lg bg-yellow-lt text-yellow"  data-bs-toggle="tooltip" data-bs-placement="top" title="Nuestro éxito de ventas."><i class="ti ti-star icon-2"></i></span>
                     {% endif %}
                   </div>
-                  {% if card.is_featured %}
-                  <span class="badge badge-lg bg-yellow-lt text-yellow"  data-bs-toggle="tooltip" data-bs-placement="top" title="Nuestro éxito de ventas."><i class="ti ti-star icon-2"></i></span>
-                  {% endif %}
+                  <div class="offer-price mb-3">{{ card.price_display }}</div>
+                  <a href="{{ url_for('tarjetas.comprar', slug=card.slug) }}" class="btn btn-primary w-100">
+                    <i class="ti ti-bolt me-1"></i>{{ _("Comprar Tarjeta") }}
+                  </a>
                 </div>
-                <div class="offer-price mb-3">{{ card.price_display }}</div>
-                <a href="{{ url_for('tarjetas.comprar', slug=card.slug) }}" class="btn btn-primary w-100">
-                  <i class="ti ti-bolt me-1"></i>{{ _("Comprar Tarjeta") }}
-                </a>
               </div>
-            </div>
             {% else %}
-            <div class="col-12">
-              <div class="text-secondary">{{ _("Estamos preparando nuestras tarjetas de regalo.") }}</div>
-            </div>
+              <div class="col-12">
+                <div class="text-secondary">{{ _("Estamos preparando nuestras tarjetas de regalo.") }}</div>
+              </div>
             {% endfor %}
           </div>
         </div>
-  {% endif %}
-  {% if order.has_giftcards() %}
-      <div class="status-card p-4 mb-4 mt-4">
+      {% endif %}
+      {% if order.has_giftcards() %}
+        <div class="status-card p-4 mb-4 mt-4">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
               <div class="fw-semibold">{{ _("Nuestros planes de minutos.") }}</div>
@@ -364,177 +364,177 @@
 
           <div class="row g-3">
             {% for pack in packs %}
-            <div class="col-md-6 col-xl-3">
-              <div class="offer-card h-100 p-3">
-                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                  <div>
-                    <div class="fw-semibold">{{ pack.minutes }} {{ _("minutos") }}</div>
-                    {% if pack.description %}
-                    <div class="text-secondary small">{{ pack.description }}</div>
+              <div class="col-md-6 col-xl-3">
+                <div class="offer-card h-100 p-3">
+                  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                      <div class="fw-semibold">{{ pack.minutes }} {{ _("minutos") }}</div>
+                      {% if pack.description %}
+                        <div class="text-secondary small">{{ pack.description }}</div>
+                      {% endif %}
+                    </div>
+                    {% if pack.is_featured %}
+                      <span class="badge badge-lg bg-yellow-lt text-yellow"  data-bs-toggle="tooltip" data-bs-placement="top" title="Nuestro éxito de ventas."><i class="ti ti-star icon-2"></i></span>
                     {% endif %}
                   </div>
-                  {% if pack.is_featured %}
-                  <span class="badge badge-lg bg-yellow-lt text-yellow"  data-bs-toggle="tooltip" data-bs-placement="top" title="Nuestro éxito de ventas."><i class="ti ti-star icon-2"></i></span>
-                  {% endif %}
+                  <div class="offer-price mb-3">{{ pack.price_display }}</div>
+                  <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn btn-primary w-100">
+                    <i class="ti ti-bolt me-1"></i>{{ _("Comprar") }} {{ pack.minutes }} {{ _("minutos") }}
+                  </a>
                 </div>
-                <div class="offer-price mb-3">{{ pack.price_display }}</div>
-                <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn btn-primary w-100">
-                  <i class="ti ti-bolt me-1"></i>{{ _("Comprar") }} {{ pack.minutes }} {{ _("minutos") }}
-                </a>
               </div>
-            </div>
             {% else %}
-            <div class="col-12">
-              <div class="text-secondary">{{ _("No hay packs disponibles por el momento.") }}</div>
-            </div>
+              <div class="col-12">
+                <div class="text-secondary">{{ _("No hay packs disponibles por el momento.") }}</div>
+              </div>
             {% endfor %}
           </div>
         </div>
-  {% endif %}
-  {% endif %}
+      {% endif %}
+    {% endif %}
 
 
 
 
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-function copyToClipboard(text, iconEl) {
-  navigator.clipboard.writeText(text).then(() => {
-    const original = iconEl.className;
-    iconEl.className = "ti ti-check ms-1 text-success";
-    setTimeout(() => { iconEl.className = original; }, 1200);
-  }).catch(() => {
+  <script>
+    function copyToClipboard(text, iconEl) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = iconEl.className;
+        iconEl.className = "ti ti-check ms-1 text-success";
+        setTimeout(() => { iconEl.className = original; }, 1200);
+      }).catch(() => {
     // Fallback for non-secure contexts (http) or older browsers
-    const temp = document.createElement("textarea");
-    temp.value = text;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand("copy");
-    document.body.removeChild(temp);
-  });
-}
-</script>
-{% if not is_paid %}
-<script>
-  (function () {
-    var panel = document.getElementById('payment-wait-panel');
-    if (!panel) return;
-
-    var createdAt = new Date(panel.dataset.createdAt);
-    var expiresAt = new Date(createdAt.getTime() + 5 * 60 * 1000); // created_at + 5min
-
-    var timerBadge = document.getElementById('payment-wait-timer');
-    var countdownEl = document.getElementById('payment-wait-countdown');
-    var statusBtn = document.getElementById('btn-status-update');
-    var intervalId = null;
-
-    function pad(n) {
-      return String(n).padStart(2, '0');
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      });
     }
+  </script>
+  {% if not is_paid %}
+    <script>
+      (function () {
+        var panel = document.getElementById('payment-wait-panel');
+        if (!panel) return;
 
-    function formatRemaining(ms) {
-      var totalSeconds = Math.max(0, Math.floor(ms / 1000));
-      return pad(Math.floor(totalSeconds / 60)) + ':' + pad(totalSeconds % 60);
-    }
+        var createdAt = new Date(panel.dataset.createdAt);
+        var expiresAt = new Date(createdAt.getTime() + 5 * 60 * 1000); // created_at + 5min
 
-    function expire() {
-      if (intervalId) clearInterval(intervalId);
-      if (timerBadge) timerBadge.classList.add('d-none');
-      if (statusBtn) {
-        statusBtn.classList.remove('d-none');
-        statusBtn.disabled = false;
-      }
-    }
+        var timerBadge = document.getElementById('payment-wait-timer');
+        var countdownEl = document.getElementById('payment-wait-countdown');
+        var statusBtn = document.getElementById('btn-status-update');
+        var intervalId = null;
 
-    function tick() {
-      var remaining = expiresAt.getTime() - Date.now();
-      if (remaining <= 0) {
-        expire();
-        return;
-      }
-      if (countdownEl) countdownEl.textContent = formatRemaining(remaining);
-    }
+        function pad(n) {
+          return String(n).padStart(2, '0');
+        }
+
+        function formatRemaining(ms) {
+          var totalSeconds = Math.max(0, Math.floor(ms / 1000));
+          return pad(Math.floor(totalSeconds / 60)) + ':' + pad(totalSeconds % 60);
+        }
+
+        function expire() {
+          if (intervalId) clearInterval(intervalId);
+          if (timerBadge) timerBadge.classList.add('d-none');
+          if (statusBtn) {
+            statusBtn.classList.remove('d-none');
+            statusBtn.disabled = false;
+          }
+        }
+
+        function tick() {
+          var remaining = expiresAt.getTime() - Date.now();
+          if (remaining <= 0) {
+            expire();
+            return;
+          }
+          if (countdownEl) countdownEl.textContent = formatRemaining(remaining);
+        }
 
     // Handle page loaded after the 5min window already passed (e.g. reopened from email).
-    if (expiresAt.getTime() - Date.now() <= 0) {
-      expire();
-    } else {
-      tick();
-      intervalId = setInterval(tick, 1000);
-    }
+        if (expiresAt.getTime() - Date.now() <= 0) {
+          expire();
+        } else {
+          tick();
+          intervalId = setInterval(tick, 1000);
+        }
 
-    if (statusBtn) {
-      statusBtn.addEventListener('click', function () {
-        statusBtn.disabled = true;
-        var originalHtml = statusBtn.innerHTML;
-        statusBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ _("Consultando...") }}';
+        if (statusBtn) {
+          statusBtn.addEventListener('click', function () {
+            statusBtn.disabled = true;
+            var originalHtml = statusBtn.innerHTML;
+            statusBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ _("Consultando...") }}';
 
         // TODO: point this at your actual status-check endpoint (route name is a placeholder).
-        fetch('/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({ order_id: panel.dataset.orderId })
-        })
-          .then(function (response) {
-            if (!response.ok) throw new Error('status-check-failed');
-            return response.json();
-          })
-          .then(function (data) {
-            if (data && data.is_paid) {
-              window.location.reload();
-            } else {
-              statusBtn.disabled = false;
-              statusBtn.innerHTML = originalHtml;
-            }
-          })
-          .catch(function () {
-            statusBtn.disabled = false;
-            statusBtn.innerHTML = originalHtml;
+            fetch('/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+              },
+              body: JSON.stringify({ order_id: panel.dataset.orderId })
+            })
+              .then(function (response) {
+                if (!response.ok) throw new Error('status-check-failed');
+                return response.json();
+              })
+              .then(function (data) {
+                if (data && data.is_paid) {
+                  window.location.reload();
+                } else {
+                  statusBtn.disabled = false;
+                  statusBtn.innerHTML = originalHtml;
+                }
+              })
+              .catch(function () {
+                statusBtn.disabled = false;
+                statusBtn.innerHTML = originalHtml;
+              });
           });
-      });
-    }
-  })();
-</script>
-{% endif %}
+        }
+      })();
+    </script>
+  {% endif %}
 
-{% if is_paid %}
-<script>
-  (function () {
-    var storageKey = 'fonotarot_purchase_{{ order.id }}';
-    if (window.sessionStorage && sessionStorage.getItem(storageKey)) {
-      return;
-    }
+  {% if is_paid %}
+    <script>
+      (function () {
+        var storageKey = 'fonotarot_purchase_{{ order.id }}';
+        if (window.sessionStorage && sessionStorage.getItem(storageKey)) {
+          return;
+        }
 
-    if (typeof window.fonotarotTrackEvent === 'function') {
-      window.fonotarotTrackEvent('purchase', {
-        transaction_id: {{ order.transaction_id|tojson }},
-        affiliation: 'Fonotarot',
-        currency: 'CLP',
-        value: {{ (order.amount|float)|tojson }},
-        items: [
-          {% for item in items %}
-          {
-            item_id: {{ (item.item_type ~ '-' ~ item.item_id)|tojson }},
-            item_name: {{ item.name|tojson }},
-            item_category: {{ item.item_type|tojson }},
-            price: {{ item.unit_price }},
-            quantity: {{ item.quantity }}
-          }{% if not loop.last %},{% endif %}
-          {% endfor %}
-        ]
-      });
-    }
+        if (typeof window.fonotarotTrackEvent === 'function') {
+          window.fonotarotTrackEvent('purchase', {
+            transaction_id: {{ order.transaction_id|tojson }},
+            affiliation: 'Fonotarot',
+            currency: 'CLP',
+            value: {{ (order.amount|float)|tojson }},
+            items: [
+              {% for item in items %}
+                {
+                  item_id: {{ (item.item_type ~ '-' ~ item.item_id)|tojson }},
+                  item_name: {{ item.name|tojson }},
+                  item_category: {{ item.item_type|tojson }},
+                  price: {{ item.unit_price }},
+                  quantity: {{ item.quantity }}
+                }{% if not loop.last %},{% endif %}
+              {% endfor %}
+            ]
+          });
+        }
 
-    if (window.sessionStorage) {
-      sessionStorage.setItem(storageKey, '1');
-    }
-  })();
-</script>
-{% endif %}
+        if (window.sessionStorage) {
+          sessionStorage.setItem(storageKey, '1');
+        }
+      })();
+    </script>
+  {% endif %}
 {% endblock %}

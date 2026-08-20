@@ -6,465 +6,465 @@
 {% block og_description %}{{ post.excerpt or '' }}{% endblock %}
 
 {% block extra_head %}
-{% if post.featured_image_url %}
-  <meta property="og:image" content="{{ post.featured_image_url }}" />
-  <meta name="twitter:image"  content="{{ post.featured_image_url }}" />
-{% endif %}
-<meta property="og:type" content="article" />
-<meta property="article:author" content="Fonotarot" />
-<meta property="article:section" content="Tarot" />
-{% if post.published_at %}
-  <meta property="article:published_time" content="{{ post.published_at.isoformat() }}" />
-{% endif %}
-{% if post.updated_at %}
-  <meta property="article:modified_time" content="{{ post.updated_at.isoformat() }}" />
-{% endif %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": {{ post.title | tojson }},
-  "description": {{ (post.excerpt or (post.content | striptags)[:160]) | tojson }},
-  {% if post.featured_image_url %}"image": {{ post.featured_image_url | tojson }},{% endif %}
-  "datePublished": "{{ post.published_at.isoformat() if post.published_at else '' }}",
-  "dateModified": "{{ post.updated_at.isoformat() if post.updated_at else '' }}",
-  "author": {
-    "@type": "Organization",
-    "name": "Fonotarot",
-    "url": "{{ site_url }}"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Fonotarot",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "{{ site_url }}/static/logo.png"
+  {% if post.featured_image_url %}
+    <meta property="og:image" content="{{ post.featured_image_url }}" />
+    <meta name="twitter:image"  content="{{ post.featured_image_url }}" />
+  {% endif %}
+  <meta property="og:type" content="article" />
+  <meta property="article:author" content="Fonotarot" />
+  <meta property="article:section" content="Tarot" />
+  {% if post.published_at %}
+    <meta property="article:published_time" content="{{ post.published_at.isoformat() }}" />
+  {% endif %}
+  {% if post.updated_at %}
+    <meta property="article:modified_time" content="{{ post.updated_at.isoformat() }}" />
+  {% endif %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": {{ post.title | tojson }},
+      "description": {{ (post.excerpt or (post.content | striptags)[:160]) | tojson }},
+      {% if post.featured_image_url %}"image": {{ post.featured_image_url | tojson }},{% endif %}
+      "datePublished": "{{ post.published_at.isoformat() if post.published_at else '' }}",
+      "dateModified": "{{ post.updated_at.isoformat() if post.updated_at else '' }}",
+      "author": {
+        "@type": "Organization",
+        "name": "Fonotarot",
+        "url": "{{ site_url }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Fonotarot",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{ site_url }}/static/logo.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ site_url }}{{ request.path }}"
+      },
+      "wordCount": "{{ post.content | striptags | wordcount }}",
+      "timeRequired": "PT{{ post.reading_time }}M",
+      "isPartOf": {
+        "@type": "Blog",
+        "@id": "{{ site_url }}/blog/",
+        "name": "Blog — Fonotarot"
+      }
     }
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "{{ site_url }}{{ request.path }}"
-  },
-  "wordCount": "{{ post.content | striptags | wordcount }}",
-  "timeRequired": "PT{{ post.reading_time }}M",
-  "isPartOf": {
-    "@type": "Blog",
-    "@id": "{{ site_url }}/blog/",
-    "name": "Blog — Fonotarot"
-  }
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
+  </script>
+  <script type="application/ld+json">
     {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Inicio",
-      "item": "{{ site_url }}/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Blog",
-      "item": "{{ site_url }}/blog/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": {{ post.title | tojson }}
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "{{ site_url }}/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "{{ site_url }}/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ post.title | tojson }}
+        }
+      ]
     }
-  ]
-}
-</script>
+  </script>
 {% endblock %}
 
 {% block extra_css %}
-<style>
-  :root {
-    --blog-serif: 'Playfair Display', Georgia, serif;
-    --blog-sans:  'Source Sans 3', sans-serif;
-    --prose-max:  680px;
-  }
+  <style>
+    :root {
+      --blog-serif: 'Playfair Display', Georgia, serif;
+      --blog-sans:  'Source Sans 3', sans-serif;
+      --prose-max:  680px;
+    }
 
   /* ── Reading progress bar ─────────────────────────────────────────────── */
-  #read-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    height: 3px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--gold) 0%, var(--plum) 100%);
-    transition: width .1s linear;
-    pointer-events: none;
-  }
+    #read-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--plum) 100%);
+      transition: width .1s linear;
+      pointer-events: none;
+    }
 
   /* ── Hero ─────────────────────────────────────────────────────────────── */
-  .article-hero {
-    position: relative;
-    width: 100%;
-    min-height: 520px;
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--plum-dk) 0%, #0a0618 50%, var(--plum) 100%);
-    margin-bottom: 0;
-  }
-  .article-hero__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(.65) saturate(1.05);
-  }
-  .article-hero__gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      0deg,
-      rgba(0,0,0,.85) 0%,
-      rgba(0,0,0,.45) 40%,
-      rgba(0,0,0,.1) 100%
-    );
-  }
-  .article-hero__content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: var(--prose-max);
-    margin: 0 auto;
-    padding: 3rem 1.5rem 3.5rem;
-    color: white;
-  }
-  .article-hero__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-family: var(--blog-sans);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--gold-lt);
-    margin-bottom: 1.25rem;
-    opacity: .9;
-  }
-  .article-hero__eyebrow::before {
-    content: '';
-    display: block;
-    width: 2rem;
-    height: 1px;
-    background: var(--gold-lt);
-    opacity: .7;
-  }
-  .article-hero__title {
-    font-family: var(--blog-serif);
-    font-size: clamp(1.875rem, 4.5vw, 3.25rem);
-    font-weight: 700;
-    line-height: 1.15;
-    color: white;
-    margin: 0 0 1.5rem;
-    text-shadow: 0 2px 20px rgba(0,0,0,.4);
-  }
-  .article-hero__excerpt {
-    font-family: var(--blog-sans);
-    font-size: 1.0625rem;
-    line-height: 1.65;
-    color: rgba(255,255,255,.75);
-    margin: 0;
-    font-style: italic;
-  }
+    .article-hero {
+      position: relative;
+      width: 100%;
+      min-height: 520px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--plum-dk) 0%, #0a0618 50%, var(--plum) 100%);
+      margin-bottom: 0;
+    }
+    .article-hero__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(.65) saturate(1.05);
+    }
+    .article-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        0deg,
+        rgba(0,0,0,.85) 0%,
+        rgba(0,0,0,.45) 40%,
+        rgba(0,0,0,.1) 100%
+      );
+    }
+    .article-hero__content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: var(--prose-max);
+      margin: 0 auto;
+      padding: 3rem 1.5rem 3.5rem;
+      color: white;
+    }
+    .article-hero__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--blog-sans);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      margin-bottom: 1.25rem;
+      opacity: .9;
+    }
+    .article-hero__eyebrow::before {
+      content: '';
+      display: block;
+      width: 2rem;
+      height: 1px;
+      background: var(--gold-lt);
+      opacity: .7;
+    }
+    .article-hero__title {
+      font-family: var(--blog-serif);
+      font-size: clamp(1.875rem, 4.5vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: white;
+      margin: 0 0 1.5rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
+    .article-hero__excerpt {
+      font-family: var(--blog-sans);
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,.75);
+      margin: 0;
+      font-style: italic;
+    }
 
   /* ── Breadcrumb + back nav ─────────────────────────────────────────────── */
-  .article-nav {
-    max-width: var(--prose-max);
-    margin: 2.5rem auto 0;
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .article-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--blog-sans);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color .2s, gap .2s;
-  }
-  .article-back::before { content: '←'; transition: transform .2s; }
-  .article-back:hover { color: var(--plum); gap: 0.65rem; }
-  .article-back:hover::before { transform: translateX(-3px); }
-  .article-meta-pill {
-    font-family: var(--blog-sans);
-    font-size: 0.75rem;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .article-meta-pill__sep { color: var(--border); }
+    .article-nav {
+      max-width: var(--prose-max);
+      margin: 2.5rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .article-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--blog-sans);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s, gap .2s;
+    }
+    .article-back::before { content: '←'; transition: transform .2s; }
+    .article-back:hover { color: var(--plum); gap: 0.65rem; }
+    .article-back:hover::before { transform: translateX(-3px); }
+    .article-meta-pill {
+      font-family: var(--blog-sans);
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .article-meta-pill__sep { color: var(--border); }
 
   /* ── Article prose ─────────────────────────────────────────────────────── */
-  .article-body {
-    max-width: var(--prose-max);
-    margin: 3rem auto 5rem;
-    padding: 0 1.5rem;
-  }
+    .article-body {
+      max-width: var(--prose-max);
+      margin: 3rem auto 5rem;
+      padding: 0 1.5rem;
+    }
 
   /* Ornamental opener */
-  .article-body::before {
-    content: '✦';
-    display: block;
-    text-align: center;
-    font-size: 1.25rem;
-    color: var(--gold);
-    opacity: .6;
-    margin-bottom: 2.5rem;
-    letter-spacing: .3em;
-  }
+    .article-body::before {
+      content: '✦';
+      display: block;
+      text-align: center;
+      font-size: 1.25rem;
+      color: var(--gold);
+      opacity: .6;
+      margin-bottom: 2.5rem;
+      letter-spacing: .3em;
+    }
 
-  .article-prose {
-    font-family: var(--blog-sans);
-    font-size: 1.0625rem;
-    line-height: 1.85;
-    color: var(--text);
-  }
+    .article-prose {
+      font-family: var(--blog-sans);
+      font-size: 1.0625rem;
+      line-height: 1.85;
+      color: var(--text);
+    }
 
   /* Drop cap on first paragraph */
-  .article-prose > p:first-child::first-letter {
-    font-family: var(--blog-serif);
-    font-size: 4.25rem;
-    font-weight: 700;
-    line-height: .78;
-    float: left;
-    margin: .08em .14em 0 0;
-    color: var(--plum);
-    padding: 0.05em 0;
-  }
+    .article-prose > p:first-child::first-letter {
+      font-family: var(--blog-serif);
+      font-size: 4.25rem;
+      font-weight: 700;
+      line-height: .78;
+      float: left;
+      margin: .08em .14em 0 0;
+      color: var(--plum);
+      padding: 0.05em 0;
+    }
 
   /* Headings */
-  .article-prose h1,
-  .article-prose h2,
-  .article-prose h3,
-  .article-prose h4 {
-    font-family: var(--blog-serif);
-    color: var(--text);
-    line-height: 1.25;
-    margin-top: 2.5rem;
-    margin-bottom: .75rem;
-  }
-  .article-prose h2 { font-size: 1.75rem; }
-  .article-prose h3 { font-size: 1.375rem; }
-  .article-prose h4 { font-size: 1.125rem; }
+    .article-prose h1,
+    .article-prose h2,
+    .article-prose h3,
+    .article-prose h4 {
+      font-family: var(--blog-serif);
+      color: var(--text);
+      line-height: 1.25;
+      margin-top: 2.5rem;
+      margin-bottom: .75rem;
+    }
+    .article-prose h2 { font-size: 1.75rem; }
+    .article-prose h3 { font-size: 1.375rem; }
+    .article-prose h4 { font-size: 1.125rem; }
 
   /* Paragraphs */
-  .article-prose p { margin: 0 0 1.5rem; }
-  .article-prose p:last-child { margin-bottom: 0; }
+    .article-prose p { margin: 0 0 1.5rem; }
+    .article-prose p:last-child { margin-bottom: 0; }
 
   /* Links */
-  .article-prose a {
-    color: var(--plum);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-    transition: color .2s;
-  }
-  .article-prose a:hover { color: var(--rose); }
+    .article-prose a {
+      color: var(--plum);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      transition: color .2s;
+    }
+    .article-prose a:hover { color: var(--rose); }
 
   /* Blockquote / pull-quote */
-  .article-prose blockquote {
-    margin: 2.5rem 0;
-    padding: 1.5rem 2rem;
-    border-left: 3px solid var(--gold);
-    background: var(--sand);
-    border-radius: 0 8px 8px 0;
-    font-family: var(--blog-serif);
-    font-size: 1.1875rem;
-    font-style: italic;
-    line-height: 1.6;
-    color: var(--text);
-  }
-  .article-prose blockquote p { margin: 0; }
+    .article-prose blockquote {
+      margin: 2.5rem 0;
+      padding: 1.5rem 2rem;
+      border-left: 3px solid var(--gold);
+      background: var(--sand);
+      border-radius: 0 8px 8px 0;
+      font-family: var(--blog-serif);
+      font-size: 1.1875rem;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .article-prose blockquote p { margin: 0; }
 
   /* Horizontal rule */
-  .article-prose hr {
-    border: none;
-    text-align: center;
-    margin: 3rem 0;
-    color: var(--gold);
-    opacity: .5;
-    letter-spacing: .5em;
-  }
-  .article-prose hr::before { content: '✦ ✦ ✦'; }
+    .article-prose hr {
+      border: none;
+      text-align: center;
+      margin: 3rem 0;
+      color: var(--gold);
+      opacity: .5;
+      letter-spacing: .5em;
+    }
+    .article-prose hr::before { content: '✦ ✦ ✦'; }
 
   /* Lists */
-  .article-prose ul,
-  .article-prose ol {
-    padding-left: 1.5rem;
-    margin: 0 0 1.5rem;
-  }
-  .article-prose li { margin-bottom: .5rem; }
-  .article-prose ul li::marker { color: var(--gold); }
+    .article-prose ul,
+    .article-prose ol {
+      padding-left: 1.5rem;
+      margin: 0 0 1.5rem;
+    }
+    .article-prose li { margin-bottom: .5rem; }
+    .article-prose ul li::marker { color: var(--gold); }
 
   /* Images */
-  .article-prose img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin: 1.5rem auto;
-    display: block;
-    box-shadow: 0 4px 24px rgba(0,0,0,.12);
-  }
+    .article-prose img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 24px rgba(0,0,0,.12);
+    }
 
   /* Code */
-  .article-prose code {
-    font-family: 'Fira Code', 'Courier New', monospace;
-    font-size: .875em;
-    background: var(--lavender);
-    color: var(--rose);
-    padding: .15em .4em;
-    border-radius: 3px;
-  }
-  .article-prose pre {
-    background: var(--sand);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.25rem 1.5rem;
-    overflow-x: auto;
-    margin: 0 0 1.5rem;
-  }
-  .article-prose pre code {
-    background: none;
-    color: var(--text);
-    padding: 0;
-  }
+    .article-prose code {
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: .875em;
+      background: var(--lavender);
+      color: var(--rose);
+      padding: .15em .4em;
+      border-radius: 3px;
+    }
+    .article-prose pre {
+      background: var(--sand);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      margin: 0 0 1.5rem;
+    }
+    .article-prose pre code {
+      background: none;
+      color: var(--text);
+      padding: 0;
+    }
 
   /* ── Article footer ────────────────────────────────────────────────────── */
-  .article-footer {
-    max-width: var(--prose-max);
-    margin: 4rem auto 5rem;
-    padding: 0 1.5rem;
-    border-top: 1px solid var(--border);
-    padding-top: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .article-footer__share {
-    font-family: var(--blog-sans);
-    font-size: 0.8125rem;
-    color: var(--muted);
-  }
+    .article-footer {
+      max-width: var(--prose-max);
+      margin: 4rem auto 5rem;
+      padding: 0 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .article-footer__share {
+      font-family: var(--blog-sans);
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
 
   /* ── Responsive ───────────────────────────────────────────────────────── */
-  @media (max-width: 600px) {
-    .article-hero { min-height: 380px; }
-    .article-hero__title { font-size: 1.75rem; }
-    .article-prose > p:first-child::first-letter { font-size: 3rem; }
-    .article-body { margin-top: 2rem; }
-  }
-</style>
+    @media (max-width: 600px) {
+      .article-hero { min-height: 380px; }
+      .article-hero__title { font-size: 1.75rem; }
+      .article-prose > p:first-child::first-letter { font-size: 3rem; }
+      .article-body { margin-top: 2rem; }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
 {# ── Reading progress bar ─────────────────────────────────────────────── #}
-<div id="read-progress" role="progressbar" aria-hidden="true"></div>
+  <div id="read-progress" role="progressbar" aria-hidden="true"></div>
 
 {# ── Hero ─────────────────────────────────────────────────────────────── #}
-<div class="article-hero">
-  {% if post.featured_image_url %}
-    <img class="article-hero__image"
-         src="{{ post.featured_image_url }}"
-         alt="{{ post.title }}"
-         loading="eager" />
-  {% endif %}
-  <div class="article-hero__gradient"></div>
-  <div class="article-hero__content reveal">
-    <div class="article-hero__eyebrow">
-      {% if post.published_at %}
-        {{ post.published_at.strftime('%d %B %Y') }}
-        &nbsp;·&nbsp;
-      {% endif %}
-      {{ post.reading_time }} min de lectura
-    </div>
-    <h1 class="article-hero__title">{{ post.title }}</h1>
-    {% if post.excerpt %}
-      <p class="article-hero__excerpt">{{ post.excerpt }}</p>
+  <div class="article-hero">
+    {% if post.featured_image_url %}
+      <img class="article-hero__image"
+           src="{{ post.featured_image_url }}"
+           alt="{{ post.title }}"
+           loading="eager" />
     {% endif %}
+    <div class="article-hero__gradient"></div>
+    <div class="article-hero__content reveal">
+      <div class="article-hero__eyebrow">
+        {% if post.published_at %}
+          {{ post.published_at.strftime('%d %B %Y') }}
+          &nbsp;·&nbsp;
+        {% endif %}
+        {{ post.reading_time }} min de lectura
+      </div>
+      <h1 class="article-hero__title">{{ post.title }}</h1>
+      {% if post.excerpt %}
+        <p class="article-hero__excerpt">{{ post.excerpt }}</p>
+      {% endif %}
+    </div>
   </div>
-</div>
 
 {# ── Back nav ─────────────────────────────────────────────────────────── #}
-<div class="article-nav">
-  <a href="{{ url_for('blog.listing') }}" class="article-back">
-    Volver al Blog
-  </a>
-  <div class="article-meta-pill">
-    {% if post.published_at %}
-      <span>{{ post.published_at.strftime('%d %b %Y') }}</span>
-      <span class="article-meta-pill__sep">·</span>
-    {% endif %}
-    <span>{{ post.reading_time }} min de lectura</span>
+  <div class="article-nav">
+    <a href="{{ url_for('blog.listing') }}" class="article-back">
+      Volver al Blog
+    </a>
+    <div class="article-meta-pill">
+      {% if post.published_at %}
+        <span>{{ post.published_at.strftime('%d %b %Y') }}</span>
+        <span class="article-meta-pill__sep">·</span>
+      {% endif %}
+      <span>{{ post.reading_time }} min de lectura</span>
+    </div>
   </div>
-</div>
 
 {# ── Article body ─────────────────────────────────────────────────────── #}
-<div class="article-body reveal" style="animation-delay:.1s">
-  <div class="article-prose" id="article-content">
-    {{ post.content | safe }}
+  <div class="article-body reveal" style="animation-delay:.1s">
+    <div class="article-prose" id="article-content">
+      {{ post.content | safe }}
+    </div>
   </div>
-</div>
 
 {# ── Article footer ───────────────────────────────────────────────────── #}
-<div class="article-footer">
-  <a href="{{ url_for('blog.listing') }}" class="article-back">
-    Volver al Blog
-  </a>
-  <span class="article-footer__share">
-    ✦ &nbsp; Fonotarot — Tarot por Teléfono
-  </span>
-</div>
+  <div class="article-footer">
+    <a href="{{ url_for('blog.listing') }}" class="article-back">
+      Volver al Blog
+    </a>
+    <span class="article-footer__share">
+      ✦ &nbsp; Fonotarot — Tarot por Teléfono
+    </span>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  (function () {
+  <script>
+    (function () {
     /* ── Reading progress ─────────────────────────────────────────────── */
-    var bar = document.getElementById('read-progress');
-    var content = document.getElementById('article-content');
-    if (bar && content) {
-      function updateProgress() {
-        var rect = content.getBoundingClientRect();
-        var total = content.offsetHeight;
-        var scrolled = Math.max(0, -rect.top);
-        var pct = Math.min(100, (scrolled / total) * 100);
-        bar.style.width = pct + '%';
+      var bar = document.getElementById('read-progress');
+      var content = document.getElementById('article-content');
+      if (bar && content) {
+        function updateProgress() {
+          var rect = content.getBoundingClientRect();
+          var total = content.offsetHeight;
+          var scrolled = Math.max(0, -rect.top);
+          var pct = Math.min(100, (scrolled / total) * 100);
+          bar.style.width = pct + '%';
+        }
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
       }
-      window.addEventListener('scroll', updateProgress, { passive: true });
-      updateProgress();
-    }
 
     /* ── Scroll reveal ────────────────────────────────────────────────── */
-    var els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.08 });
-    els.forEach(function (el) { io.observe(el); });
-  })();
-</script>
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
 {% endblock %}

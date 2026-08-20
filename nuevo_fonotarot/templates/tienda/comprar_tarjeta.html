@@ -3,234 +3,234 @@
 {% block title %}{{ _("Comprar tarjeta de regalo - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
-<style>
-  .ck-submit-spinner {
-    display: none;
-    align-items: center;
-    margin-right: .5rem;
-  }
-
-  .ck-submit.is-loading .ck-submit-spinner {
-    display: inline-flex;
-  }
-
-  .ck-submit.is-loading .ck-submit-lock {
-    display: none;
-  }
-
-  .ck-submit-spinner i {
-    animation: ck-btn-spin .75s linear infinite;
-  }
-
-  @keyframes ck-btn-spin {
-    from {
-      transform: rotate(0deg);
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
+  <style>
+    .ck-submit-spinner {
+      display: none;
+      align-items: center;
+      margin-right: .5rem;
     }
 
-    to {
-      transform: rotate(360deg);
+    .ck-submit.is-loading .ck-submit-spinner {
+      display: inline-flex;
     }
-  }
-</style>
+
+    .ck-submit.is-loading .ck-submit-lock {
+      display: none;
+    }
+
+    .ck-submit-spinner i {
+      animation: ck-btn-spin .75s linear infinite;
+    }
+
+    @keyframes ck-btn-spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{ url_for('tarjetas.comprar', slug=card.slug) }}" id="checkout-form">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <form method="post" action="{{ url_for('tarjetas.comprar', slug=card.slug) }}" id="checkout-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <div class="ck-split">
-    <div class="ck-left">
-      <a href="/" class="ck-left-brand">🌞 {{ _("Fonotarot") }}</a>
+    <div class="ck-split">
+      <div class="ck-left">
+        <a href="/" class="ck-left-brand">🌞 {{ _("Fonotarot") }}</a>
 
-      <div class="ck-pack-icon"><i class="ti ti-gift-card"></i></div>
-      <div class="ck-pack-name">Tarjeta de Regalo {{ card.name }}</div>
-      {% if card.description %}
-      <div class="ck-pack-desc">{{ card.description }}</div>
-      {% endif %}
-
-      <div class="ck-left-item">
-        <span class="item-name"><i class="ti ti-ticket me-2"></i>{{ _("Tarjeta de regalo por %(minutes)s minutos", minutes=card.minutes) }}</span>
-        <span class="item-price">{{ card.price_display }}</span>
-      </div>
-
-      <div class="ck-left-total">
-        <span class="total-label">{{ _("Total a pagar") }}</span>
-        <span class="total-value" id="gift-total">{{ card.price_display }}</span>
-      </div>
-
-      <div class="ck-left-secure">
-        <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro · Datos encriptados · Acreditación inmediata") }}
-      </div>
-    </div>
-
-    <div class="ck-right">
-      <div class="ck-right-inner">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="ck-alerts">
-          {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible mb-2">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-          {% endfor %}
-        </div>
+        <div class="ck-pack-icon"><i class="ti ti-gift-card"></i></div>
+        <div class="ck-pack-name">Tarjeta de Regalo {{ card.name }}</div>
+        {% if card.description %}
+          <div class="ck-pack-desc">{{ card.description }}</div>
         {% endif %}
-        {% endwith %}
 
-        <h2>{{ _("Finalizar compra") }}</h2>
-        <p class="subtitle">{{ _("Completa tus datos para enviar tu tarjeta de regalo.") }}</p>
-
-        <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de contacto") }}</div>
-
-          {% if not current_user %}
-          <div class="ck-info anon">
-            <i class="ti ti-ghost me-1"></i>
-            <strong>{{ _("Flexibilidad.") }}</strong>
-            {{ _("Luego de confirmar el pago podrás enviar la tarjeta y/o descargar el PDF.") }}
-          </div>
-          {% else %}
-          <div class="ck-info known">
-            <i class="ti ti-user-check me-1"></i>
-            <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
-            {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
-          </div>
-          {% endif %}
-
-          <div class="row g-2">
-            <div class="col-md-12">
-              <label class="form-label" for="email">{{ _("Email del comprador *") }}</label>
-              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
-            </div>
-          </div>
-
-          <div class="row g-2 mt-1">
-            <div class="col-12">
-              <label class="form-label" for="recipient_email">{{ _("Email destinatario (opcional)") }}</label>
-              <input type="email" id="recipient_email" name="recipient_email" class="form-control" placeholder="{{ _('persona@correo.com') }}" />
-            </div>
-            <div class="col-12">
-              <label class="form-label" for="gift_message">{{ _("Mensaje (opcional)") }}</label>
-              <textarea id="gift_message" name="gift_message" class="form-control" rows="2"></textarea>
-            </div>
-          </div>
+        <div class="ck-left-item">
+          <span class="item-name"><i class="ti ti-ticket me-2"></i>{{ _("Tarjeta de regalo por %(minutes)s minutos", minutes=card.minutes) }}</span>
+          <span class="item-price">{{ card.price_display }}</span>
         </div>
 
-        <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-credit-card"></i> {{ _("Método de pago") }}</div>
-          <div class="ck-pay-pills">
-            <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="flow" id="pay_flow" required {% if preferred == 'flow' %}checked{% endif %} />
-              <div class="ck-pill {% if preferred == 'flow' %}selected{% endif %}" id="flow_box">
-                <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
-                <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
-                <div class="ck-pill-name">Flow</div>
-                <div class="ck-pill-desc">{{ _("Débito / Crédito") }}</div>
-              </div>
-            </label>
-
-            <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="khipu" id="pay_khipu" {% if preferred == 'khipu' %}checked{% endif %} />
-              <div class="ck-pill {% if preferred == 'khipu' %}selected{% endif %}" id="khipu_box">
-                <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
-                <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
-                <div class="ck-pill-name">Khipu</div>
-                <div class="ck-pill-desc">{{ _("Transferencia") }}</div>
-              </div>
-            </label>
-          </div>
+        <div class="ck-left-total">
+          <span class="total-label">{{ _("Total a pagar") }}</span>
+          <span class="total-value" id="gift-total">{{ card.price_display }}</span>
         </div>
 
-        <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
-          <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
-          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - %(price)s", price=card.price_display) }}</span>
-        </button>
-        <p class="ck-note">
-          <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}
-        </p>
+        <div class="ck-left-secure">
+          <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro · Datos encriptados · Acreditación inmediata") }}
+        </div>
+      </div>
+
+      <div class="ck-right">
+        <div class="ck-right-inner">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="ck-alerts">
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible mb-2">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          <h2>{{ _("Finalizar compra") }}</h2>
+          <p class="subtitle">{{ _("Completa tus datos para enviar tu tarjeta de regalo.") }}</p>
+
+          <div class="ck-form-section">
+            <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de contacto") }}</div>
+
+            {% if not current_user %}
+              <div class="ck-info anon">
+                <i class="ti ti-ghost me-1"></i>
+                <strong>{{ _("Flexibilidad.") }}</strong>
+                {{ _("Luego de confirmar el pago podrás enviar la tarjeta y/o descargar el PDF.") }}
+              </div>
+            {% else %}
+              <div class="ck-info known">
+                <i class="ti ti-user-check me-1"></i>
+                <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
+                {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
+              </div>
+            {% endif %}
+
+            <div class="row g-2">
+              <div class="col-md-12">
+                <label class="form-label" for="email">{{ _("Email del comprador *") }}</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
+              </div>
+            </div>
+
+            <div class="row g-2 mt-1">
+              <div class="col-12">
+                <label class="form-label" for="recipient_email">{{ _("Email destinatario (opcional)") }}</label>
+                <input type="email" id="recipient_email" name="recipient_email" class="form-control" placeholder="{{ _('persona@correo.com') }}" />
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="gift_message">{{ _("Mensaje (opcional)") }}</label>
+                <textarea id="gift_message" name="gift_message" class="form-control" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="ck-form-section">
+            <div class="section-label"><i class="ti ti-credit-card"></i> {{ _("Método de pago") }}</div>
+            <div class="ck-pay-pills">
+              <label class="ck-pill-label">
+                <input type="radio" name="payment_method" value="flow" id="pay_flow" required {% if preferred == 'flow' %}checked{% endif %} />
+                <div class="ck-pill {% if preferred == 'flow' %}selected{% endif %}" id="flow_box">
+                  <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
+                  <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
+                  <div class="ck-pill-name">Flow</div>
+                  <div class="ck-pill-desc">{{ _("Débito / Crédito") }}</div>
+                </div>
+              </label>
+
+              <label class="ck-pill-label">
+                <input type="radio" name="payment_method" value="khipu" id="pay_khipu" {% if preferred == 'khipu' %}checked{% endif %} />
+                <div class="ck-pill {% if preferred == 'khipu' %}selected{% endif %}" id="khipu_box">
+                  <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
+                  <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
+                  <div class="ck-pill-name">Khipu</div>
+                  <div class="ck-pill-desc">{{ _("Transferencia") }}</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
+            <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
+            <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - %(price)s", price=card.price_display) }}</span>
+          </button>
+          <p class="ck-note">
+            <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-</form>
+  </form>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  function formatClp(value) {
-    return '$' + value.toLocaleString('es-CL');
-  }
-
-  document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('.ck-pill').forEach(function(pill) {
-        pill.classList.remove('selected');
-      });
-      var box = this.value === 'flow'
-        ? document.getElementById('flow_box')
-        : document.getElementById('khipu_box');
-      if (box) box.classList.add('selected');
-    });
-  });
-
-  var quantityInput = document.getElementById('quantity');
-  var totalEl = document.getElementById('gift-total');
-  var submitLabel = document.getElementById('checkout-submit-label');
-  var unitPrice = {{ card.price }};
-  if (quantityInput && totalEl && submitLabel) {
-    function updateTotals() {
-      var qty = parseInt(quantityInput.value || '1', 10);
-      if (isNaN(qty)) qty = 1;
-      qty = Math.max(1, Math.min(qty, 20));
-      quantityInput.value = qty;
-      var total = unitPrice * qty;
-      var formatted = formatClp(total);
-      totalEl.textContent = formatted;
-      submitLabel.textContent = {{ _("Pagar ahora - %(price)s", price="__PRICE__") | tojson }}.replace('__PRICE__', formatted);
+  <script>
+    function formatClp(value) {
+      return '$' + value.toLocaleString('es-CL');
     }
-    quantityInput.addEventListener('input', updateTotals);
-    updateTotals();
-  }
 
-  var checkoutForm = document.getElementById('checkout-form');
-  var checkoutBtn = document.getElementById('checkout-submit-btn');
-  if (checkoutForm && checkoutBtn && submitLabel) {
-    checkoutForm.addEventListener('submit', function() {
-      if (typeof window.fonotarotTrackEvent === 'function') {
-        var qty = parseInt(quantityInput && quantityInput.value ? quantityInput.value : '1', 10);
-        if (isNaN(qty) || qty < 1) qty = 1;
-        var value = unitPrice * qty;
-        var items = [{
-          item_id: 'gift_card-{{ card.id }}',
-          item_name: {{ card.name | tojson }},
-          item_category: 'gift_card',
-          price: unitPrice,
-          quantity: qty
-        }];
-        window.fonotarotTrackEvent('begin_checkout', {
-          currency: 'CLP',
-          value: value,
-          items: items
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.ck-pill').forEach(function(pill) {
+          pill.classList.remove('selected');
         });
-        var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
-        if (payMethod) {
-          window.fonotarotTrackEvent('add_payment_info', {
+        var box = this.value === 'flow'
+          ? document.getElementById('flow_box')
+          : document.getElementById('khipu_box');
+        if (box) box.classList.add('selected');
+      });
+    });
+
+    var quantityInput = document.getElementById('quantity');
+    var totalEl = document.getElementById('gift-total');
+    var submitLabel = document.getElementById('checkout-submit-label');
+    var unitPrice = {{ card.price }};
+    if (quantityInput && totalEl && submitLabel) {
+      function updateTotals() {
+        var qty = parseInt(quantityInput.value || '1', 10);
+        if (isNaN(qty)) qty = 1;
+        qty = Math.max(1, Math.min(qty, 20));
+        quantityInput.value = qty;
+        var total = unitPrice * qty;
+        var formatted = formatClp(total);
+        totalEl.textContent = formatted;
+        submitLabel.textContent = {{ _("Pagar ahora - %(price)s", price="__PRICE__") | tojson }}.replace('__PRICE__', formatted);
+      }
+      quantityInput.addEventListener('input', updateTotals);
+      updateTotals();
+    }
+
+    var checkoutForm = document.getElementById('checkout-form');
+    var checkoutBtn = document.getElementById('checkout-submit-btn');
+    if (checkoutForm && checkoutBtn && submitLabel) {
+      checkoutForm.addEventListener('submit', function() {
+        if (typeof window.fonotarotTrackEvent === 'function') {
+          var qty = parseInt(quantityInput && quantityInput.value ? quantityInput.value : '1', 10);
+          if (isNaN(qty) || qty < 1) qty = 1;
+          var value = unitPrice * qty;
+          var items = [{
+            item_id: 'gift_card-{{ card.id }}',
+            item_name: {{ card.name | tojson }},
+            item_category: 'gift_card',
+            price: unitPrice,
+            quantity: qty
+          }];
+          window.fonotarotTrackEvent('begin_checkout', {
             currency: 'CLP',
             value: value,
-            payment_type: payMethod.value,
             items: items
           });
+          var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
+          if (payMethod) {
+            window.fonotarotTrackEvent('add_payment_info', {
+              currency: 'CLP',
+              value: value,
+              payment_type: payMethod.value,
+              items: items
+            });
+          }
         }
-      }
-      if (checkoutBtn.disabled) {
-        return false;
-      }
-      checkoutBtn.disabled = true;
-      checkoutBtn.classList.add('disabled', 'is-loading');
-      submitLabel.textContent = checkoutBtn.dataset.loadingText || '';
-      return true;
-    });
-  }
-</script>
+        if (checkoutBtn.disabled) {
+          return false;
+        }
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('disabled', 'is-loading');
+        submitLabel.textContent = checkoutBtn.dataset.loadingText || '';
+        return true;
+      });
+    }
+  </script>
 {% endblock %}

@@ -252,14 +252,14 @@
 
         {# Title #}
         {{ form.title(class="post-title-input", id="title-field",
-                      placeholder=_gettext('Post title…'),
-                      autocomplete="off") }}
+        placeholder=_gettext('Post title…'),
+        autocomplete="off") }}
 
         {# Slug row #}
         <div class="post-slug-row">
           <span>/blog/</span>
           {{ form.slug(class="post-slug-input", id="slug-field",
-                       placeholder=_gettext('auto-generated-slug')) }}
+          placeholder=_gettext('auto-generated-slug')) }}
           <span class="ms-auto fst-italic" id="slug-status"></span>
         </div>
         {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
@@ -329,7 +329,7 @@
               </span>
             </div>
             {{ form.excerpt(class="excerpt-textarea", id="excerpt-field",
-                            placeholder=_gettext('Brief description of the post…')) }}
+            placeholder=_gettext('Brief description of the post…')) }}
             <div class="excerpt-counter">
               <span id="excerpt-count">0</span> / 160
             </div>
@@ -477,9 +477,9 @@
             'fullscreen','insertdatetime','media','table','wordcount'],
           toolbar:
             'undo redo | formatselect | bold italic backcolor | ' +
-            'alignleft aligncenter alignright alignjustify | ' +
-            'bullist numlist outdent indent | removeformat | ' +
-            'preview code fullscreen',
+          'alignleft aligncenter alignright alignjustify | ' +
+          'bullist numlist outdent indent | removeformat | ' +
+          'preview code fullscreen',
           content_style: contentStyle(isDark),
         };
         if (isDark) { o.skin = 'oxide-dark'; o.content_css = 'dark'; }

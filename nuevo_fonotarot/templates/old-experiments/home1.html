@@ -451,18 +451,18 @@
     <section class="zodiac-strip" aria-hidden="true">
       <div class="zodiac-scroll">
         {% set signs = [
-          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
-          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
-          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis"),
-          ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
-          ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
-          ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis")
+        ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
+        ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
+        ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis"),
+        ("♈","Aries"),("♉","Tauro"),("♊","Géminis"),("♋","Cáncer"),
+        ("♌","Leo"),("♍","Virgo"),("♎","Libra"),("♏","Escorpio"),
+        ("♐","Sagitario"),("♑","Capricornio"),("♒","Acuario"),("♓","Piscis")
         ] %}
         {% for symbol, name in signs %}
-        <div class="zodiac-item">
-          <span class="zodiac-icon">{{ symbol }}</span>
-          <span class="zodiac-name">{{ name }}</span>
-        </div>
+          <div class="zodiac-item">
+            <span class="zodiac-icon">{{ symbol }}</span>
+            <span class="zodiac-name">{{ name }}</span>
+          </div>
         {% endfor %}
       </div>
     </section>
@@ -478,31 +478,31 @@
         </div>
         <div class="row g-4">
           {% for agent in agents %}
-          <div class="col-sm-6 col-lg-4">
-            <div class="agent-card h-100 d-flex flex-column">
-              <div class="agent-avatar">{{ agent.name[0] }}</div>
-              <div class="agent-name">{{ agent.name }}</div>
-              <div class="agent-spec">{{ agent.specialty }}</div>
-              <div class="mb-2">
+            <div class="col-sm-6 col-lg-4">
+              <div class="agent-card h-100 d-flex flex-column">
+                <div class="agent-avatar">{{ agent.name[0] }}</div>
+                <div class="agent-name">{{ agent.name }}</div>
+                <div class="agent-spec">{{ agent.specialty }}</div>
+                <div class="mb-2">
+                  {% if agent.status == 'online' %}
+                    <span class="badge-online">● Disponible</span>
+                  {% elif agent.status == 'busy' %}
+                    <span class="badge-busy">● En consulta</span>
+                  {% else %}
+                    <span class="badge-offline">● No disponible</span>
+                  {% endif %}
+                </div>
                 {% if agent.status == 'online' %}
-                <span class="badge-online">● Disponible</span>
+                  <a href="tel:600XXXXXXX" class="btn btn-call mt-auto">
+                    <i class="ti ti-phone me-1"></i>Llama Ahora
+                  </a>
                 {% elif agent.status == 'busy' %}
-                <span class="badge-busy">● En consulta</span>
-                {% else %}
-                <span class="badge-offline">● No disponible</span>
+                  <button class="btn btn-busy mt-auto" disabled>
+                    <i class="ti ti-clock me-1"></i>En consulta
+                  </button>
                 {% endif %}
               </div>
-              {% if agent.status == 'online' %}
-              <a href="tel:600XXXXXXX" class="btn btn-call mt-auto">
-                <i class="ti ti-phone me-1"></i>Llama Ahora
-              </a>
-              {% elif agent.status == 'busy' %}
-              <button class="btn btn-busy mt-auto" disabled>
-                <i class="ti ti-clock me-1"></i>En consulta
-              </button>
-              {% endif %}
             </div>
-          </div>
           {% endfor %}
         </div>
         <div class="text-center mt-5">
@@ -524,19 +524,19 @@
         </div>
         <div class="row g-4 justify-content-center">
           {% for plan in plans %}
-          <div class="col-sm-6 col-lg-3">
-            <div class="plan-card {% if plan.featured %}featured{% endif %}">
-              {% if plan.featured %}
-              <div><span class="plan-badge">Más Popular</span></div>
-              {% endif %}
-              <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-              <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
-              <p class="plan-desc">{{ plan.description }}</p>
-              <a href="#" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
-                <i class="ti ti-wallet me-1"></i>Carga Minutos
-              </a>
+            <div class="col-sm-6 col-lg-3">
+              <div class="plan-card {% if plan.featured %}featured{% endif %}">
+                {% if plan.featured %}
+                  <div><span class="plan-badge">Más Popular</span></div>
+                {% endif %}
+                <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+                <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                <p class="plan-desc">{{ plan.description }}</p>
+                <a href="#" class="btn btn-plan {% if plan.featured %}btn-plan-primary{% else %}btn-plan-outline{% endif %}">
+                  <i class="ti ti-wallet me-1"></i>Carga Minutos
+                </a>
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -553,14 +553,14 @@
         <div id="testiCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testimonial-slide">
-                <div class="stars-row">★★★★★</div>
-                <p class="t-text">"{{ t.text }}"</p>
-                <div class="t-author">{{ t.author }}</div>
-                <div class="t-city">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testimonial-slide">
+                  <div class="stars-row">★★★★★</div>
+                  <p class="t-text">"{{ t.text }}"</p>
+                  <div class="t-author">{{ t.author }}</div>
+                  <div class="t-city">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#testiCarousel" data-bs-slide="prev">
@@ -573,8 +573,8 @@
           </button>
           <div class="carousel-indicators" style="position:static; margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#testiCarousel" data-bs-slide-to="{{ loop.index0 }}"
-                    {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#testiCarousel" data-bs-slide-to="{{ loop.index0 }}"
+                      {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>

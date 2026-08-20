@@ -3,113 +3,113 @@
 {% block title %}{{ _("Planes de Suscripción - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
-<style>
-  .card-featured { border-color:var(--plum); box-shadow:0 0 28px rgba(107,63,160,.2); }
-  .price-tag { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:800; color:var(--plum); }
-  .price-tag small { font-size:1rem; color:var(--muted); }
-  .badge-rec { background:var(--rose); color:#fff; font-size:.72rem; }
-  .saving-badge { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.2); border-radius:8px; padding:.2rem .7rem; font-size:.78rem; }
-</style>
+  <style>
+    .card-featured { border-color:var(--plum); box-shadow:0 0 28px rgba(107,63,160,.2); }
+    .price-tag { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:800; color:var(--plum); }
+    .price-tag small { font-size:1rem; color:var(--muted); }
+    .badge-rec { background:var(--rose); color:#fff; font-size:.72rem; }
+    .saving-badge { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.2); border-radius:8px; padding:.2rem .7rem; font-size:.78rem; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible mb-4">
-              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endwith %}
-
-        <div class="text-center mb-5">
-          <h1 class="fw-bold">{{ _("Planes de Suscripción") }}</h1>
-          <p class="text-secondary fs-5 mt-2">{{ _("Minutos renovados cada mes — ahorra y prioriza tu bienestar") }}</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible mb-4">
+          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+      {% endfor %}
+    {% endwith %}
 
-        <div class="row g-4 justify-content-center align-items-stretch">
-          {% for plan in plans %}
-          <div class="col-12 col-md-4">
-            <div class="card h-100 p-4 {% if plan.is_featured %}card-featured{% endif %}">
-              {% if plan.is_featured %}
+    <div class="text-center mb-5">
+      <h1 class="fw-bold">{{ _("Planes de Suscripción") }}</h1>
+      <p class="text-secondary fs-5 mt-2">{{ _("Minutos renovados cada mes — ahorra y prioriza tu bienestar") }}</p>
+    </div>
+
+    <div class="row g-4 justify-content-center align-items-stretch">
+      {% for plan in plans %}
+        <div class="col-12 col-md-4">
+          <div class="card h-100 p-4 {% if plan.is_featured %}card-featured{% endif %}">
+            {% if plan.is_featured %}
               <div class="mb-2"><span class="badge badge-rec">⭐ {{ _("Recomendado") }}</span></div>
-              {% endif %}
-              <h3 class="fw-bold">{{ plan.name }}</h3>
-              <div class="price-tag my-2">{{ plan.price_display }}<small>/mes</small></div>
-              <p class="text-secondary mb-1">
-                <i class="ti ti-clock me-1 text-purple"></i>
-                <strong class="">{{ _("%(minutes)s minutos", minutes=plan.minutes_per_month) }}</strong> {{ _("por mes") }}
-              </p>
-              {% if plan.description %}
+            {% endif %}
+            <h3 class="fw-bold">{{ plan.name }}</h3>
+            <div class="price-tag my-2">{{ plan.price_display }}<small>/mes</small></div>
+            <p class="text-secondary mb-1">
+              <i class="ti ti-clock me-1 text-purple"></i>
+              <strong class="">{{ _("%(minutes)s minutos", minutes=plan.minutes_per_month) }}</strong> {{ _("por mes") }}
+            </p>
+            {% if plan.description %}
               <p class="text-secondary small">{{ plan.description }}</p>
-              {% endif %}
-              {% if plan.features_list %}
+            {% endif %}
+            {% if plan.features_list %}
               <ul class="list-unstyled mt-3">
                 {% for feat in plan.features_list %}
-                <li class="mb-1 small text-secondary"><i class="ti ti-check text-success me-1"></i>{{ feat }}</li>
+                  <li class="mb-1 small text-secondary"><i class="ti ti-check text-success me-1"></i>{{ feat }}</li>
                 {% endfor %}
               </ul>
-              {% endif %}
-              <div class="mt-auto pt-3">
-                {% if current_user.is_authenticated %}
+            {% endif %}
+            <div class="mt-auto pt-3">
+              {% if current_user.is_authenticated %}
                 <a href="{{ url_for('suscripciones.link_pago', plan_id=plan.id) }}"
                    class="btn btn-primary w-100">
-                   <i class="ti ti-link me-1"></i>{{ _("Suscribirme") }}
+                  <i class="ti ti-link me-1"></i>{{ _("Suscribirme") }}
                 </a>
-                {% else %}
+              {% else %}
                 <a href="#" class="btn btn-primary w-100 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}">
-                   <i class="ti ti-login me-1"></i>{{ _("Inicia sesión para suscribirte") }}
+                  <i class="ti ti-login me-1"></i>{{ _("Inicia sesión para suscribirte") }}
                 </a>
-                {% endif %}
-              </div>
+              {% endif %}
             </div>
           </div>
-          {% else %}
-          <div class="col-12 text-center text-secondary py-5">
-            <i class="ti ti-calendar-off" style="font-size:3rem"></i>
-            <p class="mt-2">{{ _("No hay planes disponibles por el momento.") }}</p>
-          </div>
-          {% endfor %}
         </div>
+      {% else %}
+        <div class="col-12 text-center text-secondary py-5">
+          <i class="ti ti-calendar-off" style="font-size:3rem"></i>
+          <p class="mt-2">{{ _("No hay planes disponibles por el momento.") }}</p>
+        </div>
+      {% endfor %}
+    </div>
 
         <!-- Comparison vs prepaid -->
-        <div class="card p-4 mt-5">
-          <h5 class="text-white mb-3">{{ _("¿Suscripción o minutos prepagados?") }}</h5>
-          <div class="table-responsive">
-            <table class="table table-sm mb-0">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-center">{{ _("Prepagado") }}</th>
-                  <th class="text-center">{{ _("Suscripción") }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{ _("Minutos nunca vencen") }}</td>
-                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
-                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
-                </tr>
-                <tr>
-                  <td>{{ _("Renovación automática") }}</td>
-                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
-                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
-                </tr>
-                <tr>
-                  <td>{{ _("Precio por minuto más bajo") }}</td>
-                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
-                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
-                </tr>
-                <tr>
-                  <td>{{ _("Sin compromiso") }}</td>
-                  <td class="text-center"><i class="ti ti-check text-success"></i></td>
-                  <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div class="card p-4 mt-5">
+      <h5 class="text-white mb-3">{{ _("¿Suscripción o minutos prepagados?") }}</h5>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="text-center">{{ _("Prepagado") }}</th>
+              <th class="text-center">{{ _("Suscripción") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ _("Minutos nunca vencen") }}</td>
+              <td class="text-center"><i class="ti ti-check text-success"></i></td>
+              <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+            </tr>
+            <tr>
+              <td>{{ _("Renovación automática") }}</td>
+              <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+              <td class="text-center"><i class="ti ti-check text-success"></i></td>
+            </tr>
+            <tr>
+              <td>{{ _("Precio por minuto más bajo") }}</td>
+              <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+              <td class="text-center"><i class="ti ti-check text-success"></i></td>
+            </tr>
+            <tr>
+              <td>{{ _("Sin compromiso") }}</td>
+              <td class="text-center"><i class="ti ti-check text-success"></i></td>
+              <td class="text-center"><i class="ti ti-minus text-secondary"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-</div>
+  </div>
 {% endblock %}

@@ -210,28 +210,28 @@
 
                                                                     <!-- Remaining stock -->
                                                                     {% if remaining <= 5 %}
-                                                                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#fff8e6; border:1px solid #f0d080; border-radius:8px; margin-bottom:24px;">
-                                                                        <tr>
-                                                                            <td style="padding:14px 18px;">
-                                                                                <p style="margin:0; font-family:Inter,-apple-system,Arial,sans-serif; font-size:14px; color:#7a5500;">
-                                                                                    ⚠️ <strong>Stock bajo:</strong> quedan <strong>{{ remaining }}</strong>
-                                                                                    {% if remaining == 1 %}promoción disponible{% else %}promociones disponibles{% endif %}.
-                                                                                    Recarga el stock desde el panel de administración
-                                                                                    (<em>SiteSettings → promo_free_minutes_remaining</em>).
-                                                                                </p>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
+                                                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#fff8e6; border:1px solid #f0d080; border-radius:8px; margin-bottom:24px;">
+                                                                            <tr>
+                                                                                <td style="padding:14px 18px;">
+                                                                                    <p style="margin:0; font-family:Inter,-apple-system,Arial,sans-serif; font-size:14px; color:#7a5500;">
+                                                                                        ⚠️ <strong>Stock bajo:</strong> quedan <strong>{{ remaining }}</strong>
+                                                                                        {% if remaining == 1 %}promoción disponible{% else %}promociones disponibles{% endif %}.
+                                                                                        Recarga el stock desde el panel de administración
+                                                                                        (<em>SiteSettings → promo_free_minutes_remaining</em>).
+                                                                                    </p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
                                                                     {% else %}
-                                                                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f0fdf4; border:1px solid #a7f3d0; border-radius:8px; margin-bottom:24px;">
-                                                                        <tr>
-                                                                            <td style="padding:14px 18px;">
-                                                                                <p style="margin:0; font-family:Inter,-apple-system,Arial,sans-serif; font-size:14px; color:#065f46;">
-                                                                                    ✅ Quedan <strong>{{ remaining }}</strong> promociones disponibles.
-                                                                                </p>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
+                                                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f0fdf4; border:1px solid #a7f3d0; border-radius:8px; margin-bottom:24px;">
+                                                                            <tr>
+                                                                                <td style="padding:14px 18px;">
+                                                                                    <p style="margin:0; font-family:Inter,-apple-system,Arial,sans-serif; font-size:14px; color:#065f46;">
+                                                                                        ✅ Quedan <strong>{{ remaining }}</strong> promociones disponibles.
+                                                                                    </p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
                                                                     {% endif %}
 
                                                                 </td>

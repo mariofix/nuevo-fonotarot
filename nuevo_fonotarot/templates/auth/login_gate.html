@@ -1,290 +1,290 @@
 {% extends "base.html" %}
 
 {% block extra_css %}
-<style>
+  <style>
   /* ── Gate wrapper: blurred content + fixed modal overlay ── */
-  .gate-wrap {
-    position: relative;
-    min-height: 70vh;
-    overflow: hidden;
-  }
+    .gate-wrap {
+      position: relative;
+      min-height: 70vh;
+      overflow: hidden;
+    }
 
   /* Everything inside the skeleton gets blurred + pointer-blocked */
-  .gate-skeleton {
-    filter: blur(7px) saturate(0.4);
-    pointer-events: none;
-    user-select: none;
-    opacity: 0.55;
-    padding: 3rem 0 5rem;
-  }
+    .gate-skeleton {
+      filter: blur(7px) saturate(0.4);
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.55;
+      padding: 3rem 0 5rem;
+    }
 
   /* The frosted overlay that sits between skeleton and modal */
-  .gate-backdrop {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      160deg,
-      rgba(250,247,243,.72) 0%,
-      rgba(232,224,240,.68) 60%,
-      rgba(245,230,232,.72) 100%
-    );
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-  }
+    .gate-backdrop {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(250,247,243,.72) 0%,
+        rgba(232,224,240,.68) 60%,
+        rgba(245,230,232,.72) 100%
+      );
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
 
   /* ── Modal card ── */
-  .gate-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 2.5rem 2rem;
-    box-shadow:
+    .gate-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow:
       0 32px 80px rgba(107,63,160,.22),
       0 8px 24px rgba(107,63,160,.12);
-    width: 100%;
-    max-width: 420px;
-    position: relative;
-    z-index: 11;
-    text-align: center;
-    border: 1px solid rgba(107,63,160,.12);
-  }
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      z-index: 11;
+      text-align: center;
+      border: 1px solid rgba(107,63,160,.12);
+    }
 
-  [data-theme="dark"] .gate-card {
-    background: var(--sand);
-    border-color: var(--border);
-    color: var(--text);
-  }
+    [data-theme="dark"] .gate-card {
+      background: var(--sand);
+      border-color: var(--border);
+      color: var(--text);
+    }
 
-  .gate-icon {
-    font-size: 3.5rem;
-    line-height: 1;
-    margin-bottom: .75rem;
-    display: block;
-  }
+    .gate-icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: .75rem;
+      display: block;
+    }
 
-  .gate-card h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.75rem;
-    color: var(--plum-dk);
-    margin: 0 0 .4rem;
-  }
+    .gate-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      color: var(--plum-dk);
+      margin: 0 0 .4rem;
+    }
 
-  [data-theme="dark"] .gate-card h2 { color: var(--plum); }
+    [data-theme="dark"] .gate-card h2 { color: var(--plum); }
 
-  .gate-card .gate-sub {
-    color: var(--muted);
-    font-size: .95rem;
-    margin-bottom: 1.75rem;
-    line-height: 1.5;
-  }
+    .gate-card .gate-sub {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 1.75rem;
+      line-height: 1.5;
+    }
 
-  .btn-gate-login {
-    display: block;
-    width: 100%;
-    background: var(--plum);
-    color: #fff !important;
-    text-decoration: none;
-    border: none;
-    border-radius: 30px;
-    padding: .75rem 1.3rem;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .2s, box-shadow .2s;
-    margin-bottom: .75rem;
-  }
-  .btn-gate-login:hover {
-    background: var(--plum-dk);
-    box-shadow: 0 6px 20px rgba(107,63,160,.35);
-  }
+    .btn-gate-login {
+      display: block;
+      width: 100%;
+      background: var(--plum);
+      color: #fff !important;
+      text-decoration: none;
+      border: none;
+      border-radius: 30px;
+      padding: .75rem 1.3rem;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+      margin-bottom: .75rem;
+    }
+    .btn-gate-login:hover {
+      background: var(--plum-dk);
+      box-shadow: 0 6px 20px rgba(107,63,160,.35);
+    }
 
-  .gate-register-link {
-    font-size: .88rem;
-    color: var(--muted);
-  }
-  .gate-register-link a {
-    color: var(--plum);
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .gate-register-link a:hover { text-decoration: underline; }
+    .gate-register-link {
+      font-size: .88rem;
+      color: var(--muted);
+    }
+    .gate-register-link a {
+      color: var(--plum);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .gate-register-link a:hover { text-decoration: underline; }
 
   /* ── Inline form ── */
-  .gate-form-group {
-    text-align: left;
-    margin-bottom: 1rem;
-  }
-  .gate-form-group label {
-    display: block;
-    font-size: .82rem;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: .3rem;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-  }
-  .gate-form-group input {
-    width: 100%;
-    border: 1.5px solid rgba(107,63,160,.2);
-    border-radius: 10px;
-    padding: .6rem .9rem;
-    font-size: .97rem;
-    outline: none;
-    background: #faf8fc;
-    color: var(--text, #222);
-    transition: border-color .2s, box-shadow .2s;
-    box-sizing: border-box;
-  }
-  .gate-form-group input:focus {
-    border-color: var(--plum);
-    box-shadow: 0 0 0 3px rgba(107,63,160,.12);
-  }
-  [data-theme="dark"] .gate-form-group input {
-    background: rgba(255,255,255,.07);
-    color: var(--text);
-    border-color: var(--border);
-  }
-  .gate-error {
-    color: #c0392b;
-    font-size: .85rem;
-    margin-bottom: .75rem;
-    display: none;
-  }
-  .gate-error.visible { display: block; }
+    .gate-form-group {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .gate-form-group label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: .3rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .gate-form-group input {
+      width: 100%;
+      border: 1.5px solid rgba(107,63,160,.2);
+      border-radius: 10px;
+      padding: .6rem .9rem;
+      font-size: .97rem;
+      outline: none;
+      background: #faf8fc;
+      color: var(--text, #222);
+      transition: border-color .2s, box-shadow .2s;
+      box-sizing: border-box;
+    }
+    .gate-form-group input:focus {
+      border-color: var(--plum);
+      box-shadow: 0 0 0 3px rgba(107,63,160,.12);
+    }
+    [data-theme="dark"] .gate-form-group input {
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .gate-error {
+      color: #c0392b;
+      font-size: .85rem;
+      margin-bottom: .75rem;
+      display: none;
+    }
+    .gate-error.visible { display: block; }
 
   /* ── Skeleton placeholders ── */
-  .skel {
-    background: linear-gradient(90deg, var(--lavender) 25%, var(--blush) 50%, var(--lavender) 75%);
-    background-size: 200% 100%;
-    animation: skel-shimmer 1.6s infinite;
-    border-radius: 8px;
-  }
-  @keyframes skel-shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
+    .skel {
+      background: linear-gradient(90deg, var(--lavender) 25%, var(--blush) 50%, var(--lavender) 75%);
+      background-size: 200% 100%;
+      animation: skel-shimmer 1.6s infinite;
+      border-radius: 8px;
+    }
+    @keyframes skel-shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
 
-  .skel-h1   { height: 2.4rem; width: 55%; margin-bottom: 1rem; }
-  .skel-sub  { height: 1rem;   width: 35%; margin-bottom: 2rem; }
-  .skel-card { height: 160px;  width: 100%; margin-bottom: 1.25rem; border-radius: 12px; }
-  .skel-btn  { height: 2.75rem; width: 40%; border-radius: 30px; }
-  .skel-label{ height: .75rem; width: 25%; margin-bottom: .4rem; }
-  .skel-input{ height: 2.4rem; width: 100%; margin-bottom: 1.1rem; border-radius: 10px; }
-</style>
+    .skel-h1   { height: 2.4rem; width: 55%; margin-bottom: 1rem; }
+    .skel-sub  { height: 1rem;   width: 35%; margin-bottom: 2rem; }
+    .skel-card { height: 160px;  width: 100%; margin-bottom: 1.25rem; border-radius: 12px; }
+    .skel-btn  { height: 2.75rem; width: 40%; border-radius: 30px; }
+    .skel-label{ height: .75rem; width: 25%; margin-bottom: .4rem; }
+    .skel-input{ height: 2.4rem; width: 100%; margin-bottom: 1.1rem; border-radius: 10px; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="gate-wrap">
+  <div class="gate-wrap">
 
   {# ── Blurred skeleton that mimics a profile / content page ── #}
-  <div class="gate-skeleton">
-    <div class="container py-4" style="max-width:720px">
-      <div class="skel skel-h1"></div>
-      <div class="skel skel-sub"></div>
+    <div class="gate-skeleton">
+      <div class="container py-4" style="max-width:720px">
+        <div class="skel skel-h1"></div>
+        <div class="skel skel-sub"></div>
 
-      <div class="skel skel-card"></div>
+        <div class="skel skel-card"></div>
 
-      <div class="skel skel-label"></div>
-      <div class="skel skel-input"></div>
-      <div class="skel skel-label"></div>
-      <div class="skel skel-input"></div>
-      <div class="skel skel-label"></div>
-      <div class="skel skel-input"></div>
+        <div class="skel skel-label"></div>
+        <div class="skel skel-input"></div>
+        <div class="skel skel-label"></div>
+        <div class="skel skel-input"></div>
+        <div class="skel skel-label"></div>
+        <div class="skel skel-input"></div>
 
-      <div class="skel skel-btn mt-2"></div>
+        <div class="skel skel-btn mt-2"></div>
+      </div>
     </div>
-  </div>
 
   {# ── Frosted backdrop + modal card ── #}
-  <div class="gate-backdrop">
-    <div class="gate-card">
-      <span class="gate-icon">🔮</span>
-      <h2>{{ _("Contenido privado") }}</h2>
-      <p class="gate-sub">{{ _("Ingresa tus credenciales para continuar.") }}</p>
+    <div class="gate-backdrop">
+      <div class="gate-card">
+        <span class="gate-icon">🔮</span>
+        <h2>{{ _("Contenido privado") }}</h2>
+        <p class="gate-sub">{{ _("Ingresa tus credenciales para continuar.") }}</p>
 
-      <form id="gate-login-form" novalidate>
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="gate-form-group">
-          <label for="gate-email">{{ _("Correo electrónico") }}</label>
-          <input type="email" id="gate-email" name="email" autocomplete="email" required placeholder="{{ _('tu@correo.com') }}">
-        </div>
-        <div class="gate-form-group">
-          <label for="gate-password">{{ _("Contraseña") }}</label>
-          <input type="password" id="gate-password" name="password" autocomplete="current-password" required placeholder="••••••••">
-        </div>
-        <p class="gate-error" id="gate-error-msg">{{ _("Correo o contraseña incorrectos.") }}</p>
-        <button type="submit" class="btn-gate-login">
-          <i class="ti ti-login me-1" aria-hidden="true"></i><span id="gate-btn-label">{{ _("Iniciar sesión") }}</span>
-        </button>
-      </form>
+        <form id="gate-login-form" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="gate-form-group">
+            <label for="gate-email">{{ _("Correo electrónico") }}</label>
+            <input type="email" id="gate-email" name="email" autocomplete="email" required placeholder="{{ _('tu@correo.com') }}">
+          </div>
+          <div class="gate-form-group">
+            <label for="gate-password">{{ _("Contraseña") }}</label>
+            <input type="password" id="gate-password" name="password" autocomplete="current-password" required placeholder="••••••••">
+          </div>
+          <p class="gate-error" id="gate-error-msg">{{ _("Correo o contraseña incorrectos.") }}</p>
+          <button type="submit" class="btn-gate-login">
+            <i class="ti ti-login me-1" aria-hidden="true"></i><span id="gate-btn-label">{{ _("Iniciar sesión") }}</span>
+          </button>
+        </form>
 
+      </div>
     </div>
-  </div>
 
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-(function () {
-  const form     = document.getElementById('gate-login-form');
-  const errMsg   = document.getElementById('gate-error-msg');
-  const btnLabel = document.getElementById('gate-btn-label');
-  const nextUrl  = {{ next_url | tojson }};
-  const i18n = {
-    verifying: {{ _("Verificando…") | tojson }},
-    invalidCreds: {{ _("Correo o contraseña incorrectos.") | tojson }},
-    login: {{ _("Iniciar sesión") | tojson }},
-    networkError: {{ _("Error de red, intenta de nuevo.") | tojson }},
-  };
+  <script>
+    (function () {
+      const form     = document.getElementById('gate-login-form');
+      const errMsg   = document.getElementById('gate-error-msg');
+      const btnLabel = document.getElementById('gate-btn-label');
+      const nextUrl  = {{ next_url | tojson }};
+      const i18n = {
+        verifying: {{ _("Verificando…") | tojson }},
+        invalidCreds: {{ _("Correo o contraseña incorrectos.") | tojson }},
+        login: {{ _("Iniciar sesión") | tojson }},
+        networkError: {{ _("Error de red, intenta de nuevo.") | tojson }},
+      };
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    errMsg.classList.remove('visible');
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        errMsg.classList.remove('visible');
 
-    const btn = form.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btnLabel.textContent = i18n.verifying;
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btnLabel.textContent = i18n.verifying;
 
-    const payload = {
-      email:    document.getElementById('gate-email').value,
-      password: document.getElementById('gate-password').value,
-    };
+        const payload = {
+          email:    document.getElementById('gate-email').value,
+          password: document.getElementById('gate-password').value,
+        };
 
-    try {
-      const resp = await fetch('{{ url_for_security("login") }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRFToken': form.querySelector('[name="csrf_token"]').value,
-        },
-        body: JSON.stringify(payload),
+        try {
+          const resp = await fetch('{{ url_for_security("login") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRFToken': form.querySelector('[name="csrf_token"]').value,
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json();
+
+          if (resp.ok && data?.response?.user) {
+            window.location.href = nextUrl || '/';
+          } else {
+            const errors = data?.response?.errors;
+            const first  = errors ? Object.values(errors).flat()[0] : null;
+            errMsg.textContent = first || i18n.invalidCreds;
+            errMsg.classList.add('visible');
+            btn.disabled = false;
+            btnLabel.textContent = i18n.login;
+          }
+        } catch (_) {
+          errMsg.textContent = i18n.networkError;
+          errMsg.classList.add('visible');
+          btn.disabled = false;
+          btnLabel.textContent = i18n.login;
+        }
       });
-
-      const data = await resp.json();
-
-      if (resp.ok && data?.response?.user) {
-        window.location.href = nextUrl || '/';
-      } else {
-        const errors = data?.response?.errors;
-        const first  = errors ? Object.values(errors).flat()[0] : null;
-        errMsg.textContent = first || i18n.invalidCreds;
-        errMsg.classList.add('visible');
-        btn.disabled = false;
-        btnLabel.textContent = i18n.login;
-      }
-    } catch (_) {
-      errMsg.textContent = i18n.networkError;
-      errMsg.classList.add('visible');
-      btn.disabled = false;
-      btnLabel.textContent = i18n.login;
-    }
-  });
-})();
-</script>
+    })();
+  </script>
 {% endblock %}

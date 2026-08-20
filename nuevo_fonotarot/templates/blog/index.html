@@ -8,302 +8,302 @@
 {% block keywords %}blog tarot, artículos tarot, espiritualidad, tarot Chile, consejos tarot{% endblock %}
 
 {% block extra_head %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Blog — Fonotarot",
-  "description": "Artículos sobre tarot, espiritualidad y bienestar de los tarotistas de Fonotarot.",
-  "url": "{{ site_url }}{{ request.path }}",
-  "isPartOf": {
-    "@type": "WebSite",
-    "@id": "{{ site_url }}/#website"
-  },
-  "breadcrumb": {
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Inicio",
-        "item": "{{ site_url }}/"
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Blog — Fonotarot",
+      "description": "Artículos sobre tarot, espiritualidad y bienestar de los tarotistas de Fonotarot.",
+      "url": "{{ site_url }}{{ request.path }}",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "{{ site_url }}/#website"
       },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Blog"
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "{{ site_url }}/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog"
+          }
+        ]
       }
-    ]
-  }
-}
-</script>
+    }
+  </script>
 {% endblock %}
 
 {% block extra_css %}
-<style>
-  :root {
-    --blog-serif: 'Playfair Display', Georgia, serif;
-    --blog-sans:  'Source Sans 3', sans-serif;
-  }
+  <style>
+    :root {
+      --blog-serif: 'Playfair Display', Georgia, serif;
+      --blog-sans:  'Source Sans 3', sans-serif;
+    }
 
   /* ── Masthead ──────────────────────────────────────────────────── */
-  .A-masthead {
-    text-align: center;
-    padding: 3rem 1rem 2rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 3rem;
-    position: relative;
-  }
-  .A-masthead__rule {
-    position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-    width: 60px; height: 3px; background: var(--gold); border-radius: 2px;
-  }
-  .A-eyebrow {
-    font-family: var(--blog-sans);
-    font-size: .6875rem; font-weight: 700; letter-spacing: .28em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: .75rem;
-  }
-  .A-title {
-    font-family: var(--blog-serif);
-    font-size: clamp(2.75rem, 5vw, 4rem);
-    font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -.02em;
-  }
+    .A-masthead {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    .A-masthead__rule {
+      position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 3px; background: var(--gold); border-radius: 2px;
+    }
+    .A-eyebrow {
+      font-family: var(--blog-sans);
+      font-size: .6875rem; font-weight: 700; letter-spacing: .28em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .75rem;
+    }
+    .A-title {
+      font-family: var(--blog-serif);
+      font-size: clamp(2.75rem, 5vw, 4rem);
+      font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -.02em;
+    }
 
   /* ── Hero ──────────────────────────────────────────────────────── */
-  .A-hero {
-    display: grid; grid-template-columns: 1fr 1fr;
-    border-radius: 12px; overflow: hidden;
-    border: 1px solid var(--border);
-    margin-bottom: 3.5rem;
-    transition: box-shadow .3s;
-    color: inherit; text-decoration: none;
-  }
-  .A-hero:hover { box-shadow: 0 12px 48px rgba(0,0,0,.14); color: inherit; text-decoration: none; }
-  .A-hero__img {
-    aspect-ratio: 4/3;
-    background: linear-gradient(135deg, #2a1545 0%, #6b3fa0 50%, #c9a84c 100%);
-    position: relative; overflow: hidden;
-  }
-  .A-hero__img img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: brightness(.8) saturate(1.1);
-    transition: transform .7s ease;
-  }
-  .A-hero:hover .A-hero__img img { transform: scale(1.04); }
-  .A-hero__img-num {
-    position: absolute; bottom: 1.25rem; left: 1.5rem;
-    font-family: var(--blog-serif); font-size: 5rem;
-    color: rgba(255,255,255,.15); line-height: 1; user-select: none;
-  }
-  .A-hero__body {
-    background: var(--sand); padding: 2.75rem 2.5rem;
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .A-hero__pill {
-    display: inline-flex; align-items: center; gap: .35rem;
-    font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
-    letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
-    border: 1px solid rgba(201,168,76,.35); border-radius: 20px;
-    padding: .2rem .7rem; margin-bottom: 1.25rem; width: fit-content;
-  }
-  .A-hero__headline {
-    font-family: var(--blog-serif);
-    font-size: clamp(1.625rem, 2.2vw, 2.25rem);
-    font-weight: 700; line-height: 1.2; color: var(--text);
-    margin-bottom: 1rem; letter-spacing: -.01em; transition: color .25s;
-  }
-  .A-hero:hover .A-hero__headline { color: var(--plum); }
-  .A-hero__excerpt {
-    font-family: var(--blog-sans); font-size: .9375rem; line-height: 1.7;
-    color: var(--muted); margin-bottom: 2rem;
-    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-  }
-  .A-hero__foot {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 1.25rem; border-top: 1px solid var(--border);
-  }
-  .A-hero__date { font-family: var(--blog-sans); font-size: .75rem; color: var(--muted); }
-  .A-hero__cta {
-    font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
-    letter-spacing: .12em; text-transform: uppercase; color: var(--plum);
-    display: flex; align-items: center; gap: .4rem; transition: gap .2s;
-  }
-  .A-hero__cta::after { content: '→'; }
-  .A-hero:hover .A-hero__cta { gap: .65rem; }
+    .A-hero {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 3.5rem;
+      transition: box-shadow .3s;
+      color: inherit; text-decoration: none;
+    }
+    .A-hero:hover { box-shadow: 0 12px 48px rgba(0,0,0,.14); color: inherit; text-decoration: none; }
+    .A-hero__img {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #2a1545 0%, #6b3fa0 50%, #c9a84c 100%);
+      position: relative; overflow: hidden;
+    }
+    .A-hero__img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(.8) saturate(1.1);
+      transition: transform .7s ease;
+    }
+    .A-hero:hover .A-hero__img img { transform: scale(1.04); }
+    .A-hero__img-num {
+      position: absolute; bottom: 1.25rem; left: 1.5rem;
+      font-family: var(--blog-serif); font-size: 5rem;
+      color: rgba(255,255,255,.15); line-height: 1; user-select: none;
+    }
+    .A-hero__body {
+      background: var(--sand); padding: 2.75rem 2.5rem;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .A-hero__pill {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+      border: 1px solid rgba(201,168,76,.35); border-radius: 20px;
+      padding: .2rem .7rem; margin-bottom: 1.25rem; width: fit-content;
+    }
+    .A-hero__headline {
+      font-family: var(--blog-serif);
+      font-size: clamp(1.625rem, 2.2vw, 2.25rem);
+      font-weight: 700; line-height: 1.2; color: var(--text);
+      margin-bottom: 1rem; letter-spacing: -.01em; transition: color .25s;
+    }
+    .A-hero:hover .A-hero__headline { color: var(--plum); }
+    .A-hero__excerpt {
+      font-family: var(--blog-sans); font-size: .9375rem; line-height: 1.7;
+      color: var(--muted); margin-bottom: 2rem;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .A-hero__foot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 1.25rem; border-top: 1px solid var(--border);
+    }
+    .A-hero__date { font-family: var(--blog-sans); font-size: .75rem; color: var(--muted); }
+    .A-hero__cta {
+      font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--plum);
+      display: flex; align-items: center; gap: .4rem; transition: gap .2s;
+    }
+    .A-hero__cta::after { content: '→'; }
+    .A-hero:hover .A-hero__cta { gap: .65rem; }
 
   /* ── List head ─────────────────────────────────────────────────── */
-  .A-list-head {
-    display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
-  }
-  .A-list-head__label {
-    font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
-    letter-spacing: .2em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
-  }
-  .A-list-head__rule { flex: 1; height: 1px; background: var(--border); }
+    .A-list-head {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .A-list-head__label {
+      font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+    }
+    .A-list-head__rule { flex: 1; height: 1px; background: var(--border); }
 
   /* ── Numbered list ─────────────────────────────────────────────── */
-  .A-item {
-    display: grid; grid-template-columns: 80px 1fr 200px;
-    gap: 0 2rem; align-items: start;
-    padding: 2rem 0; border-bottom: 1px solid var(--border);
-    color: inherit; text-decoration: none;
-  }
-  .A-item:last-child { border-bottom: none; }
-  .A-item:hover { color: inherit; text-decoration: none; }
-  .A-item__num {
-    font-family: var(--blog-serif); font-size: 3.5rem; color: var(--border);
-    line-height: 1; user-select: none; transition: color .25s; padding-top: .125rem;
-  }
-  .A-item:hover .A-item__num { color: var(--gold); }
-  .A-item__body { min-width: 0; }
-  .A-item__category {
-    font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
-    letter-spacing: .18em; text-transform: uppercase; color: var(--rose); margin-bottom: .5rem;
-  }
-  .A-item__title {
-    font-family: var(--blog-serif); font-size: clamp(1.1rem, 1.6vw, 1.375rem);
-    font-weight: 700; color: var(--text); line-height: 1.3;
-    margin-bottom: .625rem; transition: color .2s;
-  }
-  .A-item:hover .A-item__title { color: var(--plum); }
-  .A-item__excerpt {
-    font-family: var(--blog-sans); font-size: .875rem; line-height: 1.65;
-    color: var(--muted);
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
-  .A-item__thumb {
-    border-radius: 8px; overflow: hidden; aspect-ratio: 4/3;
-    background: linear-gradient(135deg, #2a1545, #c9a84c); position: relative;
-  }
-  .A-item__thumb img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    opacity: .85; transition: transform .5s ease;
-  }
-  .A-item:hover .A-item__thumb img { transform: scale(1.06); }
-  .A-item__thumb-ph {
-    position: absolute; inset: 0; display: flex; align-items: center;
-    justify-content: center; font-family: var(--blog-serif);
-    font-size: 2rem; color: rgba(255,255,255,.2); user-select: none;
-  }
-  .A-item__meta {
-    font-family: var(--blog-sans); font-size: .75rem; color: var(--muted);
-    margin-top: .625rem; display: flex; gap: .5rem;
-  }
+    .A-item {
+      display: grid; grid-template-columns: 80px 1fr 200px;
+      gap: 0 2rem; align-items: start;
+      padding: 2rem 0; border-bottom: 1px solid var(--border);
+      color: inherit; text-decoration: none;
+    }
+    .A-item:last-child { border-bottom: none; }
+    .A-item:hover { color: inherit; text-decoration: none; }
+    .A-item__num {
+      font-family: var(--blog-serif); font-size: 3.5rem; color: var(--border);
+      line-height: 1; user-select: none; transition: color .25s; padding-top: .125rem;
+    }
+    .A-item:hover .A-item__num { color: var(--gold); }
+    .A-item__body { min-width: 0; }
+    .A-item__category {
+      font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--rose); margin-bottom: .5rem;
+    }
+    .A-item__title {
+      font-family: var(--blog-serif); font-size: clamp(1.1rem, 1.6vw, 1.375rem);
+      font-weight: 700; color: var(--text); line-height: 1.3;
+      margin-bottom: .625rem; transition: color .2s;
+    }
+    .A-item:hover .A-item__title { color: var(--plum); }
+    .A-item__excerpt {
+      font-family: var(--blog-sans); font-size: .875rem; line-height: 1.65;
+      color: var(--muted);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .A-item__thumb {
+      border-radius: 8px; overflow: hidden; aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #2a1545, #c9a84c); position: relative;
+    }
+    .A-item__thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      opacity: .85; transition: transform .5s ease;
+    }
+    .A-item:hover .A-item__thumb img { transform: scale(1.06); }
+    .A-item__thumb-ph {
+      position: absolute; inset: 0; display: flex; align-items: center;
+      justify-content: center; font-family: var(--blog-serif);
+      font-size: 2rem; color: rgba(255,255,255,.2); user-select: none;
+    }
+    .A-item__meta {
+      font-family: var(--blog-sans); font-size: .75rem; color: var(--muted);
+      margin-top: .625rem; display: flex; gap: .5rem;
+    }
 
   /* ── Empty state ───────────────────────────────────────────────── */
-  .A-empty { text-align: center; padding: 7rem 1rem; }
-  .A-empty__symbol {
-    font-family: var(--blog-serif); font-size: 4.5rem;
-    color: var(--gold); opacity: .3; line-height: 1; margin-bottom: 1.75rem;
-  }
-  .A-empty__title { font-family: var(--blog-serif); font-size: 1.625rem; color: var(--text); margin-bottom: .5rem; }
-  .A-empty__sub { font-family: var(--blog-sans); font-size: .9375rem; color: var(--muted); }
+    .A-empty { text-align: center; padding: 7rem 1rem; }
+    .A-empty__symbol {
+      font-family: var(--blog-serif); font-size: 4.5rem;
+      color: var(--gold); opacity: .3; line-height: 1; margin-bottom: 1.75rem;
+    }
+    .A-empty__title { font-family: var(--blog-serif); font-size: 1.625rem; color: var(--text); margin-bottom: .5rem; }
+    .A-empty__sub { font-family: var(--blog-sans); font-size: .9375rem; color: var(--muted); }
 
   /* ── Responsive ────────────────────────────────────────────────── */
-  @media (max-width: 880px) {
-    .A-hero { grid-template-columns: 1fr; }
-    .A-hero__img { aspect-ratio: 16/9; }
-    .A-item { grid-template-columns: 60px 1fr; }
-    .A-item__thumb { display: none; }
-  }
-  @media (max-width: 560px) {
-    .A-item { grid-template-columns: 48px 1fr; }
-    .A-masthead { padding: 2.5rem 1rem 1.75rem; }
-  }
-</style>
+    @media (max-width: 880px) {
+      .A-hero { grid-template-columns: 1fr; }
+      .A-hero__img { aspect-ratio: 16/9; }
+      .A-item { grid-template-columns: 60px 1fr; }
+      .A-item__thumb { display: none; }
+    }
+    @media (max-width: 560px) {
+      .A-item { grid-template-columns: 48px 1fr; }
+      .A-masthead { padding: 2.5rem 1rem 1.75rem; }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+  <div class="container">
 
-  <div class="A-masthead reveal">
-    <div class="A-eyebrow">Fonotarot · Tarot por Teléfono</div>
-    <h1 class="A-title">Blog</h1>
-    <div class="A-masthead__rule"></div>
-  </div>
-
-  {% if posts %}
-    {% set hero = posts[0] %}
-    {% set rest  = posts[1:] %}
-
-    <a href="{{ url_for('blog.detail', slug=hero.slug) }}" class="A-hero reveal" style="animation-delay:.08s">
-      <div class="A-hero__img">
-        {% if hero.featured_image_url %}
-          <img src="{{ hero.featured_image_url }}" alt="{{ hero.title }}" loading="eager" />
-        {% endif %}
-        <div class="A-hero__img-num">I</div>
-      </div>
-      <div class="A-hero__body">
-        <div class="A-hero__pill">✦ Artículo destacado</div>
-        <h2 class="A-hero__headline">{{ hero.title }}</h2>
-        {% if hero.excerpt %}
-          <p class="A-hero__excerpt">{{ hero.excerpt }}</p>
-        {% endif %}
-        <div class="A-hero__foot">
-          <span class="A-hero__date">
-            {% if hero.published_at %}{{ hero.published_at.strftime('%d %b %Y') }} · {% endif %}{{ hero.reading_time }} min de lectura
-          </span>
-          <span class="A-hero__cta">Leer artículo</span>
-        </div>
-      </div>
-    </a>
-
-    {% if rest %}
-    <div class="A-list-head reveal" style="animation-delay:.14s">
-      <div class="A-list-head__rule"></div>
-      <span class="A-list-head__label">✦ &nbsp; Más publicaciones &nbsp; ✦</span>
-      <div class="A-list-head__rule"></div>
+    <div class="A-masthead reveal">
+      <div class="A-eyebrow">Fonotarot · Tarot por Teléfono</div>
+      <h1 class="A-title">Blog</h1>
+      <div class="A-masthead__rule"></div>
     </div>
 
-    {% set numerals = ['II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'] %}
-    {% for post in rest %}
-    <a href="{{ url_for('blog.detail', slug=post.slug) }}"
-       class="A-item reveal" style="animation-delay:{{ (0.18 + loop.index0 * 0.06)|round(2) }}s">
-      <div class="A-item__num">{{ numerals[loop.index0] if loop.index0 < numerals|length else loop.index + 1 }}</div>
-      <div class="A-item__body">
-        <div class="A-item__category">{{ _('Artículo') }}</div>
-        <div class="A-item__title">{{ post.title }}</div>
-        {% if post.excerpt %}
-          <p class="A-item__excerpt">{{ post.excerpt }}</p>
-        {% endif %}
-        <div class="A-item__meta">
-          {% if post.published_at %}<span>{{ post.published_at.strftime('%d %b %Y') }}</span><span>·</span>{% endif %}
-          <span>{{ post.reading_time }} min de lectura</span>
+    {% if posts %}
+      {% set hero = posts[0] %}
+      {% set rest  = posts[1:] %}
+
+      <a href="{{ url_for('blog.detail', slug=hero.slug) }}" class="A-hero reveal" style="animation-delay:.08s">
+        <div class="A-hero__img">
+          {% if hero.featured_image_url %}
+            <img src="{{ hero.featured_image_url }}" alt="{{ hero.title }}" loading="eager" />
+          {% endif %}
+          <div class="A-hero__img-num">I</div>
         </div>
+        <div class="A-hero__body">
+          <div class="A-hero__pill">✦ Artículo destacado</div>
+          <h2 class="A-hero__headline">{{ hero.title }}</h2>
+          {% if hero.excerpt %}
+            <p class="A-hero__excerpt">{{ hero.excerpt }}</p>
+          {% endif %}
+          <div class="A-hero__foot">
+            <span class="A-hero__date">
+              {% if hero.published_at %}{{ hero.published_at.strftime('%d %b %Y') }} · {% endif %}{{ hero.reading_time }} min de lectura
+            </span>
+            <span class="A-hero__cta">Leer artículo</span>
+          </div>
+        </div>
+      </a>
+
+      {% if rest %}
+        <div class="A-list-head reveal" style="animation-delay:.14s">
+          <div class="A-list-head__rule"></div>
+          <span class="A-list-head__label">✦ &nbsp; Más publicaciones &nbsp; ✦</span>
+          <div class="A-list-head__rule"></div>
+        </div>
+
+        {% set numerals = ['II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'] %}
+        {% for post in rest %}
+          <a href="{{ url_for('blog.detail', slug=post.slug) }}"
+             class="A-item reveal" style="animation-delay:{{ (0.18 + loop.index0 * 0.06)|round(2) }}s">
+            <div class="A-item__num">{{ numerals[loop.index0] if loop.index0 < numerals|length else loop.index + 1 }}</div>
+            <div class="A-item__body">
+              <div class="A-item__category">{{ _('Artículo') }}</div>
+              <div class="A-item__title">{{ post.title }}</div>
+              {% if post.excerpt %}
+                <p class="A-item__excerpt">{{ post.excerpt }}</p>
+              {% endif %}
+              <div class="A-item__meta">
+                {% if post.published_at %}<span>{{ post.published_at.strftime('%d %b %Y') }}</span><span>·</span>{% endif %}
+                <span>{{ post.reading_time }} min de lectura</span>
+              </div>
+            </div>
+            <div class="A-item__thumb">
+              {% if post.featured_image_url %}
+                <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" loading="lazy" />
+              {% else %}
+                <div class="A-item__thumb-ph">✦</div>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      {% endif %}
+
+    {% else %}
+      <div class="A-empty reveal">
+        <div class="A-empty__symbol">✦</div>
+        <p class="A-empty__title">{{ _("Aún no hay publicaciones") }}</p>
+        <p class="A-empty__sub">{{ _("¡Vuelve pronto!") }}</p>
       </div>
-      <div class="A-item__thumb">
-        {% if post.featured_image_url %}
-          <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" loading="lazy" />
-        {% else %}
-          <div class="A-item__thumb-ph">✦</div>
-        {% endif %}
-      </div>
-    </a>
-    {% endfor %}
     {% endif %}
 
-  {% else %}
-    <div class="A-empty reveal">
-      <div class="A-empty__symbol">✦</div>
-      <p class="A-empty__title">{{ _("Aún no hay publicaciones") }}</p>
-      <p class="A-empty__sub">{{ _("¡Vuelve pronto!") }}</p>
-    </div>
-  {% endif %}
-
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  (function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.08 });
-    els.forEach(function (el) { io.observe(el); });
-  })();
-</script>
+  <script>
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
 {% endblock %}

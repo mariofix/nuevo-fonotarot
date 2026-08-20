@@ -5,120 +5,120 @@
 
 {% endblock extra_js %}
 {% block extra_css %}
-<style>
+  <style>
   /* ─── Tienda hero ───────────────────────────────── */
-  .tienda-hero {
-    position: relative; z-index: 1;
-    padding: 80px 0 60px;
-    text-align: center;
-    background: linear-gradient(160deg, var(--cream) 0%, var(--lavender) 100%);
-    border-bottom: 1px solid rgba(107,63,160,.15);
-  }
-  .tienda-hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 900;
-    color: var(--plum-dk);
-    margin-bottom: .75rem;
-  }
+    .tienda-hero {
+      position: relative; z-index: 1;
+      padding: 80px 0 60px;
+      text-align: center;
+      background: linear-gradient(160deg, var(--cream) 0%, var(--lavender) 100%);
+      border-bottom: 1px solid rgba(107,63,160,.15);
+    }
+    .tienda-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      color: var(--plum-dk);
+      margin-bottom: .75rem;
+    }
 
   /* ─── Tienda sections ───────────────────────────── */
-  .tienda-section {
-    position: relative; z-index: 1;
-    padding: 60px 0;
-  }
-  .tienda-section:nth-child(even) { background: var(--cream); }
-  .tienda-section:nth-child(odd)  { background: var(--sand); }
+    .tienda-section {
+      position: relative; z-index: 1;
+      padding: 60px 0;
+    }
+    .tienda-section:nth-child(even) { background: var(--cream); }
+    .tienda-section:nth-child(odd)  { background: var(--sand); }
 
   /* ─── Pack / plan cards ─────────────────────────── */
-  .pack-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.75rem 1.25rem;
-    text-align: center;
-    height: 100%;
-    display: flex; flex-direction: column;
-    transition: transform .25s, box-shadow .25s;
-  }
-  .pack-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 36px rgba(107,63,160,.18);
-    border-color: var(--plum);
-  }
-  .pack-card.featured {
-    background: linear-gradient(160deg, var(--blush) 0%, var(--lavender) 100%);
-    border-color: var(--plum);
-    box-shadow: 0 0 32px rgba(107,63,160,.15);
-  }
-  .pack-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem; font-weight: 900;
-    color: var(--plum); line-height: 1;
-    margin: .5rem 0 .25rem;
-  }
-  .pack-price small { font-size: 1rem; color: var(--muted); font-weight: 400; }
-  .pack-mins { font-size: 1.5rem; font-weight: 700; color: var(--text); }
-  .pack-badge {
-    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
-    background: var(--plum); color: #fff;
-    border-radius: 20px; padding: 3px 12px;
-    font-weight: 700; display: inline-block; margin-bottom: .75rem;
-  }
-  .btn-pack {
-    border-radius: 30px; padding: .5rem 0; font-weight: 700; font-size: .9rem; width: 100%; margin-top: auto;
-  }
-  .btn-pack-primary {
-    background: linear-gradient(135deg, var(--plum), var(--plum-dk));
-    color: #fff !important; border: none;
-  }
-  .btn-pack-outline {
-    background: transparent;
-    border: 1px solid rgba(107,63,160,.45);
-    color: var(--plum) !important;
-  }
-  .btn-pack-outline:hover { background: rgba(107,63,160,.06); }
+    .pack-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      height: 100%;
+      display: flex; flex-direction: column;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .pack-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 36px rgba(107,63,160,.18);
+      border-color: var(--plum);
+    }
+    .pack-card.featured {
+      background: linear-gradient(160deg, var(--blush) 0%, var(--lavender) 100%);
+      border-color: var(--plum);
+      box-shadow: 0 0 32px rgba(107,63,160,.15);
+    }
+    .pack-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 900;
+      color: var(--plum); line-height: 1;
+      margin: .5rem 0 .25rem;
+    }
+    .pack-price small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+    .pack-mins { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+    .pack-badge {
+      font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+      background: var(--plum); color: #fff;
+      border-radius: 20px; padding: 3px 12px;
+      font-weight: 700; display: inline-block; margin-bottom: .75rem;
+    }
+    .btn-pack {
+      border-radius: 30px; padding: .5rem 0; font-weight: 700; font-size: .9rem; width: 100%; margin-top: auto;
+    }
+    .btn-pack-primary {
+      background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+      color: #fff !important; border: none;
+    }
+    .btn-pack-outline {
+      background: transparent;
+      border: 1px solid rgba(107,63,160,.45);
+      color: var(--plum) !important;
+    }
+    .btn-pack-outline:hover { background: rgba(107,63,160,.06); }
 
   /* ─── Product cards ─────────────────────────────── */
-  .product-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    height: 100%;
-    transition: transform .2s, box-shadow .2s;
-  }
-  .product-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 28px rgba(107,63,160,.15);
-    border-color: var(--plum);
-  }
-  .product-img { width:100%; height:130px; object-fit:cover; }
-  .product-img-ph {
-    width:100%; height:130px;
-    background: var(--lavender);
-    display:flex; align-items:center; justify-content:center;
-  }
+    .product-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      height: 100%;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(107,63,160,.15);
+      border-color: var(--plum);
+    }
+    .product-img { width:100%; height:130px; object-fit:cover; }
+    .product-img-ph {
+      width:100%; height:130px;
+      background: var(--lavender);
+      display:flex; align-items:center; justify-content:center;
+    }
 
   /* ─── Privacy banner ─────────────────────────────── */
-  .privacy-banner {
-    background: rgba(16,185,129,.06);
-    border: 1px solid rgba(16,185,129,.25);
-    border-radius: 14px;
-    padding: 1.5rem 2rem;
-  }
+    .privacy-banner {
+      background: rgba(16,185,129,.06);
+      border: 1px solid rgba(16,185,129,.25);
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+    }
 
   /* ─── Payment badges ─────────────────────────────── */
-  .pay-badge {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: .5rem 1.5rem;
-    font-size: .85rem;
-    color: var(--text);
-    letter-spacing: .04em;
-  }
-</style>
+    .pay-badge {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .5rem 1.5rem;
+      font-size: .85rem;
+      color: var(--text);
+      letter-spacing: .04em;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -138,14 +138,14 @@
   <!-- ── FLASH MESSAGES ─────────────────────────────── -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    <div class="container py-3" style="position:relative;z-index:1">
-      {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <div class="container py-3" style="position:relative;z-index:1">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     {% endif %}
   {% endwith %}
 
@@ -160,37 +160,37 @@
       </div>
       <div class="row g-4 justify-content-center">
         {% for pack in minute_packs %}
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="pack-card {% if pack.is_featured %}featured{% endif %}">
-            {% if pack.is_featured %}
-              <span class="pack-badge">{{ _("Más popular") }}</span>
-            {% endif %}
-            <i class="ti ti-clock mb-2" style="font-size:2rem;color:var(--plum)"></i>
-            <div class="pack-mins">{{ pack.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
-            <div class="pack-price">{{ pack.price_display }}<small> CLP</small></div>
-            {% if pack.description %}
-              <p class="section-subtitle small mt-2 mb-0">{{ pack.description }}</p>
-            {% endif %}
-            <button type="button"
-                    class="btn btn-pack mt-3 {% if pack.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"
-                    onclick="Cart.add('minute_pack', '{{ pack.id }}', 1, '{{ pack.minutes }} min', {{ pack.price | float }})"
-                    data-track-event="add_to_cart"
-                    data-track-value="{{ pack.price }}"
-                    data-track-currency="CLP"
-                    data-track-item-id="minute_pack-{{ pack.id }}"
-                    data-track-item-name="{{ pack.minutes }} minutos de tarot"
-                    data-track-item-category="minute_pack"
-                    data-track-item-price="{{ pack.price }}"
-                    data-track-item-quantity="1">
-              <i class="ti ti-wallet me-1"></i>{{ _("Agregar al Carro") }}
-            </button>
+          <div class="col-6 col-md-4 col-lg-3">
+            <div class="pack-card {% if pack.is_featured %}featured{% endif %}">
+              {% if pack.is_featured %}
+                <span class="pack-badge">{{ _("Más popular") }}</span>
+              {% endif %}
+              <i class="ti ti-clock mb-2" style="font-size:2rem;color:var(--plum)"></i>
+              <div class="pack-mins">{{ pack.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
+              <div class="pack-price">{{ pack.price_display }}<small> CLP</small></div>
+              {% if pack.description %}
+                <p class="section-subtitle small mt-2 mb-0">{{ pack.description }}</p>
+              {% endif %}
+              <button type="button"
+                      class="btn btn-pack mt-3 {% if pack.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"
+                      onclick="Cart.add('minute_pack', '{{ pack.id }}', 1, '{{ pack.minutes }} min', {{ pack.price | float }})"
+                      data-track-event="add_to_cart"
+                      data-track-value="{{ pack.price }}"
+                      data-track-currency="CLP"
+                      data-track-item-id="minute_pack-{{ pack.id }}"
+                      data-track-item-name="{{ pack.minutes }} minutos de tarot"
+                      data-track-item-category="minute_pack"
+                      data-track-item-price="{{ pack.price }}"
+                      data-track-item-quantity="1">
+                <i class="ti ti-wallet me-1"></i>{{ _("Agregar al Carro") }}
+              </button>
+            </div>
           </div>
-        </div>
         {% else %}
-        <div class="col-12 text-center" style="color:var(--muted)">
-          <i class="ti ti-clock-off mb-2" style="font-size:2.5rem"></i>
-          <p>{{ _("No hay packs disponibles por el momento.") }}</p>
-        </div>
+          <div class="col-12 text-center" style="color:var(--muted)">
+            <i class="ti ti-clock-off mb-2" style="font-size:2.5rem"></i>
+            <p>{{ _("No hay packs disponibles por el momento.") }}</p>
+          </div>
         {% endfor %}
       </div>
       <div class="text-center mt-4">
@@ -200,7 +200,7 @@
       </div>
     </div>
   </section>
-  
+
 
   {# <!-- ── PLANES DE SUSCRIPCIÓN ──────────────────────── -->
   <section class="tienda-section">
@@ -267,96 +267,96 @@
 
   <!-- ── TARJETAS DIGITALES ──────────────────────────── -->
   {% if gift_cards %}
-  <section class="tienda-section">
-    <div class="container">
-      <div class="text-center mb-5">
-        <div class="section-tag"><i class="ti ti-ticket me-1"></i>{{ _("Tarjetas Digitales") }}</div>
-        <h2 class="section-title">{{ _("Regala Minutos de Tarot") }}</h2>
-        <div class="divider-gold"></div>
-        <p class="section-subtitle">{{ _("Compra una tarjeta prepago y comparte su código para que otra persona lo canjee.") }}</p>
+    <section class="tienda-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag"><i class="ti ti-ticket me-1"></i>{{ _("Tarjetas Digitales") }}</div>
+          <h2 class="section-title">{{ _("Regala Minutos de Tarot") }}</h2>
+          <div class="divider-gold"></div>
+          <p class="section-subtitle">{{ _("Compra una tarjeta prepago y comparte su código para que otra persona lo canjee.") }}</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+          {% for card in gift_cards %}
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="pack-card {% if card.is_featured %}featured{% endif %}">
+                {% if card.is_featured %}
+                  <span class="pack-badge">{{ _("Recomendada") }}</span>
+                {% endif %}
+                <i class="ti ti-gift mb-2" style="font-size:2rem;color:var(--plum)"></i>
+                <div class="pack-mins">{{ card.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
+                <div class="pack-price">{{ card.price_display }}<small> CLP</small></div>
+                {% if card.description %}
+                  <p class="section-subtitle small mt-2 mb-0">{{ card.description }}</p>
+                {% endif %}
+                <button type="button"
+                        class="btn btn-pack mt-3 {% if card.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"
+                        onclick="Cart.add('giftcard', '{{ card.slug }}', 1, '{{ card.minutes }} min gift card', {{ card.price | float }})"
+                        data-track-event="add_to_cart"
+                        data-track-value="{{ card.price }}"
+                        data-track-currency="CLP"
+                        data-track-item-id="giftcard-{{ card.slug }}"
+                        data-track-item-name="{{ card.minutes }} min gift card"
+                        data-track-item-category="giftcard"
+                        data-track-item-price="{{ card.price }}"
+                        data-track-item-quantity="1">
+                  <i class="ti ti-gift me-1"></i>{{ _("Agregar al Carro") }}
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
+          <a href="{{ url_for('tarjetas.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
+            <i class="ti ti-help me-1"></i>{{ _("¿Como Funciona?") }}
+          </a>
+          <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
+            <i class="ti ti-ticket me-1"></i>{{ _("Canjear código") }}
+          </a>
+        </div>
       </div>
-      <div class="row g-4 justify-content-center">
-        {% for card in gift_cards %}
-<div class="col-12 col-sm-6 col-lg-3">
-  <div class="pack-card {% if card.is_featured %}featured{% endif %}">
-    {% if card.is_featured %}
-      <span class="pack-badge">{{ _("Recomendada") }}</span>
-    {% endif %}
-    <i class="ti ti-gift mb-2" style="font-size:2rem;color:var(--plum)"></i>
-    <div class="pack-mins">{{ card.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
-    <div class="pack-price">{{ card.price_display }}<small> CLP</small></div>
-    {% if card.description %}
-      <p class="section-subtitle small mt-2 mb-0">{{ card.description }}</p>
-    {% endif %}
-    <button type="button"
-            class="btn btn-pack mt-3 {% if card.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"
-            onclick="Cart.add('giftcard', '{{ card.slug }}', 1, '{{ card.minutes }} min gift card', {{ card.price | float }})"
-            data-track-event="add_to_cart"
-            data-track-value="{{ card.price }}"
-            data-track-currency="CLP"
-            data-track-item-id="giftcard-{{ card.slug }}"
-            data-track-item-name="{{ card.minutes }} min gift card"
-            data-track-item-category="giftcard"
-            data-track-item-price="{{ card.price }}"
-            data-track-item-quantity="1">
-      <i class="ti ti-gift me-1"></i>{{ _("Agregar al Carro") }}
-    </button>
-  </div>
-</div>
-{% endfor %}
-      </div>
-      <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
-        <a href="{{ url_for('tarjetas.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-help me-1"></i>{{ _("¿Como Funciona?") }}
-        </a>
-        <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-ticket me-1"></i>{{ _("Canjear código") }}
-        </a>
-      </div>
-    </div>
-  </section>
+    </section>
   {% endif %}
 
   <!-- ── PRODUCTOS DESTACADOS ───────────────────────── -->
   {% if featured_products %}
-  <section class="tienda-section">
-    <div class="container">
-      <div class="text-center mb-5">
-        <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Productos Destacados") }}</div>
-        <h2 class="section-title">{{ _("Nuestra Tienda Esotérica") }}</h2>
-        <div class="divider-gold"></div>
-        <p class="section-subtitle">{{ _("Mazos, velas, inciensos y más. Envíos anónimos a todo Chile.") }}</p>
-      </div>
-      <div class="row g-4">
-        {% for product in featured_products %}
-        <div class="col-6 col-md-4 col-lg-2">
-          <div class="product-card">
-            {% if product.cover_image_url %}
-            <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-img"/>
-            {% else %}
-            <div class="product-img-ph">
-              <i class="ti ti-package" style="font-size:2.5rem;color:var(--violet)"></i>
-            </div>
-            {% endif %}
-            <div class="p-3">
-              <div class="fw-bold small">{{ product.name }}</div>
-              <div class="mt-1 mb-2" style="color:var(--plum);font-weight:700">{{ product.price_display }}</div>
-              <a href="{{ url_for('productos.detalle', slug=product.slug) }}"
-                 class="btn btn-pack-outline btn-sm w-100" style="border-radius:20px;font-size:.8rem;padding:.3rem 0">
-                <i class="ti ti-eye me-1"></i>{{ _("Ver") }}
-              </a>
-            </div>
-          </div>
+    <section class="tienda-section">
+      <div class="container">
+        <div class="text-center mb-5">
+          <div class="section-tag"><i class="ti ti-sparkles me-1"></i>{{ _("Productos Destacados") }}</div>
+          <h2 class="section-title">{{ _("Nuestra Tienda Esotérica") }}</h2>
+          <div class="divider-gold"></div>
+          <p class="section-subtitle">{{ _("Mazos, velas, inciensos y más. Envíos anónimos a todo Chile.") }}</p>
         </div>
-        {% endfor %}
+        <div class="row g-4">
+          {% for product in featured_products %}
+            <div class="col-6 col-md-4 col-lg-2">
+              <div class="product-card">
+                {% if product.cover_image_url %}
+                  <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-img"/>
+                {% else %}
+                  <div class="product-img-ph">
+                    <i class="ti ti-package" style="font-size:2.5rem;color:var(--violet)"></i>
+                  </div>
+                {% endif %}
+                <div class="p-3">
+                  <div class="fw-bold small">{{ product.name }}</div>
+                  <div class="mt-1 mb-2" style="color:var(--plum);font-weight:700">{{ product.price_display }}</div>
+                  <a href="{{ url_for('productos.detalle', slug=product.slug) }}"
+                     class="btn btn-pack-outline btn-sm w-100" style="border-radius:20px;font-size:.8rem;padding:.3rem 0">
+                    <i class="ti ti-eye me-1"></i>{{ _("Ver") }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+          <a href="{{ url_for('productos.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
+            <i class="ti ti-shopping-bag me-1"></i>{{ _("Ver todos los productos") }}
+          </a>
+        </div>
       </div>
-      <div class="text-center mt-4">
-        <a href="{{ url_for('productos.index') }}" class="btn btn-pack-outline px-4" style="border-radius:30px;">
-          <i class="ti ti-shopping-bag me-1"></i>{{ _("Ver todos los productos") }}
-        </a>
-      </div>
-    </div>
-  </section>
+    </section>
   {% endif %}
 
   <!-- ── PRIVACIDAD + PAGO ──────────────────────────── -->

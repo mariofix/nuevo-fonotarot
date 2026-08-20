@@ -3,107 +3,107 @@
 {% block title %}{{ _("Productos Esotéricos - Fonotarot") }}{% endblock %}
 
 {% block extra_css %}
-<style>
-  .card:hover { border-color:#6d28d9; }
-  .cart-btn { position:relative; }
-  .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
-  .cat-btn.active { background:#6d28d9; border-color:#6d28d9; color:#fff; }
-  .product-img { width:100%; height:160px; object-fit:cover; border-radius:6px 6px 0 0; }
-  .product-img-placeholder { width:100%; height:160px; background:#2d2d4e; border-radius:6px 6px 0 0; display:flex; align-items:center; justify-content:center; }
-  .price { color:#a78bfa; font-weight:700; font-size:1.1rem; }
-  .anonymous-note { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; }
-</style>
+  <style>
+    .card:hover { border-color:#6d28d9; }
+    .cart-btn { position:relative; }
+    .cart-count { position:absolute; top:-6px; right:-6px; background:#d97706; color:#000; border-radius:50%; width:18px; height:18px; font-size:.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .cat-btn.active { background:#6d28d9; border-color:#6d28d9; color:#fff; }
+    .product-img { width:100%; height:160px; object-fit:cover; border-radius:6px 6px 0 0; }
+    .product-img-placeholder { width:100%; height:160px; background:#2d2d4e; border-radius:6px 6px 0 0; display:flex; align-items:center; justify-content:center; }
+    .price { color:#a78bfa; font-weight:700; font-size:1.1rem; }
+    .anonymous-note { background:#064e3b; color:#6ee7b7; border-radius:8px; padding:.5rem 1rem; font-size:.85rem; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="page">
-  <div class="page-wrapper">
-    <div class="page-body py-5">
-      <div class="container-xl">
+  <div class="page">
+    <div class="page-wrapper">
+      <div class="page-body py-5">
+        <div class="container-xl">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible mb-4">
-              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endwith %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible mb-4">
+                {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endwith %}
 
-        <div class="text-center mb-4">
-          <h1 class="fw-bold text-white">{{ _("Productos Esotéricos") }}</h1>
-          <p class="text-secondary fs-5 mt-2">{{ _("Mazos, velas, inciensos, cristales y más") }}</p>
-          <span class="anonymous-note"><i class="ti ti-eye-off me-1"></i>{{ _("Cajas sin marcas · Envíos discretos · Punto de retiro disponible") }}</span>
-        </div>
+          <div class="text-center mb-4">
+            <h1 class="fw-bold text-white">{{ _("Productos Esotéricos") }}</h1>
+            <p class="text-secondary fs-5 mt-2">{{ _("Mazos, velas, inciensos, cristales y más") }}</p>
+            <span class="anonymous-note"><i class="ti ti-eye-off me-1"></i>{{ _("Cajas sin marcas · Envíos discretos · Punto de retiro disponible") }}</span>
+          </div>
 
         <!-- Category filter -->
-        <div class="d-flex flex-wrap gap-2 mb-4">
-          <a href="{{ url_for('productos.index') }}"
-             class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
-            {{ _("Todos") }}
-          </a>
-          {% for cat in categories %}
-          <a href="{{ url_for('productos.index', categoria=cat.slug) }}"
-             class="btn btn-sm btn-outline-primary cat-btn {% if active_category == cat.slug %}active{% endif %}">
-            {{ cat.name }}
-          </a>
-          {% endfor %}
-        </div>
+          <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{{ url_for('productos.index') }}"
+               class="btn btn-sm btn-outline-primary cat-btn {% if not active_category %}active{% endif %}">
+              {{ _("Todos") }}
+            </a>
+            {% for cat in categories %}
+              <a href="{{ url_for('productos.index', categoria=cat.slug) }}"
+                 class="btn btn-sm btn-outline-primary cat-btn {% if active_category == cat.slug %}active{% endif %}">
+                {{ cat.name }}
+              </a>
+            {% endfor %}
+          </div>
 
         <!-- Products grid -->
-        <div class="row g-3">
-          {% for product in products %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="card h-100">
-              {% if product.cover_image_url %}
-              <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-img"/>
-              {% else %}
-              <div class="product-img-placeholder">
-                <i class="ti ti-package text-secondary" style="font-size:3rem"></i>
-              </div>
-              {% endif %}
-              <div class="p-3">
-                <div class="small text-secondary mb-1">
-                  {% if product.category %}{{ product.category.name }}{% endif %}
-                </div>
-                <h6 class="text-white mb-1">{{ product.name }}</h6>
-                <div class="price">{{ product.price_display }}</div>
-                {% if product.stock > 0 %}
-                <div class="small text-success mt-1"><i class="ti ti-check me-1"></i>{{ _("En stock") }}</div>
-                {% else %}
-                <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</div>
-                {% endif %}
-                <div class="d-flex gap-2 mt-3">
-                  <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">{{ _("Ver") }}</a>
-                  {% if product.stock > 0 %}
-                   <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex"
-                         data-track-event="add_to_cart"
-                         data-track-value="{{ product.price }}"
-                         data-track-currency="CLP"
-                         data-track-item-id="product-{{ product.id }}"
-                         data-track-item-name="{{ product.name }}"
-                         data-track-item-category="product"
-                         data-track-item-price="{{ product.price }}"
-                         data-track-item-quantity="1">
-                    <input type="hidden" name="item_type" value="product"/>
-                    <input type="hidden" name="item_id" value="{{ product.id }}"/>
-                    <input type="hidden" name="quantity" value="1"/>
-                    <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-shopping-cart-plus"></i></button>
-                  </form>
+          <div class="row g-3">
+            {% for product in products %}
+              <div class="col-6 col-md-4 col-lg-3">
+                <div class="card h-100">
+                  {% if product.cover_image_url %}
+                    <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" class="product-img"/>
+                  {% else %}
+                    <div class="product-img-placeholder">
+                      <i class="ti ti-package text-secondary" style="font-size:3rem"></i>
+                    </div>
                   {% endif %}
+                  <div class="p-3">
+                    <div class="small text-secondary mb-1">
+                      {% if product.category %}{{ product.category.name }}{% endif %}
+                    </div>
+                    <h6 class="text-white mb-1">{{ product.name }}</h6>
+                    <div class="price">{{ product.price_display }}</div>
+                    {% if product.stock > 0 %}
+                      <div class="small text-success mt-1"><i class="ti ti-check me-1"></i>{{ _("En stock") }}</div>
+                    {% else %}
+                      <div class="small text-danger mt-1"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</div>
+                    {% endif %}
+                    <div class="d-flex gap-2 mt-3">
+                      <a href="{{ url_for('productos.detalle', slug=product.slug) }}" class="btn btn-outline-primary btn-sm flex-grow-1">{{ _("Ver") }}</a>
+                      {% if product.stock > 0 %}
+                        <form action="{{ url_for('productos.agregar') }}" method="post" class="d-flex"
+                              data-track-event="add_to_cart"
+                              data-track-value="{{ product.price }}"
+                              data-track-currency="CLP"
+                              data-track-item-id="product-{{ product.id }}"
+                              data-track-item-name="{{ product.name }}"
+                              data-track-item-category="product"
+                              data-track-item-price="{{ product.price }}"
+                              data-track-item-quantity="1">
+                          <input type="hidden" name="item_type" value="product"/>
+                          <input type="hidden" name="item_id" value="{{ product.id }}"/>
+                          <input type="hidden" name="quantity" value="1"/>
+                          <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-shopping-cart-plus"></i></button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            {% else %}
+              <div class="col-12 text-center text-secondary py-5">
+                <i class="ti ti-package-off" style="font-size:3rem"></i>
+                <p class="mt-2">{{ _("No hay productos en esta categoría por el momento.") }}</p>
+              </div>
+            {% endfor %}
           </div>
-          {% else %}
-          <div class="col-12 text-center text-secondary py-5">
-            <i class="ti ti-package-off" style="font-size:3rem"></i>
-            <p class="mt-2">{{ _("No hay productos en esta categoría por el momento.") }}</p>
-          </div>
-          {% endfor %}
-        </div>
 
+        </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}

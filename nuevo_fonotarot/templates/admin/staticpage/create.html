@@ -206,14 +206,14 @@
 
         {# Title #}
         {{ form.title(class="page-title-input", id="title-field",
-                      placeholder=_gettext('Page title…'),
-                      autocomplete="off") }}
+        placeholder=_gettext('Page title…'),
+        autocomplete="off") }}
 
         {# Path row #}
         <div class="page-path-row">
           <span>/</span>
           {{ form.path(class="page-path-input", id="path-field",
-                       placeholder=_gettext('about-us')) }}
+          placeholder=_gettext('about-us')) }}
         </div>
         {% for error in form.title.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
         {% for error in form.path.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}

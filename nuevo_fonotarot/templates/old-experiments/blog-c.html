@@ -4,261 +4,261 @@
 {% block title %}Lab C · Blog — Fonotarot{% endblock %}
 
 {% block extra_css %}
-<style>
-  :root {
-    --blog-serif: 'Playfair Display', Georgia, serif;
-    --blog-sans:  'Source Sans 3', sans-serif;
-  }
+  <style>
+    :root {
+      --blog-serif: 'Playfair Display', Georgia, serif;
+      --blog-sans:  'Source Sans 3', sans-serif;
+    }
 
   /* ── Masthead ──────────────────────────────────────────────────── */
-  .C-masthead {
-    text-align: center; padding: 3rem 1rem 2.5rem; position: relative;
-  }
-  .C-masthead::before, .C-masthead::after {
-    content: '✦'; position: absolute; top: 50%; transform: translateY(-50%);
-    font-size: 1.25rem; color: var(--gold); opacity: .4;
-  }
-  .C-masthead::before { left: 0; }
-  .C-masthead::after  { right: 0; }
-  .C-eyebrow {
-    font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
-    letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: .875rem;
-  }
-  .C-title {
-    font-family: var(--blog-serif); font-size: clamp(2.5rem, 5vw, 3.75rem);
-    font-weight: 700; font-style: italic; color: var(--text);
-    line-height: 1.05; letter-spacing: -.02em;
-  }
+    .C-masthead {
+      text-align: center; padding: 3rem 1rem 2.5rem; position: relative;
+    }
+    .C-masthead::before, .C-masthead::after {
+      content: '✦'; position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 1.25rem; color: var(--gold); opacity: .4;
+    }
+    .C-masthead::before { left: 0; }
+    .C-masthead::after  { right: 0; }
+    .C-eyebrow {
+      font-family: var(--blog-sans); font-size: .625rem; font-weight: 700;
+      letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: .875rem;
+    }
+    .C-title {
+      font-family: var(--blog-serif); font-size: clamp(2.5rem, 5vw, 3.75rem);
+      font-weight: 700; font-style: italic; color: var(--text);
+      line-height: 1.05; letter-spacing: -.02em;
+    }
 
   /* ── Shared overlay ────────────────────────────────────────────── */
-  .C-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(0deg, rgba(13,8,32,.88) 0%, rgba(13,8,32,.15) 55%, transparent 100%);
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 1.75rem;
-  }
-  .C-pill {
-    display: inline-flex; align-items: center;
-    font-family: var(--blog-sans); font-size: .5625rem; font-weight: 700;
-    letter-spacing: .2em; text-transform: uppercase; color: var(--gold-lt);
-    border: 1px solid rgba(201,168,76,.4); border-radius: 20px;
-    padding: .2rem .625rem; margin-bottom: .875rem; width: fit-content;
-  }
-  .C-headline {
-    font-family: var(--blog-serif); font-weight: 700; color: white;
-    line-height: 1.2; margin-bottom: .625rem; letter-spacing: -.01em;
-    transition: color .2s;
-  }
-  .C-foot {
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .C-date { font-family: var(--blog-sans); font-size: .75rem; color: rgba(255,255,255,.5); }
-  .C-read {
-    font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: rgba(255,255,255,.75); display: flex; align-items: center; gap: .3rem;
-    transition: color .2s;
-  }
-  .C-read::after { content: '→'; }
+    .C-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(13,8,32,.88) 0%, rgba(13,8,32,.15) 55%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.75rem;
+    }
+    .C-pill {
+      display: inline-flex; align-items: center;
+      font-family: var(--blog-sans); font-size: .5625rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--gold-lt);
+      border: 1px solid rgba(201,168,76,.4); border-radius: 20px;
+      padding: .2rem .625rem; margin-bottom: .875rem; width: fit-content;
+    }
+    .C-headline {
+      font-family: var(--blog-serif); font-weight: 700; color: white;
+      line-height: 1.2; margin-bottom: .625rem; letter-spacing: -.01em;
+      transition: color .2s;
+    }
+    .C-foot {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .C-date { font-family: var(--blog-sans); font-size: .75rem; color: rgba(255,255,255,.5); }
+    .C-read {
+      font-family: var(--blog-sans); font-size: .6875rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.75); display: flex; align-items: center; gap: .3rem;
+      transition: color .2s;
+    }
+    .C-read::after { content: '→'; }
 
   /* ── Big feature ───────────────────────────────────────────────── */
-  .C-feature {
-    display: grid; grid-template-columns: 3fr 2fr; gap: .625rem; margin-bottom: .625rem;
-  }
-  .C-feature__main {
-    border-radius: 14px; overflow: hidden; position: relative;
-    aspect-ratio: 16/10;
-    background: linear-gradient(135deg, #2a1545 0%, #4a2872 40%, #c9a84c 100%);
-    display: block; text-decoration: none;
-  }
-  .C-feature__main:hover { text-decoration: none; }
-  .C-feature__main img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: brightness(.72) saturate(1.1); transition: transform .7s ease;
-  }
-  .C-feature__main:hover img { transform: scale(1.04); }
-  .C-feature__main:hover .C-headline { color: var(--gold-lt); }
-  .C-feature__main:hover .C-read { color: white; }
-  .C-feature__main .C-headline { font-size: clamp(1.375rem, 2vw, 2rem); }
+    .C-feature {
+      display: grid; grid-template-columns: 3fr 2fr; gap: .625rem; margin-bottom: .625rem;
+    }
+    .C-feature__main {
+      border-radius: 14px; overflow: hidden; position: relative;
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, #2a1545 0%, #4a2872 40%, #c9a84c 100%);
+      display: block; text-decoration: none;
+    }
+    .C-feature__main:hover { text-decoration: none; }
+    .C-feature__main img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(.72) saturate(1.1); transition: transform .7s ease;
+    }
+    .C-feature__main:hover img { transform: scale(1.04); }
+    .C-feature__main:hover .C-headline { color: var(--gold-lt); }
+    .C-feature__main:hover .C-read { color: white; }
+    .C-feature__main .C-headline { font-size: clamp(1.375rem, 2vw, 2rem); }
 
-  .C-feature__sidebar { display: flex; flex-direction: column; gap: .625rem; }
-  .C-side-card {
-    border-radius: 12px; overflow: hidden; position: relative; flex: 1;
-    display: block; text-decoration: none; min-height: 140px;
-  }
-  .C-side-card:nth-child(1) { background: linear-gradient(135deg, #0d1428, #1a3a6b, #c9a84c); }
-  .C-side-card:nth-child(2) { background: linear-gradient(135deg, #1a0e1a, #8b5e3c, #d98aaa); }
-  .C-side-card:hover { text-decoration: none; }
-  .C-side-card img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: brightness(.68); transition: transform .6s ease;
-    position: absolute; inset: 0;
-  }
-  .C-side-card:hover img { transform: scale(1.05); }
-  .C-side-card:hover .C-headline { color: var(--gold-lt); }
-  .C-side-card .C-headline {
-    font-size: 1rem; margin-bottom: .5rem;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
+    .C-feature__sidebar { display: flex; flex-direction: column; gap: .625rem; }
+    .C-side-card {
+      border-radius: 12px; overflow: hidden; position: relative; flex: 1;
+      display: block; text-decoration: none; min-height: 140px;
+    }
+    .C-side-card:nth-child(1) { background: linear-gradient(135deg, #0d1428, #1a3a6b, #c9a84c); }
+    .C-side-card:nth-child(2) { background: linear-gradient(135deg, #1a0e1a, #8b5e3c, #d98aaa); }
+    .C-side-card:hover { text-decoration: none; }
+    .C-side-card img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(.68); transition: transform .6s ease;
+      position: absolute; inset: 0;
+    }
+    .C-side-card:hover img { transform: scale(1.05); }
+    .C-side-card:hover .C-headline { color: var(--gold-lt); }
+    .C-side-card .C-headline {
+      font-size: 1rem; margin-bottom: .5rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
 
   /* ── Grid ──────────────────────────────────────────────────────── */
-  .C-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: .625rem; margin-bottom: 3rem;
-  }
-  .C-card {
-    border-radius: 12px; overflow: hidden; position: relative;
-    aspect-ratio: 4/3; display: block; text-decoration: none;
-  }
-  .C-card:nth-child(3n+1) { background: linear-gradient(135deg, #2a1545, #6b3fa0); }
-  .C-card:nth-child(3n+2) { background: linear-gradient(135deg, #0d0820, #4a2872, #d98aaa); }
-  .C-card:nth-child(3n)   { background: linear-gradient(135deg, #1a0e1a, #8b5e3c, #e8c56a); }
-  .C-card:hover { text-decoration: none; }
-  .C-card img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: brightness(.7) saturate(1.1); transition: transform .5s ease;
-  }
-  .C-card:hover img { transform: scale(1.06); }
-  .C-card:hover .C-headline { color: var(--gold-lt); }
-  .C-card .C-headline {
-    font-size: 1rem; margin-bottom: .5rem;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
+    .C-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: .625rem; margin-bottom: 3rem;
+    }
+    .C-card {
+      border-radius: 12px; overflow: hidden; position: relative;
+      aspect-ratio: 4/3; display: block; text-decoration: none;
+    }
+    .C-card:nth-child(3n+1) { background: linear-gradient(135deg, #2a1545, #6b3fa0); }
+    .C-card:nth-child(3n+2) { background: linear-gradient(135deg, #0d0820, #4a2872, #d98aaa); }
+    .C-card:nth-child(3n)   { background: linear-gradient(135deg, #1a0e1a, #8b5e3c, #e8c56a); }
+    .C-card:hover { text-decoration: none; }
+    .C-card img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(.7) saturate(1.1); transition: transform .5s ease;
+    }
+    .C-card:hover img { transform: scale(1.06); }
+    .C-card:hover .C-headline { color: var(--gold-lt); }
+    .C-card .C-headline {
+      font-size: 1rem; margin-bottom: .5rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
 
   /* ── Placeholder glyph ─────────────────────────────────────────── */
-  .C-ph {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-family: var(--blog-serif); color: rgba(255,255,255,.12);
-    user-select: none;
-  }
+    .C-ph {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--blog-serif); color: rgba(255,255,255,.12);
+      user-select: none;
+    }
 
   /* ── Empty ─────────────────────────────────────────────────────── */
-  .C-empty { text-align: center; padding: 6rem 1rem; }
-  .C-empty__symbol { font-family: var(--blog-serif); font-size: 4rem; color: var(--gold); opacity: .3; margin-bottom: 1.5rem; }
-  .C-empty__title { font-family: var(--blog-serif); font-size: 1.5rem; color: var(--text); }
+    .C-empty { text-align: center; padding: 6rem 1rem; }
+    .C-empty__symbol { font-family: var(--blog-serif); font-size: 4rem; color: var(--gold); opacity: .3; margin-bottom: 1.5rem; }
+    .C-empty__title { font-family: var(--blog-serif); font-size: 1.5rem; color: var(--text); }
 
   /* ── Responsive ────────────────────────────────────────────────── */
-  @media (max-width: 880px) {
-    .C-feature { grid-template-columns: 1fr; }
-    .C-feature__sidebar { flex-direction: row; }
-    .C-side-card { aspect-ratio: 4/3; min-height: auto; }
-    .C-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 560px) {
-    .C-grid { grid-template-columns: 1fr; }
-    .C-feature__sidebar { flex-direction: column; }
-  }
-</style>
+    @media (max-width: 880px) {
+      .C-feature { grid-template-columns: 1fr; }
+      .C-feature__sidebar { flex-direction: row; }
+      .C-side-card { aspect-ratio: 4/3; min-height: auto; }
+      .C-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .C-grid { grid-template-columns: 1fr; }
+      .C-feature__sidebar { flex-direction: column; }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+  <div class="container">
 
-  <div class="C-masthead reveal">
-    <div class="C-eyebrow">✦ Fonotarot · Artículos ✦</div>
-    <h1 class="C-title">Blog</h1>
-  </div>
+    <div class="C-masthead reveal">
+      <div class="C-eyebrow">✦ Fonotarot · Artículos ✦</div>
+      <h1 class="C-title">Blog</h1>
+    </div>
 
-  {% if posts %}
-    {% set all = posts %}
+    {% if posts %}
+      {% set all = posts %}
 
     {# ── Big feature: first 3 posts ─────────────────────────────── #}
-    <div class="C-feature reveal" style="animation-delay:.08s">
-      <a href="{{ url_for('blog.detail', slug=all[0].slug) }}" class="C-feature__main">
-        {% if all[0].featured_image_url %}
-          <img src="{{ all[0].featured_image_url }}" alt="{{ all[0].title }}" loading="eager"/>
-        {% else %}
-          <div class="C-ph" style="font-size:5rem;">✦</div>
-        {% endif %}
-        <div class="C-overlay">
-          <div class="C-pill">Artículo destacado</div>
-          <div class="C-headline">{{ all[0].title }}</div>
-          <div class="C-foot">
-            {% if all[0].published_at %}<span class="C-date">{{ all[0].published_at.strftime('%d %b %Y') }}</span>{% endif %}
-            <span class="C-read">Leer</span>
+      <div class="C-feature reveal" style="animation-delay:.08s">
+        <a href="{{ url_for('blog.detail', slug=all[0].slug) }}" class="C-feature__main">
+          {% if all[0].featured_image_url %}
+            <img src="{{ all[0].featured_image_url }}" alt="{{ all[0].title }}" loading="eager"/>
+          {% else %}
+            <div class="C-ph" style="font-size:5rem;">✦</div>
+          {% endif %}
+          <div class="C-overlay">
+            <div class="C-pill">Artículo destacado</div>
+            <div class="C-headline">{{ all[0].title }}</div>
+            <div class="C-foot">
+              {% if all[0].published_at %}<span class="C-date">{{ all[0].published_at.strftime('%d %b %Y') }}</span>{% endif %}
+              <span class="C-read">Leer</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <div class="C-feature__sidebar">
-        {% if all|length > 1 %}
-        <a href="{{ url_for('blog.detail', slug=all[1].slug) }}" class="C-side-card">
-          {% if all[1].featured_image_url %}
-            <img src="{{ all[1].featured_image_url }}" alt="{{ all[1].title }}" loading="lazy"/>
-          {% else %}
-            <div class="C-ph" style="font-size:3rem;">✦</div>
+        <div class="C-feature__sidebar">
+          {% if all|length > 1 %}
+            <a href="{{ url_for('blog.detail', slug=all[1].slug) }}" class="C-side-card">
+              {% if all[1].featured_image_url %}
+                <img src="{{ all[1].featured_image_url }}" alt="{{ all[1].title }}" loading="lazy"/>
+              {% else %}
+                <div class="C-ph" style="font-size:3rem;">✦</div>
+              {% endif %}
+              <div class="C-overlay">
+                <div class="C-headline">{{ all[1].title }}</div>
+                <div class="C-foot">
+                  {% if all[1].published_at %}<span class="C-date">{{ all[1].published_at.strftime('%d %b %Y') }}</span>{% endif %}
+                </div>
+              </div>
+            </a>
           {% endif %}
-          <div class="C-overlay">
-            <div class="C-headline">{{ all[1].title }}</div>
-            <div class="C-foot">
-              {% if all[1].published_at %}<span class="C-date">{{ all[1].published_at.strftime('%d %b %Y') }}</span>{% endif %}
-            </div>
-          </div>
-        </a>
-        {% endif %}
-        {% if all|length > 2 %}
-        <a href="{{ url_for('blog.detail', slug=all[2].slug) }}" class="C-side-card">
-          {% if all[2].featured_image_url %}
-            <img src="{{ all[2].featured_image_url }}" alt="{{ all[2].title }}" loading="lazy"/>
-          {% else %}
-            <div class="C-ph" style="font-size:3rem;">☽</div>
+          {% if all|length > 2 %}
+            <a href="{{ url_for('blog.detail', slug=all[2].slug) }}" class="C-side-card">
+              {% if all[2].featured_image_url %}
+                <img src="{{ all[2].featured_image_url }}" alt="{{ all[2].title }}" loading="lazy"/>
+              {% else %}
+                <div class="C-ph" style="font-size:3rem;">☽</div>
+              {% endif %}
+              <div class="C-overlay">
+                <div class="C-headline">{{ all[2].title }}</div>
+                <div class="C-foot">
+                  {% if all[2].published_at %}<span class="C-date">{{ all[2].published_at.strftime('%d %b %Y') }}</span>{% endif %}
+                </div>
+              </div>
+            </a>
           {% endif %}
-          <div class="C-overlay">
-            <div class="C-headline">{{ all[2].title }}</div>
-            <div class="C-foot">
-              {% if all[2].published_at %}<span class="C-date">{{ all[2].published_at.strftime('%d %b %Y') }}</span>{% endif %}
-            </div>
-          </div>
-        </a>
-        {% endif %}
+        </div>
       </div>
-    </div>
 
     {# ── Grid: remaining posts ───────────────────────────────────── #}
-    {% set rest = all[3:] %}
-    {% if rest %}
-    <div class="C-grid">
-      {% for post in rest %}
-      <a href="{{ url_for('blog.detail', slug=post.slug) }}"
-         class="C-card reveal" style="animation-delay:{{ (0.14 + loop.index0 * 0.06)|round(2) }}s">
-        {% if post.featured_image_url %}
-          <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" loading="lazy"/>
-        {% else %}
-          <div class="C-ph" style="font-size:2.5rem;">✦</div>
-        {% endif %}
-        <div class="C-overlay">
-          <div class="C-headline">{{ post.title }}</div>
-          <div class="C-foot">
-            {% if post.published_at %}<span class="C-date">{{ post.published_at.strftime('%d %b %Y') }}</span>{% endif %}
-            <span class="C-read">Leer</span>
-          </div>
+      {% set rest = all[3:] %}
+      {% if rest %}
+        <div class="C-grid">
+          {% for post in rest %}
+            <a href="{{ url_for('blog.detail', slug=post.slug) }}"
+               class="C-card reveal" style="animation-delay:{{ (0.14 + loop.index0 * 0.06)|round(2) }}s">
+              {% if post.featured_image_url %}
+                <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" loading="lazy"/>
+              {% else %}
+                <div class="C-ph" style="font-size:2.5rem;">✦</div>
+              {% endif %}
+              <div class="C-overlay">
+                <div class="C-headline">{{ post.title }}</div>
+                <div class="C-foot">
+                  {% if post.published_at %}<span class="C-date">{{ post.published_at.strftime('%d %b %Y') }}</span>{% endif %}
+                  <span class="C-read">Leer</span>
+                </div>
+              </div>
+            </a>
+          {% endfor %}
         </div>
-      </a>
-      {% endfor %}
-    </div>
+      {% endif %}
+
+    {% else %}
+      <div class="C-empty reveal">
+        <div class="C-empty__symbol">✦</div>
+        <p class="C-empty__title">{{ _("Aún no hay publicaciones") }}</p>
+      </div>
     {% endif %}
 
-  {% else %}
-    <div class="C-empty reveal">
-      <div class="C-empty__symbol">✦</div>
-      <p class="C-empty__title">{{ _("Aún no hay publicaciones") }}</p>
-    </div>
-  {% endif %}
-
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  (function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.06 });
-    els.forEach(function (el) { io.observe(el); });
-  })();
-</script>
+  <script>
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.06 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
 {% endblock %}

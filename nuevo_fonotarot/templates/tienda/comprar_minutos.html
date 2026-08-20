@@ -3,110 +3,110 @@
 {% block title %}{{ _("Comprar %(minutes)s minutos - Fonotarot", minutes=pack.minutes) }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
-<style>
-  .ck-submit-spinner {
-    display: none;
-    align-items: center;
-    margin-right: .5rem;
-  }
-
-  .ck-submit.is-loading .ck-submit-spinner {
-    display: inline-flex;
-  }
-
-  .ck-submit.is-loading .ck-submit-lock {
-    display: none;
-  }
-
-  .ck-submit-spinner i {
-    animation: ck-btn-spin .75s linear infinite;
-  }
-
-  @keyframes ck-btn-spin {
-    from {
-      transform: rotate(0deg);
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
+  <style>
+    .ck-submit-spinner {
+      display: none;
+      align-items: center;
+      margin-right: .5rem;
     }
 
-    to {
-      transform: rotate(360deg);
+    .ck-submit.is-loading .ck-submit-spinner {
+      display: inline-flex;
     }
-  }
-</style>
+
+    .ck-submit.is-loading .ck-submit-lock {
+      display: none;
+    }
+
+    .ck-submit-spinner i {
+      animation: ck-btn-spin .75s linear infinite;
+    }
+
+    @keyframes ck-btn-spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" id="checkout-form">
+  <form method="post" action="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" id="checkout-form">
 
 
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 
-  <div class="ck-split">
+    <div class="ck-split">
 
     <!-- ── LEFT: Pack summary ─────────────────────────── -->
-    <div class="ck-left">
-      <a href="/" class="ck-left-brand">🌙 {{ _("Fonotarot") }}</a>
+      <div class="ck-left">
+        <a href="/" class="ck-left-brand">🌙 {{ _("Fonotarot") }}</a>
 
-      <div class="ck-pack-icon"><i class="ti ti-clock"></i></div>
-      <div class="ck-pack-name">{{ _("%(minutes)s minutos de tarot", minutes=pack.minutes) }}</div>
-      {% if pack.description %}
-      <div class="ck-pack-desc">{{ pack.description }}</div>
-      {% endif %}
+        <div class="ck-pack-icon"><i class="ti ti-clock"></i></div>
+        <div class="ck-pack-name">{{ _("%(minutes)s minutos de tarot", minutes=pack.minutes) }}</div>
+        {% if pack.description %}
+          <div class="ck-pack-desc">{{ pack.description }}</div>
+        {% endif %}
 
-      <div class="ck-left-item">
-        <span class="item-name"><i class="ti ti-clock me-2"></i>{{ _("%(minutes)s minutos de tarot × 1", minutes=pack.minutes) }}</span>
-        <span class="item-price">{{ pack.price_display }}</span>
+        <div class="ck-left-item">
+          <span class="item-name"><i class="ti ti-clock me-2"></i>{{ _("%(minutes)s minutos de tarot × 1", minutes=pack.minutes) }}</span>
+          <span class="item-price">{{ pack.price_display }}</span>
+        </div>
+
+        <div class="ck-left-item text-success d-none" id="discount_row">
+          <span class="item-name"><i class="ti ti-discount-2 me-2"></i>{{ _("Descuento") }}</span>
+          <span class="item-price" id="discount_amount_display">-$0</span>
+        </div>
+
+        <div class="ck-left-total">
+          <span class="total-label">{{ _("Total a pagar") }}</span>
+          <span class="total-value" id="total_price_display">{{ pack.price_display }}</span>
+        </div>
+
+        <div class="ck-left-secure">
+          <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro · Datos encriptados · Acreditación inmediata") }}
+        </div>
       </div>
-
-      <div class="ck-left-item text-success d-none" id="discount_row">
-        <span class="item-name"><i class="ti ti-discount-2 me-2"></i>{{ _("Descuento") }}</span>
-        <span class="item-price" id="discount_amount_display">-$0</span>
-      </div>
-
-      <div class="ck-left-total">
-        <span class="total-label">{{ _("Total a pagar") }}</span>
-        <span class="total-value" id="total_price_display">{{ pack.price_display }}</span>
-      </div>
-
-      <div class="ck-left-secure">
-        <i class="ti ti-shield-check me-1"></i>{{ _("Pago seguro · Datos encriptados · Acreditación inmediata") }}
-      </div>
-    </div>
 
     <!-- ── RIGHT: Checkout form ──────────────────────── -->
-    <div class="ck-right">
-      <div class="ck-right-inner">
+      <div class="ck-right">
+        <div class="ck-right-inner">
 
         <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="ck-alerts">
-          {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible mb-2">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="ck-alerts">
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible mb-2">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
 
-        <h2>{{ _("Finalizar compra") }}</h2>
-        <p class="subtitle">{{ _("Completa tus datos y elige cómo pagar.") }}</p>
+          <h2>{{ _("Finalizar compra") }}</h2>
+          <p class="subtitle">{{ _("Completa tus datos y elige cómo pagar.") }}</p>
 
-        {% if not current_user %}
-          <div class="ck-info anon">
-            <i class="ti ti-ghost me-1"></i>
-            <strong>{{ _("Compra inmediata.") }}</strong> {{ _("Necesitamos el número desde donde nos llamarás y un correo electronico para enviar el comprobante.") }}<br>
-            <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
-              {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
-            </a>
-          </div>
+          {% if not current_user %}
+            <div class="ck-info anon">
+              <i class="ti ti-ghost me-1"></i>
+              <strong>{{ _("Compra inmediata.") }}</strong> {{ _("Necesitamos el número desde donde nos llamarás y un correo electronico para enviar el comprobante.") }}<br>
+              <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
+                {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
+              </a>
+            </div>
 
         <!-- ── Customer data ─────────────────────── -->
-        <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de Compra") }}</div>
+            <div class="ck-form-section">
+              <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de Compra") }}</div>
 
 
           {# <div class="form-check mt-3">
@@ -119,11 +119,11 @@
             </div>
           </div> #}
           {% else %}
-          <div class="ck-info known">
-            <i class="ti ti-user-check me-1"></i>
-            <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
-            {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
-          </div>
+            <div class="ck-info known">
+              <i class="ti ti-user-check me-1"></i>
+              <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
+              {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
+            </div>
           {% endif %}
 
           <div class="row g-2">
@@ -205,135 +205,135 @@
     </div>
 
   </div>
-</form>
+  </form>
 {% endblock %}
 
 {% block extra_js %}
-<script>
+  <script>
   /* Sync pill selected state when radio changes */
-  document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('.ck-pill').forEach(function(pill) {
-        pill.classList.remove('selected');
-      });
-      var box = this.value === 'flow'
-        ? document.getElementById('flow_box')
-        : document.getElementById('khipu_box');
-      if (box) box.classList.add('selected');
-    });
-  });
-
-  var checkoutForm = document.getElementById('checkout-form');
-  var checkoutBtn = document.getElementById('checkout-submit-btn');
-  var checkoutLabel = document.getElementById('checkout-submit-label');
-  if (checkoutForm && checkoutBtn && checkoutLabel) {
-    checkoutForm.addEventListener('submit', function() {
-      if (typeof window.fonotarotTrackEvent === 'function') {
-        var quantity = 1;
-        var items = [{
-          item_id: 'minute_pack-{{ pack.id }}',
-          item_name: {{ (_("%(minutes)s minutos de tarot", minutes=pack.minutes)) | tojson }},
-          item_category: 'minute_pack',
-          price: {{ pack.price }},
-          quantity: quantity
-        }];
-        window.fonotarotTrackEvent('begin_checkout', {
-          currency: 'CLP',
-          value: {{ pack.price }},
-          items: items
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.ck-pill').forEach(function(pill) {
+          pill.classList.remove('selected');
         });
-        var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
-        if (payMethod) {
-          window.fonotarotTrackEvent('add_payment_info', {
+        var box = this.value === 'flow'
+          ? document.getElementById('flow_box')
+          : document.getElementById('khipu_box');
+        if (box) box.classList.add('selected');
+      });
+    });
+
+    var checkoutForm = document.getElementById('checkout-form');
+    var checkoutBtn = document.getElementById('checkout-submit-btn');
+    var checkoutLabel = document.getElementById('checkout-submit-label');
+    if (checkoutForm && checkoutBtn && checkoutLabel) {
+      checkoutForm.addEventListener('submit', function() {
+        if (typeof window.fonotarotTrackEvent === 'function') {
+          var quantity = 1;
+          var items = [{
+            item_id: 'minute_pack-{{ pack.id }}',
+            item_name: {{ (_("%(minutes)s minutos de tarot", minutes=pack.minutes)) | tojson }},
+            item_category: 'minute_pack',
+            price: {{ pack.price }},
+            quantity: quantity
+          }];
+          window.fonotarotTrackEvent('begin_checkout', {
             currency: 'CLP',
             value: {{ pack.price }},
-            payment_type: payMethod.value,
             items: items
           });
+          var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
+          if (payMethod) {
+            window.fonotarotTrackEvent('add_payment_info', {
+              currency: 'CLP',
+              value: {{ pack.price }},
+              payment_type: payMethod.value,
+              items: items
+            });
+          }
+          var createAccount = checkoutForm.querySelector('#create_account');
+          if (createAccount && createAccount.checked) {
+            window.fonotarotTrackEvent('sign_up', { method: 'checkout' });
+          }
         }
-        var createAccount = checkoutForm.querySelector('#create_account');
-        if (createAccount && createAccount.checked) {
-          window.fonotarotTrackEvent('sign_up', { method: 'checkout' });
+        if (checkoutBtn.disabled) {
+          return false;
         }
-      }
-      if (checkoutBtn.disabled) {
-        return false;
-      }
-      checkoutBtn.disabled = true;
-      checkoutBtn.classList.add('disabled', 'is-loading');
-      checkoutLabel.textContent = checkoutBtn.dataset.loadingText || '';
-      return true;
-    });
-  }
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('disabled', 'is-loading');
+        checkoutLabel.textContent = checkoutBtn.dataset.loadingText || '';
+        return true;
+      });
+    }
 
   // Discount Code Preview Logic
-  var applyDiscountBtn = document.getElementById('apply_discount_btn');
-  var discountInput = document.getElementById('discount_code');
-  var discountMessage = document.getElementById('discount_message');
-  var discountRow = document.getElementById('discount_row');
-  var discountAmountDisplay = document.getElementById('discount_amount_display');
-  var totalPriceDisplay = document.getElementById('total_price_display');
-  var originalPriceDisplay = '{{ pack.price_display }}';
+    var applyDiscountBtn = document.getElementById('apply_discount_btn');
+    var discountInput = document.getElementById('discount_code');
+    var discountMessage = document.getElementById('discount_message');
+    var discountRow = document.getElementById('discount_row');
+    var discountAmountDisplay = document.getElementById('discount_amount_display');
+    var totalPriceDisplay = document.getElementById('total_price_display');
+    var originalPriceDisplay = '{{ pack.price_display }}';
 
-  if (applyDiscountBtn && discountInput) {
-    applyDiscountBtn.addEventListener('click', async function() {
-      var code = discountInput.value.trim();
-      if (!code) {
-        discountMessage.textContent = '';
-        discountRow.classList.add('d-none');
-        totalPriceDisplay.textContent = originalPriceDisplay;
-        checkoutLabel.textContent = '{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}';
-        return;
-      }
-
-      applyDiscountBtn.disabled = true;
-      discountMessage.className = 'small text-muted';
-      discountMessage.textContent = '{{ _("Calculando...") }}';
-
-      try {
-        const response = await fetch('{{ url_for("api.preview_discount") }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({
-            discount_code: code,
-            item_type: 'minute_pack',
-            item_id: {{ pack.id }}
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || '{{ _("Error al aplicar el código.") }}');
+    if (applyDiscountBtn && discountInput) {
+      applyDiscountBtn.addEventListener('click', async function() {
+        var code = discountInput.value.trim();
+        if (!code) {
+          discountMessage.textContent = '';
+          discountRow.classList.add('d-none');
+          totalPriceDisplay.textContent = originalPriceDisplay;
+          checkoutLabel.textContent = '{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}';
+          return;
         }
 
-        discountMessage.className = 'small text-success mt-1';
-        discountMessage.textContent = '{{ _("Código aplicado con éxito.") }}';
+        applyDiscountBtn.disabled = true;
+        discountMessage.className = 'small text-muted';
+        discountMessage.textContent = '{{ _("Calculando...") }}';
+
+        try {
+          const response = await fetch('{{ url_for("api.preview_discount") }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+              discount_code: code,
+              item_type: 'minute_pack',
+              item_id: {{ pack.id }}
+            })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || '{{ _("Error al aplicar el código.") }}');
+          }
+
+          discountMessage.className = 'small text-success mt-1';
+          discountMessage.textContent = '{{ _("Código aplicado con éxito.") }}';
 
         // Format numbers for CLP (e.g., $10.000)
-        var formatCurrency = function(val) {
-          return '$' + Math.round(Number(val)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        };
+          var formatCurrency = function(val) {
+            return '$' + Math.round(Number(val)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          };
 
-        discountRow.classList.remove('d-none');
-        discountAmountDisplay.textContent = '-' + formatCurrency(data.discount_amount);
-        var finalDisplay = formatCurrency(data.final_price);
-        totalPriceDisplay.textContent = finalDisplay;
-        checkoutLabel.textContent = '{{ _("Pagar ahora - ") }}' + finalDisplay;
+          discountRow.classList.remove('d-none');
+          discountAmountDisplay.textContent = '-' + formatCurrency(data.discount_amount);
+          var finalDisplay = formatCurrency(data.final_price);
+          totalPriceDisplay.textContent = finalDisplay;
+          checkoutLabel.textContent = '{{ _("Pagar ahora - ") }}' + finalDisplay;
 
-      } catch (err) {
-        discountMessage.className = 'small text-danger mt-1';
-        discountMessage.textContent = err.message;
-        discountRow.classList.add('d-none');
-        totalPriceDisplay.textContent = originalPriceDisplay;
-        checkoutLabel.textContent = '{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}';
-      } finally {
-        applyDiscountBtn.disabled = false;
-      }
-    });
-  }
-</script>
+        } catch (err) {
+          discountMessage.className = 'small text-danger mt-1';
+          discountMessage.textContent = err.message;
+          discountRow.classList.add('d-none');
+          totalPriceDisplay.textContent = originalPriceDisplay;
+          checkoutLabel.textContent = '{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}';
+        } finally {
+          applyDiscountBtn.disabled = false;
+        }
+      });
+    }
+  </script>
 {% endblock %}

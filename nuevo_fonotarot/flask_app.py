@@ -1,11 +1,19 @@
+## Implementar:
+## - whenever
+## - pint
+## - pydantic-settings
+## - complexiply
+## - NiceUI (en daleks)
+
 """Flask application factory."""
 
 import logging.config
 import os
+from types import SimpleNamespace
 from typing import Any
 
 import sentry_sdk
-from flask import Flask, request, session
+from flask import Flask, g, request, session
 from flask_babel import get_locale
 from flask_merchants.signals import webhook_event_finished
 from flask_security.datastore import SQLAlchemyUserDatastore
@@ -164,7 +172,7 @@ def _init_extensions(app: Flask) -> None:
 
     @app.before_request
     def _inject_site_settings():
-        if request.path.startswith(app.static_url_path):
+        if app.static_url_path and request.path.startswith(app.static_url_path):
             return
         from .models import SiteSettings
 
@@ -237,31 +245,10 @@ def _init_extensions(app: Flask) -> None:
 
 
 def _init_merchants(app: Flask, admin: Any) -> None:
+    from .models import Order
     from .signals import _handle_payment_webhook_finished
 
-    providers = []
-    if app.config.get("KHIPU_API_KEY", None):
-        from merchants.providers.khipu import KhipuProvider
-
-        providers.append(
-            KhipuProvider(
-                api_key=app.config.get("KHIPU_API_KEY", ""),
-                subject="Compra Fonotarot",
-            )
-        )
-    if app.config.get("FLOW_API_KEY", None):
-        from merchants.providers.flow import FlowProvider
-
-        providers.append(
-            FlowProvider(
-                api_key=app.config.get("FLOW_API_KEY", ""),
-                api_secret=app.config.get("FLOW_SECRET_KEY", ""),
-                api_url=app.config.get("FLOW_API_URL", ""),
-            )
-        )
-    from .models import Order
-
-    merchants_ext.init_app(app=app, db=db, models=[Order], providers=providers, admin=admin)
+    merchants_ext.init_app(app=app, db=db, models=[Order], admin=admin)
     webhook_event_finished.connect(
         _handle_payment_webhook_finished,
         sender=app,

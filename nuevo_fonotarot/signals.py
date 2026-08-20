@@ -1,7 +1,5 @@
 """Signal-facing post-payment processes."""
 
-from __future__ import annotations
-
 from .actions import post_purchase_process
 from .log import get_logger
 

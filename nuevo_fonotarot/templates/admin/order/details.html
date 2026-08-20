@@ -2,48 +2,48 @@
 
 {% block body %}
   {%
-    set order_labels = {
-      'pending': _gettext('Pending'),
-      'paid': _gettext('Paid'),
-      'fulfilling': _gettext('Fulfilling'),
-      'shipped': _gettext('Shipped'),
-      'delivered': _gettext('Delivered'),
-      'failed': _gettext('Failed'),
-      'cancelled': _gettext('Cancelled'),
-    }
+  set order_labels = {
+  'pending': _gettext('Pending'),
+  'paid': _gettext('Paid'),
+  'fulfilling': _gettext('Fulfilling'),
+  'shipped': _gettext('Shipped'),
+  'delivered': _gettext('Delivered'),
+  'failed': _gettext('Failed'),
+  'cancelled': _gettext('Cancelled'),
+  }
   %}
   {%
-    set payment_labels = {
-      'pending': _gettext('Pending'),
-      'processing': _gettext('Processing'),
-      'succeeded': _gettext('Succeeded'),
-      'failed': _gettext('Failed'),
-      'cancelled': _gettext('Cancelled'),
-      'refunded': _gettext('Refunded'),
-      'unknown': _gettext('Unknown'),
-    }
+  set payment_labels = {
+  'pending': _gettext('Pending'),
+  'processing': _gettext('Processing'),
+  'succeeded': _gettext('Succeeded'),
+  'failed': _gettext('Failed'),
+  'cancelled': _gettext('Cancelled'),
+  'refunded': _gettext('Refunded'),
+  'unknown': _gettext('Unknown'),
+  }
   %}
   {%
-    set order_badges = {
-      'pending': 'bg-warning-lt text-warning',
-      'paid': 'bg-success-lt text-success',
-      'fulfilling': 'bg-info-lt text-info',
-      'shipped': 'bg-primary-lt text-primary',
-      'delivered': 'bg-teal-lt text-teal',
-      'failed': 'bg-danger-lt text-danger',
-      'cancelled': 'bg-danger-lt text-danger',
-    }
+  set order_badges = {
+  'pending': 'bg-warning-lt text-warning',
+  'paid': 'bg-success-lt text-success',
+  'fulfilling': 'bg-info-lt text-info',
+  'shipped': 'bg-primary-lt text-primary',
+  'delivered': 'bg-teal-lt text-teal',
+  'failed': 'bg-danger-lt text-danger',
+  'cancelled': 'bg-danger-lt text-danger',
+  }
   %}
   {%
-    set payment_badges = {
-      'pending': 'bg-warning-lt text-warning',
-      'processing': 'bg-info-lt text-info',
-      'succeeded': 'bg-success-lt text-success',
-      'failed': 'bg-danger-lt text-danger',
-      'cancelled': 'bg-danger-lt text-danger',
-      'refunded': 'bg-secondary-lt text-secondary',
-      'unknown': 'bg-secondary-lt text-secondary',
-    }
+  set payment_badges = {
+  'pending': 'bg-warning-lt text-warning',
+  'processing': 'bg-info-lt text-info',
+  'succeeded': 'bg-success-lt text-success',
+  'failed': 'bg-danger-lt text-danger',
+  'cancelled': 'bg-danger-lt text-danger',
+  'refunded': 'bg-secondary-lt text-secondary',
+  'unknown': 'bg-secondary-lt text-secondary',
+  }
   %}
 
   <style>
@@ -167,14 +167,14 @@
         </div>
         <div class="card-body">
           {%
-            set audit_payloads = [
-              (_gettext('Extra arguments'), 'extra_args'),
-              (_gettext('Provider request payload'), 'request_payload'),
-              (_gettext('Provider response payload'), 'response_payload'),
-              (_gettext('Payment object'), 'payment_object'),
-              (_gettext('Firenze payload'), 'firenze_payload'),
-              (_gettext('Firenze response'), 'firenze_response'),
-            ]
+          set audit_payloads = [
+          (_gettext('Extra arguments'), 'extra_args'),
+          (_gettext('Provider request payload'), 'request_payload'),
+          (_gettext('Provider response payload'), 'response_payload'),
+          (_gettext('Payment object'), 'payment_object'),
+          (_gettext('Firenze payload'), 'firenze_payload'),
+          (_gettext('Firenze response'), 'firenze_response'),
+          ]
           %}
           {% for label, field_name in audit_payloads %}
             <div class="audit-block p-3 mb-3">
@@ -214,11 +214,11 @@
             {% endif %}
             {% set order_current_index = order_steps.index(model.status) %}
             {%
-              set order_terminal_colors = {
-                'delivered': 'text-teal',
-                'cancelled': 'text-danger',
-                'failed': 'text-danger'
-              }
+            set order_terminal_colors = {
+            'delivered': 'text-teal',
+            'cancelled': 'text-danger',
+            'failed': 'text-danger'
+            }
             %}
             <ul class="steps steps-green steps-vertical mb-0">
               {% for step in order_steps %}
@@ -250,13 +250,13 @@
             {% endif %}
             {% set payment_current_index = payment_steps.index(model.payment_status) %}
             {%
-              set payment_terminal_colors = {
-                'succeeded': 'text-success',
-                'failed': 'text-danger',
-                'cancelled': 'text-danger',
-                'refunded': 'text-secondary',
-                'unknown': 'text-secondary'
-              }
+            set payment_terminal_colors = {
+            'succeeded': 'text-success',
+            'failed': 'text-danger',
+            'cancelled': 'text-danger',
+            'refunded': 'text-secondary',
+            'unknown': 'text-secondary'
+            }
             %}
             <ul class="steps steps-green steps-vertical mb-0">
               {% for step in payment_steps %}

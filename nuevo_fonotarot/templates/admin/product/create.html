@@ -249,21 +249,21 @@
     <div class="product-editor-layout">
       <div class="product-editor-main">
         {{ form.name(class="product-name-input", id="name-field",
-                     placeholder=_gettext('Product name...'),
-                     autocomplete="off") }}
+        placeholder=_gettext('Product name...'),
+        autocomplete="off") }}
         {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
 
         <div class="product-slug-row">
           <span>/tienda/</span>
           {{ form.slug(class="product-slug-input", id="slug-field",
-                       placeholder=_gettext('auto-generated-slug')) }}
+          placeholder=_gettext('auto-generated-slug')) }}
         </div>
         {% for error in form.slug.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
 
         <div class="description-card">
           <div class="description-card-header">{{ _gettext('Description') }}</div>
           {{ form.description(class="description-field", id="description-field",
-                              placeholder=_gettext('Describe the product, materials, usage, and details for customers.')) }}
+          placeholder=_gettext('Describe the product, materials, usage, and details for customers.')) }}
         </div>
         {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
       </div>

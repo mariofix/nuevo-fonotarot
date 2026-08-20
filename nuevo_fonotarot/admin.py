@@ -257,7 +257,9 @@ class SecureAdminIndexView(AdminIndexView):
 
         # Total discounted per code, paid orders only. Assumes a single currency
         # (CLP) across all discount usage — matches your actual sales profile.
-        q_discount = db.session.query(Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0)).filter(
+        q_discount = db.session.query(
+            Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0)
+        ).filter(
             Order.discount_code_id.isnot(None),
             Order.discount_amount.isnot(None),
             Order.payment_status == self.PAID_STATUS,
@@ -274,7 +276,7 @@ class SecureAdminIndexView(AdminIndexView):
         )
         if year and month:
             q_discount_count = q_discount_count.filter(Order.created_at >= month_start, Order.created_at < month_end)
-        
+
         discount_month_uses = dict(q_discount_count.group_by(Order.discount_code_id).all())
 
         discount_rows = []
@@ -489,12 +491,13 @@ class MonthlyStoreReportView(BaseView):
 
         # Calculate month timestamps for the chart
         import datetime
+
         month_start_dt = datetime.datetime(year, month, 1)
         if month == 12:
             month_end_dt = datetime.datetime(year + 1, 1, 1)
         else:
             month_end_dt = datetime.datetime(year, month + 1, 1)
-            
+
         start_ms = int(month_start_dt.timestamp() * 1000)
         end_ms = int(month_end_dt.timestamp() * 1000)
 

@@ -256,18 +256,18 @@
       <i class="ti ti-arrow-left me-1"></i>{{ _gettext('All Posts') }}
     </a>
     {%- if admin_view.can_create -%}
-    <a href="{{ get_url('.create_view', url=return_url) }}" class="btn btn-sm btn-ghost-secondary">
-      <i class="ti ti-plus me-1"></i>{{ _gettext('New Post') }}
-    </a>
+      <a href="{{ get_url('.create_view', url=return_url) }}" class="btn btn-sm btn-ghost-secondary">
+        <i class="ti ti-plus me-1"></i>{{ _gettext('New Post') }}
+      </a>
     {%- endif -%}
     <span class="text-muted small ms-auto">
       {{ _gettext('Editing') }}
     </span>
     {%- if admin_view.can_view_details and model -%}
-    <a href="{{ get_url('.details_view', id=model.id, url=return_url) }}"
-       class="btn btn-sm btn-ghost-secondary" title="{{ _gettext('View details') }}">
-      <i class="ti ti-info-circle"></i>
-    </a>
+      <a href="{{ get_url('.details_view', id=model.id, url=return_url) }}"
+         class="btn btn-sm btn-ghost-secondary" title="{{ _gettext('View details') }}">
+        <i class="ti ti-info-circle"></i>
+      </a>
     {%- endif -%}
   </div>
 
@@ -285,8 +285,8 @@
 
         {# Title #}
         {{ form.title(class="post-title-input", id="title-field",
-                      placeholder=_gettext('Post title…'),
-                      autocomplete="off") }}
+        placeholder=_gettext('Post title…'),
+        autocomplete="off") }}
 
         {# Slug row #}
         <div class="post-slug-row">
@@ -332,32 +332,32 @@
 
           {# Timestamps #}
           {% if model %}
-          <div class="meta-card">
-            <div class="meta-card-header">{{ _gettext('Info') }}</div>
-            {% if model.published_at %}
-            <div class="meta-item">
-              <i class="ti ti-calendar meta-item-icon"></i>
-              <div>
-                <div class="meta-item-label">{{ _gettext('Published') }}</div>
-                <div class="meta-item-value">{{ model.published_at.strftime('%d %b %Y') }}</div>
+            <div class="meta-card">
+              <div class="meta-card-header">{{ _gettext('Info') }}</div>
+              {% if model.published_at %}
+                <div class="meta-item">
+                  <i class="ti ti-calendar meta-item-icon"></i>
+                  <div>
+                    <div class="meta-item-label">{{ _gettext('Published') }}</div>
+                    <div class="meta-item-value">{{ model.published_at.strftime('%d %b %Y') }}</div>
+                  </div>
+                </div>
+              {% endif %}
+              <div class="meta-item">
+                <i class="ti ti-clock meta-item-icon"></i>
+                <div>
+                  <div class="meta-item-label">{{ _gettext('Created') }}</div>
+                  <div class="meta-item-value">{{ model.created_at.strftime('%d %b %Y') }}</div>
+                </div>
+              </div>
+              <div class="meta-item">
+                <i class="ti ti-edit meta-item-icon"></i>
+                <div>
+                  <div class="meta-item-label">{{ _gettext('Last modified') }}</div>
+                  <div class="meta-item-value">{{ model.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
+                </div>
               </div>
             </div>
-            {% endif %}
-            <div class="meta-item">
-              <i class="ti ti-clock meta-item-icon"></i>
-              <div>
-                <div class="meta-item-label">{{ _gettext('Created') }}</div>
-                <div class="meta-item-value">{{ model.created_at.strftime('%d %b %Y') }}</div>
-              </div>
-            </div>
-            <div class="meta-item">
-              <i class="ti ti-edit meta-item-icon"></i>
-              <div>
-                <div class="meta-item-label">{{ _gettext('Last modified') }}</div>
-                <div class="meta-item-value">{{ model.updated_at.strftime('%d %b %Y, %H:%M') }}</div>
-              </div>
-            </div>
-          </div>
           {% endif %}
 
           {# Featured Image #}
@@ -387,7 +387,7 @@
               <span>{{ _gettext('Excerpt') }}</span>
             </div>
             {{ form.excerpt(class="excerpt-textarea", id="excerpt-field",
-                            placeholder=_gettext('Brief description of the post…')) }}
+            placeholder=_gettext('Brief description of the post…')) }}
             <div class="excerpt-counter">
               <span id="excerpt-count">0</span> / 160
             </div>
@@ -536,9 +536,9 @@
             'fullscreen','insertdatetime','media','table','wordcount'],
           toolbar:
             'undo redo | formatselect | bold italic backcolor | ' +
-            'alignleft aligncenter alignright alignjustify | ' +
-            'bullist numlist outdent indent | removeformat | ' +
-            'preview code fullscreen',
+          'alignleft aligncenter alignright alignjustify | ' +
+          'bullist numlist outdent indent | removeformat | ' +
+          'preview code fullscreen',
           content_style: contentStyle(isDark),
         };
         if (isDark) { o.skin = 'oxide-dark'; o.content_css = 'dark'; }

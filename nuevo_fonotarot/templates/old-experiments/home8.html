@@ -182,45 +182,45 @@
         </div>
         <div class="oc-pane active" id="oc-all8">
           {% for agent in agents %}
-          <div class="agent-oc-card">
-            <div class="agent-oc-av">{{ agent.name[0] }}</div>
-            <div class="flex-grow-1">
-              <div class="agent-oc-nm">{{ agent.name }}</div>
-              <div class="agent-oc-sp">{{ agent.specialty }}</div>
-              <div class="mt-1">
-                {% if agent.status == 'available' %}<span class="b-on">● Disponible</span>
-                {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+            <div class="agent-oc-card">
+              <div class="agent-oc-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="agent-oc-nm">{{ agent.name }}</div>
+                <div class="agent-oc-sp">{{ agent.specialty }}</div>
+                <div class="mt-1">
+                  {% if agent.status == 'available' %}<span class="b-on">● Disponible</span>
+                  {% elif agent.status == 'busy' %}<span class="b-busy">● En consulta</span>{% endif %}
+                </div>
               </div>
+              {% if agent.status == 'available' %}<a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
+              {% else %}<button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>{% endif %}
             </div>
-            {% if agent.status == 'available' %}<a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-            {% else %}<button class="btn-oc-busy" disabled><i class="ti ti-clock"></i></button>{% endif %}
-          </div>
           {% endfor %}
         </div>
         <div class="oc-pane" id="oc-online8">
           {% for agent in agents if agent.status == 'available' %}
-          <div class="agent-oc-card">
-            <div class="agent-oc-av">{{ agent.name[0] }}</div>
-            <div class="flex-grow-1">
-              <div class="agent-oc-nm">{{ agent.name }}</div>
-              <div class="agent-oc-sp">{{ agent.specialty }}</div>
-              <span class="b-on">● Disponible ahora</span>
+            <div class="agent-oc-card">
+              <div class="agent-oc-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="agent-oc-nm">{{ agent.name }}</div>
+                <div class="agent-oc-sp">{{ agent.specialty }}</div>
+                <span class="b-on">● Disponible ahora</span>
+              </div>
+              <a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
             </div>
-            <a href="tel:+56222301515" class="btn-oc-call"><i class="ti ti-phone me-1"></i>Llamar</a>
-          </div>
           {% endfor %}
         </div>
         <div class="oc-pane" id="oc-busy8">
           {% for agent in agents if agent.status == 'busy' %}
-          <div class="agent-oc-card">
-            <div class="agent-oc-av">{{ agent.name[0] }}</div>
-            <div class="flex-grow-1">
-              <div class="agent-oc-nm">{{ agent.name }}</div>
-              <div class="agent-oc-sp">{{ agent.specialty }}</div>
-              <span class="b-busy">● En consulta</span>
+            <div class="agent-oc-card">
+              <div class="agent-oc-av">{{ agent.name[0] }}</div>
+              <div class="flex-grow-1">
+                <div class="agent-oc-nm">{{ agent.name }}</div>
+                <div class="agent-oc-sp">{{ agent.specialty }}</div>
+                <span class="b-busy">● En consulta</span>
+              </div>
+              <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i> Vuelve pronto</button>
             </div>
-            <button class="btn-oc-busy" disabled><i class="ti ti-clock"></i> Vuelve pronto</button>
-          </div>
           {% endfor %}
         </div>
         <div class="mt-4">
@@ -359,7 +359,7 @@
             <p class="bento-text">Tarot del Amor, Tarot Gitano, Tarot Marsella, Tarot Kármico, Tarot Intuitivo, Runas Nórdicas y más. Cada especialista tiene su área de dominio particular.</p>
             <div class="d-flex flex-wrap gap-2 mt-3">
               {% for spec in ["Amor","Trabajo","Salud","Familia","Finanzas","Guía Espiritual"] %}
-              <span style="background:#f0ebff; color:var(--violet); border-radius:20px; padding:3px 12px; font-size:.78rem; font-weight:600;">{{ spec }}</span>
+                <span style="background:#f0ebff; color:var(--violet); border-radius:20px; padding:3px 12px; font-size:.78rem; font-weight:600;">{{ spec }}</span>
               {% endfor %}
             </div>
           </div>
@@ -386,26 +386,26 @@
         <div class="text-center mb-5">
           <div class="plan-tab-bar" id="planTabs">
             {% for plan in plans %}
-            <button class="plan-tab {% if loop.first %}active{% endif %}" onclick="switchPlanTab('plan-{{ plan.minutes }}', this)">{{ plan.minutes }} min</button>
+              <button class="plan-tab {% if loop.first %}active{% endif %}" onclick="switchPlanTab('plan-{{ plan.minutes }}', this)">{{ plan.minutes }} min</button>
             {% endfor %}
           </div>
         </div>
         {% for plan in plans %}
-        <div class="plan-pane {% if loop.first %}active{% endif %}" id="plan-{{ plan.minutes }}">
-          <div class="row justify-content-center">
-            <div class="col-sm-8 col-md-6 col-lg-4">
-              <div class="plan-card {% if plan.is_featured %}featured{% endif %}">
-                {% if plan.is_featured %}<div><span class="plan-badge">✨ Más popular</span></div>{% endif %}
-                <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
-                <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
-                <p class="plan-desc">{{ plan.description }}</p>
-                <a href="#" class="btn {% if plan.is_featured %}btn-plan-violet{% else %}btn-plan-outline{% endif %}">
-                  <i class="ti ti-wallet me-1"></i>Carga Minutos
-                </a>
+          <div class="plan-pane {% if loop.first %}active{% endif %}" id="plan-{{ plan.minutes }}">
+            <div class="row justify-content-center">
+              <div class="col-sm-8 col-md-6 col-lg-4">
+                <div class="plan-card {% if plan.is_featured %}featured{% endif %}">
+                  {% if plan.is_featured %}<div><span class="plan-badge">✨ Más popular</span></div>{% endif %}
+                  <div class="plan-mins">{{ plan.minutes }}<small> min</small></div>
+                  <div class="plan-price">${{ plan.price }} CLP<span> / sesión</span></div>
+                  <p class="plan-desc">{{ plan.description }}</p>
+                  <a href="#" class="btn {% if plan.is_featured %}btn-plan-violet{% else %}btn-plan-outline{% endif %}">
+                    <i class="ti ti-wallet me-1"></i>Carga Minutos
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         {% endfor %}
         <p class="text-center mt-4" style="color:var(--muted); font-size:.85rem;">
           <i class="ti ti-info-circle me-1" style="color:var(--violet);"></i>Los minutos no tienen fecha de vencimiento.
@@ -423,21 +423,21 @@
         <div id="tc8" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5500">
           <div class="carousel-inner">
             {% for t in testimonials %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-              <div class="testi-card">
-                <div class="t-stars">★★★★★</div>
-                <p class="t-quote">"{{ t.text }}"</p>
-                <div class="t-author">{{ t.author }}</div>
-                <div class="t-city">{{ t.city }}</div>
+              <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="testi-card">
+                  <div class="t-stars">★★★★★</div>
+                  <p class="t-quote">"{{ t.text }}"</p>
+                  <div class="t-author">{{ t.author }}</div>
+                  <div class="t-city">{{ t.city }}</div>
+                </div>
               </div>
-            </div>
             {% endfor %}
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#tc8" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span></button>
           <button class="carousel-control-next" type="button" data-bs-target="#tc8" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span></button>
           <div class="carousel-indicators" style="position:static;margin-top:2rem;">
             {% for t in testimonials %}
-            <button type="button" data-bs-target="#tc8" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
+              <button type="button" data-bs-target="#tc8" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active" aria-current="true"{% endif %}></button>
             {% endfor %}
           </div>
         </div>
@@ -460,27 +460,27 @@
             </div>
             <div class="faq-pane active" id="fcat-general">
               {% for q, a in [
-                ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al +56 2 2230 1515. Serás conectado/a de inmediato con una especialista disponible."),
-                ("¿Está disponible las 24 horas?","Sí, operamos todos los días del año sin excepción."),
-                ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú o el botón de la página y elige con quién prefieres consultar.")
+              ("¿Cómo funciona el servicio?","Elige un plan de minutos, carga tu saldo y llama al +56 2 2230 1515. Serás conectado/a de inmediato con una especialista disponible."),
+              ("¿Está disponible las 24 horas?","Sí, operamos todos los días del año sin excepción."),
+              ("¿Puedo elegir con quién consultar?","Sí. Abre el panel de especialistas desde el menú o el botón de la página y elige con quién prefieres consultar.")
               ] %}
               <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
               {% endfor %}
             </div>
             <div class="faq-pane" id="fcat-planes">
               {% for q, a in [
-                ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento."),
-                ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile."),
-                ("¿Qué pasa con los minutos que no uso?","Los minutos restantes de una sesión quedan guardados en tu cuenta para que los uses en otra consulta.")
+              ("¿Los minutos tienen fecha de vencimiento?","No. Los minutos que cargues quedan disponibles en tu cuenta sin fecha de vencimiento."),
+              ("¿Qué formas de pago aceptan?","Aceptamos tarjetas de crédito y débito, transferencia bancaria y otros medios habituales en Chile."),
+              ("¿Qué pasa con los minutos que no uso?","Los minutos restantes de una sesión quedan guardados en tu cuenta para que los uses en otra consulta.")
               ] %}
               <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
               {% endfor %}
             </div>
             <div class="faq-pane" id="fcat-privacidad">
               {% for q, a in [
-                ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato compartido durante la consulta es divulgado a terceros."),
-                ("¿Se graban las llamadas?","No. Las sesiones son completamente privadas y no quedan grabadas en ningún sistema."),
-                ("¿Necesito crear una cuenta?","No es obligatorio. Puedes consultar sin registrarte.")
+              ("¿Es confidencial mi consulta?","Absolutamente. Tu privacidad es nuestra prioridad. Ningún dato compartido durante la consulta es divulgado a terceros."),
+              ("¿Se graban las llamadas?","No. Las sesiones son completamente privadas y no quedan grabadas en ningún sistema."),
+              ("¿Necesito crear una cuenta?","No es obligatorio. Puedes consultar sin registrarte.")
               ] %}
               <div class="faq-item"><div class="faq-q">{{ q }}</div><div class="faq-a">{{ a }}</div></div>
               {% endfor %}

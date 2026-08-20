@@ -162,8 +162,8 @@
     {% if admin_view.can_upload %}
       {%- if admin_view.upload_modal -%}
         {{ lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
-                                btn_class='btn btn-primary',
-                                content='<i class="ti ti-upload me-1"></i>' ~ _gettext('Upload')) }}
+        btn_class='btn btn-primary',
+        content='<i class="ti ti-upload me-1"></i>' ~ _gettext('Upload')) }}
       {% else %}
         <a class="btn btn-primary" href="{{ get_dir_url('.upload', path=dir_path) }}">
           <i class="ti ti-upload me-1"></i>{{ _gettext('Upload') }}
@@ -183,12 +183,12 @@
             </a>
           </li>
           {% for name, path in breadcrumbs[:-1] %}
-          <li class="breadcrumb-item">
-            <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
-          </li>
+            <li class="breadcrumb-item">
+              <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
+            </li>
           {% endfor %}
           {% if breadcrumbs %}
-          <li class="breadcrumb-item active" aria-current="page">{{ breadcrumbs[-1][0] }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ breadcrumbs[-1][0] }}</li>
           {% endif %}
         </ol>
       </nav>
@@ -197,84 +197,84 @@
 
   {# ── Image/folder grid ─────────────────────────────────────────────────── #}
   {% block file_list_table %}
-  <div class="ml-grid" id="ml-grid">
-    {% set image_exts = ('jpg','jpeg','png','gif','webp','svg','avif') %}
+    <div class="ml-grid" id="ml-grid">
+      {% set image_exts = ('jpg','jpeg','png','gif','webp','svg','avif') %}
 
-    {% for name, item_path, is_dir, size, date in items %}
-      {% if is_dir %}
+      {% for name, item_path, is_dir, size, date in items %}
+        {% if is_dir %}
         {# Folder card #}
-        <a href="{{ get_dir_url('.index_view', path=item_path)|safe }}" class="ml-folder">
-          <i class="ti ti-folder"></i>
-          <span class="ml-folder-name">{{ name }}</span>
-        </a>
-      {% else %}
+          <a href="{{ get_dir_url('.index_view', path=item_path)|safe }}" class="ml-folder">
+            <i class="ti ti-folder"></i>
+            <span class="ml-folder-name">{{ name }}</span>
+          </a>
+        {% else %}
         {# Image card #}
-        {% set ext = name.rsplit('.', 1)[-1].lower() if '.' in name else '' %}
-        <div class="ml-image-card">
-          {% if actions %}
-          <div class="ml-select-checkbox">
-            <input type="checkbox" name="rowid" class="action-checkbox form-check-input" value="{{ item_path }}" />
-          </div>
-          {% endif %}
+          {% set ext = name.rsplit('.', 1)[-1].lower() if '.' in name else '' %}
+          <div class="ml-image-card">
+            {% if actions %}
+              <div class="ml-select-checkbox">
+                <input type="checkbox" name="rowid" class="action-checkbox form-check-input" value="{{ item_path }}" />
+              </div>
+            {% endif %}
 
-          {% if ext in image_exts %}
-            <img class="ml-thumb"
-                 src="{{ get_file_url(item_path)|safe }}"
-                 alt="{{ name }}"
-                 loading="lazy" />
-          {% else %}
-            <div class="ml-thumb-placeholder">
-              <i class="ti ti-file"></i>
-            </div>
-          {% endif %}
+            {% if ext in image_exts %}
+              <img class="ml-thumb"
+                   src="{{ get_file_url(item_path)|safe }}"
+                   alt="{{ name }}"
+                   loading="lazy" />
+            {% else %}
+              <div class="ml-thumb-placeholder">
+                <i class="ti ti-file"></i>
+              </div>
+            {% endif %}
 
-          <div class="ml-image-overlay">
-            <div class="ml-image-name">{{ name }}</div>
-            <div class="ml-image-actions">
-              {% if admin_view.can_rename and item_path and name != '..' %}
-                {%- if admin_view.rename_modal -%}
-                  {{ lib.add_modal_button(url=get_url('.rename', path=item_path, modal=True),
-                                          btn_class='btn btn-sm btn-ghost-light',
-                                          content='<i class="ti ti-pencil"></i>') }}
-                {% else %}
-                  <a class="btn btn-sm btn-ghost-light"
-                     href="{{ get_url('.rename', path=item_path) }}"
-                     title="{{ _gettext('Rename') }}">
-                    <i class="ti ti-pencil"></i>
-                  </a>
-                {%- endif -%}
-              {% endif %}
-              {% if admin_view.can_delete and item_path %}
-                <form method="POST" action="{{ get_url('.delete') }}" style="flex:1;">
-                  {{ delete_form.path(value=item_path) }}
-                  {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
-                    {{ delete_form.csrf_token }}
-                  {% elif csrf_token is defined and csrf_token %}
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                  {% endif %}
-                  <button type="submit" class="btn btn-sm btn-ghost-danger w-100"
-                          title="{{ _gettext('Delete') }}"
-                          onclick="return confirm('{{ _gettext('Delete %(name)s?', name=name)|e }}')">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </form>
-              {% endif %}
+            <div class="ml-image-overlay">
+              <div class="ml-image-name">{{ name }}</div>
+              <div class="ml-image-actions">
+                {% if admin_view.can_rename and item_path and name != '..' %}
+                  {%- if admin_view.rename_modal -%}
+                    {{ lib.add_modal_button(url=get_url('.rename', path=item_path, modal=True),
+                    btn_class='btn btn-sm btn-ghost-light',
+                    content='<i class="ti ti-pencil"></i>') }}
+                  {% else %}
+                    <a class="btn btn-sm btn-ghost-light"
+                       href="{{ get_url('.rename', path=item_path) }}"
+                       title="{{ _gettext('Rename') }}">
+                      <i class="ti ti-pencil"></i>
+                    </a>
+                  {%- endif -%}
+                {% endif %}
+                {% if admin_view.can_delete and item_path %}
+                  <form method="POST" action="{{ get_url('.delete') }}" style="flex:1;">
+                    {{ delete_form.path(value=item_path) }}
+                    {% if delete_form.csrf_token is defined and delete_form.csrf_token %}
+                      {{ delete_form.csrf_token }}
+                    {% elif csrf_token is defined and csrf_token %}
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    {% endif %}
+                    <button type="submit" class="btn btn-sm btn-ghost-danger w-100"
+                            title="{{ _gettext('Delete') }}"
+                            onclick="return confirm('{{ _gettext('Delete %(name)s?', name=name)|e }}')">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
             </div>
           </div>
+        {% endif %}
+      {% else %}
+        <div class="ml-empty">
+          <div class="ml-empty-icon"><i class="ti ti-photo-off"></i></div>
+          <h3>{{ _gettext('No images yet') }}</h3>
+          <p>{{ _gettext('Upload images to populate the media library.') }}</p>
         </div>
-      {% endif %}
-    {% else %}
-      <div class="ml-empty">
-        <div class="ml-empty-icon"><i class="ti ti-photo-off"></i></div>
-        <h3>{{ _gettext('No images yet') }}</h3>
-        <p>{{ _gettext('Upload images to populate the media library.') }}</p>
-      </div>
-    {% endfor %}
-  </div>
+      {% endfor %}
+    </div>
   {% endblock %}
 
   {% block actions %}
-  {{ actionslib.form(actions, get_url('.action_view')) }}
+    {{ actionslib.form(actions, get_url('.action_view')) }}
   {% endblock %}
 
   {%- if admin_view.rename_modal or admin_view.upload_modal or admin_view.edit_modal -%}

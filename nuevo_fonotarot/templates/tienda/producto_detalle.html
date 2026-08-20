@@ -3,153 +3,153 @@
 {% block title %}{{ product.name }} - Fonotarot{% endblock %}
 
 {% block extra_css %}
-<style>
-  .price { font-family:'Playfair Display',serif; color:var(--plum); font-weight:800; font-size:2rem; }
-  .product-detail-main-image { width:100%;max-height:400px;object-fit:cover; }
-  .product-gallery-thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:.5rem; margin-top:.75rem; }
-  .product-gallery-thumb-btn {
-    border:1px solid var(--tblr-border-color);
-    border-radius:.5rem;
-    overflow:hidden;
-    padding:0;
-    background:transparent;
-    cursor:pointer;
-  }
-  .product-gallery-thumb-btn.active { border-color:var(--plum); box-shadow:0 0 0 2px rgba(107,63,160,.18); }
-  .product-gallery-thumb-btn img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
-  .pack-card {
-    position: relative;
-    background: #fff;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 16px;
-    padding: 1.2rem;
-    text-align: center;
-    height: 100%;
-  }
-  .pack-card.featured {
-    border-color: var(--plum);
-    box-shadow: 0 10px 28px rgba(107, 63, 160, 0.2);
-  }
-  .pack-badge {
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: var(--plum);
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.2rem 0.6rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-  }
-  .pack-mins { font-size: 1.6rem; font-weight: 800; color: #1f2937; }
-  .pack-price { font-size: 1.35rem; font-weight: 800; color: var(--plum); }
-  .pack-price small { font-size: 0.78rem; color: #6b7280; font-weight: 500; }
-  .btn-pack, .btn-pack-outline, .btn-pack-primary {
-    width: 100%;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.92rem;
-    padding: 0.55rem 0.9rem;
-  }
-  .btn-pack-primary, .btn-pack {
-    background: var(--plum);
-    border: 1px solid var(--plum);
-    color: #fff;
-  }
-  .btn-pack-outline {
-    background: transparent;
-    border: 1px solid var(--plum);
-    color: var(--plum);
-  }
-  .btn-pack-outline:hover {
-    background: var(--plum);
-    color: #fff;
-  }
-  .other-product-img { width:100%; height:120px; object-fit:cover; border-radius:.5rem .5rem 0 0; }
-  .other-product-img-ph { width:100%; height:120px; display:flex; align-items:center; justify-content:center; background:var(--lavender); border-radius:.5rem .5rem 0 0; }
-</style>
+  <style>
+    .price { font-family:'Playfair Display',serif; color:var(--plum); font-weight:800; font-size:2rem; }
+    .product-detail-main-image { width:100%;max-height:400px;object-fit:cover; }
+    .product-gallery-thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:.5rem; margin-top:.75rem; }
+    .product-gallery-thumb-btn {
+      border:1px solid var(--tblr-border-color);
+      border-radius:.5rem;
+      overflow:hidden;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+    }
+    .product-gallery-thumb-btn.active { border-color:var(--plum); box-shadow:0 0 0 2px rgba(107,63,160,.18); }
+    .product-gallery-thumb-btn img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
+    .pack-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 16px;
+      padding: 1.2rem;
+      text-align: center;
+      height: 100%;
+    }
+    .pack-card.featured {
+      border-color: var(--plum);
+      box-shadow: 0 10px 28px rgba(107, 63, 160, 0.2);
+    }
+    .pack-badge {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      background: var(--plum);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .pack-mins { font-size: 1.6rem; font-weight: 800; color: #1f2937; }
+    .pack-price { font-size: 1.35rem; font-weight: 800; color: var(--plum); }
+    .pack-price small { font-size: 0.78rem; color: #6b7280; font-weight: 500; }
+    .btn-pack, .btn-pack-outline, .btn-pack-primary {
+      width: 100%;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 0.55rem 0.9rem;
+    }
+    .btn-pack-primary, .btn-pack {
+      background: var(--plum);
+      border: 1px solid var(--plum);
+      color: #fff;
+    }
+    .btn-pack-outline {
+      background: transparent;
+      border: 1px solid var(--plum);
+      color: var(--plum);
+    }
+    .btn-pack-outline:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+    .other-product-img { width:100%; height:120px; object-fit:cover; border-radius:.5rem .5rem 0 0; }
+    .other-product-img-ph { width:100%; height:120px; display:flex; align-items:center; justify-content:center; background:var(--lavender); border-radius:.5rem .5rem 0 0; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+  <div class="container py-5">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible mb-4">
-              {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible mb-4">
+          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
 
-        <div class="row g-4">
-          <div class="col-md-5">
-            {% if product.cover_image_url %}
-            <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" id="product-main-image" class="img-fluid rounded product-detail-main-image"/>
-            {% if product.image_urls|length > 1 %}
+    <div class="row g-4">
+      <div class="col-md-5">
+        {% if product.cover_image_url %}
+          <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" id="product-main-image" class="img-fluid rounded product-detail-main-image"/>
+          {% if product.image_urls|length > 1 %}
             <div class="product-gallery-thumbs">
               {% for image_url in product.image_urls %}
-              <button type="button"
-                      class="product-gallery-thumb-btn {% if image_url == product.cover_image_url %}active{% endif %}"
-                      data-product-image="{{ image_url }}"
-                      aria-label="{{ _('Ver imagen %(index)s', index=loop.index) }}">
-                <img src="{{ image_url }}" alt="{{ product.name }} {{ loop.index }}" />
-              </button>
+                <button type="button"
+                        class="product-gallery-thumb-btn {% if image_url == product.cover_image_url %}active{% endif %}"
+                        data-product-image="{{ image_url }}"
+                        aria-label="{{ _('Ver imagen %(index)s', index=loop.index) }}">
+                  <img src="{{ image_url }}" alt="{{ product.name }} {{ loop.index }}" />
+                </button>
               {% endfor %}
             </div>
-            {% endif %}
-            {% else %}
-            <div class="d-flex align-items-center justify-content-center rounded" style="height:300px;background:var(--lavender)">
-              <i class="ti ti-package" style="font-size:5rem;color:var(--muted)"></i>
-            </div>
-            {% endif %}
+          {% endif %}
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center rounded" style="height:300px;background:var(--lavender)">
+            <i class="ti ti-package" style="font-size:5rem;color:var(--muted)"></i>
           </div>
-          <div class="col-md-7">
-            <div class="text-secondary small mb-1">{% if product.category %}{{ product.category.name }}{% endif %}</div>
-            <h1 class="fw-bold">{{ product.name }}</h1>
-            <div class="price my-3">{{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
-            {% if product.description %}
-            <p class="text-secondary">{{ product.description }}</p>
-            {% endif %}
-            {% if product.stock > 0 %}
-            <p class="text-success"><i class="ti ti-check me-1"></i>{{ _("En stock (%(stock)s disponibles)", stock=product.stock) }}</p>
-            <div class="d-flex gap-2 align-items-center mt-4"
-     data-track-event="add_to_cart"
-     data-track-value="{{ product.price | int }}"
-     data-track-currency="CLP"
-     data-track-item-id="product-{{ product.slug }}"
-     data-track-item-name="{{ product.name }}"
-     data-track-item-category="product"
-     data-track-item-price="{{ product.price | int }}"
-     data-track-item-quantity="1">
-  <label class="text-secondary me-2" for="qty">{{ _("Cantidad:") }}</label>
-  <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}"
-         class="form-control" style="width:80px"/>
-  <button type="button"
-          class="btn btn-primary"
-          onclick="Cart.add('product', '{{ product.slug }}', parseInt(document.getElementById('qty').value) || 1, '{{ product.name }}', {{ product.price | float }})">
-    <i class="ti ti-shopping-cart-plus me-1"></i>{{ _("Agregar al carrito") }}
-  </button>
-</div>
-            {% else %}
-            <p class="text-danger"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</p>
-            {% endif %}
-            <div class="card p-3 mt-4">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ti ti-eye-off text-success" style="font-size:1.4rem"></i>
-                <div>
-                  <strong>{{ _("Envío anónimo, regalo, o normal.") }}</strong>
-                  <p class="text-secondary small mb-0">{{ _("Caja Normal, Caja sin marcas, o nuestra caja de regalo especial para tí.") }}</p>
-                </div>
-              </div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="text-secondary small mb-1">{% if product.category %}{{ product.category.name }}{% endif %}</div>
+        <h1 class="fw-bold">{{ product.name }}</h1>
+        <div class="price my-3">{{ product.price_display }} <span class="text-secondary fs-6 fw-normal">CLP</span></div>
+        {% if product.description %}
+          <p class="text-secondary">{{ product.description }}</p>
+        {% endif %}
+        {% if product.stock > 0 %}
+          <p class="text-success"><i class="ti ti-check me-1"></i>{{ _("En stock (%(stock)s disponibles)", stock=product.stock) }}</p>
+          <div class="d-flex gap-2 align-items-center mt-4"
+               data-track-event="add_to_cart"
+               data-track-value="{{ product.price | int }}"
+               data-track-currency="CLP"
+               data-track-item-id="product-{{ product.slug }}"
+               data-track-item-name="{{ product.name }}"
+               data-track-item-category="product"
+               data-track-item-price="{{ product.price | int }}"
+               data-track-item-quantity="1">
+            <label class="text-secondary me-2" for="qty">{{ _("Cantidad:") }}</label>
+            <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.stock }}"
+                   class="form-control" style="width:80px"/>
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="Cart.add('product', '{{ product.slug }}', parseInt(document.getElementById('qty').value) || 1, '{{ product.name }}', {{ product.price | float }})">
+              <i class="ti ti-shopping-cart-plus me-1"></i>{{ _("Agregar al carrito") }}
+            </button>
+          </div>
+        {% else %}
+          <p class="text-danger"><i class="ti ti-x me-1"></i>{{ _("Sin stock") }}</p>
+        {% endif %}
+        <div class="card p-3 mt-4">
+          <div class="d-flex align-items-start gap-2">
+            <i class="ti ti-eye-off text-success" style="font-size:1.4rem"></i>
+            <div>
+              <strong>{{ _("Envío anónimo, regalo, o normal.") }}</strong>
+              <p class="text-secondary small mb-0">{{ _("Caja Normal, Caja sin marcas, o nuestra caja de regalo especial para tí.") }}</p>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        {% if minute_packs %}
-        <div class="mt-5">
-          <h3 class="fw-bold mb-3">{{ _("Packs de minutos activos") }}</h3>
-          <div class="row g-3">
-            {% for pack in minute_packs %}
+    {% if minute_packs %}
+      <div class="mt-5">
+        <h3 class="fw-bold mb-3">{{ _("Packs de minutos activos") }}</h3>
+        <div class="row g-3">
+          {% for pack in minute_packs %}
             <div class="col-6 col-md-4 col-lg-3">
               <div class="pack-card {% if pack.is_featured %}featured{% endif %}">
                 {% if pack.is_featured %}<span class="pack-badge">{{ _("Más popular") }}</span>{% endif %}
@@ -176,24 +176,24 @@
                 </form>
               </div>
             </div>
-            {% endfor %}
-          </div>
+          {% endfor %}
         </div>
-        {% endif %}
+      </div>
+    {% endif %}
 
-        {% if other_products %}
-        <div class="mt-5">
-          <h3 class="fw-bold mb-3">{{ _("Otros productos recomendados") }}</h3>
-          <div class="row g-3">
-            {% for other in other_products %}
+    {% if other_products %}
+      <div class="mt-5">
+        <h3 class="fw-bold mb-3">{{ _("Otros productos recomendados") }}</h3>
+        <div class="row g-3">
+          {% for other in other_products %}
             <div class="col-6 col-md-4 col-lg-2">
               <div class="card h-100">
                 {% if other.cover_image_url %}
-                <img src="{{ other.cover_image_url }}" alt="{{ other.name }}" class="other-product-img"/>
+                  <img src="{{ other.cover_image_url }}" alt="{{ other.name }}" class="other-product-img"/>
                 {% else %}
-                <div class="other-product-img-ph">
-                  <i class="ti ti-package text-secondary" style="font-size:2rem"></i>
-                </div>
+                  <div class="other-product-img-ph">
+                    <i class="ti ti-package text-secondary" style="font-size:2rem"></i>
+                  </div>
                 {% endif %}
                 <div class="p-2">
                   <div class="small fw-bold">{{ other.name }}</div>
@@ -204,12 +204,12 @@
                 </div>
               </div>
             </div>
-            {% endfor %}
-          </div>
+          {% endfor %}
         </div>
-        {% endif %}
+      </div>
+    {% endif %}
 
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}

@@ -15,8 +15,6 @@ Architecture:
 - Session-based state: Identity and method persisted between requests
 """
 
-from __future__ import annotations
-
 import json
 import typing as t
 from datetime import datetime, timedelta
