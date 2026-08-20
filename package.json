@@ -13,10 +13,10 @@
     "@fontsource/source-sans-3": "^5.0.0",
     "@tabler/core": "^1.4.0",
     "@tabler/icons-webfont": "^3.46.0",
-    "grapesjs": "^0.23.4",
+    "grapesjs": "^0.23.5",
     "hugerte": "^1.0.12",
     "grapesjs-blocks-basic": "^1.0.2",
     "grapesjs-preset-webpage": "^1.0.3",
-    "@highlightjs/cdn-assets": "^11.9.0"
+    "@highlightjs/cdn-assets": "^11.12.0"
   }
 }
