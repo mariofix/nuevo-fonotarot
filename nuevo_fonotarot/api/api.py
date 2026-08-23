@@ -1,6 +1,9 @@
-from flask import Blueprint, jsonify, request, session, url_for
+from datetime import datetime
+
+from flask import Blueprint, current_app, jsonify, request, session, url_for
 from flask_login import login_required
 from flask_security import current_user
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from ..extensions import csrf, db, limiter
 from ..firenze import search_client, search_client_data, search_credits
@@ -15,8 +18,41 @@ from ..promo_helpers import (
 logger = get_logger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1/")
+internal_bp = Blueprint("internal_api", __name__, url_prefix="/api")
 csrf.exempt(api_bp)
+csrf.exempt(internal_bp)
 logger.debug("api_bp: blueprint created with url_prefix=%r", api_bp.url_prefix)
+logger.debug("internal_bp: blueprint created with url_prefix=%r", internal_bp.url_prefix)
+
+
+@internal_bp.route("/internal/orders-summary", methods=["GET"])
+def orders_summary():
+    """Return the current store's sales aggregate to trusted sibling instances."""
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "", 1).strip() if auth_header else ""
+    if not token:
+        return jsonify({"error": "missing_authorization"}), 401
+
+    serializer = URLSafeTimedSerializer(
+        current_app.config["MERCHANTS_KEY"],
+        salt="fonotarot.merchants.internal",
+    )
+    try:
+        serializer.loads(token, max_age=current_app.config.get("MERCHANTS_TOKEN_TTL_SECONDS", 60))
+    except (BadSignature, SignatureExpired):
+        return jsonify({"error": "invalid_or_expired_token"}), 401
+
+    from ..admin import SecureAdminIndexView
+
+    view = SecureAdminIndexView()
+    month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    series = view._build_sales_series(month_start, datetime.now(), "day")
+    return jsonify(
+        {
+            "catalog_stats": view._catalog_stats_payload(),
+            "sales_series": {"granularity": "day", "series": series},
+        }
+    )
 
 
 @api_bp.route("/consulta-saldo", methods=["POST"])

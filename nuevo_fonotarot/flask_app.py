@@ -77,6 +77,10 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
+    if app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS") and (
+        not app.config.get("MERCHANTS_KEY") or app.config.get("MERCHANTS_KEY") == "dev-merchants-key-change-me"
+    ):
+        raise RuntimeError("MERCHANTS_KEY must be configured when MERCHANTS_EXTERNAL_ENDPOINTS is enabled.")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # Apply Django-style logging configuration from the LOGGING config key.
@@ -262,12 +266,13 @@ def _register_blueprints(app: Flask) -> None:
 
     # from .lab import lab_bp
     # from .legacy import legacy_bp
-    from .api import api_bp
+    from .api import api_bp, internal_bp
     from .content import blog_bp, content_bp
     from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 
     app.register_blueprint(content_bp)
+    app.register_blueprint(internal_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
     app.register_blueprint(pagos_bp)

@@ -191,8 +191,12 @@ class Config:
     # locale negotiation know the list before any DB request is made.
     AVAILABLE_LANGUAGES: list = json.loads(os.environ.get("AVAILABLE_LANGUAGES", '[["es", "es_CL", "Chile"]]'))
     # merchants
+    MERCHANTS_KEY: str = os.environ.get("MERCHANTS_KEY", "dev-merchants-key-change-me")
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
     MERCHANTS_AUTOLOAD_PROVIDERS: list = os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",")
+    MERCHANTS_EXTERNAL_ENDPOINTS: list[str] = [
+        item.strip() for item in os.environ.get("MERCHANTS_EXTERNAL_ENDPOINTS", "").split(",") if item.strip()
+    ]
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
     FLOW_SECRET_KEY: str = os.environ.get("FLOW_SECRET_KEY", "")
     FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
