@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, request, session, url_for
@@ -28,6 +29,10 @@ logger.debug("internal_bp: blueprint created with url_prefix=%r", internal_bp.ur
 @internal_bp.route("/internal/orders-summary", methods=["GET"])
 def orders_summary():
     """Return the current store's sales aggregate to trusted sibling instances."""
+    merchant_key = current_app.config.get("MERCHANTS_KEY")
+    if not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}:
+        return jsonify({"error": "merchant_federation_disabled"}), 503
+
     auth_header = request.headers.get("Authorization", "")
     token = auth_header.replace("Bearer ", "", 1).strip() if auth_header else ""
     if not token:
@@ -52,12 +57,19 @@ def orders_summary():
 
     start_ms = request.args.get("start", type=float)
     end_ms = request.args.get("end", type=float)
-    start_dt = (
-        datetime.fromtimestamp(start_ms / 1000)
-        if start_ms is not None
-        else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    )
-    end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms is not None else now
+    try:
+        if start_ms is not None and not math.isfinite(start_ms):
+            start_ms = None
+        if end_ms is not None and not math.isfinite(end_ms):
+            end_ms = None
+        start_dt = (
+            datetime.fromtimestamp(start_ms / 1000)
+            if start_ms is not None
+            else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms is not None else now
+    except (TypeError, ValueError, OSError):
+        return jsonify({"error": "invalid start/end"}), 400
 
     granularity = request.args.get("granularity") or "day"
     if end_dt <= start_dt:

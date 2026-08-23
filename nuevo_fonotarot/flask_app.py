@@ -77,16 +77,22 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
-    if app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS") and (
-        not app.config.get("MERCHANTS_KEY") or app.config.get("MERCHANTS_KEY") == "dev-merchants-key-change-me"
-    ):
-        raise RuntimeError("MERCHANTS_KEY must be configured when MERCHANTS_EXTERNAL_ENDPOINTS is enabled.")
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # Apply Django-style logging configuration from the LOGGING config key.
     # All nuevo_fonotarot.* loggers inherit from the 'nuevo_fonotarot' root
     # logger defined in the LOGGING dict.  Override verbosity with LOG_LEVEL.
     logging.config.dictConfig(app.config["LOGGING"])
+
+    merchant_key = app.config.get("MERCHANTS_KEY")
+    if app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS") and (
+        not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}
+    ):
+        app.logger.warning(
+            "MERCHANTS_EXTERNAL_ENDPOINTS is configured but MERCHANTS_KEY is missing or still set to the default placeholder; "
+            "remote merchant federation is disabled for this runtime."
+        )
+        app.config["MERCHANTS_EXTERNAL_ENDPOINTS"] = []
 
     _init_extensions(app)
     _register_blueprints(app)

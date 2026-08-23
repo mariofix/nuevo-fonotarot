@@ -128,6 +128,10 @@ class SecureAdminIndexView(AdminIndexView):
 
     @staticmethod
     def _fetch_remote_orders_summary(endpoint: str) -> dict | None:
+        merchant_key = current_app.config.get("MERCHANTS_KEY")
+        if not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}:
+            return None
+
         token = SecureAdminIndexView._merchant_token()
         try:
             response = requests.get(
