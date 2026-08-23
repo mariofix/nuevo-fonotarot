@@ -84,9 +84,11 @@ class SecureAdminIndexView(AdminIndexView):
     def _merge_series_points(local_series: list[dict], remote_series: list[dict]) -> list[dict]:
         by_x: dict[int, float] = {}
         for point in local_series + remote_series:
-            x = int(point.get("x"))
-            y = float(point.get("y", 0) or 0)
-            by_x[x] = by_x.get(x, 0.0) + y
+            x = point.get("x")
+            y = point.get("y", 0) or 0
+            if x is None:
+                continue
+            by_x[int(x)] = by_x.get(int(x), 0.0) + float(y)
         return [{"x": x, "y": y} for x, y in sorted(by_x.items())]
 
     @staticmethod

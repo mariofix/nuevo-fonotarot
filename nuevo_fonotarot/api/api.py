@@ -38,19 +38,36 @@ def orders_summary():
         salt="fonotarot.merchants.internal",
     )
     try:
-        serializer.loads(token, max_age=current_app.config.get("MERCHANTS_TOKEN_TTL_SECONDS", 60))
+        payload = serializer.loads(token, max_age=current_app.config.get("MERCHANTS_TOKEN_TTL_SECONDS", 60))
     except (BadSignature, SignatureExpired):
         return jsonify({"error": "invalid_or_expired_token"}), 401
+
+    if payload.get("scope") != "orders-summary":
+        return jsonify({"error": "invalid_scope"}), 401
 
     from ..admin import SecureAdminIndexView
 
     view = SecureAdminIndexView()
-    month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    series = view._build_sales_series(month_start, datetime.now(), "day")
+    now = datetime.now()
+
+    start_ms = request.args.get("start", type=float)
+    end_ms = request.args.get("end", type=float)
+    start_dt = (
+        datetime.fromtimestamp(start_ms / 1000)
+        if start_ms is not None
+        else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    )
+    end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms is not None else now
+
+    granularity = request.args.get("granularity") or "day"
+    if end_dt <= start_dt:
+        return jsonify({"error": "end must be after start"}), 400
+
+    series = view._build_sales_series(start_dt, end_dt, granularity)
     return jsonify(
         {
             "catalog_stats": view._catalog_stats_payload(),
-            "sales_series": {"granularity": "day", "series": series},
+            "sales_series": {"granularity": granularity, "series": series},
         }
     )
 
