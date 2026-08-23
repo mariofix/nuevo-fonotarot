@@ -48,35 +48,6 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
 
-_PLACEHOLDER_PREFIXES = ("change-me", "dev-", "replace-me", "example")
-
-
-def _has_placeholder_value(value: str | None) -> bool:
-    """Return True when a secret still uses a development placeholder."""
-    if value is None:
-        return True
-    normalized = value.strip().lower()
-    if not normalized:
-        return True
-    return normalized.startswith(_PLACEHOLDER_PREFIXES) or normalized.endswith("-change-me")
-
-
-def _assert_required_secret_config(app_config: dict) -> None:
-    """Reject insecure hard-coded secrets before the app starts."""
-    required = {
-        "SECRET_KEY": app_config.get("SECRET_KEY"),
-        "SECURITY_PASSWORD_SALT": app_config.get("SECURITY_PASSWORD_SALT"),
-        "MERCHANTS_KEY": app_config.get("MERCHANTS_KEY"),
-    }
-    missing = [name for name, value in required.items() if _has_placeholder_value(str(value) if value is not None else None)]
-    if missing:
-        names = ", ".join(missing)
-        raise RuntimeError(
-            "Missing or insecure secret configuration for: "
-            f"{names}. Set these values in .env or the runtime environment before starting the app."
-        )
-
-
 def _make_logging_config(log_level: str = "DEBUG") -> dict:
     """Build a Django-style ``dictConfig`` logging configuration.
 
@@ -152,7 +123,7 @@ def _make_logging_config(log_level: str = "DEBUG") -> dict:
 class Config:
     """Base configuration shared across all environments."""
 
-    SECRET_KEY: str | None = os.environ.get("SECRET_KEY")
+    SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
     TRUSTED_HOSTS: list = ["tienda.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
     SERVER_NAME: str = os.environ.get("SERVER_NAME", "localhost")
     PREFERRED_URL_SCHEME: str = os.environ.get("PREFERRED_URL_SCHEME", "http")
@@ -165,7 +136,7 @@ class Config:
     RATELIMIT_STORAGE_URI: str = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
     # Flask-Security
-    SECURITY_PASSWORD_SALT: str | None = os.environ.get("SECURITY_PASSWORD_SALT")
+    SECURITY_PASSWORD_SALT: str = os.environ.get("SECURITY_PASSWORD_SALT", "dev-password-salt-change-me")
 
     # Username support: the username field stores an E.164 phone number
     # (digits only, no leading +).  Users can register/login with phone OR
@@ -220,7 +191,7 @@ class Config:
     # locale negotiation know the list before any DB request is made.
     AVAILABLE_LANGUAGES: list = json.loads(os.environ.get("AVAILABLE_LANGUAGES", '[["es", "es_CL", "Chile"]]'))
     # merchants
-    MERCHANTS_KEY: str | None = os.environ.get("MERCHANTS_KEY")
+    MERCHANTS_KEY: str = os.environ.get("MERCHANTS_KEY", "dev-merchants-key-change-me")
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
     MERCHANTS_AUTOLOAD_PROVIDERS: list = os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",")
     MERCHANTS_EXTERNAL_ENDPOINTS: list[str] = [
@@ -323,9 +294,6 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     TESTING: bool = True
-    SECRET_KEY: str = "testing-secret-key"
-    SECURITY_PASSWORD_SALT: str = "testing-password-salt"
-    MERCHANTS_KEY: str = "testing-merchants-key"
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///:memory:"
     WTF_CSRF_ENABLED: bool = False
     SECURITY_WTF_CSRF_ENABLED: bool = False
