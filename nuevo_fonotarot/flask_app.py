@@ -19,7 +19,7 @@ from flask_merchants.signals import webhook_event_finished
 from flask_security.datastore import SQLAlchemyUserDatastore
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from config import config
+from config import _assert_required_secret_config, config
 
 from .admin import SecureAdminIndexView, init_admin
 from .extensions import (
@@ -77,6 +77,7 @@ def create_flask(config_name: str | None = None) -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[config_name])
+    _assert_required_secret_config(app.config)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # Apply Django-style logging configuration from the LOGGING config key.
