@@ -262,12 +262,13 @@ def _register_blueprints(app: Flask) -> None:
 
     # from .lab import lab_bp
     # from .legacy import legacy_bp
-    from .api import api_bp
+    from .api import api_bp, internal_bp
     from .content import blog_bp, content_bp
     from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 
     app.register_blueprint(content_bp)
+    app.register_blueprint(internal_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(blog_bp, url_prefix=app.config["BLOG_URL_PREFIX"])
     app.register_blueprint(pagos_bp)

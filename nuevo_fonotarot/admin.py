@@ -4,6 +4,7 @@ import json
 import os
 from datetime import date, datetime, timedelta
 
+import requests
 from flask import current_app, jsonify, redirect, request, url_for
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_admin.actions import action
@@ -16,6 +17,9 @@ from flask_security import current_user
 from sqlalchemy import func
 
 from .extensions import db
+from .log import get_logger
+
+logger = get_logger(__name__)
 
 # Spanish month names used in legacy CDR report views
 _MONTHS_ES = {
@@ -72,11 +76,114 @@ class SecureAdminIndexView(AdminIndexView):
             return func.subdate(func.date(Order.created_at), func.weekday(Order.created_at))
         raise ValueError(f"Unknown granularity: {granularity}")
 
+    @staticmethod
+    def _merchant_token() -> str:
+        from itsdangerous import URLSafeTimedSerializer
+
+        serializer = URLSafeTimedSerializer(current_app.config["MERCHANTS_KEY"], salt="fonotarot.merchants.internal")
+        return serializer.dumps({"scope": "orders-summary"})
+
+    @staticmethod
+    def _merge_series_points(local_series: list[dict], remote_series: list[dict]) -> list[dict]:
+        by_x: dict[int, float] = {}
+        for point in local_series + remote_series:
+            if point is None:
+                continue
+            x = point.get("x")
+            if x is None:
+                continue
+            y_value = point.get("y")
+            y = float(y_value) if y_value is not None else 0.0
+            by_x[int(x)] = by_x.get(int(x), 0.0) + y
+        return [{"x": x, "y": y} for x, y in sorted(by_x.items())]
+
+    @staticmethod
+    def _merge_catalog_rows(local_rows: list[dict], remote_rows: list[dict], key_field: str) -> list[dict]:
+        merged: dict[str, dict] = {}
+        numeric_fields = {
+            "month_qty",
+            "total_qty",
+            "month_revenue",
+            "total_revenue",
+            "discounted_amount",
+            "month_amount",
+            "total_amount",
+            "uses",
+            "month_uses",
+            "redeemed_count",
+            "issued_count",
+            "qty",
+            "amount",
+            "revenue",
+        }
+        for row in [*local_rows, *remote_rows]:
+            key = str(row.get(key_field))
+            if not key:
+                continue
+            if key not in merged:
+                merged[key] = dict(row)
+                continue
+            for numeric_field in numeric_fields:
+                if numeric_field not in row:
+                    continue
+                merged[key][numeric_field] = float(merged[key].get(numeric_field, 0) or 0) + float(row.get(numeric_field, 0) or 0)
+            for field in ("name", "code", "provider", "currency", "item_id"):
+                if field in row and not merged[key].get(field):
+                    merged[key][field] = row.get(field)
+        return list(merged.values())
+
+    @staticmethod
+    def _fetch_remote_orders_summary(endpoint: str) -> dict | None:
+        merchant_key = current_app.config.get("MERCHANTS_KEY")
+        if not merchant_key or merchant_key == "dev-merchants-key-change-me":
+            logger.warning("Skipping remote orders summary fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.", endpoint)
+            return None
+
+        try:
+            token = SecureAdminIndexView._merchant_token()
+            response = requests.get(
+                endpoint,
+                headers={"Authorization": "Bearer " + token},
+                timeout=5,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            if not isinstance(payload, dict):
+                logger.warning("Skipping remote orders summary fetch for %s: unexpected payload format (%s).", endpoint, type(payload).__name__)
+                return None
+            return payload
+        except (requests.RequestException, ValueError) as exc:
+            logger.warning("Skipping remote orders summary fetch for %s: %s", endpoint, exc)
+            return None
+
+    def _build_sales_series(self, start_dt: datetime, end_dt: datetime, granularity: str) -> list[dict]:
+        from .models import Order
+
+        bucket = self._bucket_expr(granularity).label("bucket")
+        rows = (
+            db.session.query(bucket, func.coalesce(func.sum(Order.amount), 0).label("total"))
+            .filter(
+                Order.payment_status == self.PAID_STATUS,
+                Order.created_at >= start_dt,
+                Order.created_at < end_dt,
+            )
+            .group_by(bucket)
+            .order_by(bucket)
+            .all()
+        )
+
+        def to_ms(value) -> int:
+            if isinstance(value, datetime):
+                return int(value.timestamp() * 1000)
+            if isinstance(value, str):
+                return int(datetime.strptime(value, "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
+            return int(datetime(value.year, value.month, value.day).timestamp() * 1000)
+
+        return [{"x": to_ms(r.bucket), "y": float(r.total)} for r in rows]
+
     @expose("/api/sales-series")
     def sales_series(self):
         import math
-
-        from .models import Order
 
         now = datetime.now()
         try:
@@ -103,40 +210,21 @@ class SecureAdminIndexView(AdminIndexView):
         span_days = (end_dt - start_dt).total_seconds() / 86400
         granularity = request.args.get("granularity")
         if not granularity:
-            # No explicit granularity from the client (e.g. direct API call,
-            # not the dashboard's own JS) — default view is "day"; only fall
-            # back to span-based guessing when a custom range was requested
-            # without telling us the intended bucket size.
             granularity = "day" if start_ms is None and end_ms is None else self._pick_granularity(span_days)
 
-        bucket = self._bucket_expr(granularity).label("bucket")
-        rows = (
-            db.session.query(bucket, func.coalesce(func.sum(Order.amount), 0).label("total"))
-            .filter(
-                Order.payment_status == self.PAID_STATUS,
-                Order.created_at >= start_dt,
-                Order.created_at < end_dt,
-            )
-            .group_by(bucket)
-            .order_by(bucket)
-            .all()
-        )
+        series = self._build_sales_series(start_dt, end_dt, granularity)
+        for endpoint in current_app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS", []):
+            payload = self._fetch_remote_orders_summary(endpoint)
+            if not payload:
+                continue
+            remote_series = payload.get("sales_series", {}).get("series", [])
+            if remote_series:
+                series = self._merge_series_points(series, remote_series)
 
-        def to_ms(value) -> int:
-            if isinstance(value, datetime):
-                return int(value.timestamp() * 1000)
-            if isinstance(value, str):
-                return int(datetime.strptime(value, "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
-            return int(datetime(value.year, value.month, value.day).timestamp() * 1000)
-
-        series = [{"x": to_ms(r.bucket), "y": float(r.total)} for r in rows]
         return jsonify({"granularity": granularity, "series": series})
 
-    def _fetch_catalog_stats(self, year: int | None = None, month: int | None = None) -> dict:
-        """Real sales figures for MinutePacks, GiftCardProducts, and DiscountCodes,
-        replacing the hardcoded dashboard table rows."""
-        from flask_babel import format_currency
-
+    def _catalog_stats_payload(self, year: int | None = None, month: int | None = None) -> dict:
+        """Return raw storefront sales aggregates suitable for internal federation."""
         from .models import DiscountCode, GiftCard, GiftCardProduct, MinutePack, Order, OrderItem, OrderItemType
 
         if year and month:
@@ -170,29 +258,22 @@ class SecureAdminIndexView(AdminIndexView):
 
         pack_month_sales = _pack_sales(since=month_start, until=month_end)
         pack_total_sales = _pack_sales()
-
         packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-
-        # Bar width = share of THIS MONTH's revenue, per pack — rows sum to ~100%.
-        total_pack_month_revenue = sum(v["revenue"] for v in pack_month_sales.values()) or 1
-        colors = ["primary", "indigo", "cyan", "pink", "lime", "azure", "orange", "teal", "indigo"]
-        minute_pack_rows = [
+        minute_packs = [
             {
+                "key": f"minute_pack:{p.id}",
+                "item_id": p.id,
                 "name": f"{p.minutes} Minutos",
-                "color": colors.pop(),
+                "currency": p.currency,
                 "is_featured": p.is_featured,
                 "month_qty": pack_month_sales.get(p.id, {}).get("qty", 0),
                 "total_qty": pack_total_sales.get(p.id, {}).get("qty", 0),
-                "month_revenue_display": format_currency(pack_month_sales.get(p.id, {}).get("revenue", 0), p.currency),
-                "total_revenue_display": format_currency(pack_total_sales.get(p.id, {}).get("revenue", 0), p.currency),
-                "width_pct": round(
-                    float(pack_month_sales.get(p.id, {}).get("revenue", 0)) / float(total_pack_month_revenue) * 100, 1
-                ),
+                "month_revenue": pack_month_sales.get(p.id, {}).get("revenue", 0),
+                "total_revenue": pack_total_sales.get(p.id, {}).get("revenue", 0),
             }
             for p in packs
         ]
 
-        # --- Gift cards ----------------------------------------------------
         def _giftcard_sales(since=None, until=None):
             subtotal = OrderItem.unit_price * OrderItem.quantity
             q = (
@@ -213,50 +294,35 @@ class SecureAdminIndexView(AdminIndexView):
 
         gc_month_sales = _giftcard_sales(since=month_start, until=month_end)
         gc_total_sales = _giftcard_sales()
-
-        # "% Uso" = redeemed / issued, all-time — a distinct lifetime metric from
-        # month-vs-total sales volume, so it's tracked separately via GiftCard.status
-        # rather than derived from the OrderItem revenue query above.
         gc_redeemed = dict(
             db.session.query(GiftCard.gift_card_product_id, func.count(GiftCard.id))
             .filter(GiftCard.status == "redeemed")
             .group_by(GiftCard.gift_card_product_id)
             .all()
         )
-
         gc_products = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
-
-        total_gc_month_revenue = sum(v["revenue"] for v in gc_month_sales.values()) or 1
-        colors = ["lime", "cyan", "pink", "azure", "orange", "teal", "indigo"]
-
-        gift_card_rows = []
+        gift_cards = []
         for gp in gc_products:
-            month = gc_month_sales.get(gp.id, {}).get("qty", 0)
-            total = gc_total_sales.get(gp.id, {}).get("qty", 0)
-            month_revenue = gc_month_sales.get(gp.id, {}).get("revenue", 0)
+            month_qty = gc_month_sales.get(gp.id, {}).get("qty", 0)
+            total_qty = gc_total_sales.get(gp.id, {}).get("qty", 0)
             redeemed = gc_redeemed.get(gp.id, 0)
-            pct_used = round(redeemed / total * 100, 1) if total else None
-
-            gift_card_rows.append(
+            gift_cards.append(
                 {
+                    "key": f"gift_card:{gp.id}",
+                    "item_id": gp.id,
                     "name": gp.name,
+                    "currency": gp.currency,
                     "is_featured": gp.is_featured,
-                    "color": colors.pop(0),
-                    "month_qty": month,
-                    "total_qty": total,
-                    "pct_used": pct_used,
-                    "month_revenue_display": format_currency(month_revenue, gp.currency),
-                    "width_pct": round(float(month_revenue) / float(total_gc_month_revenue) * 100, 1),
+                    "month_qty": month_qty,
+                    "total_qty": total_qty,
+                    "month_revenue": gc_month_sales.get(gp.id, {}).get("revenue", 0),
+                    "total_revenue": gc_total_sales.get(gp.id, {}).get("revenue", 0),
+                    "redeemed_count": redeemed,
+                    "issued_count": total_qty,
                 }
             )
 
-        # --- Discount codes --------------------------------------------
-        # Most-used first; capped so a long promo history doesn't blow up the card.
         codes = DiscountCode.query.order_by(DiscountCode.uses_count.desc()).limit(10).all()
-        max_uses_seen = max((c.uses_count for c in codes), default=0) or 1
-
-        # Total discounted per code, paid orders only. Assumes a single currency
-        # (CLP) across all discount usage — matches your actual sales profile.
         q_discount = db.session.query(
             Order.discount_code_id, func.coalesce(func.sum(Order.discount_amount), 0)
         ).filter(
@@ -266,43 +332,27 @@ class SecureAdminIndexView(AdminIndexView):
         )
         if year and month:
             q_discount = q_discount.filter(Order.created_at >= month_start, Order.created_at < month_end)
-
         discount_totals = dict(q_discount.group_by(Order.discount_code_id).all())
-        colors = ["orange", "pink", "azure", "orange", "teal", "indigo", "blue", "purple", "success", "danger"]
-
         q_discount_count = db.session.query(Order.discount_code_id, func.count(Order.id)).filter(
             Order.discount_code_id.isnot(None),
             Order.payment_status == self.PAID_STATUS,
         )
         if year and month:
             q_discount_count = q_discount_count.filter(Order.created_at >= month_start, Order.created_at < month_end)
-
         discount_month_uses = dict(q_discount_count.group_by(Order.discount_code_id).all())
+        discount_codes = [
+            {
+                "key": f"discount_code:{c.id}",
+                "code": c.code,
+                "currency": c.currency or "CLP",
+                "uses": c.uses_count,
+                "month_uses": discount_month_uses.get(c.id, 0),
+                "max_uses": c.max_uses,
+                "discounted_amount": discount_totals.get(c.id, 0),
+            }
+            for c in codes
+        ]
 
-        discount_rows = []
-        for c in codes:
-            month_uses = discount_month_uses.get(c.id, 0)
-            if c.max_uses:
-                pct = round(c.uses_count / c.max_uses * 100, 1)
-                width = min(pct, 100.0)
-            else:
-                pct = None
-                width = round(c.uses_count / max_uses_seen * 100, 1)
-
-            discount_rows.append(
-                {
-                    "code": c.code,
-                    "uses": c.uses_count,
-                    "month_uses": month_uses,
-                    "max_uses": c.max_uses,
-                    "pct": pct,
-                    "width_pct": width,
-                    "discounted_display": format_currency(discount_totals.get(c.id, 0), c.currency or "CLP"),
-                    "color": colors.pop(),
-                }
-            )
-
-        # --- Payment providers ------------------------------------------------
         def _provider_sales(since=None, until=None):
             q = db.session.query(
                 Order.provider,
@@ -318,32 +368,140 @@ class SecureAdminIndexView(AdminIndexView):
 
         provider_month_sales = _provider_sales(since=month_start, until=month_end)
         provider_total_sales = _provider_sales()
-
-        # Union of providers seen in either window, sorted by total amount desc.
-        all_providers = sorted(
-            set(provider_month_sales) | set(provider_total_sales),
-            key=lambda p: provider_total_sales.get(p, {}).get("amount", 0),
-            reverse=True,
-        )
-        total_month_amount = sum(v["amount"] for v in provider_month_sales.values()) or 1
-
-        pay_provider_rows = [
+        pay_providers = [
             {
-                "name": provider or "—",
+                "key": f"provider:{provider or 'unknown'}",
+                "provider": provider or "—",
                 "month_qty": provider_month_sales.get(provider, {}).get("qty", 0),
-                "month_amount_display": format_currency(
-                    provider_month_sales.get(provider, {}).get("amount", 0), "CLP"
-                ),
                 "total_qty": provider_total_sales.get(provider, {}).get("qty", 0),
-                "total_amount_display": format_currency(
-                    provider_total_sales.get(provider, {}).get("amount", 0), "CLP"
-                ),
-                "width_pct": round(
-                    float(provider_month_sales.get(provider, {}).get("amount", 0)) / float(total_month_amount) * 100, 1
-                ),
+                "month_amount": provider_month_sales.get(provider, {}).get("amount", 0),
+                "total_amount": provider_total_sales.get(provider, {}).get("amount", 0),
             }
-            for provider in all_providers
+            for provider in sorted(set(provider_month_sales) | set(provider_total_sales), key=lambda p: provider_total_sales.get(p, {}).get("amount", 0), reverse=True)
         ]
+        return {
+            "minute_packs": minute_packs,
+            "gift_cards": gift_cards,
+            "discount_codes": discount_codes,
+            "pay_providers": pay_providers,
+        }
+
+    def _fetch_catalog_stats(self, year: int | None = None, month: int | None = None) -> dict:
+        """Real sales figures for MinutePacks, GiftCardProducts, and DiscountCodes,
+        replacing the hardcoded dashboard table rows."""
+        from flask_babel import format_currency
+
+        local_stats = self._catalog_stats_payload(year=year, month=month)
+        remote_stats = []
+        for endpoint in current_app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS", []):
+            payload = self._fetch_remote_orders_summary(endpoint)
+            if not payload:
+                continue
+            remote_stats.append(payload.get("catalog_stats", {}))
+
+        if remote_stats:
+            merged = {
+                "minute_packs": self._merge_catalog_rows(local_stats.get("minute_packs", []), remote_stats[0].get("minute_packs", []), "key"),
+                "gift_cards": self._merge_catalog_rows(local_stats.get("gift_cards", []), remote_stats[0].get("gift_cards", []), "key"),
+                "discount_codes": self._merge_catalog_rows(local_stats.get("discount_codes", []), remote_stats[0].get("discount_codes", []), "key"),
+                "pay_providers": self._merge_catalog_rows(local_stats.get("pay_providers", []), remote_stats[0].get("pay_providers", []), "key"),
+            }
+            for extra_payload in remote_stats[1:]:
+                merged["minute_packs"] = self._merge_catalog_rows(merged.get("minute_packs", []), extra_payload.get("minute_packs", []), "key")
+                merged["gift_cards"] = self._merge_catalog_rows(merged.get("gift_cards", []), extra_payload.get("gift_cards", []), "key")
+                merged["discount_codes"] = self._merge_catalog_rows(merged.get("discount_codes", []), extra_payload.get("discount_codes", []), "key")
+                merged["pay_providers"] = self._merge_catalog_rows(merged.get("pay_providers", []), extra_payload.get("pay_providers", []), "key")
+        else:
+            merged = local_stats
+
+        minute_pack_rows = []
+        if merged.get("minute_packs"):
+            total_pack_month_revenue = sum(float(item.get("month_revenue", 0) or 0) for item in merged["minute_packs"]) or 1
+            colors = ["primary", "indigo", "cyan", "pink", "lime", "azure", "orange", "teal", "indigo"]
+            for item in merged["minute_packs"]:
+                month_revenue = float(item.get("month_revenue", 0) or 0)
+                minute_pack_rows.append(
+                    {
+                        "name": item.get("name", ""),
+                        "color": colors.pop(),
+                        "is_featured": item.get("is_featured", False),
+                        "month_qty": int(item.get("month_qty", 0) or 0),
+                        "total_qty": int(item.get("total_qty", 0) or 0),
+                        "month_revenue_display": format_currency(month_revenue, item.get("currency", "CLP")),
+                        "total_revenue_display": format_currency(float(item.get("total_revenue", 0) or 0), item.get("currency", "CLP")),
+                        "width_pct": round((month_revenue / total_pack_month_revenue) * 100, 1) if total_pack_month_revenue else 0,
+                    }
+                )
+
+        gift_cards = merged.get("gift_cards", [])
+        total_gc_month_revenue = sum(float(item.get("month_revenue", 0) or 0) for item in gift_cards) or 1
+        gift_card_rows = []
+        colors = ["lime", "cyan", "pink", "azure", "orange", "teal", "indigo"]
+        for item in gift_cards:
+            total = int(item.get("total_qty", 0) or 0)
+            redeemed = int(item.get("redeemed_count", 0) or 0)
+            month_revenue = float(item.get("month_revenue", 0) or 0)
+            gift_card_rows.append(
+                {
+                    "name": item.get("name", ""),
+                    "is_featured": item.get("is_featured", False),
+                    "color": colors.pop(0),
+                    "month_qty": int(item.get("month_qty", 0) or 0),
+                    "total_qty": total,
+                    "pct_used": round(redeemed / total * 100, 1) if total else None,
+                    "month_revenue_display": format_currency(month_revenue, item.get("currency", "CLP")),
+                    "width_pct": round((month_revenue / total_gc_month_revenue) * 100, 1) if total_gc_month_revenue else 0,
+                }
+            )
+
+        discount_codes = merged.get("discount_codes", [])
+        max_uses_seen = max((int(item.get("uses", 0) or 0) for item in discount_codes), default=0) or 1
+        colors = ["orange", "pink", "azure", "orange", "teal", "indigo", "blue", "purple", "success", "danger"]
+        discount_rows = []
+        for item in discount_codes:
+            uses = int(item.get("uses", 0) or 0)
+            max_uses = item.get("max_uses")
+            if max_uses:
+                pct = round(uses / max_uses * 100, 1)
+                width = min(pct, 100.0)
+            else:
+                pct = None
+                width = round(uses / max_uses_seen * 100, 1)
+            discount_rows.append(
+                {
+                    "code": item.get("code", ""),
+                    "uses": uses,
+                    "month_uses": int(item.get("month_uses", 0) or 0),
+                    "max_uses": max_uses,
+                    "pct": pct,
+                    "width_pct": width,
+                    "discounted_display": format_currency(float(item.get("discounted_amount", 0) or 0), item.get("currency", "CLP")),
+                    "color": colors.pop(),
+                }
+            )
+
+        pay_provider_rows = []
+        provider_month_sales = {
+            item.get("provider", "—"): {"qty": int(item.get("month_qty", 0) or 0), "amount": float(item.get("month_amount", 0) or 0)}
+            for item in merged.get("pay_providers", [])
+        }
+        total_month_amount = sum(v["amount"] for v in provider_month_sales.values()) or 1
+        colors = ["primary", "indigo", "cyan", "pink", "lime", "azure", "orange", "teal", "indigo"]
+        for item in merged.get("pay_providers", []):
+            provider = item.get("provider", "—")
+            month_amount = float(item.get("month_amount", 0) or 0)
+            pay_provider_rows.append(
+                {
+                    "name": provider,
+                    "month_qty": int(item.get("month_qty", 0) or 0),
+                    "month_amount_display": format_currency(month_amount, "CLP"),
+                    "total_qty": int(item.get("total_qty", 0) or 0),
+                    "total_amount_display": format_currency(float(item.get("total_amount", 0) or 0), "CLP"),
+                    "width_pct": round((month_amount / total_month_amount) * 100, 1) if total_month_amount else 0,
+                    "color": colors.pop(),
+                }
+            )
+
         return {
             "minute_packs": minute_pack_rows,
             "gift_cards": gift_card_rows,

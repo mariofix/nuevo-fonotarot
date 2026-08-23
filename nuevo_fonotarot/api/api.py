@@ -1,6 +1,10 @@
-from flask import Blueprint, jsonify, request, session, url_for
+import math
+from datetime import datetime
+
+from flask import Blueprint, current_app, jsonify, request, session, url_for
 from flask_login import login_required
 from flask_security import current_user
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from ..extensions import csrf, db, limiter
 from ..firenze import search_client, search_client_data, search_credits
@@ -15,8 +19,69 @@ from ..promo_helpers import (
 logger = get_logger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1/")
+internal_bp = Blueprint("internal_api", __name__, url_prefix="/api")
 csrf.exempt(api_bp)
+csrf.exempt(internal_bp)
 logger.debug("api_bp: blueprint created with url_prefix=%r", api_bp.url_prefix)
+logger.debug("internal_bp: blueprint created with url_prefix=%r", internal_bp.url_prefix)
+
+
+@internal_bp.route("/internal/orders-summary", methods=["GET"])
+def orders_summary():
+    """Return the current store's sales aggregate to trusted sibling instances."""
+    merchant_key = current_app.config.get("MERCHANTS_KEY")
+    if not merchant_key:
+        return jsonify({"error": "merchant_federation_disabled"}), 503
+
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "", 1).strip() if auth_header else ""
+    if not token:
+        return jsonify({"error": "missing_authorization"}), 401
+
+    serializer = URLSafeTimedSerializer(
+        current_app.config["MERCHANTS_KEY"],
+        salt=current_app.config["SECRET_KEY"],
+    )
+    try:
+        payload = serializer.loads(token, max_age=current_app.config.get("MERCHANTS_TOKEN_TTL_SECONDS", 60))
+    except (BadSignature, SignatureExpired):
+        return jsonify({"error": "invalid_or_expired_token"}), 401
+
+    if payload.get("scope") != "orders-summary":
+        return jsonify({"error": "invalid_scope"}), 401
+
+    from ..admin import SecureAdminIndexView
+
+    view = SecureAdminIndexView()
+    now = datetime.now()
+
+    start_ms = request.args.get("start", type=float)
+    end_ms = request.args.get("end", type=float)
+    try:
+        if start_ms is not None and not math.isfinite(start_ms):
+            start_ms = None
+        if end_ms is not None and not math.isfinite(end_ms):
+            end_ms = None
+        start_dt = (
+            datetime.fromtimestamp(start_ms / 1000)
+            if start_ms is not None
+            else now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_dt = datetime.fromtimestamp(end_ms / 1000) if end_ms is not None else now
+    except (TypeError, ValueError, OSError):
+        return jsonify({"error": "invalid start/end"}), 400
+
+    granularity = request.args.get("granularity") or "day"
+    if end_dt <= start_dt:
+        return jsonify({"error": "end must be after start"}), 400
+
+    series = view._build_sales_series(start_dt, end_dt, granularity)
+    return jsonify(
+        {
+            "catalog_stats": view._catalog_stats_payload(),
+            "sales_series": {"granularity": granularity, "series": series},
+        }
+    )
 
 
 @api_bp.route("/consulta-saldo", methods=["POST"])
