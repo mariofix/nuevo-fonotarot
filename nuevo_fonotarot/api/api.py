@@ -30,7 +30,7 @@ logger.debug("internal_bp: blueprint created with url_prefix=%r", internal_bp.ur
 def orders_summary():
     """Return the current store's sales aggregate to trusted sibling instances."""
     merchant_key = current_app.config.get("MERCHANTS_KEY")
-    if not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}:
+    if not merchant_key or merchant_key == "dev-merchants-key-change-me":
         return jsonify({"error": "merchant_federation_disabled"}), 503
 
     auth_header = request.headers.get("Authorization", "")

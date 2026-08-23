@@ -84,16 +84,6 @@ def create_flask(config_name: str | None = None) -> Flask:
     # logger defined in the LOGGING dict.  Override verbosity with LOG_LEVEL.
     logging.config.dictConfig(app.config["LOGGING"])
 
-    merchant_key = app.config.get("MERCHANTS_KEY")
-    if app.config.get("MERCHANTS_EXTERNAL_ENDPOINTS") and (
-        not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}
-    ):
-        app.logger.warning(
-            "MERCHANTS_EXTERNAL_ENDPOINTS is configured but MERCHANTS_KEY is missing or still set to the default placeholder; "
-            "remote merchant federation is disabled for this runtime."
-        )
-        app.config["MERCHANTS_EXTERNAL_ENDPOINTS"] = []
-
     _init_extensions(app)
     _register_blueprints(app)
     _init_merchants(app, admin=admin)

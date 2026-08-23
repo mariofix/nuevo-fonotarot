@@ -17,6 +17,9 @@ from flask_security import current_user
 from sqlalchemy import func
 
 from .extensions import db
+from .log import get_logger
+
+logger = get_logger(__name__)
 
 # Spanish month names used in legacy CDR report views
 _MONTHS_ES = {
@@ -84,11 +87,14 @@ class SecureAdminIndexView(AdminIndexView):
     def _merge_series_points(local_series: list[dict], remote_series: list[dict]) -> list[dict]:
         by_x: dict[int, float] = {}
         for point in local_series + remote_series:
+            if point is None:
+                continue
             x = point.get("x")
-            y = point.get("y", 0) or 0
             if x is None:
                 continue
-            by_x[int(x)] = by_x.get(int(x), 0.0) + float(y)
+            y_value = point.get("y")
+            y = float(y_value) if y_value is not None else 0.0
+            by_x[int(x)] = by_x.get(int(x), 0.0) + y
         return [{"x": x, "y": y} for x, y in sorted(by_x.items())]
 
     @staticmethod
@@ -129,11 +135,12 @@ class SecureAdminIndexView(AdminIndexView):
     @staticmethod
     def _fetch_remote_orders_summary(endpoint: str) -> dict | None:
         merchant_key = current_app.config.get("MERCHANTS_KEY")
-        if not merchant_key or merchant_key in {"dev-merchants-key-change-me", "change-me-to-a-shared-random-secret"}:
+        if not merchant_key or merchant_key == "dev-merchants-key-change-me":
+            logger.warning("Skipping remote orders summary fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.", endpoint)
             return None
 
-        token = SecureAdminIndexView._merchant_token()
         try:
+            token = SecureAdminIndexView._merchant_token()
             response = requests.get(
                 endpoint,
                 headers={"Authorization": "Bearer " + token},
@@ -141,11 +148,13 @@ class SecureAdminIndexView(AdminIndexView):
             )
             response.raise_for_status()
             payload = response.json()
-            if isinstance(payload, dict):
-                return payload
-        except (requests.RequestException, ValueError):
+            if not isinstance(payload, dict):
+                logger.warning("Skipping remote orders summary fetch for %s: unexpected payload format (%s).", endpoint, type(payload).__name__)
+                return None
+            return payload
+        except (requests.RequestException, ValueError) as exc:
+            logger.warning("Skipping remote orders summary fetch for %s: %s", endpoint, exc)
             return None
-        return None
 
     def _build_sales_series(self, start_dt: datetime, end_dt: datetime, granularity: str) -> list[dict]:
         from .models import Order
