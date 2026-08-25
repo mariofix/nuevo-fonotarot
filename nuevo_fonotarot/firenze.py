@@ -58,6 +58,9 @@ def _timeout() -> int:
     """Return the configured request timeout in seconds."""
     return int(current_app.config.get("FIRENZE_API_TIMEOUT", current_app.config.get("FIRENZE_TIMEOUT", 5)))
 
+def _service() -> str:
+    """Return the configured service."""
+    return current_app.config.get("FIRENZE_SERVICE", "fonotarot-cl").strip()
 
 def _get_credentials() -> tuple[str, str] | None:
     """Return Firenze API credentials from config, or None if not configured."""
@@ -102,7 +105,7 @@ def search_credits(
         return None
 
     params: dict[str, str] = {}
-    params["service"] = "fonotarot-cl"
+    params["service"] = _service()
     if ani:
         params["ani"] = ani
 
@@ -189,7 +192,7 @@ def search_client(
         return None
 
     params: dict[str, str] = {}
-    params["service"] = "fonotarot-cl"
+    params["service"] = _service()
     if normalized_client_id:
         params["client_id"] = normalized_client_id
     if email:
@@ -303,7 +306,7 @@ def search_client_data(
         return None
 
     params: dict[str, str] = {}
-    params["service"] = "fonotarot-cl"
+    params["service"] = _service()
     if normalized_client_id:
         params["client_id"] = normalized_client_id
     if email:
@@ -384,7 +387,7 @@ def create_client(
         return None
 
     payload = {
-        "service": "fonotarot-cl",
+        "service": _service(),
         "full_name": name or None,
         "email": email or None,
         "phone_number": ani or None,
@@ -492,7 +495,7 @@ def post_purchase(
         return None
 
     payload = {
-        "service": "fonotarot-cl",
+        "service": _service(),
         "client_id": client_id or None,
         "credits": segundos or 0,
         "transaction_id": transaction_id or "",
@@ -560,7 +563,7 @@ def complete_promo_credit(ani: str | None, credits: int) -> int | None:
         return None
 
     payload = {
-        "service": "fonotarot-cl",
+        "service": _service(),
         "email": f"{normalized_ani}@fonotarot.cl",
         "credits": credits,
         "ani": normalized_ani,
@@ -716,7 +719,7 @@ def search_client_minutes(
         return None, "auth"
 
     url = urljoin(_base_url(), "/api/v1/clients/search")
-    params: dict[str, str | int] = {"service": "fonotarot-cl"}
+    params: dict[str, str | int] = {"service": _service()}
     if normalized_client_id is not None:
         params["client_id"] = normalized_client_id
     else:
@@ -776,7 +779,7 @@ def _normalize_ani(ani: str | None) -> str | None:
 def update_client_profile(
     client_id: int,
     *,
-    service: str = "fonotarot-cl",
+    service: str = _service(),
     full_name: str | None | object = _UNSET,
     email: str | None | object = _UNSET,
     phone: str | None | object = _UNSET,
@@ -829,7 +832,7 @@ def update_client_profile(
         return False
 
 
-def list_client_anis(client_id: int, *, service: str = "fonotarot-cl") -> list[str] | None:
+def list_client_anis(client_id: int, *, service: str = _service()) -> list[str] | None:
     """Return ANI list for a Firenze client, or None when request fails."""
     headers = _auth_headers()
     if not headers:
@@ -869,7 +872,7 @@ def add_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str = "fonotarot-cl",
+    service: str = _service(),
 ) -> tuple[bool, bool]:
     """Add ANI to a Firenze client.
 
@@ -914,7 +917,7 @@ def delete_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str = "fonotarot-cl",
+    service: str = _service(),
 ) -> tuple[bool, bool]:
     """Delete ANI from a Firenze client.
 
