@@ -13,7 +13,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import sentry_sdk
-from flask import Flask, g, request, session
+from flask import Flask, g, request, session, url_for
 from flask_babel import get_locale
 from flask_merchants.signals import webhook_event_finished
 from flask_security.datastore import SQLAlchemyUserDatastore
@@ -87,10 +87,6 @@ def create_flask(config_name: str | None = None) -> Flask:
     _init_extensions(app)
     _register_blueprints(app)
     _init_merchants(app, admin=admin)
-
-    site_domain = app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
-    app.jinja_env.globals["site_domain"] = site_domain
-    app.jinja_env.globals["site_url"] = f"https://{site_domain}"
 
     return app
 
@@ -172,6 +168,10 @@ def _init_extensions(app: Flask) -> None:
 
     @app.before_request
     def _inject_site_settings():
+        site_domain = app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
+        app.jinja_env.globals["site_domain"] = site_domain
+        app.jinja_env.globals["site_url"] = url_for("content.index", _external=True)
+
         if app.static_url_path and request.path.startswith(app.static_url_path):
             return
         from .models import SiteSettings

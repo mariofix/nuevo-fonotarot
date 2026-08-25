@@ -1,8 +1,4 @@
-from typing import Any
-
 import ephem
-
-_EJECUTIVOS_URL = "https://firenze.156.cl/audiotex/ejecutivos"
 
 # Moon phase names in order (index 0–7), matching the template display order.
 MOON_PHASE_NAMES = [

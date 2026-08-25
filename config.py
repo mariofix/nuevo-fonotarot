@@ -225,7 +225,7 @@ class Config:
     # Firenze API (external telephony platform for promotions)
     # Firenze client lookup/creation service (internal, not internet-accessible)
     # http://zvn-lin3.local:9002/api/v1/public/ejecutivos
-    FIRENZE_SERVICE:str = os.environ.get("FIRENZE_SERVICE", "")
+    FIRENZE_SERVICE: str = os.environ.get("FIRENZE_SERVICE", "")
     FIRENZE_API_URL: str = os.environ.get("FIRENZE_API_URL", "")
     FIRENZE_API_URL_LOCAL: str = os.environ.get("FIRENZE_API_URL_LOCAL", "")
     FIRENZE_API_KEY: str = os.environ.get("FIRENZE_API_KEY", "")

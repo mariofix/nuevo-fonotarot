@@ -126,7 +126,9 @@ class SecureAdminIndexView(AdminIndexView):
             for numeric_field in numeric_fields:
                 if numeric_field not in row:
                     continue
-                merged[key][numeric_field] = float(merged[key].get(numeric_field, 0) or 0) + float(row.get(numeric_field, 0) or 0)
+                merged[key][numeric_field] = float(merged[key].get(numeric_field, 0) or 0) + float(
+                    row.get(numeric_field, 0) or 0
+                )
             for field in ("name", "code", "provider", "currency", "item_id"):
                 if field in row and not merged[key].get(field):
                     merged[key][field] = row.get(field)
@@ -136,7 +138,10 @@ class SecureAdminIndexView(AdminIndexView):
     def _fetch_remote_orders_summary(endpoint: str) -> dict | None:
         merchant_key = current_app.config.get("MERCHANTS_KEY")
         if not merchant_key or merchant_key == "dev-merchants-key-change-me":
-            logger.warning("Skipping remote orders summary fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.", endpoint)
+            logger.warning(
+                "Skipping remote orders summary fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.",
+                endpoint,
+            )
             return None
 
         try:
@@ -149,7 +154,11 @@ class SecureAdminIndexView(AdminIndexView):
             response.raise_for_status()
             payload = response.json()
             if not isinstance(payload, dict):
-                logger.warning("Skipping remote orders summary fetch for %s: unexpected payload format (%s).", endpoint, type(payload).__name__)
+                logger.warning(
+                    "Skipping remote orders summary fetch for %s: unexpected payload format (%s).",
+                    endpoint,
+                    type(payload).__name__,
+                )
                 return None
             return payload
         except (requests.RequestException, ValueError) as exc:
@@ -377,7 +386,11 @@ class SecureAdminIndexView(AdminIndexView):
                 "month_amount": provider_month_sales.get(provider, {}).get("amount", 0),
                 "total_amount": provider_total_sales.get(provider, {}).get("amount", 0),
             }
-            for provider in sorted(set(provider_month_sales) | set(provider_total_sales), key=lambda p: provider_total_sales.get(p, {}).get("amount", 0), reverse=True)
+            for provider in sorted(
+                set(provider_month_sales) | set(provider_total_sales),
+                key=lambda p: provider_total_sales.get(p, {}).get("amount", 0),
+                reverse=True,
+            )
         ]
         return {
             "minute_packs": minute_packs,
@@ -401,22 +414,40 @@ class SecureAdminIndexView(AdminIndexView):
 
         if remote_stats:
             merged = {
-                "minute_packs": self._merge_catalog_rows(local_stats.get("minute_packs", []), remote_stats[0].get("minute_packs", []), "key"),
-                "gift_cards": self._merge_catalog_rows(local_stats.get("gift_cards", []), remote_stats[0].get("gift_cards", []), "key"),
-                "discount_codes": self._merge_catalog_rows(local_stats.get("discount_codes", []), remote_stats[0].get("discount_codes", []), "key"),
-                "pay_providers": self._merge_catalog_rows(local_stats.get("pay_providers", []), remote_stats[0].get("pay_providers", []), "key"),
+                "minute_packs": self._merge_catalog_rows(
+                    local_stats.get("minute_packs", []), remote_stats[0].get("minute_packs", []), "key"
+                ),
+                "gift_cards": self._merge_catalog_rows(
+                    local_stats.get("gift_cards", []), remote_stats[0].get("gift_cards", []), "key"
+                ),
+                "discount_codes": self._merge_catalog_rows(
+                    local_stats.get("discount_codes", []), remote_stats[0].get("discount_codes", []), "key"
+                ),
+                "pay_providers": self._merge_catalog_rows(
+                    local_stats.get("pay_providers", []), remote_stats[0].get("pay_providers", []), "key"
+                ),
             }
             for extra_payload in remote_stats[1:]:
-                merged["minute_packs"] = self._merge_catalog_rows(merged.get("minute_packs", []), extra_payload.get("minute_packs", []), "key")
-                merged["gift_cards"] = self._merge_catalog_rows(merged.get("gift_cards", []), extra_payload.get("gift_cards", []), "key")
-                merged["discount_codes"] = self._merge_catalog_rows(merged.get("discount_codes", []), extra_payload.get("discount_codes", []), "key")
-                merged["pay_providers"] = self._merge_catalog_rows(merged.get("pay_providers", []), extra_payload.get("pay_providers", []), "key")
+                merged["minute_packs"] = self._merge_catalog_rows(
+                    merged.get("minute_packs", []), extra_payload.get("minute_packs", []), "key"
+                )
+                merged["gift_cards"] = self._merge_catalog_rows(
+                    merged.get("gift_cards", []), extra_payload.get("gift_cards", []), "key"
+                )
+                merged["discount_codes"] = self._merge_catalog_rows(
+                    merged.get("discount_codes", []), extra_payload.get("discount_codes", []), "key"
+                )
+                merged["pay_providers"] = self._merge_catalog_rows(
+                    merged.get("pay_providers", []), extra_payload.get("pay_providers", []), "key"
+                )
         else:
             merged = local_stats
 
         minute_pack_rows = []
         if merged.get("minute_packs"):
-            total_pack_month_revenue = sum(float(item.get("month_revenue", 0) or 0) for item in merged["minute_packs"]) or 1
+            total_pack_month_revenue = (
+                sum(float(item.get("month_revenue", 0) or 0) for item in merged["minute_packs"]) or 1
+            )
             colors = ["primary", "indigo", "cyan", "pink", "lime", "azure", "orange", "teal", "indigo"]
             for item in merged["minute_packs"]:
                 month_revenue = float(item.get("month_revenue", 0) or 0)
@@ -428,8 +459,14 @@ class SecureAdminIndexView(AdminIndexView):
                         "month_qty": int(item.get("month_qty", 0) or 0),
                         "total_qty": int(item.get("total_qty", 0) or 0),
                         "month_revenue_display": format_currency(month_revenue, item.get("currency", "CLP")),
-                        "total_revenue_display": format_currency(float(item.get("total_revenue", 0) or 0), item.get("currency", "CLP")),
-                        "width_pct": round((month_revenue / total_pack_month_revenue) * 100, 1) if total_pack_month_revenue else 0,
+                        "total_revenue_display": format_currency(
+                            float(item.get("total_revenue", 0) or 0), item.get("currency", "CLP")
+                        ),
+                        "width_pct": (
+                            round((month_revenue / total_pack_month_revenue) * 100, 1)
+                            if total_pack_month_revenue
+                            else 0
+                        ),
                     }
                 )
 
@@ -450,7 +487,9 @@ class SecureAdminIndexView(AdminIndexView):
                     "total_qty": total,
                     "pct_used": round(redeemed / total * 100, 1) if total else None,
                     "month_revenue_display": format_currency(month_revenue, item.get("currency", "CLP")),
-                    "width_pct": round((month_revenue / total_gc_month_revenue) * 100, 1) if total_gc_month_revenue else 0,
+                    "width_pct": (
+                        round((month_revenue / total_gc_month_revenue) * 100, 1) if total_gc_month_revenue else 0
+                    ),
                 }
             )
 
@@ -475,14 +514,19 @@ class SecureAdminIndexView(AdminIndexView):
                     "max_uses": max_uses,
                     "pct": pct,
                     "width_pct": width,
-                    "discounted_display": format_currency(float(item.get("discounted_amount", 0) or 0), item.get("currency", "CLP")),
+                    "discounted_display": format_currency(
+                        float(item.get("discounted_amount", 0) or 0), item.get("currency", "CLP")
+                    ),
                     "color": colors.pop(),
                 }
             )
 
         pay_provider_rows = []
         provider_month_sales = {
-            item.get("provider", "—"): {"qty": int(item.get("month_qty", 0) or 0), "amount": float(item.get("month_amount", 0) or 0)}
+            item.get("provider", "—"): {
+                "qty": int(item.get("month_qty", 0) or 0),
+                "amount": float(item.get("month_amount", 0) or 0),
+            }
             for item in merged.get("pay_providers", [])
         }
         total_month_amount = sum(v["amount"] for v in provider_month_sales.values()) or 1

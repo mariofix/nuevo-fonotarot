@@ -58,9 +58,11 @@ def _timeout() -> int:
     """Return the configured request timeout in seconds."""
     return int(current_app.config.get("FIRENZE_API_TIMEOUT", current_app.config.get("FIRENZE_TIMEOUT", 5)))
 
+
 def _service() -> str:
     """Return the configured service."""
     return current_app.config.get("FIRENZE_SERVICE", "fonotarot-cl").strip()
+
 
 def _get_credentials() -> tuple[str, str] | None:
     """Return Firenze API credentials from config, or None if not configured."""
@@ -779,7 +781,7 @@ def _normalize_ani(ani: str | None) -> str | None:
 def update_client_profile(
     client_id: int,
     *,
-    service: str = _service(),
+    service: str,
     full_name: str | None | object = _UNSET,
     email: str | None | object = _UNSET,
     phone: str | None | object = _UNSET,
@@ -789,6 +791,7 @@ def update_client_profile(
     Only fields explicitly passed are sent to Firenze. Passing ``phone=None``
     clears registered ANI values using the Firenze ``::EMPTY::`` sentinel.
     """
+    service = _service()
     payload: dict[str, str | None] = {}
     if full_name is not _UNSET:
         payload["full_name"] = None if full_name is None else str(full_name)
@@ -832,13 +835,14 @@ def update_client_profile(
         return False
 
 
-def list_client_anis(client_id: int, *, service: str = _service()) -> list[str] | None:
+def list_client_anis(client_id: int, *, service: str) -> list[str] | None:
     """Return ANI list for a Firenze client, or None when request fails."""
     headers = _auth_headers()
     if not headers:
         logger.warning("list_client_anis: missing Firenze API credentials for client_id=%s", client_id)
         return None
 
+    service = _service()
     url = urljoin(_base_url(), f"/api/v1/clients/{service}/{client_id}/ani")
 
     try:
@@ -872,12 +876,13 @@ def add_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str = _service(),
+    service: str,
 ) -> tuple[bool, bool]:
     """Add ANI to a Firenze client.
 
     Returns ``(success, created)``.
     """
+    service = _service()
     normalized_ani = _normalize_ani(ani)
     if not normalized_ani:
         logger.warning("add_client_ani: invalid ANI value for client_id=%s", client_id)
@@ -917,12 +922,13 @@ def delete_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str = _service(),
+    service: str,
 ) -> tuple[bool, bool]:
     """Delete ANI from a Firenze client.
 
     Returns ``(success, deleted)``.
     """
+    service = _service()
     normalized_ani = _normalize_ani(ani)
     if not normalized_ani:
         logger.warning("delete_client_ani: invalid ANI value for client_id=%s", client_id)
