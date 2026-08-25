@@ -835,7 +835,7 @@ def update_client_profile(
         return False
 
 
-def list_client_anis(client_id: int, *, service: str) -> list[str] | None:
+def list_client_anis(client_id: int, service: str | None = None) -> list[str] | None:
     """Return ANI list for a Firenze client, or None when request fails."""
     headers = _auth_headers()
     if not headers:
@@ -876,7 +876,7 @@ def add_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str,
+    service: str | None = None,
 ) -> tuple[bool, bool]:
     """Add ANI to a Firenze client.
 
@@ -922,7 +922,7 @@ def delete_client_ani(
     client_id: int,
     ani: str,
     *,
-    service: str,
+    service: str | None = None,
 ) -> tuple[bool, bool]:
     """Delete ANI from a Firenze client.
 

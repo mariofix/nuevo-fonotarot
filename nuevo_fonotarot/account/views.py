@@ -272,7 +272,7 @@ def settings():
 
     additional_phones: list[str] = []
     if current_user.firenze_client_id:
-        phones = list_client_anis(int(current_user.firenze_client_id))
+        phones = list_client_anis(client_id=int(current_user.firenze_client_id))
         if phones is None:
             flash(
                 _("Nos fue imposible cargar tus Teléfonos, por favor intenta nuevamente."),
