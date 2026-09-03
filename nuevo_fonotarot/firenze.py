@@ -781,7 +781,7 @@ def _normalize_ani(ani: str | None) -> str | None:
 def update_client_profile(
     client_id: int,
     *,
-    service: str,
+    service: str  | None = None,
     full_name: str | None | object = _UNSET,
     email: str | None | object = _UNSET,
     phone: str | None | object = _UNSET,

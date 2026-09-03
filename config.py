@@ -124,7 +124,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS: list = ["tienda.fonotarot.com", "localhost", "tardis.local", "zvn-lin4.local", "10.0.0.4"]
+    TRUSTED_HOSTS:list = os.environ.get("TRUSTED_HOSTS", "localhost,").split(",")
     SERVER_NAME: str = os.environ.get("SERVER_NAME", "localhost")
     PREFERRED_URL_SCHEME: str = os.environ.get("PREFERRED_URL_SCHEME", "http")
     DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
@@ -262,7 +262,7 @@ class Config:
     LOGGING: dict = _make_logging_config(os.environ.get("LOG_LEVEL", "DEBUG"))
     SESSION_COOKIE_NAME: str = "tienda_fonotarot"
 
-    CORS_ORIGINS = ["https://fonotarot.com", "https://compra.fonotarot.com"]
+    CORS_ORIGINS: list = os.environ.get("CORS_ORIGINS", "localhost,").split(",")
 
     SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
     EMAIL_PREFIX = "Tienda Fonotarot"
