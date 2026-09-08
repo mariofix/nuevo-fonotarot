@@ -359,9 +359,20 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
     return stats
 
 
+def get_phone_for_country(code: str) -> str | None:
+    """Return the contact phone number for a country code, or None if unknown."""
+    from flask import current_app
+
+    with current_app.app_context():
+        info = current_app.config.get("FT_INFO_PAISES", {})
+        entry = info.get(code.upper())
+        return entry[1] if entry else None
+
+
 __all__ = [
     "_flag_class",
     "_LangEntry",
     "get_moon_phase_index",
     "MOON_PHASE_NAMES",
+    "get_phone_for_country",
 ]

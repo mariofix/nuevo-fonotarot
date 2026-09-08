@@ -52,17 +52,10 @@ def _homepage_ctx() -> dict:
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
     firenze_ejecutivos_url = f"{api_url}/api/v1/public/ejecutivos" if api_url else ""
 
-    try:
-        ejecutivos = _json.loads(current_app.config.get("FT_EJECUTIVOS", []))
-    except (ValueError, TypeError):
-        logger.warning("SiteSettings 'ejecutivos' is not valid JSON; tarotistas section will be empty")
-        ejecutivos = []
-
     latest_posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.published_at.desc()).limit(3).all()
 
     return {
         "firenze_ejecutivos_url": firenze_ejecutivos_url,
-        "ejecutivos": ejecutivos,
         "testimonials": TESTIMONIALS,
         "minute_packs": minute_packs,
         "gift_cards": gift_cards,

@@ -34,7 +34,7 @@ from .extensions import (
     security,
     toolbar,
 )
-from .utils import _LangEntry
+from .utils import get_phone_for_country
 
 
 def _reset_admin_for_factory_reuse() -> None:
@@ -105,16 +105,9 @@ def _init_extensions(app: Flask) -> None:
     toolbar.init_app(app)
     available_langs: list = app.config.get("AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]])
 
-    def _parse_available_langs() -> list[_LangEntry]:
-        """Return language entries from app config."""
-        return [_LangEntry(*item) for item in available_langs]
-
-    def _active_locales() -> list[str]:
-        return [lang.locale for lang in _parse_available_langs()]
-
     def _locale_selector() -> str:
         lang = session.get("lang") or request.args.get("lang")
-        active = _active_locales()
+        active = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
         # SiteSettings overrides the deploy-time BABEL_DEFAULT_LOCALE if set.
         default_lang: str = app.config.get("BABEL_DEFAULT_LOCALE", "es_CL")
 
@@ -128,6 +121,7 @@ def _init_extensions(app: Flask) -> None:
 
     babel.init_app(app, locale_selector=_locale_selector)
     app.jinja_env.globals["get_locale"] = get_locale
+    app.jinja_env.globals["get_phone_for_country"] = get_phone_for_country
 
     # Rename the "username" field label to "Teléfono" across all
     # Flask-Security forms before init_app builds the field.
@@ -185,15 +179,26 @@ def _init_extensions(app: Flask) -> None:
             app.logger.warning("_inject_site_settings: failed to fetch SiteSettings")
 
     @app.context_processor
-    def inject_site_languages() -> dict:
-        return {"site_languages": _parse_available_langs()}
-
-    @app.context_processor
     def inject_firenze_public_urls() -> dict[str, str]:
         api_url = app.config.get("FIRENZE_API_URL", "").rstrip("/")
         return {
             "firenze_ejecutivos_url": f"{api_url}/api/v1/public/ejecutivos" if api_url else "",
         }
+
+    @app.before_request
+    def load_country():
+        g.current_country = session.get("country_override") or request.headers.get(
+            "X-Country", app.config.get("FT_DEFAULT_COUNTRY") or "CL"
+        )
+        enabled = app.config.get("FT_PAISES", [])
+        network = app.config.get("FT_NETWORK", {})
+
+        if g.current_country in enabled:
+            g.country_status = "ok"
+        elif g.current_country in network:
+            g.country_status = "wrong_network"
+        else:
+            g.country_status = "unsupported"
 
     @app.context_processor
     def inject_site_settings() -> dict:

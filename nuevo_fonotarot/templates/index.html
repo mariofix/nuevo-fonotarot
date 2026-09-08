@@ -1972,16 +1972,16 @@
 
 {# ── Homepage nav links ────────────────────────────────────────────────── #}
 {% block nav_links %}
-  <a href="#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
-  <a href="#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
-  <a href="#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
-  <a href="tel:+{{ _('56222301515') }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
-    <i class="ti ti-phone me-1"></i>{{ _('+56 2 2230 1515') }}
+  <a href="{{ url_for('content.index') }}#tarotistas" class="nav-link-soft d-none d-md-inline">Tarotistas</a>
+  <a href="{{ url_for('content.index') }}#planes" class="nav-link-soft d-none d-md-inline">Planes</a>
+  <a href="{{ url_for('content.index') }}#ayuda" class="nav-link-soft d-none d-md-inline">Cómo funciona</a>
+  <a href="tel:++{{ get_phone_for_country(g.current_country) }}" class="btn btn-outline-secondary btn-sm d-none d-lg-inline-flex" style="border-radius:30px; color:var(--plum); border-color:var(--plum);">
+    <i class="ti ti-phone me-1"></i>+{{ get_phone_for_country(g.current_country) }}
   </a>
 {% endblock %}
 
 {# ── CTA overrides "Carga Minutos" to scroll to #planes on homepage ─────── #}
-{% block nav_cta %}<a href="#planes" class="btn-rose">Carga Minutos</a>{% endblock %}
+{% block nav_cta %}<a href="{{ url_for('content.index') }}#planes" class="btn-rose">Carga Minutos</a>{% endblock %}
 
 {# ── Page content ─────────────────────────────────────────────────────── #}
 {% block content %}
@@ -2002,10 +2002,10 @@
             Amor, trabajo, familia — cuando más lo necesitas.
           </p>
           <div class="d-flex gap-3 flex-wrap">
-            <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+            <a href="tel:+{{ get_phone_for_country(g.current_country) }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
               <i class="ti ti-phone me-2"></i>Llama Ahora
             </a>
-            <a href="#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
+            <a href="{{ url_for('content.index') }}#planes" class="btn btn-lg btn-plan-outline px-5" style="display:inline-flex; align-items:center;">
               <i class="ti ti-wallet me-2"></i>Carga Minutos
             </a>
           </div>
@@ -2058,8 +2058,8 @@
                   {% endfor %}
                 {% endif %}
               </div><!-- #hero-agent-rows -->
-              <a href="tel:+{{ _('56222301515') }}" class="aw-cta">
-                <i class="ti ti-phone me-2"></i>Consultar Ahora - {{ _('+56 2 2230 1515') }}
+              <a href="tel:+{{ get_phone_for_country(g.current_country) }}" class="aw-cta">
+                <i class="ti ti-phone me-2"></i>Consultar Ahora - +{{ get_phone_for_country(g.current_country) }}
               </a>
             </div>
           </div>
@@ -2133,7 +2133,7 @@
                 <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
                   {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
                   <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-                  <div class="plan-clp">{{ pack.price_display }} CLP<span></span></div>
+                  <div class="plan-clp">{{ pack.price_display }}<span></span></div>
                   <p class="plan-desc">{{ pack.description or '' }}</p>
                   <div class="mt-auto d-flex flex-column gap-2">
                     <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn-plan">
@@ -2263,7 +2263,7 @@
                     <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
                       {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
                       <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-                      <div class="plan-clp">{{ pack.price_display }} CLP<span></span></div>
+                      <div class="plan-clp">{{ pack.price_display }}<span></span></div>
                       <p class="plan-desc">{{ pack.description or '' }}</p>
                       <div class="mt-auto d-flex flex-column gap-2">
                         <a href="{{ url_for('tarjetas.comprar', slug=pack.slug) }}" class="btn-plan">
@@ -2329,7 +2329,7 @@
         <p class="sec-sub">Elige a quien más resuene contigo</p>
       </div>
       <div class="row g-4">
-        {% for agent in ejecutivos %}
+        {% for agent in config.FT_EJECUTIVOS %}
           <div class="col-6 col-md-4 col-lg-3 reveal" style="transition-delay:{{ loop.index0 * 0.1 }}s">
             <div class="agent-card" data-option="{{ agent.option }}">
               {% if not agent.avatar %}
@@ -2360,8 +2360,8 @@
         {% endfor %}
       </div>
       <div class="text-center mt-5">
-        <a href="tel:+{{ _('56222301515') }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
-          <i class="ti ti-phone me-2"></i>Llama Ahora - {{ _('+56 2 2230 1515') }}
+        <a href="tel:+{{ get_phone_for_country(g.current_country) }}" class="btn btn-lg btn-call px-5" style="border-radius:30px; display:inline-flex; align-items:center;">
+          <i class="ti ti-phone me-2"></i>Llama Ahora - +{{ get_phone_for_country(g.current_country) }}
         </a>
       </div>
     </div>
@@ -2411,138 +2411,6 @@
     </div>
   </section>
 
-<!-- ── BLOG PREVIEW ────────────────────────────── -->
-{# {% if latest_posts %}
-<section id="blog-preview" class="blog-preview-section">
-  <div class="container">
-    <div class="text-center mb-2">
-      <div class="eyebrow">Blog</div>
-      <h2 class="sec-title">Últimas publicaciones</h2>
-      <div class="divider-rose mx-auto"></div>
-      <p class="sec-sub">Reflexiones, guías y sabiduría del tarot</p>
-    </div>
-    <div class="bp-grid">
-      {% for post in latest_posts %}
-      <a href="{{ url_for('blog.detail', slug=post.slug) }}" class="bp-card reveal" style="transition-delay:{{ loop.index0 * 0.12 }}s">
-        <div class="bp-card__img">
-          {% if post.featured_image_url %}
-          <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" loading="lazy">
-          {% endif %}
-          <div class="bp-card__img-overlay"></div>
-          <span class="bp-card__number">{{ ['I','II','III'][loop.index0] }}</span>
-        </div>
-        <div class="bp-card__body">
-          <div class="bp-card__date">
-            {% if post.published_at %}{{ post.published_at.strftime('%d %b %Y') }}{% endif %}
-            <span class="bp-read-time">{{ post.reading_time }} min</span>
-          </div>
-          <h3 class="bp-card__title">{{ post.title }}</h3>
-          {% if post.excerpt %}
-          <p class="bp-card__excerpt">{{ post.excerpt }}</p>
-          {% endif %}
-          <span class="bp-card__cta">Leer artículo</span>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-    <div class="text-center">
-      <a href="{{ url_for('blog.listing') }}" class="bp-view-all">
-        Ver todo el blog <i class="ti ti-arrow-right"></i>
-      </a>
-    </div>
-  </div>
-</section>
-{% endif %}
- #}
-<!-- ── FAQ ──────────────────────────────────────── -->
-  <{# section id="faq" class="faq-section">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="text-center mb-5">
-          <div class="eyebrow">Preguntas frecuentes</div>
-          <h2 class="sec-title">¿Tienes dudas?</h2>
-          <div class="divider-rose mx-auto"></div>
-        </div>
-        <div class="accordion faq-accordion" id="faqAccordion">
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿Cómo funciona el servicio?</button>
-            </h2>
-            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">FonoTarot es un servicio de consulta de tarot por teléfono disponible los 365 días del año. Compra una bolsa de minutos, llama al {{ _('+56 2 2230 1515') }} y
-                conéctate con una de nuestras especialistas disponibles. Al llamar escucharás un menú: puedes elegir una tarotista en particular o conectarte con una al azar. Tus minutos se descuentan
-                solo mientras hablas.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Puedo elegir con qué especialista hablar?</button>
-            </h2>
-            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">Sí. En nuestra página puedes ver en tiempo real quién está disponible, en consulta o desconectada. Al llamar, el sistema te pedirá el número de conexión de la
-                especialista que prefieras. También puedes pedir que te asignen una al azar.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Los minutos tienen fecha de vencimiento?</button>
-            </h2>
-            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">No. Los minutos que compres quedan disponibles en tu cuenta sin fecha de vencimiento. Úsalos cuando más los necesites, sin apuros. Si compras más minutos, se
-                suman a tu saldo existente.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Es completamente confidencial?</button>
-            </h2>
-            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">Sí, totalmente. Al llamar, la tarotista no tiene acceso a tu número ni a ningún dato personal. Puedes usar un seudónimo si lo prefieres. Está estrictamente
-                prohibido compartir información de contacto entre clientes y especialistas, y toda la información de la consulta es confidencial.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Realizan rituales, amarras u otros trabajos espirituales?</button>
-            </h2>
-            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">No, absolutamente no. Nuestro servicio es exclusivamente de consulta de tarot por teléfono. Ninguna de nuestras especialistas está autorizada para ofrecer ni
-                realizar trabajos adicionales. Si alguna lo hiciera, te pedimos nos lo comuniques.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">¿Qué hago si la llamada se corta inesperadamente?</button>
-            </h2>
-            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">Si tus minutos se agotaron o hubo un problema de red, comunícate con nuestro supervisor por WhatsApp al +56963349072. Si fue un fallo técnico, te repondrán
-                los minutos sin problema.</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">¿Puedo llamar desde el extranjero?</button>
-            </h2>
-            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">Sí, por lo general puedes llamar al {{ _('+56 2 2230 1515') }} desde el extranjero siempre que tu número esté registrado. Pueden aplicar costos de roaming de
-                tu operadora. Si necesitas usar un número diferente o habilitar el servicio desde el extranjero, contacta al supervisor por WhatsApp (+56963349072).</div>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">¿Cuál es el horario de atención?</button>
-            </h2>
-            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-              <div class="accordion-body">Atendemos los 365 días del año. El horario general es de 9:00 a 23:00 horas, aunque con frecuencia es posible encontrar especialistas disponibles fuera de ese
-                horario. El estado en tiempo real siempre está visible en nuestra página web.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section> #}
 
 <!-- ── CTA ──────────────────────────────────────── -->
   <section class="cta-section">
@@ -2550,7 +2418,7 @@
       <h2>Da el primer paso hacia la claridad</h2>
       <p>Nuestras especialistas están listas para recibirte ahora mismo.</p>
       <div class="d-flex gap-3 justify-content-center flex-wrap">
-        <a href="tel:+{{ _('56222301515') }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
+        <a href="tel:+{{ get_phone_for_country(g.current_country) }}" class="btn btn-white btn-lg"><i class="ti ti-phone me-2"></i>Llama Ahora</a>
         <a href="#planes" class="btn btn-white-outline btn-lg"><i class="ti ti-wallet me-2"></i>Carga Minutos</a>
         <a href="#" class="btn btn-outline btn-cyan btn-lg" data-bs-toggle="modal" data-bs-target="#saldoModal"><i class="ti ti-time-duration-60 me-2"></i>Consulta tu Saldo</a>
       </div>
@@ -2593,7 +2461,7 @@
               <span>
                 <strong>¿Por qué necesitamos tu número?</strong><br>
                 Los 5 minutos se acreditan directamente en tu número en nuestra central telefónica.
-                Solo necesitas tu teléfono para llamar al {{ _('+56 2 2230 1515') }} y usarlos de inmediato.
+                Solo necesitas tu teléfono para llamar a uno de nuestros numeros de acceso y usarlos de inmediato.
                 No compartimos tu número con terceros ni te añadimos a listas de contacto.
               </span>
             </div>
@@ -2721,7 +2589,7 @@
   <script>
   /* ── Agent status poller (every 5 s) ───────────────── */
     (function() {
-      var PHONE = 'tel:+{{ _("56222301515") }}';
+      var PHONE = 'tel:+{{ get_phone_for_country(g.current_country) }}';
 
     /* Escape user-supplied strings before inserting into the DOM */
       function esc(s) {

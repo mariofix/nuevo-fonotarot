@@ -1,6 +1,7 @@
 """SQLAlchemy models for nuevo-fonotarot."""
 
 import enum
+import json
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -835,10 +836,23 @@ class SiteSettings(db.Model):
         """Return values for all *keys* in a single query.
 
         Missing keys resolve to the value in *defaults* (if provided)
-        or ``None``.
+        or ``None``. Values that are valid JSON objects or arrays are
+        parsed automatically; scalars (numbers, booleans, plain strings)
+        are left as-is to avoid changing existing types (e.g. phone
+        numbers, version strings).
         """
         rows = cls.query.all()
-        found = {row.key: row.value for row in rows}
+        found = {}
+        for row in rows:
+            value = row.value
+            if value is not None:
+                try:
+                    parsed = json.loads(value)
+                    if isinstance(parsed, (dict, list)):
+                        value = parsed
+                except json.JSONDecodeError:
+                    pass
+            found[row.key] = value
         return {key: found.get(key) for key in found}
 
     @classmethod

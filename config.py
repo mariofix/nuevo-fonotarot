@@ -124,10 +124,9 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    TRUSTED_HOSTS:list = os.environ.get("TRUSTED_HOSTS", "localhost,").split(",")
-    SERVER_NAME: str = os.environ.get("SERVER_NAME", "localhost")
+    TRUSTED_HOSTS: list = os.environ.get("TRUSTED_HOSTS", "localhost,").split(",")
+    SERVER_NAME: str = os.environ.get("SERVER_NAME")  # type: ignore
     PREFERRED_URL_SCHEME: str = os.environ.get("PREFERRED_URL_SCHEME", "http")
-    DEFAULT_CURRENCY: str = os.environ.get("DEFAULT_CURRENCY", "CLP")
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI: str = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///fonotarot.db")
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
@@ -178,18 +177,18 @@ class Config:
     SECURITY_TOTP_ISSUER: str = "Fonotarot"
 
     # Flask-Admin locale
-    ADMIN_LOCALE: str = os.environ.get("ADMIN_LOCALE", "es_CL")
+    ADMIN_LOCALE: str = "es_CL"
 
     # Flask-Babel: default locale used when the locale selector returns None
     # and as the deploy-time fallback in _locale_selector().
     # Can be overridden at runtime via SiteSettings key ``default_language``.
-    BABEL_DEFAULT_LOCALE: str = os.environ.get("BABEL_DEFAULT_LOCALE", "es_CL")
+    BABEL_DEFAULT_LOCALE: str = "es_CL"
 
     # Available languages for the public language switcher.
     # Each entry is a [short_code, locale, label] triple.
     # Managed here (not in SiteSettings) so Flask-Admin Babel and Babel
     # locale negotiation know the list before any DB request is made.
-    AVAILABLE_LANGUAGES: list = json.loads(os.environ.get("AVAILABLE_LANGUAGES", '[["es", "es_CL", "Chile"]]'))
+    AVAILABLE_LANGUAGES: list | None = None
     # merchants
     MERCHANTS_KEY: str = os.environ.get("MERCHANTS_KEY", "dev-merchants-key-change-me")
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
@@ -202,8 +201,8 @@ class Config:
     FLOW_API_URL: str = os.environ.get("FLOW_API_URL", "https://sandbox.flow.cl/api")
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
-    STRIPE_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
-    PAYPAL_ACCESS_TOKEN: str = os.environ.get("FLOW_API_KEY", "")
+    STRIPE_API_KEY: str = os.environ.get("STRIPE_API_KEY", "")
+    PAYPAL_ACCESS_TOKEN: str = os.environ.get("PAYPAL_ACCESS_TOKEN", "")
 
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")

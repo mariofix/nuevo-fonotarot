@@ -1,0 +1,36 @@
+{#
+  country_switcher macro
+  -----------------------
+  Renders a row of clickable country flags for manual country selection.
+
+  Parameters
+  ----------
+  current_country : str | False
+      The active country code, e.g. "US". Typically ``g.current_country``.
+  countries : list
+      Ordered list of country codes, e.g. config.FT_PAISES.
+  dropdown : bool
+      True renders the desktop/tablet variant (larger flag + country name).
+      False renders the compact mobile variant (flag only). Default False.
+
+  Requires tabler-flags.css (already included in base.html) and
+  FT_INFO_PAISES in app.config for country display names.
+
+  Usage in base.html:
+      {% from "macros/country_switcher.html" import country_switcher %}
+      {{ country_switcher(g.current_country, config.FT_PAISES) }}
+      {{ country_switcher(g.current_country, config.FT_PAISES, dropdown=True) }}
+#}
+
+{%- macro country_switcher(current_country, countries, dropdown=False) -%}
+  {%- set wrapper_class = "lang-switcher-dropdown" if dropdown else "lang-switcher" -%}
+  {%- set flag_class = "lang-flag-dropdown" if dropdown else "lang-flag" -%}
+  <div class="{{ wrapper_class }}" aria-label="{{ _('Seleccionar país') }}">
+    {%- for code in countries %}
+      <a href="{{ url_for('account.set_country', code=code, next=request.path) }}" title="{{ config.FT_INFO_PAISES[code][0] }}" aria-label="{{ config.FT_INFO_PAISES[code][0] }}" class="{{ flag_class }}{% if current_country == code %}active{% endif %}">
+        <span class="flag flag-xs flag-country-{{ code.lower() }}" aria-hidden="true"></span>
+        {%- if dropdown %}<span class="lang-label"> {{ config.FT_INFO_PAISES[code][0] }}</span>{% endif -%}
+      </a>
+    {%- endfor %}
+  </div>
+{%- endmacro -%}

@@ -292,28 +292,19 @@ def settings():
     )
 
 
-@account_bp.route("/set-language/<lang>")
-def set_language(lang: str):
-    """Persist the chosen locale in the session and redirect back.
-
-    The redirect target is taken from the ``next`` query-string parameter when
-    it is a safe same-site relative path (starts with ``/`` but not ``//``).
-    Falls back to the site index when ``next`` is absent or unsafe.
-    """
-    active = [item[1] for item in current_app.config.get("AVAILABLE_LANGUAGES", [])]
-
-    if lang in active:
-        session["lang"] = lang
-        logger.debug("Language set to %r for session", lang)
+@account_bp.route("/set-country/<code>", methods=["GET"])
+def set_country(code: str):
+    """Override discovered country"""
+    if code in current_app.config.get("FT_PAISES", []):
+        session["country_override"] = code
     else:
-        logger.warning("Requested language %r is not in active list %s; ignoring", lang, active)
+        logger.warning("Requested country %r is not in config.FT_PAISES; ignoring", code)
 
     next_param = request.args.get("next", "").strip()
     if next_param:
         from urllib.parse import urlsplit as _urlsplit
 
         parsed_next = _urlsplit(next_param)
-        # Accept only relative paths (no scheme, no netloc, must start with / but not //)
         if (
             not parsed_next.scheme
             and not parsed_next.netloc
@@ -323,13 +314,3 @@ def set_language(lang: str):
             return redirect(next_param)
 
     return redirect(url_for("content.index"))
-
-
-@account_bp.route("/registro/cliente-existente", methods=["GET", "POST"])
-def claim_account():
-    """Legacy endpoint kept for compatibility; account creation is checkout-only."""
-    flash(
-        _("La creación de cuenta está disponible durante el checkout."),
-        "info",
-    )
-    return redirect(url_for("pagos.index"))

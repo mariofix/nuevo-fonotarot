@@ -28,7 +28,7 @@ repos:
         args: [--py314-plus]  # match your actual target version
 
   - repo: https://github.com/pycqa/isort
-    rev: 9.0.0b5
+    rev: 9.0.1
     hooks:
       - id: isort
 
