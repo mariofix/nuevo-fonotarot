@@ -99,7 +99,7 @@
                     <div class="text-secondary small mt-1">{{ favorite_tarotista.specialty }}</div>
                   {% endif %}
                 {% else %}
-                  <div class="alert alert-info">{{ _("Selecciona tu Tarotista preferido para activar la llamada rápida y el aviso de tarotista conectado.") }}</div>
+                  <div class="alert alert-info">{{ _("Selecciona tu Tarotista preferido para activar la llamada rápida.") }}</div>
                 {% endif %}
               </div>
             </div>
@@ -109,12 +109,12 @@
                 {% if notification_preferences_labels %}
                   {{ notification_preferences_labels | join(", ") }}
                 {% else %}
-                  <div class="alert alert-info">{{ _("Configura tus notificaciones: Comprobantes de Compra, Saldo Bajo, Tarotista En Línea, Promociones.") }}</div>
+                  <div class="alert alert-info">{{ _("Configura tus notificaciones: Comprobantes de Compra, Saldo Bajo, Promociones Especiales.") }}</div>
                 {% endif %}
               </div>
             </div>
-            <div class="mb-3"><hr class="divider"></div>
-            <div class="mb-3">
+            {# <div class="mb-3"><hr class="divider"></div>
+             <div class="mb-3">
               <div class="alert alert-warning">Ruurd, Estos datos son válidos sólo cuando haya venta de productos físicos con envíos.</div>
             </div>
             <div class="mb-3">
@@ -140,7 +140,7 @@
                 {{ _("Faltan datos de cuenta para sincronización o perfil.") }}
                 <a href="{{ url_for('account.settings') }}" class="alert-link">{{ _("Completar datos en Configuración") }}</a>
               </div>
-            {% endif %}
+            {% endif %} #}
           </div>
         </div>
 
@@ -149,109 +149,114 @@
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
-            <p class="section-title mb-3">{{ _("Datos Básicos") }}</p>
+            <p class="section-title mb-3">Hola {{ current_user.full_name }}</p>
             {% if user.firenze_client_id %}
-              <div class="alert alert-success mb-0">
-                <i class="ti ti-circle-check me-1"></i>{{ _("Tu perfil está completo para compras físicas.") }}
+
+              <div class="alert alert-success mb-4">
+                <i class="ti ti-circle-check me-1"></i>Esta es tu nueva casa, bienvenida.
+              </div>
+
+              <div class="row row-cards mb-2">
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card card-sm">
+                    <div class="card-stamp">
+                      <div class="card-stamp-icon bg-success">
+                        <i class="ti ti-credit-card-hand"></i>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-auto">
+                          <div class="chart-sparkline chart-sparkline-square" id="sparkline-orders-today"
+                               data-graph-paid="15"
+                               data-graph-unpaid="4"></div>
+                        </div>
+                        <div class="col">
+                          <div class="font-weight-medium">15 Ordenes</div>
+                          <div class="text-secondary">Últimos 7 días.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card card-sm">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-auto">
+                          <span class="bg-cyan text-white avatar"><i class="ti ti-device-mobile-message icon icon-1"></i></span>
+                        </div>
+                        <div class="col">
+                          <div class="font-weight-medium">30-minutos</div>
+                          <div class="text-secondary">Pack más comprado</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card card-sm">
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="col-auto">
+                          <span class="bg-cyan text-white avatar"><i class="ti ti-gift-card icon icon-1"></i></span>
+                        </div>
+                        <div class="col">
+                          <div class="font-weight-medium">0</div>
+                          <div class="text-secondary">Giftcards utilizadas.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             {% else %}
               <div class="card">
-                <div class="table-responsive">
-                  <table class="table table-vcenter table-bordered table-nowrap card-table">
-                    <thead>
-                      <tr>
-                        <td class="w-50" colspan="2">
-                          <h2>Completa tu primera compra</h2>
-                          <div class="text-secondary text-wrap">
-                            Se activarán las novedades y beneficios que tenemos para ti
-                          </div>
-                        </td>
-                        <td class="text-center">
-                          <div class="text-uppercase text-secondary font-weight-medium">Sin Registro</div>
-                        </td>
-                        <td class="text-center">
-                          <div class="text-uppercase text-secondary font-weight-medium">Cliente Registrado</div>
-
-                        </td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="bg-surface-tertiary">
-                        <th colspan="4" class="subheader">Compras</th>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Compra Normal</td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Compra Con un Click</td>
-                        <td class="text-center">
-                          <i class="ti ti-x text-red icon-2"></i>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Consulta de Saldo</td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-warning icon-2"></i><br>
-                          <span class="text-secondary small">(3 consultas/dia)</span>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i><br>
-                          <span class="text-secondary small">(Saldo en línea)</span>
-                        </td>
-                      </tr>
-                      <tr class="bg-surface-tertiary">
-                        <th colspan="4" class="subheader">Beneficios Exclusivos</th>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Llamada Rápida<br>
-                          <span class="text-secondary small">Saltate la fila y conectate inmediatamente con <br>tu tarotista favorita.</span></td>
-                        <td class="text-center">
-                          <i class="ti ti-x text-red icon-2"></i>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Notificacion de Tarotista<br>
-                          <span class="text-secondary small">Recibe una notificación cuando tu tarotista <br>favorita se conecte al sistema,</span></td>
-
-                        <td class="text-center">
-                          <i class="ti ti-x text-red icon-2"></i>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">Minuto Extra<br>
-                          <span class="text-secondary small">Recibe una notificacion en la llamada <br>y 1 minuto extra para que termines bien tu sesión. </span></td>
-                        <td class="text-center">
-                          <i class="ti ti-x text-red icon-2"></i>
-                        </td>
-                        <td class="text-center">
-                          <i class="ti ti-check text-green icon-2"></i>
-                        </td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td colspan="2"></td>
-                        <td colspan="2">
-                          <a href="{{ url_for('account.settings') }}" class="btn btn-green w-100">Completar Registro</a>
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                <div class="mt-5 pt-4">
+                  <div class="text-center mb-4">
+                    <h2 class="fw-bold h3">{{ _("¿Con cuenta o sin cuenta?") }}</h2>
+                    <p class="text-secondary">{{ _("Compra igual de fácil de las dos formas. Esto es lo que cambia si te registras.") }}</p>
+                  </div>
+                  <div class="table-responsive mx-auto" style="max-width: 720px;">
+                    <table class="table compare-table mb-2">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th class="text-center">{{ _("Invitado") }}</th>
+                          <th class="text-center compare-col-reg">{{ _("Con cuenta") }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{{ _("Comprar y usar minutos") }}</td>
+                          <td class="text-center"><i class="ti ti-check text-success"></i></td>
+                          <td class="text-center compare-col-reg"><i class="ti ti-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                          <td>{{ _("Saltate la fila") }}</td>
+                          <td class="text-center text-secondary small"><i class="ti ti-x text-secondary"></i></td>
+                          <td class="text-center compare-col-reg small">{{ _("Consulta Disponibilidad*") }}</td>
+                        </tr>
+                        <tr>
+                          <td>{{ _("Saldo de cuenta") }}</td>
+                          <td class="text-center text-secondary small">{{ _("Al momento de llamar") }}</td>
+                          <td class="text-center compare-col-reg small">{{ _("En línea, siempre visible y siempre actualizado") }}</td>
+                        </tr>
+                        <tr>
+                          <td>{{ _("Historial de compras y llamadas") }}</td>
+                          <td class="text-center"></td>
+                          <td class="text-center compare-col-reg"><i class="ti ti-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                          <td>{{ _("Promociones especiales") }}</td>
+                          <td class="text-center text-secondary small"><i class="ti ti-x text-secondary"></i></td>
+                          <td class="text-center compare-col-reg small">{{ _("Para ciertos grupos") }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="text-center text-secondary mt-2">{{ _("Puedes crear una cuenta en tu proxima compra.") }}</p>
+                  <p class="text-center text-secondary small mt-2">{{ _("*Saltate la fila disponible para algunos usuarios, consulta disponibilidad con nosotros en nuestro canal de soporte.") }}</p>
                 </div>
               </div>
             {% endif %}
@@ -285,7 +290,43 @@
                 {% else %}
                   <tr>
                     <td colspan="4">
-                      <div class="profile-empty p-3 text-secondary">{{ _("Todavía no hay órdenes registradas.") }}</div>
+                      <div class="profile-empty p-3 text-secondary">{{ _("No encontramos compras realizadas, llamanos! escucha al universo.") }}</div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>{{ _("Tarjetas de Regalo") }}</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table card-table table-vcenter">
+              <thead>
+                <tr>
+                  <th>{{ _("Codigo Tarjeta") }}</th>
+                  <th>{{ _("Fecha") }}</th>
+                  <th>{{ _("Estado") }}</th>
+                  <th class="text-end">{{ _("Total") }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in recent_orders %}
+                  <tr>
+                    <td><a href="{{ url_for("pagos.orden_estado", order_id=order.merchants_id) }}">{{ order.merchants_id[:13] }} ({{ order.provider }})</a></td>
+                    <td>{{ order.created_at.strftime('%d/%m/%Y') if order.created_at else _("No informada") }}</td>
+                    <td>
+                      <span class="badge text-{% if order.status == "delivered" %}success{% elif order.status == 'failed' %}danger{% else %}info{% endif %}">{{ order.status }}</span>
+                    </td>
+                    <td class="text-end">{{ order.total_display }}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="4">
+                      <div class="profile-empty p-3 text-secondary">No encontramos tarjetas de regalo compradas o utilizadas.</div>
                     </td>
                   </tr>
                 {% endfor %}
@@ -298,25 +339,78 @@
           <div class="card-header">
             <span>{{ _("Palabras de Nuestras Tarotistas") }}</span>
           </div>
-          <div class="list-group list-group-flush">
-            {% for post in recent_posts %}
-              <a class="list-group-item list-group-item-action" href="{{ url_for('blog.detail', slug=post.slug) }}">
-                <div class="d-flex justify-content-between gap-3">
-                  <div>
-                    <div class="fw-semibold">{{ post.title }}</div>
-                    {% if post.excerpt %}
-                      <div class="text-secondary small">{{ post.excerpt }}</div>
-                    {% endif %}
-                  </div>
-                </div>
-              </a>
-            {% else %}
-              <div class="list-group-item">
-                <div class="profile-empty p-3 text-secondary">{{ _("Aún no hay posts publicados.") }}</div>
-              </div>
-            {% endfor %}
+          <div class="list-group list-group-flush" id="tarot-feed-list">
+            <div class="list-group-item">
+              <div class="profile-empty p-3 text-secondary">{{ _("Cargando publicaciones...") }}</div>
+            </div>
           </div>
         </div>
+
+        <script>
+          (function () {
+            const container = document.getElementById("tarot-feed-list");
+            const FEED_URL = "https://fonotarot.com/category/tarot/feed/";
+
+            function stripHtml(html) {
+              const tmp = document.createElement("div");
+              tmp.innerHTML = html;
+              return (tmp.textContent || "").replace(/\s+/g, " ").trim();
+            }
+
+            function cleanExcerpt(rawDescription, maxLen = 140) {
+              let text = stripHtml(rawDescription);
+              text = text.replace(/The post.*appeared first on.*$/i, "").trim();
+              if (text.length > maxLen) {
+                text = text.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
+              }
+              return text;
+            }
+
+            function render(posts) {
+              if (!posts.length) {
+                container.innerHTML = `
+          <div class="list-group-item">
+            <div class="profile-empty p-3 text-secondary">{{ _("Aún no hay posts publicados.") }}</div>
+          </div>`;
+                return;
+              }
+              container.innerHTML = posts.map(post => `
+        <a class="list-group-item list-group-item-action" href="${post.link}" target="_blank" rel="noopener">
+          <div class="d-flex justify-content-between gap-3">
+            <div>
+              <div class="fw-semibold">${post.title}</div>
+              <div class="text-secondary small">${post.excerpt}</div>
+            </div>
+          </div>
+        </a>
+      `).join("");
+            }
+
+            fetch(FEED_URL)
+              .then(res => {
+                if (!res.ok) throw new Error("feed http error");
+                return res.text();
+              })
+              .then(xmlText => {
+                const xml = new DOMParser().parseFromString(xmlText, "application/xml");
+                if (xml.querySelector("parsererror")) throw new Error("feed parse error");
+
+                const items = Array.from(xml.querySelectorAll("item")).slice(0, 5);
+                const posts = items.map(item => ({
+                  title: item.querySelector("title")?.textContent || "",
+                  link: item.querySelector("link")?.textContent || "",
+                  excerpt: cleanExcerpt(item.querySelector("description")?.textContent || ""),
+                }));
+                render(posts);
+              })
+              .catch(() => {
+                container.innerHTML = `
+          <div class="list-group-item">
+            <div class="profile-empty p-3 text-secondary">{{ _("No pudimos cargar las publicaciones.") }}</div>
+          </div>`;
+              });
+          })();
+        </script>
 
         <div class="row g-4">
           <div class="col-md-6">
@@ -428,5 +522,33 @@
         }
       }
     })();
+  </script>
+  <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js', v='0.1.5') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!window.ApexCharts) return;
+      document.querySelectorAll(".chart-sparkline[data-graph-paid]").forEach(function (el) {
+        var paid = parseInt(el.dataset.graphPaid, 10) || 0;
+        var unpaid = parseInt(el.dataset.graphUnpaid, 10) || 0;
+        var total = paid + unpaid;
+        var pct = total ? Math.round((paid / total) * 100) : 0;
+        new ApexCharts(el, {
+          chart: {
+            type: "radialBar", fontFamily: "inherit", height: 40, width: 40,
+            animations: { enabled: true }, sparkline: { enabled: true },
+          },
+          tooltip: { enabled: false },
+          plotOptions: {
+            radialBar: {
+              hollow: { margin: 0, size: "75%" },
+              track: { margin: 0 },
+              dataLabels: { show: false },
+            },
+          },
+          colors: ["var(--tblr-green)"],
+          series: [pct],
+        }).render();
+      });
+    });
   </script>
 {% endblock %}
