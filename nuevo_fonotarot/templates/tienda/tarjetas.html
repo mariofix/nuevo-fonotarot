@@ -2,6 +2,224 @@
 
 {% block title %}{{ _("Tarjetas Prepago Digitales - Fonotarot") }}{% endblock %}
 
+{% block extra_css %}
+  <style>
+    .pack-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition:
+      transform 0.25s,
+      box-shadow 0.25s;
+    }
+    .pack-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 36px rgba(107, 63, 160, 0.18);
+      border-color: var(--plum);
+    }
+    .pack-card.featured {
+      background: linear-gradient(160deg, var(--blush) 0%, var(--lavender) 100%);
+      border-color: var(--plum);
+      box-shadow: 0 0 32px rgba(107, 63, 160, 0.15);
+    }
+    .pack-card-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .pack-price {
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--plum);
+      line-height: 1;
+      margin: 0.5rem 0 0.25rem;
+    }
+    .pack-mins {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .pack-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--plum);
+      color: #fff;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+    .btn-pack {
+      border-radius: 30px;
+      padding: 0.5rem 0;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-top: auto;
+    }
+    .btn-pack-primary {
+      background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+      color: #fff !important;
+      border: none;
+    }
+    .btn-pack-outline {
+      background: transparent;
+      border: 1px solid rgba(107, 63, 160, 0.45);
+      color: var(--plum) !important;
+    }
+    .btn-pack-outline:hover {
+      background: rgba(107, 63, 160, 0.06);
+    }
+
+    /* ─── Flow steps (como funciona) ────────────────── */
+    .flow-steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 1rem;
+      position: relative;
+      margin-top: 2rem;
+    }
+    @media (min-width: 768px) {
+      .flow-steps::before {
+        content: "";
+        position: absolute;
+        top: 28px;
+        left: 12%;
+        right: 12%;
+        height: 2px;
+        background: var(--border);
+        z-index: 1;
+      }
+    }
+    .flow-step {
+      flex: 1 1 200px;
+      max-width: 220px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-step-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto 0.75rem;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 4px 14px rgba(107, 63, 160, 0.25);
+    }
+    .flow-step-num {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #fff;
+      color: var(--plum);
+      border: 2px solid var(--plum);
+      font-size: 0.7rem;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flow-step h6 {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .flow-step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .flow-fork {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .flow-fork-card {
+      flex: 1 1 260px;
+      max-width: 320px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .flow-fork-card i {
+      font-size: 1.6rem;
+      color: var(--plum);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .flow-fork-card h6 {
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+    .flow-fork-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .redeem-note {
+      margin-top: 1.5rem;
+      background: var(--cream, rgba(0, 0, 0, 0.02));
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    .redeem-note h6 {
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .redeem-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .redeem-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+    .redeem-pill i {
+      color: var(--plum);
+      font-size: 0.95rem;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <div class="container py-5">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -9,30 +227,29 @@
         <h1 class="fw-bold mb-1">{{ _("Tarjetas Prepago Digitales") }}</h1>
         <p class="text-secondary mb-0">{{ _("Compra, regala y canjea minutos en segundos.") }}</p>
       </div>
-      <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-outline-primary">
-        <i class="ti ti-ticket me-1"></i>{{ _("Canjear tarjeta") }}
-      </a>
+      <a href="{{ url_for('tarjetas.canjear') }}" class="btn btn-pack-outline px-3" style="border-radius:30px;width:auto"> <i class="ti ti-ticket me-1"></i>{{ _("Canjear tarjeta") }} </a>
     </div>
 
     <div class="row g-4">
       {% for card in cards %}
         <div class="col-12 col-sm-6 col-lg-4">
-          <div class="card h-100">
-            {% if card.image_url %}
-              <img src="{{ card.image_url }}" alt="{{ card.name }}" class="card-img-top" style="height:180px;object-fit:cover;" />
+          <div class="pack-card {% if card.is_featured %}featured{% endif %}">
+            {% if card.is_featured %}
+              <span class="pack-badge">{{ _("Recomendada") }}</span>
             {% endif %}
-            <div class="card-body d-flex flex-column">
-              <div class="small text-secondary mb-1">{{ _("Tarjeta digital") }}</div>
-              <h5 class="card-title">{{ card.name }}</h5>
-              <div class="h3 mb-1">{{ card.price_display }}</div>
-              <div class="text-secondary">{{ _("%(minutes)s minutos", minutes=card.minutes) }}</div>
-              {% if card.description %}
-                <p class="text-secondary small mt-2 mb-0">{{ card.description }}</p>
-              {% endif %}
-              <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-primary mt-3">
-                <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }}
-              </a>
-            </div>
+            {% if card.image_url %}
+              <img src="{{ card.image_url }}" alt="{{ card.name }}" class="pack-card-img" />
+            {% else %}
+              <i class="ti ti-gift mb-2" style="font-size:2rem;color:var(--plum)"></i>
+            {% endif %}
+            <div class="small text-secondary mb-1">{{ _("Tarjeta digital") }}</div>
+            <div class="pack-mins">{{ card.name }}</div>
+            <div class="pack-price">{{ card.price_display }}</div>
+            <div class="text-secondary">{{ _("%(minutes)s minutos", minutes=card.minutes) }}</div>
+            {% if card.description %}
+              <p class="section-subtitle small mt-2 mb-0">{{ card.description }}</p>
+            {% endif %}
+            <a href="{{ url_for('tarjetas.detalle', slug=card.slug) }}" class="btn btn-pack mt-3 {% if card.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"> <i class="ti ti-gift me-1"></i>{{ _("Comprar para regalar") }} </a>
           </div>
         </div>
       {% else %}
@@ -41,6 +258,64 @@
           <p class="mt-2">{{ _("No hay tarjetas disponibles por el momento.") }}</p>
         </div>
       {% endfor %}
+    </div>
+
+    <!-- Cómo funciona una tarjeta digital -->
+    <div class="mt-5 pt-4">
+      <div class="text-center mb-2">
+        <h2 class="fw-bold h3">{{ _("¿Cómo funciona la tarjeta digital?") }}</h2>
+        <p class="text-secondary">{{ _("Compra hoy, entrega el regalo cuando quieras.") }}</p>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-gift"></i><span class="flow-step-num">1</span></div>
+          <h6>{{ _("Elige la tarjeta") }}</h6>
+          <p>{{ _("Selecciona el monto de minutos a regalar.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-lock"></i><span class="flow-step-num">2</span></div>
+          <h6>{{ _("Paga seguro") }}</h6>
+          <p>{{ _("Completa el pago en la plataforma oficial.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-mail"></i><span class="flow-step-num">3</span></div>
+          <h6>{{ _("Recibe todo por correo") }}</h6>
+          <p>{{ _("Comprobante, código y el PDF de tu tarjeta, listos al instante.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-heart-handshake"></i><span class="flow-step-num">4</span></div>
+          <h6>{{ _("Entrega tu regalo") }}</h6>
+          <p>{{ _("Imprímelo o envíalo directo a esa persona especial.") }}</p>
+        </div>
+      </div>
+
+      <div class="flow-fork">
+        <div class="flow-fork-card">
+          <i class="ti ti-printer"></i>
+          <div>
+            <h6>{{ _("¿Prefieres el toque personal?") }}</h6>
+            <p>{{ _("Descarga el PDF, imprímelo y entrégalo tú mismo en mano.") }}</p>
+          </div>
+        </div>
+        <div class="flow-fork-card">
+          <i class="ti ti-send"></i>
+          <div>
+            <h6>{{ _("¿Es para alguien más?") }}</h6>
+            <p>{{ _("Ingresa el correo del destinatario y le llega directo, con un mensaje especial de tu parte.") }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="redeem-note">
+        <h6><i class="ti ti-info-circle me-1" style="color:var(--plum)"></i>{{ _("¿Quién recibe el regalo? Así activa sus minutos") }}</h6>
+        <p class="text-secondary small mb-3">{{ _("En %(url)s, con estos 3 datos:", url="fonotarot.com/canjear") }}</p>
+        <div class="redeem-pills">
+          <span class="redeem-pill"><i class="ti ti-phone"></i>{{ _("Su teléfono") }}</span>
+          <span class="redeem-pill"><i class="ti ti-mail"></i>{{ _("Su correo") }}</span>
+          <span class="redeem-pill"><i class="ti ti-ticket"></i>{{ _("El código de la tarjeta") }}</span>
+        </div>
+        <p class="text-secondary small mt-3 mb-0">{{ _("Si le entregas la tarjeta impresa en persona, cuéntale esto — o envíale este mismo link.") }}</p>
+      </div>
     </div>
   </div>
 {% endblock %}

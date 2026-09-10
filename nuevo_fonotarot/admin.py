@@ -1617,25 +1617,16 @@ def init_admin(app, admin_ext):
         icon_value="home-2",
     )
     admin_ext.add_category(
-        name=_l("Auth"),
+        name=_l("Generales"),
         icon_type="ti",
-        icon_value="lock",
-    )
-    admin_ext.add_category(
-        name=_l("Content"),
-        icon_type="ti",
-        icon_value="layout-dashboard",
+        icon_value="globe",
     )
     admin_ext.add_category(
         name=_l("Tienda"),
         icon_type="ti",
         icon_value="building-store",
     )
-    admin_ext.add_category(
-        name=_l("Sitio"),
-        icon_type="ti",
-        icon_value="globe",
-    )
+
     admin_ext.add_category(
         name=_l("Reportes"),
         icon_type="ti",
@@ -1650,8 +1641,8 @@ def init_admin(app, admin_ext):
         UserAdminView(
             User,
             db.session,
-            name=_l("Users"),
-            category=_l("Auth"),
+            name=_l("Usuarios"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="users",
         )
@@ -1661,7 +1652,7 @@ def init_admin(app, admin_ext):
             Role,
             db.session,
             name=_l("Roles"),
-            category=_l("Auth"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="shield",
         )
@@ -1670,18 +1661,8 @@ def init_admin(app, admin_ext):
         StaticPageAdminView(
             StaticPage,
             db.session,
-            name=_l("Pages"),
-            category=_l("Content"),
-            menu_icon_type="ti",
-            menu_icon_value="file-text",
-        )
-    )
-    admin_ext.add_view(
-        BlogPostAdminView(
-            BlogPost,
-            db.session,
-            name=_l("Blog Posts"),
-            category=_l("Content"),
+            name=_l("Paginas Estáticas"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="file-text",
         )
@@ -1773,25 +1754,25 @@ def init_admin(app, admin_ext):
             SiteSettings,
             db.session,
             name=_l("Configuración"),
-            category=_l("Sitio"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="settings",
         )
     )
     admin_ext.add_view(
         SeoSettingsAdminView(
-            name=_l("SEO"),
+            name=_l("Configuración: SEO"),
             endpoint="seo_settings",
-            category=_l("Sitio"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="search",
         )
     )
     admin_ext.add_view(
         AnalyticsSettingsAdminView(
-            name=_l("Analytics"),
+            name=_l("Configuración: Analytics"),
             endpoint="analytics_settings",
-            category=_l("Sitio"),
+            category=_l("Generales"),
             menu_icon_type="ti",
             menu_icon_value="chart-dots",
         )
@@ -1829,8 +1810,8 @@ def init_admin(app, admin_ext):
         MediaLibraryAdmin(
             media_path,
             "/static/media-library/",
-            name=_l("Media Library"),
-            category=_l("Content"),
+            name=_l("Multimedia"),
+            category=_l("Generales"),
             endpoint="media_library",
             menu_icon_type="ti",
             menu_icon_value="photo",
@@ -1840,8 +1821,8 @@ def init_admin(app, admin_ext):
         SecureFileAdmin(
             static_path,
             "/static/",
-            name=_l("Static Files"),
-            category=_l("Content"),
+            name=_l("Archivos Estaticos"),
+            category=_l("Generales"),
             endpoint="static_files",
             menu_icon_type="ti",
             menu_icon_value="folder",

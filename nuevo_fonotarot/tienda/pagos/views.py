@@ -5,6 +5,7 @@ import random
 import re
 
 from flask import current_app, redirect, render_template, url_for
+from merchants import describe_providers, list_providers
 from sqlalchemy.exc import SQLAlchemyError
 
 from ...actions import sync_firenze_topup
@@ -507,6 +508,7 @@ def index():
         featured_products=featured_products,
         gift_cards=gift_cards,
         cart_count=len(cart),
+        providers=describe_providers(),
     )
 
 

@@ -6,6 +6,7 @@ from decimal import Decimal
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
+from merchants import describe_providers, list_providers
 from sqlalchemy import and_
 
 from ...actions import register_checkout_account
@@ -44,7 +45,7 @@ def comprar_minutos(pack_slug: str):
         payment_method = request.form.get("payment_method")
         logger.debug("comprar_minutos POST: pack_slug=%s payment_method=%r", pack_slug, payment_method)
 
-        if payment_method not in ("flow", "khipu"):
+        if payment_method not in list_providers():
             logger.warning("Invalid payment method %r for pack_slug=%s", payment_method, pack_slug)
             flash(_("Método de pago no válido."), "danger")
             return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
@@ -227,6 +228,7 @@ def comprar_minutos(pack_slug: str):
         prefilled_phone=prefilled_phone,
         prefilled_shipping_phone=prefilled_shipping_phone,
         cart_count=len(_get_cart()),
+        providers=describe_providers(),
     )
 
 

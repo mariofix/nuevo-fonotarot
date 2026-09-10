@@ -224,7 +224,7 @@ class MinutePack(db.Model):
     @property
     def price_display(self) -> str:
         """Format price using locale-aware currency formatting."""
-        return babel_format_currency(self.price, self.currency, locale=get_locale())
+        return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
 
 class SubscriptionPlan(db.Model):
@@ -249,7 +249,7 @@ class SubscriptionPlan(db.Model):
     @property
     def price_display(self) -> str:
         """Format price using locale-aware currency formatting."""
-        return babel_format_currency(self.price, self.currency, locale=get_locale())
+        return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
     @property
     def features_list(self) -> list:
@@ -306,7 +306,7 @@ class Product(db.Model):
     @property
     def price_display(self) -> str:
         """Format price using locale-aware currency formatting."""
-        return babel_format_currency(self.price, self.currency, locale=get_locale())
+        return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
     @staticmethod
     def make_slug(name: str) -> str:
@@ -366,7 +366,7 @@ class GiftCardProduct(db.Model):
     @property
     def price_display(self) -> str:
         """Format price using locale-aware currency formatting."""
-        return babel_format_currency(self.price, self.currency, locale=get_locale())
+        return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
     @staticmethod
     def make_slug(name: str) -> str:
@@ -516,14 +516,18 @@ class Order(db.Model, PaymentMixin):
         """Format order total using locale-aware currency formatting."""
         if self.amount is None:
             return ""
-        return babel_format_currency(Decimal(str(self.amount)), self.currency or "CLP", locale=get_locale())
+        return babel_format_currency(
+            Decimal(str(self.amount)), self.currency, locale=get_locale(), format="#,##0.0 ¤¤"
+        )
 
     @property
     def discount_display(self) -> str:
         """Format order discount using locale-aware currency formatting."""
         if self.discount_amount is None:
             return ""
-        return babel_format_currency(Decimal(str(self.discount_amount)), self.currency or "CLP", locale=get_locale())
+        return babel_format_currency(
+            Decimal(str(self.discount_amount)), self.currency, locale=get_locale(), format="#,##0.0 ¤¤"
+        )
 
     def initiate_payment(self, payment_method: str, email: str) -> str:
         """Prepare this order as a payment record and start checkout.
@@ -678,7 +682,7 @@ class OrderItem(db.Model):
     @property
     def subtotal_display(self) -> str:
         """Format subtotal using locale-aware currency formatting."""
-        return babel_format_currency(self.subtotal, self.currency, locale=get_locale())
+        return babel_format_currency(self.subtotal, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
 
 # ---------------------------------------------------------------------------

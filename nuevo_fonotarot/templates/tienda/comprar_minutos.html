@@ -4,6 +4,8 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/tabler/css/tabler-payments.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/tabler/css/tabler-payments-cl.css') }}" />
   <style>
     .ck-submit-spinner {
       display: none;
@@ -37,11 +39,7 @@
 
 {% block content %}
   <form method="post" action="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" id="checkout-form">
-
-
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-
     <div class="ck-split">
 
     <!-- ── LEFT: Pack summary ─────────────────────────── -->
@@ -66,7 +64,7 @@
 
         <div class="ck-left-total">
           <span class="total-label">{{ _("Total a pagar") }}</span>
-          <span class="total-value" id="total_price_display">{{ pack.price_display }}</span>
+          <span class="total-value" id="total_price_display">{{ pack.price_display }} </span>
         </div>
 
         <div class="ck-left-secure">
@@ -95,116 +93,95 @@
           <h2>{{ _("Finalizar compra") }}</h2>
           <p class="subtitle">{{ _("Completa tus datos y elige cómo pagar.") }}</p>
 
-          {% if not current_user %}
-            <div class="ck-info anon">
-              <i class="ti ti-ghost me-1"></i>
-              <strong>{{ _("Compra inmediata.") }}</strong> {{ _("Necesitamos el número desde donde nos llamarás y un correo electronico para enviar el comprobante.") }}<br>
-              <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
-                {{ _("¿Ya tienes cuenta? Ingresa sin contraseña") }}
-              </a>
-            </div>
+          <div class="ck-form-section">
+            <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de Compra") }}</div>
+            {% if not current_user %}
+              <div class="ck-info anon">
+                <i class="ti ti-ghost me-1"></i>
+                <strong>{{ _("Compra Segura.") }}</strong> {{ _("Necesitamos el número desde donde nos llamarás y un correo electronico para enviar el comprobante.") }}<br>
+                <a href="#" class="ms-1 js-passwordless-trigger" data-next="{{ request.full_path.rstrip('?') }}" style="color:var(--plum)">
+                  {{ _("¿Ya tienes cuenta? Ingresa sin contraseña.") }}
+                </a>
+              </div>
 
         <!-- ── Customer data ─────────────────────── -->
-            <div class="ck-form-section">
-              <div class="section-label"><i class="ti ti-user"></i> {{ _("Datos de Compra") }}</div>
+            {% else %}
+              <div class="ck-info known">
+                <i class="ti ti-user-check me-1"></i>
+                <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
+                {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
+              </div>
+            {% endif %}
 
-
-          {# <div class="form-check mt-3">
-            <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
-            <label class="form-check-label" for="create_account">
-              {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
-            </label>
-            <div class="form-text">
-              {{ _("Te enviaremos un correo de bienvenida y confirmación.") }}
+            <div class="row g-2">
+              <div class="col-md-5">
+                <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
+                <input type="tel" id="phone" name="phone" class="form-control" data-mask="569 0000-0000" data-mask-visible="true" placeholder="+56 9 ..." value="{{ prefilled_phone }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
+                <div class="form-text">{{ _("El teléfono usarás para llamar a tu tarotista.") }}</div>
+              </div>
+              <div class="col-md-7">
+                <label class="form-label" for="email">{{ _("Email *") }}</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
+              </div>
             </div>
-          </div> #}
-          {% else %}
-            <div class="ck-info known">
-              <i class="ti ti-user-check me-1"></i>
-              <strong>{{ _("Hola") }}{% if current_user.full_name %}, {{ current_user.full_name.split()[0] }}{% endif %}.</strong>
-              {{ _("El comprobante se enviará a") }} <strong>{{ current_user.email }}</strong>.
+          </div>
+          {% if not current_user %}
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
+              <label class="form-check-label" for="create_account">
+                {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
+              </label>
+              <div class="form-text">
+                {{ _("Te enviaremos un correo de bienvenida con intrucciones para activar tu cuenta. ") }}
+                {{ _("Completa tu perfil y podrás activar beneficios exclusivos de clientes frecuentes. ") }}
+              </div>
             </div>
           {% endif %}
 
-          <div class="row g-2">
-            <div class="col-md-5">
-              <label class="form-label" for="phone">{{ _("Teléfono") }}</label>
-              <input type="tel" id="phone" name="phone" class="form-control" data-mask="569 0000-0000" data-mask-visible="true" placeholder="+56 9 ..." value="{{ prefilled_phone }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
-              <div class="form-text">{{ _("El teléfono usarás para llamar a tu tarotista.") }}</div>
-            </div>
-            <div class="col-md-7">
-              <label class="form-label" for="email">{{ _("Email *") }}</label>
-              <input type="email" id="email" name="email" class="form-control" required placeholder="tu@email.com" value="{{ prefilled_email }}" {% if current_user and current_user.is_authenticated %}readonly{% endif %} />
-            </div>
-          </div>
-        </div>
-        {% if not current_user %}
-          <div class="form-check mt-3">
-            <input class="form-check-input" type="checkbox" id="create_account" name="create_account" value="on" />
-            <label class="form-check-label" for="create_account">
-              {{ _("Quiero crear una cuenta con estos datos y no ingresarlos en mi próxima compra.") }}
-            </label>
-            <div class="form-text">
-              {{ _("Te enviaremos un correo de bienvenida con intrucciones para activar tu cuenta. ") }}
-              {{ _("Completa tu perfil y podrás activar beneficios exclusivos de clientes frecuentes. ") }}
-            </div>
-          </div>
-        {% endif %}
-
         <!-- Discount Code -->
-        <div class="ck-form-section">
-          <h2 class="section-label"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</h2>
-          <div class="input-group mb-2">
-            <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
-            <button class="btn btn-outline-secondary" type="button" id="apply_discount_btn">{{ _("Aplicar") }}</button>
+          <div class="ck-form-section">
+            <h2 class="section-label"><i class="ti ti-discount-2"></i> {{ _("Código de descuento") }}</h2>
+            <div class="input-group mb-2">
+              <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="{{ _('Si tienes un código, ingrésalo aquí') }}" />
+              <button class="btn btn-outline-secondary" type="button" id="apply_discount_btn">{{ _("Aplicar") }}</button>
+            </div>
+            <div id="discount_message" class="small"></div>
           </div>
-          <div id="discount_message" class="small"></div>
-        </div>
 
         <!-- ── Payment method ─────────────────────── -->
-        <div class="ck-form-section">
-          <div class="section-label"><i class="ti ti-credit-card"></i> {{ _("Método de pago") }}</div>
-          <div class="ck-pay-pills">
-
-            <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="flow" id="pay_flow" required {% if preferred=='flow' %}checked{% endif %} />
-              <div class="ck-pill {% if preferred == 'flow' %}selected{% endif %}" id="flow_box">
-                <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
-                <div class="ck-pill-icon"><i class="ti ti-credit-card"></i></div>
-                <div class="ck-pill-name">Flow</div>
-                <div class="ck-pill-desc">{{ _("Débito / Crédito") }}</div>
-              </div>
-            </label>
-
-            <label class="ck-pill-label">
-              <input type="radio" name="payment_method" value="khipu" id="pay_khipu" {% if preferred=='khipu' %}checked{% endif %} />
-              <div class="ck-pill {% if preferred == 'khipu' %}selected{% endif %}" id="khipu_box">
-                <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
-                <div class="ck-pill-icon"><i class="ti ti-building-bank"></i></div>
-                <div class="ck-pill-name">Khipu</div>
-                <div class="ck-pill-desc">{{ _("Transferencia") }}</div>
-              </div>
-            </label>
-
+          <div class="ck-form-section">
+            <div class="section-label"><i class="ti ti-credit-card"></i> {{ _("Método de pago") }}</div>
+            <div class="ck-pay-pills">
+              {% for provider in providers %}
+                <label class="ck-pill-label">
+                  <input type="radio" name="payment_method" value="{{ provider.key.lower() }}" id="pay_{{ provider.key.lower() }}" required {% if preferred==provider.key.lower() %}checked{% endif %} />
+                  <div class="ck-pill {% if preferred == provider.key.lower() %}selected{% endif %}" id="{{ provider.key.lower() }}_box">
+                    <div class="ck-pill-check"><i class="ti ti-circle-check-filled"></i></div>
+                    <div class="ck-pill-icon"><i class="payment payment-provider-{{ provider.key.lower() }}"></i></div>
+                    <div class="ck-pill-name">{{ provider.name }}</div>
+                    <div class="ck-pill-desc">{{ config.FT_DESCRIPCION_PROVEEDORES[provider.key.lower()]|default("-") }}</div>
+                  </div>
+                </label>
+              {% endfor %}
+            </div>
           </div>
-        </div>
 
 
 
 
         <!-- ── Submit ─────────────────────────────── -->
-        <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
-          <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
-          <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}</span>
-        </button>
-        <p class="ck-note">
-          <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}
-        </p>
+          <button type="submit" class="ck-submit" id="checkout-submit-btn" data-loading-text="{{ _('Procesando pago...') }}">
+            <span class="ck-submit-spinner"><i class="ti ti-loader-2"></i></span>
+            <i class="ti ti-lock me-2 ck-submit-lock"></i><span id="checkout-submit-label">{{ _("Pagar ahora - %(price)s", price=pack.price_display) }}</span>
+          </button>
+          <p class="ck-note">
+            <i class="ti ti-shield-check me-1"></i>{{ _("Transacción encriptada · Acreditación inmediata") }}
+          </p>
 
+        </div>
       </div>
-    </div>
 
-  </div>
+    </div>
   </form>
 {% endblock %}
 
@@ -216,9 +193,7 @@
         document.querySelectorAll('.ck-pill').forEach(function(pill) {
           pill.classList.remove('selected');
         });
-        var box = this.value === 'flow'
-          ? document.getElementById('flow_box')
-          : document.getElementById('khipu_box');
+        var box = document.getElementById(this.value + '_box');
         if (box) box.classList.add('selected');
       });
     });

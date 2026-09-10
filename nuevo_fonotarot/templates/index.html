@@ -2106,7 +2106,7 @@
           <button class="slider-btn slider-prev" id="packsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
           <div class="packs-track" id="packsSlider">
 
-            {% if not current_user and not request.cookies.get('existing_user') %}
+            {% if not current_user and not request.cookies.get('existing_user') and not config.FT_PROMO_FREE_MINUTES_REMAINING == "0" %}
               <div class="pack-item">
                 <div class="plan-card featured" style="height:100%;">
                   <div><span class="plan-popular">🔥 Oferta de Bienvenida 🔥</span></div>
@@ -2258,20 +2258,20 @@
             <div class="gcards-wrap">
               <button class="slider-btn slider-prev" id="gcardsPrev" aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>
               <div class="gcards-track" id="gcardsSlider">
-                {% for pack in gift_cards %}
+                {% for card in gift_cards %}
                   <div class="gcard-item">
-                    <div class="plan-card {% if pack.is_featured %}featured{% endif %}" style="height:100%;">
-                      {% if pack.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
-                      <div class="plan-min-num">{{ pack.minutes }}<small> min</small></div>
-                      <div class="plan-clp">{{ pack.price_display }}<span></span></div>
-                      <p class="plan-desc">{{ pack.description or '' }}</p>
+                    <div class="plan-card {% if card.is_featured %}featured{% endif %}" style="height:100%;">
+                      {% if card.is_featured %}<div><span class="plan-popular">✨ Más popular</span></div>{% endif %}
+                      <div class="plan-min-num">{{ card.minutes }}<small> min</small></div>
+                      <div class="plan-clp">{{ card.price_display }}<span></span></div>
+                      <p class="plan-desc">{{ card.description or '' }}</p>
                       <div class="mt-auto d-flex flex-column gap-2">
-                        <a href="{{ url_for('tarjetas.comprar', slug=pack.slug) }}" class="btn-plan">
+                        <a href="{{ url_for('tarjetas.comprar', slug=card.slug) }}" class="btn-plan">
                           <i class="ti ti-bolt me-1"></i>Comprar Tarjeta
                         </a>
                   {# <form action="{{ url_for('productos.agregar') }}" method="post">
-                    <input type="hidden" name="item_type" value="minute_pack" />
-                    <input type="hidden" name="item_id" value="{{ pack.id }}" />
+                    <input type="hidden" name="item_type" value="minute_card" />
+                    <input type="hidden" name="item_id" value="{{ card.id }}" />
                     <input type="hidden" name="quantity" value="1" />
                     <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}" />
                     <button type="submit" class="btn btn-cart-sm"><i class="ti ti-shopping-cart me-1"></i>Agregar al Carro</button>

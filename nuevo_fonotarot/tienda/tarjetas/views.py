@@ -5,6 +5,7 @@ from decimal import Decimal
 from flask import abort, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
+from merchants import describe_providers, list_providers
 
 from ...extensions import db
 from ...log import get_logger
@@ -181,7 +182,7 @@ def comprar(slug: str):
         gift_message = request.form.get("gift_message", "").strip()
         quantity_raw = request.form.get("quantity", "1").strip()
 
-        if payment_method not in ("flow", "khipu"):
+        if payment_method not in list_providers():
             flash(_("Método de pago no válido."), "danger")
             return redirect(url_for("tarjetas.comprar", slug=slug))
         if not purchaser_email:
@@ -245,4 +246,5 @@ def comprar(slug: str):
         preferred=preferred,
         prefilled_email=prefilled_email,
         cart_count=len(_get_cart()),
+        providers=describe_providers(),
     )

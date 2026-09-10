@@ -4,109 +4,342 @@
 
 {% block extra_css %}
   <style>
-    .card-featured { border-color:var(--plum); box-shadow:0 0 24px rgba(107,63,160,.2); transform:scale(1.03); }
-    .price-tag { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:800; color:var(--plum); }
-    .badge-pop { background:var(--rose); color:#fff; font-size:.7rem; }
-    .never-expire { background:rgba(16,185,129,.08); color:#065f46; border:1px solid rgba(16,185,129,.25); border-radius:8px; padding:.5rem 1rem; font-size:.85rem; display:inline-block; }
+    .card-featured {
+      border-color: var(--plum);
+      box-shadow: 0 0 24px rgba(107, 63, 160, 0.2);
+      transform: scale(1.03);
+    }
+    .price-tag {
+      font-family: "Playfair Display", serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--plum);
+    }
+    .badge-pop {
+      background: var(--rose);
+      color: #fff;
+      font-size: 0.7rem;
+    }
+    .never-expire {
+      background: rgba(16, 185, 129, 0.08);
+      color: #065f46;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    .pack-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition:
+      transform 0.25s,
+      box-shadow 0.25s;
+    }
+    .pack-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 36px rgba(107, 63, 160, 0.18);
+      border-color: var(--plum);
+    }
+    .pack-card.featured {
+      background: linear-gradient(160deg, var(--blush) 0%, var(--lavender) 100%);
+      border-color: var(--plum);
+      box-shadow: 0 0 32px rgba(107, 63, 160, 0.15);
+    }
+    .pack-price {
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--plum);
+      line-height: 1;
+      margin: 0.5rem 0 0.25rem;
+    }
+    .pack-price small {
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .pack-mins {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .pack-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--plum);
+      color: #fff;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+    .btn-pack {
+      border-radius: 30px;
+      padding: 0.5rem 0;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-top: auto;
+    }
+    .btn-pack-primary {
+      background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+      color: #fff !important;
+      border: none;
+    }
+    .btn-pack-outline {
+      background: transparent;
+      border: 1px solid rgba(107, 63, 160, 0.45);
+      color: var(--plum) !important;
+    }
+    .btn-pack-outline:hover {
+      background: rgba(107, 63, 160, 0.06);
+    }
+    .compare-table th,
+    .compare-table td {
+      border-color: var(--border);
+      vertical-align: middle;
+    }
+    .compare-table thead th {
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+    }
+    .compare-col-reg {
+      background: rgba(107, 63, 160, 0.05);
+    }
+
+    .flow-wrap {
+      position: relative;
+    }
+    .flow-steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 1rem;
+      position: relative;
+      margin-top: 2rem;
+    }
+    @media (min-width: 768px) {
+      .flow-steps::before {
+        content: "";
+        position: absolute;
+        top: 28px;
+        left: 12%;
+        right: 12%;
+        height: 2px;
+        background: var(--border);
+        z-index: 1;
+      }
+    }
+    .flow-step {
+      flex: 1 1 200px;
+      max-width: 220px;
+      text-align: center;
+      position: relative;
+    }
+    .flow-step-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--plum), var(--plum-dk));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto 0.75rem;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 4px 14px rgba(107, 63, 160, 0.25);
+    }
+    .flow-step-num {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #fff;
+      color: var(--plum);
+      border: 2px solid var(--plum);
+      font-size: 0.7rem;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flow-step h6 {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .flow-step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .flow-support {
+      margin-top: 2rem;
+      background: rgba(37, 211, 102, 0.06);
+      border: 1px solid rgba(37, 211, 102, 0.25);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .flow-support i {
+      font-size: 1.5rem;
+      color: #25d366;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .flow-support a {
+      color: #128c4a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .flow-support a:hover {
+      text-decoration: underline;
+    }
   </style>
 {% endblock %}
 
 {% block content %}
   <div class="container py-5">
-
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible mb-4">
-          {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+        <div class="alert alert-{{ category }} alert-dismissible mb-4">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
       {% endfor %}
     {% endwith %}
 
     <div class="text-center mb-5">
-      <h1 class="fw-bold">{{ _("Minutos de Tarot Prepagados") }}</h1>
+      <h1 class="fw-bold">{{ _("Minutos de Tarot") }}</h1>
       <p class="text-secondary fs-5 mt-2">{{ _("Recarga tu cuenta y consulta cuando quieras") }}</p>
       <span class="never-expire"><i class="ti ti-infinity me-1"></i>{{ _("Los minutos") }} <strong>{{ _("nunca vencen") }}</strong> — {{ _("úsalos a tu ritmo") }}</span>
     </div>
 
     <div class="row g-4 justify-content-center">
       {% for pack in packs %}
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="card h-100 text-center p-4 {% if pack.is_featured %}card-featured{% endif %}">
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="pack-card {% if pack.is_featured %}featured{% endif %}">
             {% if pack.is_featured %}
-              <div class="mb-2"><span class="badge badge-pop">⭐ {{ _("Más popular") }}</span></div>
+              <span class="pack-badge">{{ _("Más popular") }}</span>
             {% endif %}
-            <div class="mb-3">
-              <i class="ti ti-clock" style="font-size:2.5rem;color:var(--plum)"></i>
-            </div>
-            <h2 class="fw-bold mb-0">{{ pack.minutes }}</h2>
-            <p class="text-secondary">{{ _("minutos") }}</p>
-            <div class="price-tag">{{ pack.price_display }}</div>
-            <p class="text-secondary small mb-0">{{ _("CLP · pago único") }}</p>
+            <i class="ti ti-clock mb-2" style="font-size:2rem;color:var(--plum)"></i>
+            <div class="pack-mins">{{ pack.minutes }} <small style="font-size:1rem;color:var(--muted)">min</small></div>
+            <div class="pack-price">{{ pack.price_display }}</div>
             {% if pack.description %}
-              <p class="text-secondary small mt-2">{{ pack.description }}</p>
+              <p class="section-subtitle small mt-2 mb-0">{{ pack.description }}</p>
             {% endif %}
-            <div class="mt-3">
-              <div class="text-secondary small mb-2">
-                <i class="ti ti-check text-success me-1"></i>{{ _("Nunca vencen") }}<br/>
-                <i class="ti ti-check text-success me-1"></i>{{ _("Se acumulan") }}<br/>
-                <i class="ti ti-check text-success me-1"></i>{{ _("Sin suscripción") }}
-              </div>
-            </div>
-            <form action="{{ url_for('productos.agregar') }}" method="post" class="mt-auto"
-                  data-track-event="add_to_cart"
-                  data-track-value="{{ pack.price }}"
-                  data-track-currency="CLP"
-                  data-track-item-id="minute_pack-{{ pack.id }}"
-                  data-track-item-name="{{ pack.minutes }} minutos de tarot"
-                  data-track-item-category="minute_pack"
-                  data-track-item-price="{{ pack.price }}"
-                  data-track-item-quantity="1">
-              <input type="hidden" name="item_type" value="minute_pack"/>
-              <input type="hidden" name="item_id" value="{{ pack.id }}"/>
-              <input type="hidden" name="quantity" value="1"/>
-              <input type="hidden" name="next" value="{{ url_for('productos.carrito') }}"/>
-              <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}"
-                 class="btn btn-primary w-100 mb-2">
-                <i class="ti ti-bolt me-1"></i>{{ _("Comprar ahora") }}
-              </a>
-              <button type="submit" class="btn btn-outline-secondary w-100 btn-sm">
-                <i class="ti ti-shopping-cart me-1"></i>{{ _("Agregar al carrito") }}
-              </button>
-            </form>
+            {# <button type="button" class="btn btn-pack mt-3 {% if pack.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}" onclick="Cart.add('minute_pack', '{{ pack.id }}', 1, '{{ pack.minutes }} min', {{ pack.price | float }})" data-track-event="add_to_cart" data-track-value="{{ pack.price }}" data-track-currency="CLP" data-track-item-id="minute_pack-{{ pack.id }}" data-track-item-name="{{ pack.minutes }} minutos de tarot" data-track-item-category="minute_pack" data-track-item-price="{{ pack.price }}" data-track-item-quantity="1"><i class="ti ti-wallet me-1"></i>{{ _("Agregar al Carro") }}</button> #}
+            <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn btn-pack mt-3 {% if pack.is_featured %}btn-pack-primary{% else %}btn-pack-outline{% endif %}"> <i class="ti ti-credit-card me-1"></i>Comprar Minutos</a>
           </div>
         </div>
       {% else %}
-        <div class="col-12 text-center text-secondary py-5">
-          <i class="ti ti-clock-off" style="font-size:3rem"></i>
-          <p class="mt-2">{{ _("No hay packs disponibles por el momento.") }}</p>
+        <div class="col-12 text-center" style="color:var(--muted)">
+          <i class="ti ti-clock-off mb-2" style="font-size:2.5rem"></i>
+          <p>{{ _("No hay packs disponibles por el momento.") }}</p>
         </div>
       {% endfor %}
     </div>
-
-        <!-- FAQ-style info -->
-    <div class="row g-3 mt-5">
-      <div class="col-md-4">
-        <div class="card p-3 text-center h-100">
-          <i class="ti ti-infinity" style="font-size:2rem;color:var(--plum)"></i>
-          <h6 class="mt-2">{{ _("Sin vencimiento") }}</h6>
-          <p class="text-secondary small mb-0">{{ _("Los minutos que compras quedan en tu cuenta para siempre.") }}</p>
+    <!-- Cómo funciona la compra -->
+    <div class="flow-wrap mt-5 pt-4" id="como-funciona">
+      <div class="text-center mb-2">
+        <h2 class="fw-bold h3">{{ _("¿Cómo funciona tu compra?") }}</h2>
+        <p class="text-secondary">{{ _("De la compra a tu primera llamada, en minutos.") }}</p>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-clock"></i><span class="flow-step-num">1</span></div>
+          <h6>{{ _("Elige tu pack") }}</h6>
+          <p>{{ _("Selecciona cuántos minutos quieres cargar.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-credit-card"></i><span class="flow-step-num">2</span></div>
+          <h6>{{ _("Elige cómo pagar") }}</h6>
+          <p>{{ _("Escoge tu método de pago preferido.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-lock"></i><span class="flow-step-num">3</span></div>
+          <h6>{{ _("Paga seguro") }}</h6>
+          <p>{{ _("Completa el pago en la plataforma oficial.") }}</p>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-icon"><i class="ti ti-phone-check"></i><span class="flow-step-num">4</span></div>
+          <h6>{{ _("Llama al instante") }}</h6>
+          <p>{{ _("Validamos tu pago y activamos tus minutos automáticamente.") }}</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card p-3 text-center h-100">
-          <i class="ti ti-layers-linked" style="font-size:2rem;color:var(--plum)"></i>
-          <h6 class="mt-2">{{ _("Acumulables") }}</h6>
-          <p class="text-secondary small mb-0">{{ _("Puedes comprar varias veces y los minutos se suman.") }}</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card p-3 text-center h-100">
-          <i class="ti ti-shield-lock" style="font-size:2rem;color:var(--plum)"></i>
-          <h6 class="mt-2">{{ _("100% anónimo") }}</h6>
-          <p class="text-secondary small mb-0">{{ _("Pagos discretos. Sin suscripciones ni cargos automáticos.") }}</p>
+      <div class="flow-support">
+        <i class="ti ti-brand-whatsapp"></i>
+        <div>
+          <strong>{{ _("¿Tu pago se demora más de lo normal?") }}</strong>
+          <div class="text-secondary small">
+            {{ _("A veces la plataforma de pago tarda unos minutos en confirmar. Si tus minutos no aparecen, escríbenos por") }}
+            <a href="https://wa.me/5492477370026" target="_blank" rel="noopener">WhatsApp</a>
+            {{ _("y un humano lo resuelve al toque.") }}
+          </div>
         </div>
       </div>
     </div>
-
+    <!-- Comparativa: invitado vs cuenta registrada -->
+    <div class="mt-5 pt-4">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold h3">{{ _("¿Con cuenta o sin cuenta?") }}</h2>
+        <p class="text-secondary">{{ _("Compra igual de fácil de las dos formas. Esto es lo que cambia si te registras.") }}</p>
+      </div>
+      <div class="table-responsive mx-auto" style="max-width: 720px;">
+        <table class="table compare-table mb-2">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="text-center">{{ _("Invitado") }}</th>
+              <th class="text-center compare-col-reg">{{ _("Con cuenta") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ _("Comprar y usar minutos") }}</td>
+              <td class="text-center"><i class="ti ti-check text-success"></i></td>
+              <td class="text-center compare-col-reg"><i class="ti ti-check text-success"></i></td>
+            </tr>
+            <tr>
+              <td>{{ _("Saltate la fila") }}</td>
+              <td class="text-center text-secondary small"><i class="ti ti-x text-secondary"></i></td>
+              <td class="text-center compare-col-reg small">{{ _("Consulta Disponibilidad*") }}</td>
+            </tr>
+            <tr>
+              <td>{{ _("Saldo de cuenta") }}</td>
+              <td class="text-center text-secondary small">{{ _("Al momento de llamar") }}</td>
+              <td class="text-center compare-col-reg small">{{ _("En línea, siempre visible y siempre actualizado") }}</td>
+            </tr>
+            <tr>
+              <td>{{ _("Historial de compras y llamadas") }}</td>
+              <td class="text-center"></td>
+              <td class="text-center compare-col-reg"><i class="ti ti-check text-success"></i></td>
+            </tr>
+            <tr>
+              <td>{{ _("Promociones especiales") }}</td>
+              <td class="text-center text-secondary small"><i class="ti ti-x text-secondary"></i></td>
+              <td class="text-center compare-col-reg small">{{ _("Para ciertos grupos") }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-center text-secondary mt-2">{{ _("Puedes crear una cuenta en tu proxima compra.") }}</p>
+      <p class="text-center text-secondary small mt-2">{{ _("*Saltate la fila disponible para algunos usuarios, consulta disponibilidad con nosotros en nuestro canal de soporte.") }}</p>
+    </div>
   </div>
 {% endblock %}

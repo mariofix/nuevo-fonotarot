@@ -1,0 +1,27 @@
+/*!
+ * Tabler Payments v1.4.0 (https://tabler.io)
+ * Copyright 2018-2026 The Tabler Authors
+ * Copyright 2018-2026 codecalm.net Paweł Kuna
+ * Licensed under MIT (https://github.com/tabler/tabler/blob/master/LICENSE)
+ */
+/**
+ * Adds payments for Chilean Providers
+ *
+ */
+.payment-provider-flow {
+  background-image: url("../img/payments/flow.svg");
+}
+
+.payment-provider-flow-dark {
+  background-image: url("../img/payments/flow-dark.svg");
+}
+
+.payment-provider-khipu {
+  background-image: url("../img/payments/khipu.svg");
+}
+
+.payment-provider-khipu-dark {
+  background-image: url("../img/payments/khipu-dark.svg");
+}
+
+/*# sourceMappingURL=tabler-payments-cl.css.map */
