@@ -2,7 +2,7 @@
 
 import json
 import os
-import subprocess
+import subprocess  # nosec
 import sys
 
 import click
@@ -34,7 +34,7 @@ def _babel_cfg() -> str:
 def _run(*args: str) -> None:
     """Run a pybabel sub-command, streaming output to the terminal."""
     cmd = [sys.executable, "-m", "babel.messages.frontend"] + list(args)
-    result = subprocess.run(cmd, cwd=_project_root())
+    result = subprocess.run(cmd, cwd=_project_root())  # nosec
     if result.returncode != 0:
         raise SystemExit(result.returncode)
 

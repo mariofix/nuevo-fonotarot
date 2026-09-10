@@ -35,7 +35,7 @@ class _CheckoutRegistrationForm:
             "username": self._phone,
             "phone": self._phone,
             # Passwordless account: password is intentionally unset.
-            "password": None,
+            "password": None,  # nosec
         }
         return payload
 
@@ -480,8 +480,8 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
 
             return False, item_results
 
-        ## Move this out of this function
-        ## and after this function reports OK
+        # Move this out of this function
+        # and after this function reports OK
         minute_pack_processed += 1
         item.fulfillment_status = OrderItemFulfillmentStatus.FULFILLED.value
         item.fulfilled_at = datetime.now()
@@ -516,8 +516,8 @@ def sync_firenze_topup(order: Order, *, automated: bool) -> tuple[bool, list]:
 
     all_ok = all(result["status"] == "ok" for result in item_results)
 
-    ## Move this out of this function
-    ## and after this function reports OK
+    # Move this out of this function
+    # and after this function reports OK
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")
     _associate_order_user_by_email(order)
     db.session.commit()
@@ -744,8 +744,8 @@ def post_purchase_process(
 
     if fulfill.get("status", False) == "ok":
         logger.info(f"post_purchase_process: success notifications order={order.id} rows={len(fulfill['results'])}")
-        ## Move this out of this function
-        ## and after this function reports OK
+        # Move this out of this function
+        # and after this function reports OK
         _send_post_purchase_success_notification(order)
         _send_post_purchase_admin_email(order, audit_rows=fulfill["results"])
     logger.info(f"post_purchase_process: associating user by email order={order.id} email={order.email!r}")

@@ -5,7 +5,7 @@ from flask_security.utils import login_user
 
 from .actions import process_user_registration, register_checkout_account
 from .extensions import db, user_datastore
-from .firenze import complete_promo_credit, search_client, update_client_profile
+from .firenze import complete_promo_credit, update_client_profile
 from .log import get_logger
 from .models import Role, SiteSettings
 

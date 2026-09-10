@@ -1,15 +1,14 @@
-## Implementar:
-## - whenever
-## - pint
-## - pydantic-settings
-## - complexiply
-## - NiceUI (en daleks)
+# Implementar:
+# - whenever
+# - pint
+# - pydantic-settings
+# - complexiply
+# - NiceUI (en daleks)
 
 """Flask application factory."""
 
 import logging.config
 import os
-from types import SimpleNamespace
 from typing import Any
 
 import sentry_sdk
@@ -103,7 +102,6 @@ def _init_extensions(app: Flask) -> None:
     fsqla.FsModels.set_db_info(db, user_table_name="users", role_table_name="roles")
     limiter.init_app(app)
     toolbar.init_app(app)
-    available_langs: list = app.config.get("AVAILABLE_LANGUAGES", [["es", "es_CL", "Español"]])
 
     def _locale_selector() -> str:
         lang = session.get("lang") or request.args.get("lang")
@@ -268,7 +266,7 @@ def _register_blueprints(app: Flask) -> None:
     # from .lab import lab_bp
     # from .legacy import legacy_bp
     from .api import api_bp, internal_bp
-    from .content import blog_bp, content_bp
+    from .content import blog_bp, content_bp  # noqa - blog_bp to be removed
     from .passwordless import create_passwordless_blueprint
     from .tienda import minutos_bp, pagos_bp, productos_bp, tarjetas_bp  # , suscripciones_bp,
 

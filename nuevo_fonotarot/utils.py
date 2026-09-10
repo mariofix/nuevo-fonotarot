@@ -1,3 +1,7 @@
+import json
+import uuid
+from decimal import Decimal
+
 import ephem
 
 # Moon phase names in order (index 0–7), matching the template display order.
@@ -26,7 +30,7 @@ def decrypt_token(token: str, key: str) -> str | None:
     try:
         f = Fernet(key.encode())
         return f.encrypt(token.encode()).decode()
-    except InvalidToken as e:
+    except InvalidToken:
         return None
 
 
@@ -222,10 +226,6 @@ def _fetch_order_stats(year: int | None = None, month: int | None = None) -> dic
         "alltime": {"total": alltime_total, "sales": alltime_sales},
     }
 
-
-import json
-import uuid
-from decimal import Decimal
 
 PAID_LEGACY_STATUS = "Pagado"
 

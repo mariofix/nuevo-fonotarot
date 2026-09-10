@@ -1,8 +1,5 @@
 """Views for the content blueprint (blog posts, static pages, and homepage)."""
 
-import json as _json
-from typing import Any
-
 from flask import (
     Blueprint,
     abort,
@@ -15,13 +12,11 @@ from flask import (
     session,
     url_for,
 )
-from flask_security.utils import login_user
 from requests.exceptions import RequestException
 
-from ..extensions import db, limiter, user_datastore
-from ..firenze import search_client, update_client_profile
+from ..extensions import limiter
 from ..log import get_logger
-from ..models import BlogPost, GiftCardProduct, MinutePack, Role, SiteSettings, StaticPage
+from ..models import BlogPost, GiftCardProduct, MinutePack, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..utils import get_moon_phase_index
 

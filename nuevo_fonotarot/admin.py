@@ -2,7 +2,7 @@
 
 import json
 import os
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 import requests
 from flask import current_app, jsonify, redirect, request, url_for
@@ -139,7 +139,7 @@ class SecureAdminIndexView(AdminIndexView):
         merchant_key = current_app.config.get("MERCHANTS_KEY")
         if not merchant_key or merchant_key == "dev-merchants-key-change-me":
             logger.warning(
-                "Skipping remote orders summary fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.",
+                "Skipping remote fetch for %s: MERCHANTS_KEY is missing or still a default placeholder.",
                 endpoint,
             )
             return None
@@ -1596,8 +1596,8 @@ class OrderAdminView(SecureModelView):
 
 def init_admin(app, admin_ext):
     """Register model views on the Admin instance."""
+    from .models import BlogPost  # noqa - no be removed
     from .models import (
-        BlogPost,
         GiftCard,
         GiftCardProduct,
         MinutePack,

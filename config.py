@@ -39,7 +39,6 @@ setting.  If you need ``FLASK_DEBUG`` to toggle debug mode, use the
 ``DEBUG`` config attribute or set ``LOG_LEVEL`` / ``FLASK_ENV`` instead.
 """
 
-import json
 import os
 from pathlib import Path
 

@@ -7,7 +7,7 @@ from flask_security import current_user
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from ..extensions import csrf, db, limiter
-from ..firenze import search_client, search_client_data, search_credits
+from ..firenze import search_client, search_credits
 from ..log import get_logger
 from ..promo_helpers import (
     _complete_promo_claim,

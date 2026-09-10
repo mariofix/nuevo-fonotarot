@@ -21,7 +21,8 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_babel import lazy_gettext as _l
-from flask_security import totp
+
+# from flask_security import totp
 from flask_security.forms import Form
 from flask_security.utils import config_value as cv
 from flask_security.utils import login_user
