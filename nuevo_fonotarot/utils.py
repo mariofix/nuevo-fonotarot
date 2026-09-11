@@ -361,6 +361,9 @@ def import_legacy_sales(rows, *, dry_run: bool = False) -> dict:
 
 def get_phone_for_country(code: str) -> str | None:
     """Return the contact phone number for a country code, or None if unknown."""
+    if code is False:
+        return None
+
     from flask import current_app
 
     with current_app.app_context():
