@@ -48,6 +48,9 @@ build-backend = "hatchling.build"
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build.targets.wheel]
+packages = ["nuevo_fonotarot", "migrations"]
+
 [tool.black]
 line-length = 119
 target-version = ["py313"]

@@ -5,6 +5,7 @@ import json
 from flask import current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_babel import _
 from flask_security import current_user
+from merchants import describe_providers, list_providers
 
 from ..decorators import login_required_modal
 from ..extensions import db
@@ -244,7 +245,7 @@ def settings():
             requested_tarotista if requested_tarotista in ejecutivos_by_option else None
         )
         pref = request.form.get("preferred_payment", "").strip()
-        current_user.preferred_payment = pref if pref in ("flow", "khipu") else None
+        current_user.preferred_payment = pref if pref in list_providers() else None
         db.session.commit()
 
         full_name_changed = previous_full_name != current_user.full_name
@@ -289,6 +290,7 @@ def settings():
         ejecutivos=ejecutivos,
         notification_options=notification_options,
         selected_notification_preferences=set(current_user.notification_preferences or []),
+        providers=describe_providers(),
     )
 
 
