@@ -186,7 +186,7 @@ def _init_extensions(app: Flask) -> None:
     @app.before_request
     def load_country():
         g.current_country = session.get("country_override") or request.headers.get(
-            "X-Country", app.config.get("FT_DEFAULT_COUNTRY") or "CL"
+            "X-Country", app.config.get("FT_DEFAULT_COUNTRY") or False
         )
         enabled = app.config.get("FT_PAISES", [])
         network = app.config.get("FT_NETWORK", {})
