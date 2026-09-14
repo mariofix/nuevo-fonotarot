@@ -1534,6 +1534,9 @@ class OrderAdminView(SecureModelView):
     column_extra_row_actions = [
         ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id"})
     ]
+    form_choices = {"status": [("pending","pending"),("paid","paid"),("fulfilling","fulfilling"),("failed","failed"),("shipped","shipped"),("delivered","delivered"),("cancelled","cancelled"),],
+                    "payment_status": [("pending","pending"),("processing","processing"),("succeeded","succeeded"),("failed","failed"),("cancelled","cancelled"),("refunded","refunded"),("unknown","unknown"),]
+                    }
 
     @action("post_purchase", "Proceso post webhook")
     def action_post_purchase(self, ids):
