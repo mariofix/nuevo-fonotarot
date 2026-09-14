@@ -602,8 +602,8 @@ class Order(db.Model, PaymentMixin):
         return redirect_url
 
     @property
-    def merchants_id_or_default(self) -> int:
-        return int(self.merchants_id) if self.merchants_id is not None else 0
+    def merchants_id_or_default(self) -> str:
+        return str(self.merchants_id) if self.merchants_id is not None else "-"
 
     def to_dict(self) -> dict:
         """Return a dict representation including payment fields.
