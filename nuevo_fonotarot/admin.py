@@ -1532,7 +1532,7 @@ class OrderAdminView(SecureModelView):
     column_relationship_links = True
     column_default_sort = ("created_at", True)
     column_extra_row_actions = [
-        ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id"})
+        ModelLinkRowAction("ti ti-graph", "pagos.orden_estado", url_args={"order_id": "merchants_id" or "-"})
     ]
     form_choices = {"status": [("pending","pending"),("paid","paid"),("fulfilling","fulfilling"),("failed","failed"),("shipped","shipped"),("delivered","delivered"),("cancelled","cancelled"),],
                     "payment_status": [("pending","pending"),("processing","processing"),("succeeded","succeeded"),("failed","failed"),("cancelled","cancelled"),("refunded","refunded"),("unknown","unknown"),]
