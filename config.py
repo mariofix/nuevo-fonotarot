@@ -201,7 +201,8 @@ class Config:
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
     STRIPE_API_KEY: str = os.environ.get("STRIPE_API_KEY", "")
-    PAYPAL_ACCESS_TOKEN: str = os.environ.get("PAYPAL_ACCESS_TOKEN", "")
+    PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID", "")
+    PAYPAL_SECRET_KEY: str = os.environ.get("PAYPAL_SECRET_KEY", "")
 
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
