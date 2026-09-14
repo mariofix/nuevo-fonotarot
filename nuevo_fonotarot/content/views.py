@@ -18,6 +18,7 @@ from ..extensions import limiter
 from ..log import get_logger
 from ..models import BlogPost, GiftCardProduct, MinutePack, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
+from ..promo_helpers import _finalize_promo_email
 from ..utils import get_moon_phase_index
 
 logger = get_logger(__name__)

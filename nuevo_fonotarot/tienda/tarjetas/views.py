@@ -149,7 +149,7 @@ def instrucciones(data_str: str):
 
     base_url = current_app.config.get("TRUSTED_HOSTS", ["localhost"])[0]
     site_domain = "https://fonotarot.com"
-    card_html = create_giftcard_pdf(pdf_data=pdf_info, base_url=base_url, site_domain=site_domain)
+    card_html = create_giftcard_pdf(pdf_data=pdf_info, base_url=base_url, site_domain=site_domain)  # noqa
     card_template = render_template(
         "tienda/email/email-giftcard.html", hidecss=True, base_url=site_domain, raw_data=pdf_info, **pdf_info
     )
@@ -180,7 +180,6 @@ def comprar(slug: str):
         purchaser_email = request.form.get("email", "").strip().lower()
         recipient_email = request.form.get("recipient_email", "").strip().lower()
         gift_message = request.form.get("gift_message", "").strip()
-        quantity_raw = request.form.get("quantity", "1").strip()
 
         if payment_method not in list_providers():
             flash(_("Método de pago no válido."), "danger")

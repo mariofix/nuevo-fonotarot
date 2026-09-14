@@ -5,7 +5,7 @@ import random
 import re
 
 from flask import current_app, redirect, render_template, url_for
-from merchants import describe_providers, list_providers
+from merchants import describe_providers
 from sqlalchemy.exc import SQLAlchemyError
 
 from ...actions import sync_firenze_topup
@@ -303,7 +303,7 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
             sync_ok = topup_ok
     if requires_firenze and not sync_ok:
         logger.warning(
-            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"
+            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"  # noqa
         )
         _send_firenze_failure_email(order)
         return False

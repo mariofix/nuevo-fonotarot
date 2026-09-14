@@ -4,7 +4,7 @@ from datetime import datetime
 from secrets import choice
 from string import ascii_uppercase, digits
 
-from flask import current_app, render_template, request
+from flask import current_app, render_template
 
 from ...extensions import db
 from ...firenze import post_purchase
@@ -133,7 +133,6 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
     existing = GiftCard.query.filter_by(order_id=order.id, gift_card_product_id=product.id).count()
     missing = max(0, quantity - existing)
     issued = 0
-    new_gc = None
     for _ in range(missing):
         gift_card = GiftCard(
             code=generate_unique_gift_code(),
@@ -146,8 +145,13 @@ def issue_gift_cards_for_order_item(order: Order, item) -> tuple[bool, dict]:
         db.session.add(gift_card)
         db.session.flush()
         issued += 1
+        if order.merchants_id:
+            file_name = f"gc-{order.merchants_id.lower()}.pdf"
+        else:
+            file_name = f"gc-pk-{order.id}.pdf"
+
         pdf_info = {
-            "file_name": f"gc-{order.merchants_id.lower()}.pdf",
+            "file_name": file_name,
             "valido_hasta": f"{gift_card.redeem_until}",
             "codigo": f"{gift_card.code}",
             "minutos": f"{product.name}",
