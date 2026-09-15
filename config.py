@@ -201,6 +201,8 @@ class Config:
     KHIPU_API_KEY: str = os.environ.get("KHIPU_API_KEY", "")
     KHIPU_WEBHOOK_SECRET: str = os.environ.get("KHIPU_WEBHOOK_SECRET", "")
     STRIPE_API_KEY: str = os.environ.get("STRIPE_API_KEY", "")
+    STRIPE_API_SECRET: str = os.environ.get("STRIPE_API_SECRET", "")
+
     PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID", "")
     PAYPAL_SECRET_KEY: str = os.environ.get("PAYPAL_SECRET_KEY", "")
     PAYPAL_BASE_URL: str = os.environ.get("PAYPAL_BASE_URL", "")
