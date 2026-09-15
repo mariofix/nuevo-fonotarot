@@ -203,6 +203,7 @@ class Config:
     STRIPE_API_KEY: str = os.environ.get("STRIPE_API_KEY", "")
     PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID", "")
     PAYPAL_SECRET_KEY: str = os.environ.get("PAYPAL_SECRET_KEY", "")
+    PAYPAL_BASE_URL: str = os.environ.get("PAYPAL_BASE_URL", "")
 
     # Email (Daleks)
     DALEKS_URL: str = os.environ.get("DALEKS_URL", "http://localhost:2525")
