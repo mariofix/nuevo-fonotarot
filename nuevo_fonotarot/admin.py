@@ -1108,6 +1108,7 @@ class MinutePackRolePriceAdminView(SecureModelView):
             duplicate_query = duplicate_query.filter(MinutePackRolePrice.id != model.id)
         if duplicate_query.first() is not None:
             raise ValidationError(_l("Ya existe un precio programado para ese pack, rol y fecha de inicio."))
+        return super().on_model_change(form, model, is_created)
 
 
 class SubscriptionPlanAdminView(SecureModelView):
