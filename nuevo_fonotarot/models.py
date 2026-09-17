@@ -234,11 +234,11 @@ class MinutePack(db.Model):
         """Format price using locale-aware currency formatting."""
         return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
 
-    @staticmethod
-    def _request_user():
-        if not has_request_context():
-            return None
+    def _resolved_price(self):
+        from .tienda.minutos.service import resolve_minute_pack_price
 
+        if not has_request_context():
+            return resolve_minute_pack_price(self, None)
         from flask_security import current_user
 
         try:
@@ -246,15 +246,7 @@ class MinutePack(db.Model):
         except Exception:
             user = current_user
         if not getattr(user, "is_authenticated", False):
-            return None
-        return user
-
-    def _resolved_price(self):
-        from .tienda.minutos.service import resolve_minute_pack_price
-
-        if not has_request_context():
-            return resolve_minute_pack_price(self, None)
-        user = self._request_user()
+            user = None
         cache = getattr(g, "_minute_pack_resolved_price_cache", {})
         cache_key = (self.id, getattr(user, "id", None) if user is not None else None)
         if cache_key not in cache:

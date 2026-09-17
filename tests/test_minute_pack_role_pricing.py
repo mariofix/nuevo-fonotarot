@@ -124,9 +124,3 @@ def test_resolve_minute_pack_price_prefers_best_price_across_roles(app):
 
         assert resolved.amount == Decimal("17000")
         assert resolved.applied_role_name == "leales-plata-best-price"
-
-
-def test_default_loyalty_role_names_are_seeded_constants():
-    from nuevo_fonotarot.tienda.minutos.service import DEFAULT_LOYALTY_ROLE_NAMES
-
-    assert DEFAULT_LOYALTY_ROLE_NAMES == ("leales-oro", "leales-plata", "leales-bronze")

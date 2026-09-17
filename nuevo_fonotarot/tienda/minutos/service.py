@@ -10,8 +10,6 @@ from sqlalchemy.orm import selectinload
 
 from ...models import MinutePack, MinutePackRolePrice
 
-DEFAULT_LOYALTY_ROLE_NAMES = ("leales-oro", "leales-plata", "leales-bronze")
-
 
 @dataclass(frozen=True)
 class ResolvedMinutePackPrice:

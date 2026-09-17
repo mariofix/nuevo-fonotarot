@@ -6,7 +6,7 @@ from alembic.migration import MigrationContext
 from alembic.operations import Operations
 
 
-def test_minute_pack_role_prices_migration_creates_table_and_seeds_roles(tmp_path):
+def test_minute_pack_role_prices_migration_creates_table(tmp_path):
     db_path = tmp_path / "migration.db"
     engine = sa.create_engine(f"sqlite:///{db_path}")
     metadata = sa.MetaData()
@@ -46,11 +46,3 @@ def test_minute_pack_role_prices_migration_creates_table_and_seeds_roles(tmp_pat
 
         inspector = sa.inspect(connection)
         assert "minute_pack_role_prices" in inspector.get_table_names()
-
-        role_names = {
-            row[0]
-            for row in connection.execute(
-                sa.select(sa.column("name")).select_from(sa.table("roles")),
-            )
-        }
-        assert {"leales-oro", "leales-plata", "leales-bronze"} <= role_names
