@@ -243,7 +243,7 @@ def comprar_minutos(pack_slug: str):
 
 @minutos_bp.route("/<pack_slug>/one-click", methods=["POST"])  # type: ignore
 def one_click(pack_slug: str):
-    """One-Click uprchase for registered users"""
+    """One-Click purchase for registered users."""
     is_authenticated_user = _is_authenticated_user()
     if not is_authenticated_user:
         abort(403)

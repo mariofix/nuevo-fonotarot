@@ -152,7 +152,7 @@ def find_pending_minute_pack_order(
             Order.status == OrderStatus.PENDING,
             Order.provider == provider,
             Order.amount == amount,
-            Order.shipping_email == email,
+            Order.email == email,
             Order.created_at >= duplicate_cutoff,
             Order.items.any(duplicate_filter),
         )
