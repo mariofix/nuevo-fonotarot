@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
-from flask_babel import get_locale
+from flask_babel import _, get_locale
 from sqlalchemy.orm import selectinload
 
 from ...models import MinutePack, MinutePackRolePrice
@@ -129,7 +129,7 @@ def summarize_current_role_prices(pack: MinutePack, at: datetime | None = None) 
     """Return a compact summary of currently active role prices for a pack."""
     current_by_role = _current_role_prices(pack, at)
     if not current_by_role:
-        return "-"
+        return _("Sin precios leales activos")
     parts = []
     for role_name, schedule in sorted(current_by_role.items()):
         display = babel_format_currency(

@@ -46,27 +46,22 @@ def upgrade():
         batch_op.create_index(batch_op.f("ix_minute_pack_role_prices_role_id"), ["role_id"], unique=False)
         batch_op.create_index(batch_op.f("ix_minute_pack_role_prices_starts_at"), ["starts_at"], unique=False)
 
-    roles_table = sa.table(
-        "roles",
-        sa.column("name", sa.String(length=80)),
-        sa.column("description", sa.String(length=255)),
-    )
     bind = op.get_bind()
+    metadata = sa.MetaData()
+    roles_table = sa.Table("roles", metadata, autoload_with=bind)
     for role_name in LOYALTY_ROLE_NAMES:
         exists = bind.execute(
             sa.select(sa.literal(1)).select_from(roles_table).where(roles_table.c.name == role_name),
         ).scalar()
         if exists:
             continue
-        op.bulk_insert(
-            roles_table,
-            [
-                {
-                    "name": role_name,
-                    "description": "Rol de clientes leales para precios preferenciales.",
-                }
-            ],
-        )
+        payload = {
+            "name": role_name,
+            "description": "Rol de clientes leales para precios preferenciales.",
+        }
+        if "permissions" in roles_table.c:
+            payload["permissions"] = []
+        bind.execute(roles_table.insert().values(**payload))
 
 
 def downgrade():
