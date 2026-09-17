@@ -285,7 +285,7 @@ def one_click(pack_slug: str):
             currency=pricing.currency,
             provider=current_user.preferred_payment,
             email=current_user.email,
-            shipping_phone=current_user.username,
+            shipping_phone=current_user.phone or current_user.username,
             user=current_user,
             firenze_client_id=current_user.firenze_client_id,
         )

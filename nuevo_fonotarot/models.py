@@ -8,7 +8,7 @@ from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
 from dateutil.relativedelta import relativedelta
-from flask import has_request_context
+from flask import g, has_request_context
 from flask_babel import get_locale
 from flask_merchants.models import PaymentMixin
 from flask_security.models import fsqla_v3 as fsqla
@@ -252,14 +252,15 @@ class MinutePack(db.Model):
     def _resolved_price(self):
         from .tienda.minutos.service import resolve_minute_pack_price
 
+        if not has_request_context():
+            return resolve_minute_pack_price(self, None)
         user = self._request_user()
-        cache_key = getattr(user, "id", None) if user is not None else None
-        cached = getattr(self, "_resolved_price_cache", None)
-        if cached and cached[0] == cache_key:
-            return cached[1]
-        resolved = resolve_minute_pack_price(self, user)
-        self._resolved_price_cache = (cache_key, resolved)
-        return resolved
+        cache = getattr(g, "_minute_pack_resolved_price_cache", {})
+        cache_key = (self.id, getattr(user, "id", None) if user is not None else None)
+        if cache_key not in cache:
+            cache[cache_key] = resolve_minute_pack_price(self, user)
+            g._minute_pack_resolved_price_cache = cache
+        return cache[cache_key]
 
     @property
     def effective_price(self) -> Decimal:
