@@ -37,7 +37,7 @@ def _is_authenticated_user() -> bool:
     return bool(current_user.is_authenticated)
 
 
-def _redeem_gift_card_submission():
+def _redeem_gift_card_submission(*, redirect_endpoint: str):
     """Handle the shared gift-card redemption POST flow."""
     if not _is_authenticated_user():
         flash(_("Debes iniciar sesión para canjear una tarjeta."), "warning")
@@ -47,22 +47,22 @@ def _redeem_gift_card_submission():
     code = normalize_input_code(raw_code)
     if not code:
         flash(_("Ingresa un código válido."), "danger")
-        return redirect(url_for("tarjetas.canjear"))
+        return redirect(url_for(redirect_endpoint))
 
     gift_card = GiftCard.query.filter_by(code=code).first()
     if gift_card is None:
         flash(_("El código ingresado no existe."), "danger")
-        return redirect(url_for("tarjetas.canjear"))
+        return redirect(url_for(redirect_endpoint))
 
     if gift_card.order_id is not None:
         purchase_order = db.session.get(Order, gift_card.order_id)
         if purchase_order is None or purchase_order.payment_status != "succeeded":
             flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
-            return redirect(url_for("tarjetas.canjear"))
+            return redirect(url_for(redirect_endpoint))
 
     ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
     flash(_(message), "success" if ok else "danger")
-    return redirect(url_for("tarjetas.canjear"))
+    return redirect(url_for(redirect_endpoint))
 
 
 @tarjetas_bp.route("/")
@@ -76,7 +76,7 @@ def index():
 def canjear():
     """Redeem a purchased gift-card code into user minutes."""
     if request.method == "POST":
-        return _redeem_gift_card_submission()
+        return _redeem_gift_card_submission(redirect_endpoint="tarjetas.canjear")
 
     return render_template(
         "tienda/canjear_tarjeta.html",
@@ -91,7 +91,7 @@ def canjear_orig():
         return redirect(url_for("security.login", next=request.url))
 
     if request.method == "POST":
-        return _redeem_gift_card_submission()
+        return _redeem_gift_card_submission(redirect_endpoint="tarjetas.canjear_orig")
 
     recent_redeemed = (
         GiftCard.query.filter_by(redeemed_by_user_id=current_user.id, status="redeemed")

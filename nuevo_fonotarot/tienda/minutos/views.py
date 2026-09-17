@@ -36,7 +36,7 @@ def _duplicate_order_cutoff() -> datetime:
 def _pending_order_reference(order: Order) -> str:
     if order.merchants_id:
         return str(order.merchants_id)
-    return f"pending:{encrypt_string(str(order.id), current_app.config['SECRET_KEY'])}"
+    return f"pending:{encrypt_string(str(order.id), current_app.config['PENDING_ORDER_STATUS_KEY'])}"
 
 
 @minutos_bp.route("/")

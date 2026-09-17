@@ -28,6 +28,12 @@ from ..utils import _get_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
+CUSTOMER_ORDER_REFERENCE_STATUSES = {
+    OrderStatus.PENDING,
+    OrderStatus.PAID,
+    OrderStatus.FULFILLING,
+    OrderStatus.FAILED,
+}
 
 
 def _materialize_order_items(order: Order) -> list:
@@ -94,14 +100,16 @@ def _store_index_context(*, include_providers: bool) -> dict:
 def _get_order_by_status_reference(order_reference: str) -> Order:
     """Resolve an order-status reference by provider id first, then local id."""
     order = Order.query.filter_by(merchants_id=order_reference).first()
-    if order is not None:
+    if order is not None and order.status in CUSTOMER_ORDER_REFERENCE_STATUSES:
         return order
     if order_reference.startswith("pending:"):
         from cryptography.fernet import Fernet, InvalidToken
 
         try:
             encrypted_order_id = order_reference.removeprefix("pending:")
-            order_id = Fernet(current_app.config["SECRET_KEY"].encode()).decrypt(encrypted_order_id.encode()).decode()
+            order_id = Fernet(current_app.config["PENDING_ORDER_STATUS_KEY"].encode()).decrypt(
+                encrypted_order_id.encode()
+            ).decode()
         except InvalidToken:
             abort(404)
         if order_id.isdigit():

@@ -41,6 +41,7 @@ setting.  If you need ``FLASK_DEBUG`` to toggle debug mode, use the
 
 import os
 from pathlib import Path
+from typing import ClassVar
 
 from dotenv import load_dotenv
 
@@ -123,6 +124,7 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
+    PENDING_ORDER_STATUS_KEY: str = os.environ.get("PENDING_ORDER_STATUS_KEY", SECRET_KEY)
     TRUSTED_HOSTS: list = os.environ.get("TRUSTED_HOSTS", "localhost,").split(",")
     SERVER_NAME: str = os.environ.get("SERVER_NAME")  # type: ignore
     PREFERRED_URL_SCHEME: str = os.environ.get("PREFERRED_URL_SCHEME", "http")
@@ -152,7 +154,7 @@ class Config:
     SECURITY_CHANGEABLE: bool = False
     SECURITY_WEBAUTHN: bool = False
     SECURITY_UNIFIED_SIGNIN: bool = True
-    SECURITY_US_ENABLED_METHODS: list = ["email"]  # Email and authenticator app
+    SECURITY_US_ENABLED_METHODS: ClassVar[list[str]] = ["email"]  # Email and authenticator app
     SECURITY_US_SIGNIN_REPLACES_LOGIN: bool = False  # Replace /login with /us-signin
     SECURITY_LOGIN_URL: str = "/ft-admin-login"
     SECURITY_REGISTER_URL: str = "/ft-register"
@@ -172,7 +174,9 @@ class Config:
     SECURITY_REMEMBER_ME_DAYS: int = 31  # Trust window for remember_me checkbox
 
     # TOTP settings (required for unified signin)
-    SECURITY_TOTP_SECRETS: dict = {"1": os.environ.get("SECURITY_TOTP_SECRET_1", "JBSWY3DPEBLW64TMMQQ")}
+    SECURITY_TOTP_SECRETS: ClassVar[dict[str, str]] = {
+        "1": os.environ.get("SECURITY_TOTP_SECRET_1", "JBSWY3DPEBLW64TMMQQ")
+    }
     SECURITY_TOTP_ISSUER: str = "Fonotarot"
 
     # Flask-Admin locale
@@ -191,10 +195,10 @@ class Config:
     # merchants
     MERCHANTS_KEY: str = os.environ.get("MERCHANTS_KEY", "dev-merchants-key-change-me")
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
-    MERCHANTS_AUTOLOAD_PROVIDERS: list[str] = [
+    MERCHANTS_AUTOLOAD_PROVIDERS: ClassVar[list[str]] = [
         item.strip() for item in os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",") if item.strip()
     ]
-    MERCHANTS_EXTERNAL_ENDPOINTS: list[str] = [
+    MERCHANTS_EXTERNAL_ENDPOINTS: ClassVar[list[str]] = [
         item.strip() for item in os.environ.get("MERCHANTS_EXTERNAL_ENDPOINTS", "").split(",") if item.strip()
     ]
     FLOW_API_KEY: str = os.environ.get("FLOW_API_KEY", "")
@@ -239,7 +243,7 @@ class Config:
     FIRENZE_API_PASSWORD: str = os.environ.get("FIRENZE_API_PASSWORD", "")
     FIRENZE_API_TIMEOUT: int = int(os.environ.get("FIRENZE_API_TIMEOUT", "5"))
 
-    DEBUG_TB_ENABLED: bool = bool(os.environ.get("DEBUG_TB_ENABLED", False))
+    DEBUG_TB_ENABLED: bool = os.environ.get("DEBUG_TB_ENABLED", "").lower() in {"1", "true", "yes", "on"}
     DEBUG_TB_PANELS = (
         "flask_debugtoolbar.panels.versions.VersionDebugPanel",
         "flask_debugtoolbar.panels.timer.TimerDebugPanel",
@@ -274,7 +278,9 @@ class Config:
     # VAPID
     VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "vapid_private.pem")
     VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
-    VAPID_CLAIMS = {"sub": f"mailto:{os.environ.get('MAIL_DEFAULT_SENDER', 'user@email.com')}"}
+    VAPID_CLAIMS: ClassVar[dict[str, str]] = {
+        "sub": f"mailto:{os.environ.get('MAIL_DEFAULT_SENDER', 'user@email.com')}"
+    }
 
 
 class DevelopmentConfig(Config):
