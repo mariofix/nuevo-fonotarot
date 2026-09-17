@@ -249,19 +249,27 @@ class MinutePack(db.Model):
             return None
         return user
 
+    def _resolved_price(self):
+        from .tienda.minutos.service import resolve_minute_pack_price
+
+        user = self._request_user()
+        cache_key = getattr(user, "id", None) if user is not None else None
+        cached = getattr(self, "_resolved_price_cache", None)
+        if cached and cached[0] == cache_key:
+            return cached[1]
+        resolved = resolve_minute_pack_price(self, user)
+        self._resolved_price_cache = (cache_key, resolved)
+        return resolved
+
     @property
     def effective_price(self) -> Decimal:
         """Return the current user-facing price for this pack."""
-        from .tienda.minutos.service import resolve_minute_pack_price
-
-        return resolve_minute_pack_price(self, self._request_user()).amount
+        return self._resolved_price().amount
 
     @property
     def effective_price_display(self) -> str:
         """Format the current user-facing price using locale-aware currency formatting."""
-        from .tienda.minutos.service import resolve_minute_pack_price
-
-        return resolve_minute_pack_price(self, self._request_user()).display
+        return self._resolved_price().display
 
     @property
     def active_role_prices_summary(self) -> str:
