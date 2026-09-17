@@ -6,9 +6,10 @@ from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
 from flask_babel import _, get_locale
+from sqlalchemy import and_
 from sqlalchemy.orm import selectinload
 
-from ...models import MinutePack, MinutePackRolePrice
+from ...models import MinutePack, MinutePackRolePrice, Order, OrderItem, OrderItemType, OrderStatus
 
 
 @dataclass(frozen=True)
@@ -62,32 +63,21 @@ def resolve_minute_pack_price(
     at: datetime | None = None,
 ) -> ResolvedMinutePackPrice:
     """Return the effective price for *pack* for the supplied user."""
-    base_amount = Decimal(str(pack.price))
-    base_currency = pack.currency
+    base_resolved = _base_resolved_price(pack)
     now = at or datetime.now()
 
     if not getattr(user, "is_authenticated", False):
-        return ResolvedMinutePackPrice(
-            amount=base_amount,
-            currency=base_currency,
-            base_amount=base_amount,
-            base_currency=base_currency,
-        )
+        return base_resolved
 
     role_ids = {role.id for role in list(getattr(user, "roles", [])) if getattr(role, "id", None) is not None}
     if not role_ids:
-        return ResolvedMinutePackPrice(
-            amount=base_amount,
-            currency=base_currency,
-            base_amount=base_amount,
-            base_currency=base_currency,
-        )
+        return base_resolved
 
     applicable_by_role: dict[int, MinutePackRolePrice] = {}
     for candidate in list(getattr(pack, "role_prices", [])):
         if not candidate.is_active or candidate.role_id not in role_ids:
             continue
-        if candidate.currency != base_currency:
+        if candidate.currency != base_resolved.base_currency:
             continue
         if candidate.starts_at > now:
             continue
@@ -96,12 +86,7 @@ def resolve_minute_pack_price(
             applicable_by_role[candidate.role_id] = candidate
 
     if not applicable_by_role:
-        return ResolvedMinutePackPrice(
-            amount=base_amount,
-            currency=base_currency,
-            base_amount=base_amount,
-            base_currency=base_currency,
-        )
+        return base_resolved
 
     selected = min(
         applicable_by_role.values(),
@@ -115,8 +100,8 @@ def resolve_minute_pack_price(
     return ResolvedMinutePackPrice(
         amount=Decimal(str(selected.price)),
         currency=selected.currency,
-        base_amount=base_amount,
-        base_currency=base_currency,
+        base_amount=base_resolved.base_amount,
+        base_currency=base_resolved.base_currency,
         applied_role_name=getattr(selected.role, "name", None),
         schedule_id=selected.id,
         starts_at=selected.starts_at,
@@ -138,6 +123,48 @@ def summarize_current_role_prices(pack: MinutePack, at: datetime | None = None) 
         )
         parts.append(_("%(role)s: %(price)s", role=role_name, price=display))
     return ", ".join(parts)
+
+
+def find_pending_minute_pack_order(
+    *,
+    pack_id: int,
+    amount: Decimal,
+    provider: str,
+    email: str,
+    duplicate_cutoff: datetime,
+    user_id: int | None,
+):
+    """Return a matching pending minute-pack order created recently, if any."""
+    duplicate_filter = and_(
+        OrderItem.item_type == OrderItemType.MINUTE_PACK,
+        OrderItem.item_id == pack_id,
+    )
+    query = (
+        Order.query.filter(
+            Order.status == OrderStatus.PENDING,
+            Order.provider == provider,
+            Order.amount == amount,
+            Order.shipping_email == email,
+            Order.created_at >= duplicate_cutoff,
+            Order.items.any(duplicate_filter),
+        )
+        .order_by(Order.created_at.desc())
+    )
+    if user_id is None:
+        query = query.filter(Order.user_id.is_(None))
+    else:
+        query = query.filter(Order.user_id == user_id)
+    return query.first()
+
+
+def _base_resolved_price(pack: MinutePack) -> ResolvedMinutePackPrice:
+    base_amount = Decimal(str(pack.price))
+    return ResolvedMinutePackPrice(
+        amount=base_amount,
+        currency=pack.currency,
+        base_amount=base_amount,
+        base_currency=pack.currency,
+    )
 
 
 def _current_role_prices(pack: MinutePack, at: datetime | None = None) -> dict[str, MinutePackRolePrice]:

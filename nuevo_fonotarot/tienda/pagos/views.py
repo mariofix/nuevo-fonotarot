@@ -60,6 +60,37 @@ def _summarize_order_minutes(items: list) -> int:
     return total_minutes
 
 
+def _store_index_context(*, include_providers: bool) -> dict:
+    """Return the shared store-home context."""
+    minute_packs = get_active_minute_packs()
+    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
+    active_products = Product.query.filter_by(is_active=True).all()
+    featured_products = random.sample(active_products, k=min(5, len(active_products)))
+    try:
+        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
+    except SQLAlchemyError:
+        gift_cards = []
+    cart = _get_cart()
+    context = {
+        "minute_packs": minute_packs,
+        "subscription_plans": subscription_plans,
+        "featured_products": featured_products,
+        "gift_cards": gift_cards,
+        "cart_count": len(cart),
+    }
+    if include_providers:
+        context["providers"] = describe_providers()
+    logger.debug(
+        "pagos.index: loaded %s minute packs, %s subscription plans, %s random products, %s gift cards, cart_count=%s",
+        len(minute_packs),
+        len(subscription_plans),
+        len(featured_products),
+        len(gift_cards),
+        len(cart),
+    )
+    return context
+
+
 # ---------------------------------------------------------------------------
 # Firenze client-ID sync
 # ---------------------------------------------------------------------------
@@ -489,55 +520,14 @@ def _handle_payment_webhook_event(event) -> None:
 def index():
     """Main store page: minute packs, subscriptions, and random products."""
     logger.debug("pagos.index: loading store page")
-    minute_packs = get_active_minute_packs()
-    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
-    active_products = Product.query.filter_by(is_active=True).all()
-    featured_products = random.sample(active_products, k=min(5, len(active_products)))
-    try:
-        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
-    except SQLAlchemyError:
-        gift_cards = []
-    cart = _get_cart()
-    logger.debug(
-        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
-        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
-    )
-    return render_template(
-        "tienda/index.html",
-        minute_packs=minute_packs,
-        subscription_plans=subscription_plans,
-        featured_products=featured_products,
-        gift_cards=gift_cards,
-        cart_count=len(cart),
-        providers=describe_providers(),
-    )
+    return render_template("tienda/index.html", **_store_index_context(include_providers=True))
 
 
 @pagos_bp.route("/pagar")
 def cart_checkout():
     """Checkout page for cart flow."""
     logger.debug("pagos.cart_checkout: loading cart checkout page")
-    minute_packs = get_active_minute_packs()
-    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
-    active_products = Product.query.filter_by(is_active=True).all()
-    featured_products = random.sample(active_products, k=min(5, len(active_products)))
-    try:
-        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
-    except SQLAlchemyError:
-        gift_cards = []
-    cart = _get_cart()
-    logger.debug(
-        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
-        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
-    )
-    return render_template(
-        "tienda/index.html",
-        minute_packs=minute_packs,
-        subscription_plans=subscription_plans,
-        featured_products=featured_products,
-        gift_cards=gift_cards,
-        cart_count=len(cart),
-    )
+    return render_template("tienda/index.html", **_store_index_context(include_providers=False))
 
 
 # ---------------------------------------------------------------------------

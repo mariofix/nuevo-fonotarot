@@ -7,7 +7,6 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
 from merchants import describe_providers, list_providers
-from sqlalchemy import and_
 
 from ...actions import register_checkout_account
 from ...extensions import db
@@ -15,9 +14,18 @@ from ...log import get_logger
 from ...models import DiscountCode, Order, OrderItem, OrderItemType, OrderStatus
 from ..utils import _get_cart, apply_discount, create_payment_and_redirect
 from . import minutos_bp
-from .service import get_active_minute_pack_by_slug, get_active_minute_packs, resolve_minute_pack_price
+from .service import (
+    find_pending_minute_pack_order,
+    get_active_minute_pack_by_slug,
+    get_active_minute_packs,
+    resolve_minute_pack_price,
+)
 
 logger = get_logger(__name__)
+
+
+def _is_authenticated_user() -> bool:
+    return bool(current_user.is_authenticated)
 
 
 @minutos_bp.route("/")
@@ -40,7 +48,7 @@ def comprar_minutos(pack_slug: str):
     - Physical (authenticated, full profile): all data pre-filled.
     """
     pack = get_active_minute_pack_by_slug(pack_slug)
-    is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
+    is_authenticated_user = _is_authenticated_user()
     pricing = resolve_minute_pack_price(pack, current_user if is_authenticated_user else None)
 
     if request.method == "POST":
@@ -77,24 +85,14 @@ def comprar_minutos(pack_slug: str):
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
         duplicate_cutoff = datetime.now() - timedelta(minutes=2)
-        duplicate_filter = and_(
-            OrderItem.item_type == OrderItemType.MINUTE_PACK,
-            OrderItem.item_id == pack.id,
+        existing_order = find_pending_minute_pack_order(
+            pack_id=pack.id,
+            amount=pricing.amount,
+            provider=payment_method,
+            email=email,
+            duplicate_cutoff=duplicate_cutoff,
+            user_id=current_user.id if is_authenticated_user else None,
         )
-        duplicate_query = Order.query.filter(
-            Order.status == OrderStatus.PENDING,
-            Order.provider == payment_method,
-            Order.amount == pricing.amount,
-            Order.shipping_email == email,
-            Order.created_at >= duplicate_cutoff,
-            Order.items.any(duplicate_filter),
-        ).order_by(Order.created_at.desc())
-        if is_authenticated_user:
-            duplicate_query = duplicate_query.filter(Order.user_id == current_user.id)
-        else:
-            duplicate_query = duplicate_query.filter(Order.user_id.is_(None))
-
-        existing_order = duplicate_query.first()
         if existing_order:
             logger.info(
                 "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s "
@@ -237,7 +235,7 @@ def comprar_minutos(pack_slug: str):
 @minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])  # type: ignore
 def one_click(pack_slug: str):
     """One-Click uprchase for registered users"""
-    is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
+    is_authenticated_user = _is_authenticated_user()
     if not is_authenticated_user:
         abort(403)
     if not current_user.preferred_payment or not current_user.email or not current_user.username:
@@ -247,24 +245,14 @@ def one_click(pack_slug: str):
     pricing = resolve_minute_pack_price(pack, current_user)
 
     duplicate_cutoff = datetime.now() - timedelta(minutes=2)
-    duplicate_filter = and_(
-        OrderItem.item_type == OrderItemType.MINUTE_PACK,
-        OrderItem.item_id == pack.id,
+    existing_order = find_pending_minute_pack_order(
+        pack_id=pack.id,
+        amount=pricing.amount,
+        provider=current_user.preferred_payment,
+        email=current_user.email,
+        duplicate_cutoff=duplicate_cutoff,
+        user_id=current_user.id,
     )
-    duplicate_query = Order.query.filter(
-        Order.status == OrderStatus.PENDING,
-        Order.provider == current_user.preferred_payment,
-        Order.amount == pricing.amount,
-        Order.shipping_email == current_user.email,
-        Order.created_at >= duplicate_cutoff,
-        Order.items.any(duplicate_filter),
-    ).order_by(Order.created_at.desc())
-    if is_authenticated_user:
-        duplicate_query = duplicate_query.filter(Order.user_id == current_user.id)
-    else:
-        duplicate_query = duplicate_query.filter(Order.user_id.is_(None))
-
-    existing_order = duplicate_query.first()
     if existing_order:
         logger.info(
             "comprar_minutos: prevented duplicate order creation for pack_id=%s existing_order=%s user=%s email=%r",
