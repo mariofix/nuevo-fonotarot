@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from flask import abort, current_app, flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
 from merchants import describe_providers, list_providers
@@ -12,7 +12,6 @@ from ...actions import register_checkout_account
 from ...extensions import db
 from ...log import get_logger
 from ...models import DiscountCode, Order, OrderItem, OrderItemType
-from ...utils import encrypt_string
 from ..utils import _get_cart, apply_discount, create_payment_and_redirect
 from . import minutos_bp
 from .service import (
@@ -33,10 +32,10 @@ def _duplicate_order_cutoff() -> datetime:
     return datetime.now() - timedelta(minutes=2)  # noqa: DTZ005
 
 
-def _pending_order_reference(order: Order) -> str:
+def _redirect_for_pending_duplicate(pack_slug: str, order: Order):
     if order.merchants_id:
-        return str(order.merchants_id)
-    return f"pending:{encrypt_string(str(order.id), current_app.config['PENDING_ORDER_STATUS_KEY'])}"
+        return redirect(url_for("pagos.orden_estado", order_id=order.merchants_id))
+    return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
 
 @minutos_bp.route("/")
@@ -118,7 +117,7 @@ def comprar_minutos(pack_slug: str):
                 _("Ya estamos procesando tu compra. Evita hacer clic repetido en el botón de pago."),
                 "info",
             )
-            return redirect(url_for("pagos.orden_estado", order_id=_pending_order_reference(existing_order)))
+            return _redirect_for_pending_duplicate(pack_slug, existing_order)
 
         order = Order(
             amount=final_amount,
@@ -242,7 +241,7 @@ def comprar_minutos(pack_slug: str):
     )
 
 
-@minutos_bp.route("/<pack_slug>/one-click", methods=["GET"])  # type: ignore
+@minutos_bp.route("/<pack_slug>/one-click", methods=["POST"])  # type: ignore
 def one_click(pack_slug: str):
     """One-Click uprchase for registered users"""
     is_authenticated_user = _is_authenticated_user()
@@ -275,7 +274,7 @@ def one_click(pack_slug: str):
             _("Ya estamos procesando tu compra. Evita hacer clic repetido en el botón de pago."),
             "info",
         )
-        return redirect(url_for("pagos.orden_estado", order_id=_pending_order_reference(existing_order)))
+        return _redirect_for_pending_duplicate(pack_slug, existing_order)
 
     order = Order(
         amount=pricing.amount,

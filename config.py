@@ -124,7 +124,6 @@ class Config:
     """Base configuration shared across all environments."""
 
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
-    PENDING_ORDER_STATUS_KEY: str = os.environ.get("PENDING_ORDER_STATUS_KEY", SECRET_KEY)
     TRUSTED_HOSTS: list = os.environ.get("TRUSTED_HOSTS", "localhost,").split(",")
     SERVER_NAME: str = os.environ.get("SERVER_NAME")  # type: ignore
     PREFERRED_URL_SCHEME: str = os.environ.get("PREFERRED_URL_SCHEME", "http")
