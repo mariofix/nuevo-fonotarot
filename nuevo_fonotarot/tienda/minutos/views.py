@@ -32,6 +32,10 @@ def _duplicate_order_cutoff() -> datetime:
     return datetime.now() - timedelta(minutes=2)  # noqa: DTZ005
 
 
+def _pending_order_reference(order: Order) -> str:
+    return str(order.merchants_id or order.id)
+
+
 @minutos_bp.route("/")
 def index():
     """Prepaid tarot minute packs listing."""
@@ -109,7 +113,7 @@ def comprar_minutos(pack_slug: str):
                 _("Ya estamos procesando tu compra. Evita hacer clic repetido en el botón de pago."),
                 "info",
             )
-            return redirect(url_for("pagos.orden_estado", order_id=existing_order.merchants_id))
+            return redirect(url_for("pagos.orden_estado", order_id=_pending_order_reference(existing_order)))
 
         final_amount = max(Decimal(0), pricing.amount - discount_amount)
 
@@ -267,7 +271,7 @@ def one_click(pack_slug: str):
             _("Ya estamos procesando tu compra. Evita hacer clic repetido en el botón de pago."),
             "info",
         )
-        return redirect(url_for("pagos.orden_estado", order_id=existing_order.merchants_id))
+        return redirect(url_for("pagos.orden_estado", order_id=_pending_order_reference(existing_order)))
 
     order = Order(
         amount=pricing.amount,

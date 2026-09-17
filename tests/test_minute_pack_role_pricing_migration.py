@@ -46,3 +46,19 @@ def test_minute_pack_role_prices_migration_creates_table(tmp_path):
 
         inspector = sa.inspect(connection)
         assert "minute_pack_role_prices" in inspector.get_table_names()
+        unique_constraints = {
+            constraint["name"]: tuple(constraint["column_names"])
+            for constraint in inspector.get_unique_constraints("minute_pack_role_prices")
+        }
+        assert unique_constraints["uq_minute_pack_role_prices_pack_role_start"] == (
+            "minute_pack_id",
+            "role_id",
+            "starts_at",
+        )
+        indexes = {
+            index["name"]: tuple(index["column_names"])
+            for index in inspector.get_indexes("minute_pack_role_prices")
+        }
+        assert indexes["ix_minute_pack_role_prices_minute_pack_id"] == ("minute_pack_id",)
+        assert indexes["ix_minute_pack_role_prices_role_id"] == ("role_id",)
+        assert indexes["ix_minute_pack_role_prices_starts_at"] == ("starts_at",)

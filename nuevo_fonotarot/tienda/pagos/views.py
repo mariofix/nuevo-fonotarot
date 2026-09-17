@@ -4,7 +4,7 @@ import json
 import random
 import re
 
-from flask import current_app, redirect, render_template, url_for
+from flask import abort, current_app, redirect, render_template, url_for
 from merchants import describe_providers
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -89,6 +89,18 @@ def _store_index_context(*, include_providers: bool) -> dict:
         len(cart),
     )
     return context
+
+
+def _get_order_by_status_reference(order_reference: str) -> Order:
+    """Resolve an order-status reference by provider id first, then local id."""
+    order = Order.query.filter_by(merchants_id=order_reference).first()
+    if order is not None:
+        return order
+    if order_reference.isdigit():
+        fallback_order = db.session.get(Order, int(order_reference))
+        if fallback_order is not None:
+            return fallback_order
+    abort(404)
 
 
 # ---------------------------------------------------------------------------
@@ -625,7 +637,7 @@ def make_giftcard_token(card_id, order_id, item_id):
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
-    order = Order.query.filter_by(merchants_id=order_id).first_or_404()
+    order = _get_order_by_status_reference(order_id)
     items = _materialize_order_items(order)
     packs = get_active_minute_packs()
     cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
