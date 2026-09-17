@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, current_app, flash, redirect, render_template, request, url_for
 from flask_babel import _
 from flask_security import current_user
 from merchants import describe_providers, list_providers
@@ -12,6 +12,7 @@ from ...actions import register_checkout_account
 from ...extensions import db
 from ...log import get_logger
 from ...models import DiscountCode, Order, OrderItem, OrderItemType
+from ...utils import encrypt_string
 from ..utils import _get_cart, apply_discount, create_payment_and_redirect
 from . import minutos_bp
 from .service import (
@@ -33,7 +34,9 @@ def _duplicate_order_cutoff() -> datetime:
 
 
 def _pending_order_reference(order: Order) -> str:
-    return str(order.merchants_id or order.id)
+    if order.merchants_id:
+        return str(order.merchants_id)
+    return f"pending:{encrypt_string(str(order.id), current_app.config['SECRET_KEY'])}"
 
 
 @minutos_bp.route("/")
@@ -92,12 +95,14 @@ def comprar_minutos(pack_slug: str):
                 flash(_("El código de descuento no es aplicable a este producto."), "danger")
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
+        final_amount = max(Decimal(0), pricing.amount - discount_amount)
         existing_order = find_pending_minute_pack_order(
             pack_id=pack.id,
-            amount=pricing.amount,
+            amount=final_amount,
             provider=payment_method,
             email=email,
             duplicate_cutoff=_duplicate_order_cutoff(),
+            discount_code_id=discount_obj.id if discount_obj else None,
             user_id=current_user.id if is_authenticated_user else None,
         )
         if existing_order:
@@ -114,8 +119,6 @@ def comprar_minutos(pack_slug: str):
                 "info",
             )
             return redirect(url_for("pagos.orden_estado", order_id=_pending_order_reference(existing_order)))
-
-        final_amount = max(Decimal(0), pricing.amount - discount_amount)
 
         order = Order(
             amount=final_amount,
@@ -257,6 +260,7 @@ def one_click(pack_slug: str):
         provider=current_user.preferred_payment,
         email=current_user.email,
         duplicate_cutoff=_duplicate_order_cutoff(),
+        discount_code_id=None,
         user_id=current_user.id,
     )
     if existing_order:

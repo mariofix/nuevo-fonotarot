@@ -96,10 +96,18 @@ def _get_order_by_status_reference(order_reference: str) -> Order:
     order = Order.query.filter_by(merchants_id=order_reference).first()
     if order is not None:
         return order
-    if order_reference.isdigit():
-        fallback_order = db.session.get(Order, int(order_reference))
-        if fallback_order is not None:
-            return fallback_order
+    if order_reference.startswith("pending:"):
+        from cryptography.fernet import Fernet, InvalidToken
+
+        try:
+            encrypted_order_id = order_reference.removeprefix("pending:")
+            order_id = Fernet(current_app.config["SECRET_KEY"].encode()).decrypt(encrypted_order_id.encode()).decode()
+        except InvalidToken:
+            abort(404)
+        if order_id.isdigit():
+            fallback_order = db.session.get(Order, int(order_id))
+            if fallback_order is not None and fallback_order.status == OrderStatus.PENDING:
+                return fallback_order
     abort(404)
 
 

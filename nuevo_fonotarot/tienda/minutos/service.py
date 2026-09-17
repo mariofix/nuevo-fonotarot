@@ -139,6 +139,7 @@ def find_pending_minute_pack_order(
     provider: str,
     email: str,
     duplicate_cutoff: datetime,
+    discount_code_id: int | None,
     user_id: int | None,
 ):
     """Return a matching pending minute-pack order created recently, if any."""
@@ -157,6 +158,10 @@ def find_pending_minute_pack_order(
         )
         .order_by(Order.created_at.desc())
     )
+    if discount_code_id is None:
+        query = query.filter(Order.discount_code_id.is_(None))
+    else:
+        query = query.filter(Order.discount_code_id == discount_code_id)
     if user_id is None:
         query = query.filter(Order.user_id.is_(None))
     else:

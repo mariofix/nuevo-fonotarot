@@ -17,6 +17,7 @@ def app_ctx(app):
         db.create_all()
         yield
         db.session.remove()
+        db.drop_all()
 
 
 @pytest.fixture
