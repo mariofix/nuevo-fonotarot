@@ -138,7 +138,7 @@ def summarize_current_role_prices(pack: MinutePack, at: datetime | None = None) 
             locale=get_locale(),
             format="#,##0.0 ¤¤",
         )
-        parts.append(f"{role_name}: {display}")
+        parts.append(_("%(role)s: %(price)s", role=role_name, price=display))
     return ", ".join(parts)
 
 

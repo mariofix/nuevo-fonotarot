@@ -279,30 +279,29 @@ def one_click(pack_slug: str):
         )
         return redirect(url_for("pagos.orden_estado", order_id=existing_order.merchants_id))
 
-    else:
-        order = Order(
-            amount=pricing.amount,
-            currency=pricing.currency,
-            provider=current_user.preferred_payment,
-            email=current_user.email,
-            shipping_phone=current_user.phone or current_user.username,
-            user=current_user,
-            firenze_client_id=current_user.firenze_client_id,
-        )
-        db.session.add(order)
-        db.session.flush()
+    order = Order(
+        amount=pricing.amount,
+        currency=pricing.currency,
+        provider=current_user.preferred_payment,
+        email=current_user.email,
+        shipping_phone=current_user.phone or current_user.username,
+        user=current_user,
+        firenze_client_id=current_user.firenze_client_id,
+    )
+    db.session.add(order)
+    db.session.flush()
 
-        item = OrderItem(
-            order_id=order.id,
-            item_type=OrderItemType.MINUTE_PACK,
-            item_id=pack.id,
-            name=f"{pack.minutes} minutos de tarot (One-Click)",
-            quantity=1,
-            unit_price=pricing.amount,
-            currency=pricing.currency,
-        )
-        db.session.add(item)
-        db.session.commit()
+    item = OrderItem(
+        order_id=order.id,
+        item_type=OrderItemType.MINUTE_PACK,
+        item_id=pack.id,
+        name=f"{pack.minutes} minutos de tarot (One-Click)",
+        quantity=1,
+        unit_price=pricing.amount,
+        currency=pricing.currency,
+    )
+    db.session.add(item)
+    db.session.commit()
 
     logger.info(
         "Order created via One-Click: order=%s pack_id=%s minutes=%s price=%s user=%s email=%r",
