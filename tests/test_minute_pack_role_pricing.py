@@ -2,15 +2,15 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 from nuevo_fonotarot.extensions import db
-from nuevo_fonotarot.models import MinutePack, MinutePackRolePrice, Role, User
-from nuevo_fonotarot.tienda.minutos.service import DEFAULT_LOYALTY_ROLE_NAMES, resolve_minute_pack_price
 
 
-def _make_user(email: str, *roles: Role) -> User:
+def _make_user(email: str, *roles):
+    from nuevo_fonotarot.models import User
+
     user = User(
         email=email,
         username=email,
-        ******,
+        password="test-password",
         fs_uniquifier=f"{email}-uniq",
         active=True,
     )
@@ -23,6 +23,9 @@ def _make_user(email: str, *roles: Role) -> User:
 
 def test_resolve_minute_pack_price_falls_back_to_base(app):
     with app.app_context():
+        from nuevo_fonotarot.models import MinutePack
+        from nuevo_fonotarot.tienda.minutos.service import resolve_minute_pack_price
+
         pack = MinutePack(minutes=20, price=Decimal("10000"), currency="CLP", is_active=True)
         db.session.add(pack)
         user = _make_user("guest-fallback@example.com")
@@ -36,6 +39,9 @@ def test_resolve_minute_pack_price_falls_back_to_base(app):
 
 def test_resolve_minute_pack_price_uses_latest_active_schedule_for_role(app):
     with app.app_context():
+        from nuevo_fonotarot.models import MinutePack, MinutePackRolePrice, Role
+        from nuevo_fonotarot.tienda.minutos.service import resolve_minute_pack_price
+
         role = Role(name="leales-oro-schedule")
         pack = MinutePack(minutes=30, price=Decimal("15000"), currency="CLP", is_active=True)
         db.session.add_all([role, pack])
@@ -81,6 +87,9 @@ def test_resolve_minute_pack_price_uses_latest_active_schedule_for_role(app):
 
 def test_resolve_minute_pack_price_prefers_best_price_across_roles(app):
     with app.app_context():
+        from nuevo_fonotarot.models import MinutePack, MinutePackRolePrice, Role
+        from nuevo_fonotarot.tienda.minutos.service import resolve_minute_pack_price
+
         oro = Role(name="leales-oro-best-price")
         plata = Role(name="leales-plata-best-price")
         pack = MinutePack(minutes=60, price=Decimal("30000"), currency="CLP", is_active=True)
@@ -118,4 +127,6 @@ def test_resolve_minute_pack_price_prefers_best_price_across_roles(app):
 
 
 def test_default_loyalty_role_names_are_seeded_constants():
+    from nuevo_fonotarot.tienda.minutos.service import DEFAULT_LOYALTY_ROLE_NAMES
+
     assert DEFAULT_LOYALTY_ROLE_NAMES == ("leales-oro", "leales-plata", "leales-bronze")

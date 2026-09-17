@@ -16,7 +16,7 @@ from requests.exceptions import RequestException
 
 from ..extensions import limiter
 from ..log import get_logger
-from ..models import BlogPost, GiftCardProduct, MinutePack, SiteSettings, StaticPage
+from ..models import BlogPost, GiftCardProduct, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..promo_helpers import _finalize_promo_email
 from ..tienda.minutos.service import get_active_minute_packs

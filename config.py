@@ -191,7 +191,9 @@ class Config:
     # merchants
     MERCHANTS_KEY: str = os.environ.get("MERCHANTS_KEY", "dev-merchants-key-change-me")
     MERCHANTS_WEBHOOK_BASE_URL: str = os.environ.get("MERCHANTS_WEBHOOK_BASE_URL", "")
-    MERCHANTS_AUTOLOAD_PROVIDERS: list = os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",")
+    MERCHANTS_AUTOLOAD_PROVIDERS: list[str] = [
+        item.strip() for item in os.environ.get("MERCHANTS_AUTOLOAD_PROVIDERS", "").split(",") if item.strip()
+    ]
     MERCHANTS_EXTERNAL_ENDPOINTS: list[str] = [
         item.strip() for item in os.environ.get("MERCHANTS_EXTERNAL_ENDPOINTS", "").split(",") if item.strip()
     ]

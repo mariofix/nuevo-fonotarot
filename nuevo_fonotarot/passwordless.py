@@ -20,6 +20,7 @@ import typing as t
 from datetime import datetime, timedelta
 
 from flask import Blueprint, flash, redirect, request, session, url_for
+from flask.typing import ResponseValue
 from flask_babel import lazy_gettext as _l
 
 # from flask_security import totp
@@ -31,9 +32,6 @@ from wtforms import BooleanField, HiddenField, PasswordField, StringField, Submi
 from .extensions import db, security
 from .log import get_logger
 from .models import User
-
-if t.TYPE_CHECKING:
-    from flask.typing import ResponseValue
 
 logger = get_logger(__name__)
 
