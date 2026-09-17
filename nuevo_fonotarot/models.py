@@ -8,6 +8,7 @@ from decimal import Decimal
 
 from babel.numbers import format_currency as babel_format_currency
 from dateutil.relativedelta import relativedelta
+from flask import g, has_request_context
 from flask_babel import get_locale
 from flask_merchants.models import PaymentMixin
 from flask_security.models import fsqla_v3 as fsqla
@@ -21,6 +22,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
     text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
@@ -217,14 +219,114 @@ class MinutePack(db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
+    role_prices = db.relationship(
+        "MinutePackRolePrice",
+        back_populates="minute_pack",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return f"<MinutePack {self.minutes}min ${self.price}>"
 
     @property
-    def price_display(self) -> str:
+    def base_price_display(self) -> str:
         """Format price using locale-aware currency formatting."""
         return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
+
+    def _resolved_price(self):
+        from .tienda.minutos.service import resolve_minute_pack_price
+
+        if not has_request_context():
+            return resolve_minute_pack_price(self, None)
+        from flask_security import current_user
+
+        try:
+            user = current_user._get_current_object()
+        except Exception:
+            user = current_user
+        if not getattr(user, "is_authenticated", False):
+            user = None
+        cache = getattr(g, "_minute_pack_resolved_price_cache", {})
+        cache_key = (self.id, getattr(user, "id", None) if user is not None else None)
+        if cache_key not in cache:
+            cache[cache_key] = resolve_minute_pack_price(self, user)
+            g._minute_pack_resolved_price_cache = cache
+        return cache[cache_key]
+
+    @property
+    def effective_price(self) -> Decimal:
+        """Return the current user-facing price for this pack."""
+        return self._resolved_price().amount
+
+    @property
+    def effective_price_display(self) -> str:
+        """Format the current user-facing price using locale-aware currency formatting."""
+        return self._resolved_price().display
+
+    @property
+    def active_role_prices_summary(self) -> str:
+        """Return the currently active role-price summary for operators."""
+        from .tienda.minutos.service import summarize_current_role_prices
+
+        return summarize_current_role_prices(self)
+
+    @property
+    def price_display(self) -> str:
+        """Format the effective price using locale-aware currency formatting."""
+        return self.effective_price_display
+
+
+class MinutePackRolePrice(db.Model):
+    """Role-specific minute-pack price that becomes active on a given date."""
+
+    __tablename__ = "minute_pack_role_prices"
+    __table_args__ = (
+        UniqueConstraint(
+            "minute_pack_id",
+            "role_id",
+            "starts_at",
+            name="uq_minute_pack_role_prices_pack_role_start",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    minute_pack_id: Mapped[int] = mapped_column(Integer, ForeignKey("minute_packs.id"), nullable=False, index=True)
+    role_id: Mapped[int] = mapped_column(Integer, ForeignKey("roles.id"), nullable=False, index=True)
+    price: Mapped[Decimal] = mapped_column(Numeric(19, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="CLP")
+    starts_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(), index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
+        nullable=False,
+    )
+
+    minute_pack = db.relationship("MinutePack", back_populates="role_prices")
+    role = db.relationship("Role", backref=db.backref("minute_pack_prices", lazy="dynamic"))
+
+    def __repr__(self) -> str:
+        role_name = getattr(self.role, "name", self.role_id)
+        return f"<MinutePackRolePrice pack={self.minute_pack_id} role={role_name} price={self.price}>"
+
+    def __str__(self) -> str:
+        role_name = getattr(self.role, "name", self.role_id)
+        return f"{self.minute_pack} · {role_name} · {self.starts_at:%Y-%m-%d %H:%M}"
+
+    @property
+    def price_display(self) -> str:
+        """Format override price using locale-aware currency formatting."""
+        return babel_format_currency(self.price, self.currency, locale=get_locale(), format="#,##0.0 ¤¤")
+
+    @property
+    def base_price_display(self) -> str:
+        """Return the underlying base pack price for operator reference."""
+        if self.minute_pack is None:
+            return ""
+        return self.minute_pack.base_price_display
 
 
 class SubscriptionPlan(db.Model):

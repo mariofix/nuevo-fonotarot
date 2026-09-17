@@ -3,8 +3,9 @@
 from flask import render_template
 
 from ..log import get_logger
-from ..models import BlogPost, GiftCardProduct, MinutePack, Product
+from ..models import BlogPost, GiftCardProduct, Product
 from ..placeholder import PLANS, TESTIMONIALS
+from ..tienda.minutos.service import get_active_minute_packs
 from . import lab_bp
 
 logger = get_logger(__name__)
@@ -17,7 +18,7 @@ def _ctx():
 
 def _store_preview_ctx() -> dict:
     """Shared store context for tienda lab previews."""
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes.asc()).all()
+    minute_packs = get_active_minute_packs()
     gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price.asc()).limit(4).all()
     featured_products = (
         Product.query.filter_by(is_active=True)

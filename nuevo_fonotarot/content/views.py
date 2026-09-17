@@ -16,9 +16,10 @@ from requests.exceptions import RequestException
 
 from ..extensions import limiter
 from ..log import get_logger
-from ..models import BlogPost, GiftCardProduct, MinutePack, SiteSettings, StaticPage
+from ..models import BlogPost, GiftCardProduct, SiteSettings, StaticPage
 from ..placeholder import TESTIMONIALS
 from ..promo_helpers import _finalize_promo_email
+from ..tienda.minutos.service import get_active_minute_packs
 from ..utils import get_moon_phase_index
 
 logger = get_logger(__name__)
@@ -42,7 +43,7 @@ def _homepage_ctx() -> dict:
     ejecutivos endpoint directly via JavaScript, avoiding per-poll server-side
     log entries.
     """
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    minute_packs = get_active_minute_packs()
     gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
 
     api_url = current_app.config.get("FIRENZE_API_URL", "").rstrip("/")
@@ -254,7 +255,7 @@ def promo_exito():
         response_body, status = _finalize_promo_email(email)
         return jsonify(response_body), status
 
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    minute_packs = get_active_minute_packs()
     return render_template("promo_exito.html", ani=ani, minute_packs=minute_packs)
 
 

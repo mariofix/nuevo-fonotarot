@@ -4,7 +4,7 @@ import json
 import random
 import re
 
-from flask import current_app, redirect, render_template, url_for
+from flask import abort, current_app, redirect, render_template, url_for
 from merchants import describe_providers
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -22,11 +22,18 @@ from ...models import (
     SubscriptionPlan,
 )
 from ...utils import encrypt_string
+from ..minutos.service import get_active_minute_packs
 from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
 
 logger = get_logger(__name__)
+CUSTOMER_ORDER_REFERENCE_STATUSES = {
+    OrderStatus.PENDING,
+    OrderStatus.PAID,
+    OrderStatus.FULFILLING,
+    OrderStatus.FAILED,
+}
 
 
 def _materialize_order_items(order: Order) -> list:
@@ -57,6 +64,45 @@ def _summarize_order_minutes(items: list) -> int:
         total_minutes += pack_minutes * int(item.quantity or 0)
 
     return total_minutes
+
+
+def _store_index_context(*, include_providers: bool) -> dict:
+    """Return the shared store-home context."""
+    minute_packs = get_active_minute_packs()
+    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
+    active_products = Product.query.filter_by(is_active=True).all()
+    featured_products = random.sample(active_products, k=min(5, len(active_products)))
+    try:
+        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
+    except SQLAlchemyError:
+        gift_cards = []
+    cart = _get_cart()
+    context = {
+        "minute_packs": minute_packs,
+        "subscription_plans": subscription_plans,
+        "featured_products": featured_products,
+        "gift_cards": gift_cards,
+        "cart_count": len(cart),
+    }
+    if include_providers:
+        context["providers"] = describe_providers()
+    logger.debug(
+        "pagos.index: loaded %s minute packs, %s subscription plans, %s random products, %s gift cards, cart_count=%s",
+        len(minute_packs),
+        len(subscription_plans),
+        len(featured_products),
+        len(gift_cards),
+        len(cart),
+    )
+    return context
+
+
+def _get_order_by_status_reference(order_reference: str) -> Order:
+    """Resolve a customer-facing order-status reference."""
+    order = Order.query.filter_by(merchants_id=order_reference).first()
+    if order is not None and order.status in CUSTOMER_ORDER_REFERENCE_STATUSES:
+        return order
+    abort(404)
 
 
 # ---------------------------------------------------------------------------
@@ -303,7 +349,7 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
             sync_ok = topup_ok
     if requires_firenze and not sync_ok:
         logger.warning(
-            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"  # noqa
+            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"
         )
         _send_firenze_failure_email(order)
         return False
@@ -488,55 +534,14 @@ def _handle_payment_webhook_event(event) -> None:
 def index():
     """Main store page: minute packs, subscriptions, and random products."""
     logger.debug("pagos.index: loading store page")
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
-    active_products = Product.query.filter_by(is_active=True).all()
-    featured_products = random.sample(active_products, k=min(5, len(active_products)))
-    try:
-        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
-    except SQLAlchemyError:
-        gift_cards = []
-    cart = _get_cart()
-    logger.debug(
-        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
-        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
-    )
-    return render_template(
-        "tienda/index.html",
-        minute_packs=minute_packs,
-        subscription_plans=subscription_plans,
-        featured_products=featured_products,
-        gift_cards=gift_cards,
-        cart_count=len(cart),
-        providers=describe_providers(),
-    )
+    return render_template("tienda/index.html", **_store_index_context(include_providers=True))
 
 
 @pagos_bp.route("/pagar")
 def cart_checkout():
     """Checkout page for cart flow."""
     logger.debug("pagos.cart_checkout: loading cart checkout page")
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
-    subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
-    active_products = Product.query.filter_by(is_active=True).all()
-    featured_products = random.sample(active_products, k=min(5, len(active_products)))
-    try:
-        gift_cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.price).limit(4).all()
-    except SQLAlchemyError:
-        gift_cards = []
-    cart = _get_cart()
-    logger.debug(
-        f"pagos.index: loaded {len(minute_packs)} minute packs, {len(subscription_plans)} subscription plans, "
-        f"{len(featured_products)} random products, {len(gift_cards)} gift cards, cart_count={len(cart)}"
-    )
-    return render_template(
-        "tienda/index.html",
-        minute_packs=minute_packs,
-        subscription_plans=subscription_plans,
-        featured_products=featured_products,
-        gift_cards=gift_cards,
-        cart_count=len(cart),
-    )
+    return render_template("tienda/index.html", **_store_index_context(include_providers=False))
 
 
 # ---------------------------------------------------------------------------
@@ -634,9 +639,9 @@ def make_giftcard_token(card_id, order_id, item_id):
 def orden_estado(order_id: str):
     """Show the status of a specific order."""
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
-    order = Order.query.filter_by(merchants_id=order_id).first_or_404()
+    order = _get_order_by_status_reference(order_id)
     items = _materialize_order_items(order)
-    packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    packs = get_active_minute_packs()
     cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
 
     try:

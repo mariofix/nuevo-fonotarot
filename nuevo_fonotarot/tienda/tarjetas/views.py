@@ -2,19 +2,67 @@
 
 from decimal import Decimal
 
-from flask import abort, current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    abort,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_babel import _
 from flask_security import current_user
 from merchants import describe_providers, list_providers
 
 from ...extensions import db
 from ...log import get_logger
-from ...models import GiftCard, GiftCardProduct, Order, OrderItem, OrderItemType, OrderStatus
+from ...models import (
+    GiftCard,
+    GiftCardProduct,
+    Order,
+    OrderItem,
+    OrderItemType,
+    OrderStatus,
+)
 from ..utils import _get_cart, create_payment_and_redirect
 from . import tarjetas_bp
 from .service import create_giftcard_pdf, normalize_input_code, redeem_gift_card
 
 logger = get_logger(__name__)
+
+
+def _is_authenticated_user() -> bool:
+    return bool(current_user.is_authenticated)
+
+
+def _redeem_gift_card_submission(*, redirect_endpoint: str):
+    """Handle the shared gift-card redemption POST flow."""
+    if not _is_authenticated_user():
+        flash(_("Debes iniciar sesión para canjear una tarjeta."), "warning")
+        return redirect(url_for("security.login", next=request.url))
+
+    raw_code = request.form.get("code", "")
+    code = normalize_input_code(raw_code)
+    if not code:
+        flash(_("Ingresa un código válido."), "danger")
+        return redirect(url_for(redirect_endpoint))
+
+    gift_card = GiftCard.query.filter_by(code=code).first()
+    if gift_card is None:
+        flash(_("El código ingresado no existe."), "danger")
+        return redirect(url_for(redirect_endpoint))
+
+    if gift_card.order_id is not None:
+        purchase_order = db.session.get(Order, gift_card.order_id)
+        if purchase_order is None or purchase_order.payment_status != "succeeded":
+            flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
+            return redirect(url_for(redirect_endpoint))
+
+    ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
+    flash(_(message), "success" if ok else "danger")
+    return redirect(url_for(redirect_endpoint))
 
 
 @tarjetas_bp.route("/")
@@ -28,26 +76,7 @@ def index():
 def canjear():
     """Redeem a purchased gift-card code into user minutes."""
     if request.method == "POST":
-        raw_code = request.form.get("code", "")
-        code = normalize_input_code(raw_code)
-        if not code:
-            flash(_("Ingresa un código válido."), "danger")
-            return redirect(url_for("tarjetas.canjear"))
-
-        gift_card = GiftCard.query.filter_by(code=code).first()
-        if gift_card is None:
-            flash(_("El código ingresado no existe."), "danger")
-            return redirect(url_for("tarjetas.canjear"))
-
-        if gift_card.order_id is not None:
-            purchase_order = db.session.get(Order, gift_card.order_id)
-            if purchase_order is None or purchase_order.payment_status != "succeeded":
-                flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
-                return redirect(url_for("tarjetas.canjear"))
-
-        ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
-        flash(_(message), "success" if ok else "danger")
-        return redirect(url_for("tarjetas.canjear"))
+        return _redeem_gift_card_submission(redirect_endpoint="tarjetas.canjear")
 
     return render_template(
         "tienda/canjear_tarjeta.html",
@@ -57,31 +86,12 @@ def canjear():
 @tarjetas_bp.route("/canjear-orig", methods=["GET", "POST"])
 def canjear_orig():
     """Redeem a purchased gift-card code into user minutes."""
-    if not (current_user and current_user.is_authenticated):
+    if not _is_authenticated_user():
         flash(_("Debes iniciar sesión para canjear una tarjeta."), "warning")
         return redirect(url_for("security.login", next=request.url))
 
     if request.method == "POST":
-        raw_code = request.form.get("code", "")
-        code = normalize_input_code(raw_code)
-        if not code:
-            flash(_("Ingresa un código válido."), "danger")
-            return redirect(url_for("tarjetas.canjear"))
-
-        gift_card = GiftCard.query.filter_by(code=code).first()
-        if gift_card is None:
-            flash(_("El código ingresado no existe."), "danger")
-            return redirect(url_for("tarjetas.canjear"))
-
-        if gift_card.order_id is not None:
-            purchase_order = db.session.get(Order, gift_card.order_id)
-            if purchase_order is None or purchase_order.payment_status != "succeeded":
-                flash(_("Esta tarjeta todavía no está disponible para canje."), "warning")
-                return redirect(url_for("tarjetas.canjear"))
-
-        ok, message = redeem_gift_card(gift_card=gift_card, user=current_user)
-        flash(_(message), "success" if ok else "danger")
-        return redirect(url_for("tarjetas.canjear"))
+        return _redeem_gift_card_submission(redirect_endpoint="tarjetas.canjear_orig")
 
     recent_redeemed = (
         GiftCard.query.filter_by(redeemed_by_user_id=current_user.id, status="redeemed")
@@ -126,7 +136,7 @@ def instrucciones(data_str: str):
     if not data:
         return abort(404)
 
-    if not all(k in ["giftcard_id", "order_id", "item_id"] for k in data.keys()):
+    if not all(k in ["giftcard_id", "order_id", "item_id"] for k in data):
         logger.warning(f"tarjetas.instrucciones: {data=} malformado")
         return abort(404)
 
@@ -173,7 +183,7 @@ def instrucciones(data_str: str):
 def comprar(slug: str):
     """Fast checkout for one gift-card product."""
     card = GiftCardProduct.query.filter_by(slug=slug, is_active=True).first_or_404()
-    is_authenticated_user = bool(current_user and getattr(current_user, "is_authenticated", False))
+    is_authenticated_user = _is_authenticated_user()
 
     if request.method == "POST":
         payment_method = request.form.get("payment_method", "").strip()
