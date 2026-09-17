@@ -39,6 +39,10 @@ def _is_authenticated_user() -> bool:
 
 def _redeem_gift_card_submission():
     """Handle the shared gift-card redemption POST flow."""
+    if not _is_authenticated_user():
+        flash(_("Debes iniciar sesión para canjear una tarjeta."), "warning")
+        return redirect(url_for("security.login", next=request.url))
+
     raw_code = request.form.get("code", "")
     code = normalize_input_code(raw_code)
     if not code:
