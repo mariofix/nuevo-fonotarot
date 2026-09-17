@@ -209,19 +209,19 @@
             item_id: 'minute_pack-{{ pack.id }}',
             item_name: {{ (_("%(minutes)s minutos de tarot", minutes=pack.minutes)) | tojson }},
             item_category: 'minute_pack',
-            price: {{ pack.price }},
+            price: {{ pack.effective_price|float }},
             quantity: quantity
           }];
           window.fonotarotTrackEvent('begin_checkout', {
             currency: 'CLP',
-            value: {{ pack.price }},
+            value: {{ pack.effective_price|float }},
             items: items
           });
           var payMethod = checkoutForm.querySelector('input[name="payment_method"]:checked');
           if (payMethod) {
             window.fonotarotTrackEvent('add_payment_info', {
               currency: 'CLP',
-              value: {{ pack.price }},
+              value: {{ pack.effective_price|float }},
               payment_type: payMethod.value,
               items: items
             });

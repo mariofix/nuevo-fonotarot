@@ -22,6 +22,7 @@ from ...models import (
     SubscriptionPlan,
 )
 from ...utils import encrypt_string
+from ..minutos.service import get_active_minute_packs
 from ..tarjetas.service import issue_gift_cards_for_order
 from ..utils import _get_cart
 from . import pagos_bp
@@ -488,7 +489,7 @@ def _handle_payment_webhook_event(event) -> None:
 def index():
     """Main store page: minute packs, subscriptions, and random products."""
     logger.debug("pagos.index: loading store page")
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    minute_packs = get_active_minute_packs()
     subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
     active_products = Product.query.filter_by(is_active=True).all()
     featured_products = random.sample(active_products, k=min(5, len(active_products)))
@@ -516,7 +517,7 @@ def index():
 def cart_checkout():
     """Checkout page for cart flow."""
     logger.debug("pagos.cart_checkout: loading cart checkout page")
-    minute_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    minute_packs = get_active_minute_packs()
     subscription_plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(SubscriptionPlan.price).all()
     active_products = Product.query.filter_by(is_active=True).all()
     featured_products = random.sample(active_products, k=min(5, len(active_products)))
@@ -636,7 +637,7 @@ def orden_estado(order_id: str):
     logger.debug(f"pagos.orden_estado: user checking order={order_id} status")
     order = Order.query.filter_by(merchants_id=order_id).first_or_404()
     items = _materialize_order_items(order)
-    packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    packs = get_active_minute_packs()
     cards = GiftCardProduct.query.filter_by(is_active=True).order_by(GiftCardProduct.minutes).all()
 
     try:

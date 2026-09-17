@@ -15,6 +15,7 @@ from flask_admin.model.template import EndpointLinkRowAction
 from flask_babel import lazy_gettext as _l
 from flask_security import current_user
 from sqlalchemy import func
+from wtforms.validators import ValidationError
 
 from .extensions import db
 from .log import get_logger
@@ -1056,11 +1057,57 @@ class BlogPostAdminView(SecureModelView):
 class MinutePackAdminView(SecureModelView):
     """Admin view for prepaid tarot minute packs."""
 
-    column_list = ("minutes", "price", "is_featured", "is_active", "created_at")
+    column_list = ("minutes", "price", "currency", "active_role_prices_summary", "is_featured", "is_active", "created_at")
     column_searchable_list = ("description",)
     column_filters = ("is_active", "is_featured")
     form_excluded_columns = ("created_at",)
     column_relationship_links = True
+    column_labels = {
+        "price": _l("Precio Base"),
+        "active_role_prices_summary": _l("Precios Leales Vigentes"),
+    }
+
+
+class MinutePackRolePriceAdminView(SecureModelView):
+    """Admin view for effective-dated role pricing on minute packs."""
+
+    column_list = ("minute_pack", "role", "base_price_display", "price_display", "currency", "starts_at", "is_active")
+    column_searchable_list = ("role.name", "minute_pack.description")
+    column_filters = ("role.name", "minute_pack.minutes", "currency", "starts_at", "is_active")
+    form_columns = ("minute_pack", "role", "price", "currency", "starts_at", "is_active")
+    column_relationship_links = True
+    column_labels = {
+        "minute_pack": _l("Pack de Minutos"),
+        "role": _l("Rol"),
+        "base_price_display": _l("Precio Base"),
+        "price_display": _l("Precio Leal"),
+        "starts_at": _l("Comienza"),
+        "is_active": _l("Activo"),
+    }
+
+    def on_model_change(self, form, model, is_created):
+        from .models import MinutePackRolePrice
+
+        if model.minute_pack is None or model.role is None:
+            raise ValidationError(_l("Debes seleccionar un pack y un rol."))
+        if model.price is None or model.price <= 0:
+            raise ValidationError(_l("El precio leal debe ser mayor que cero."))
+        if model.starts_at is None:
+            raise ValidationError(_l("Debes indicar desde cuándo aplica el precio."))
+        if model.currency != model.minute_pack.currency:
+            raise ValidationError(
+                _l("La moneda del precio leal debe coincidir con la moneda del pack de minutos."),
+            )
+
+        duplicate_query = self.session.query(MinutePackRolePrice).filter(
+            MinutePackRolePrice.minute_pack_id == model.minute_pack_id,
+            MinutePackRolePrice.role_id == model.role_id,
+            MinutePackRolePrice.starts_at == model.starts_at,
+        )
+        if model.id is not None:
+            duplicate_query = duplicate_query.filter(MinutePackRolePrice.id != model.id)
+        if duplicate_query.first() is not None:
+            raise ValidationError(_l("Ya existe un precio programado para ese pack, rol y fecha de inicio."))
 
 
 class SubscriptionPlanAdminView(SecureModelView):
@@ -1622,6 +1669,7 @@ def init_admin(app, admin_ext):
         GiftCard,
         GiftCardProduct,
         MinutePack,
+        MinutePackRolePrice,
         Order,
         Product,
         ProductCategory,
@@ -1696,6 +1744,16 @@ def init_admin(app, admin_ext):
             category=_l("Tienda"),
             menu_icon_type="ti",
             menu_icon_value="clock",
+        )
+    )
+    admin_ext.add_view(
+        MinutePackRolePriceAdminView(
+            MinutePackRolePrice,
+            db.session,
+            name=_l("Precios Leales de Minutos"),
+            category=_l("Tienda"),
+            menu_icon_type="ti",
+            menu_icon_value="coins",
         )
     )
     from .models import DiscountCode

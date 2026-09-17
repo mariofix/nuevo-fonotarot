@@ -4,7 +4,8 @@ import random
 
 from flask import redirect, render_template, url_for
 
-from ...models import MinutePack, Product
+from ...models import Product
+from ..minutos.service import get_active_minute_packs
 from . import productos_bp
 
 
@@ -17,7 +18,7 @@ def index():
 @productos_bp.route("/<slug>")
 def detalle(slug: str):
     product = Product.query.filter_by(slug=slug, is_active=True).first_or_404()
-    active_packs = MinutePack.query.filter_by(is_active=True).order_by(MinutePack.minutes).all()
+    active_packs = get_active_minute_packs()
     other_active_products = Product.query.filter(Product.is_active.is_(True), Product.id != product.id).all()
     other_products = random.sample(other_active_products, k=min(5, len(other_active_products)))
     return render_template(

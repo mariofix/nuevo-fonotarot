@@ -234,17 +234,17 @@
                   <div class="plan-clp">{{ pack.price_display }} CLP<span> / sesión</span></div>
                   <p class="plan-desc">{{ pack.description or '' }}</p>
                   <div class="mt-auto d-flex flex-column gap-2">
-                    <a href="{{ url_for('minutos.comprar_minutos', pack_id=pack.id) }}" class="btn-plan">
+                    <a href="{{ url_for('minutos.comprar_minutos', pack_slug=pack.slug) }}" class="btn-plan">
                       <i class="ti ti-bolt me-1"></i>Compra Ahora
                     </a>
                     <form action="{{ url_for('productos.agregar') }}" method="post"
                           data-track-event="add_to_cart"
-                          data-track-value="{{ pack.price }}"
+                          data-track-value="{{ pack.effective_price|float }}"
                           data-track-currency="CLP"
                           data-track-item-id="minute_pack-{{ pack.id }}"
                           data-track-item-name="{{ pack.minutes }} minutos de tarot"
                           data-track-item-category="minute_pack"
-                          data-track-item-price="{{ pack.price }}"
+                          data-track-item-price="{{ pack.effective_price|float }}"
                           data-track-item-quantity="1">
                       <input type="hidden" name="item_type" value="minute_pack"/>
                       <input type="hidden" name="item_id" value="{{ pack.id }}"/>
