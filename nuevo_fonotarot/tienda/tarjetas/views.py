@@ -2,14 +2,30 @@
 
 from decimal import Decimal
 
-from flask import abort, current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    abort,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_babel import _
 from flask_security import current_user
 from merchants import describe_providers, list_providers
 
 from ...extensions import db
 from ...log import get_logger
-from ...models import GiftCard, GiftCardProduct, Order, OrderItem, OrderItemType, OrderStatus
+from ...models import (
+    GiftCard,
+    GiftCardProduct,
+    Order,
+    OrderItem,
+    OrderItemType,
+    OrderStatus,
+)
 from ..utils import _get_cart, create_payment_and_redirect
 from . import tarjetas_bp
 from .service import create_giftcard_pdf, normalize_input_code, redeem_gift_card
@@ -116,7 +132,7 @@ def instrucciones(data_str: str):
     if not data:
         return abort(404)
 
-    if not all(k in ["giftcard_id", "order_id", "item_id"] for k in data.keys()):
+    if not all(k in ["giftcard_id", "order_id", "item_id"] for k in data):
         logger.warning(f"tarjetas.instrucciones: {data=} malformado")
         return abort(404)
 

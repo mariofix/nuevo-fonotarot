@@ -11,7 +11,7 @@ from merchants import describe_providers, list_providers
 from ...actions import register_checkout_account
 from ...extensions import db
 from ...log import get_logger
-from ...models import DiscountCode, Order, OrderItem, OrderItemType, OrderStatus
+from ...models import DiscountCode, Order, OrderItem, OrderItemType
 from ..utils import _get_cart, apply_discount, create_payment_and_redirect
 from . import minutos_bp
 from .service import (
@@ -26,6 +26,10 @@ logger = get_logger(__name__)
 
 def _is_authenticated_user() -> bool:
     return bool(current_user.is_authenticated)
+
+
+def _duplicate_order_cutoff() -> datetime:
+    return datetime.now() - timedelta(minutes=2)  # noqa: DTZ005
 
 
 @minutos_bp.route("/")
@@ -72,7 +76,7 @@ def comprar_minutos(pack_slug: str):
         # Check for discount code
         discount_code_str = request.form.get("discount_code", "").strip()
         discount_obj = None
-        discount_amount = Decimal("0")
+        discount_amount = Decimal(0)
         if discount_code_str:
             discount_obj = DiscountCode.query.filter_by(code=discount_code_str).first()
             if not discount_obj or not discount_obj.is_valid():
@@ -84,13 +88,12 @@ def comprar_minutos(pack_slug: str):
                 flash(_("El código de descuento no es aplicable a este producto."), "danger")
                 return redirect(url_for("minutos.comprar_minutos", pack_slug=pack_slug))
 
-        duplicate_cutoff = datetime.now() - timedelta(minutes=2)
         existing_order = find_pending_minute_pack_order(
             pack_id=pack.id,
             amount=pricing.amount,
             provider=payment_method,
             email=email,
-            duplicate_cutoff=duplicate_cutoff,
+            duplicate_cutoff=_duplicate_order_cutoff(),
             user_id=current_user.id if is_authenticated_user else None,
         )
         if existing_order:
@@ -108,7 +111,7 @@ def comprar_minutos(pack_slug: str):
             )
             return redirect(url_for("pagos.orden_estado", order_id=existing_order.merchants_id))
 
-        final_amount = max(Decimal("0"), pricing.amount - discount_amount)
+        final_amount = max(Decimal(0), pricing.amount - discount_amount)
 
         order = Order(
             amount=final_amount,
@@ -244,13 +247,12 @@ def one_click(pack_slug: str):
     pack = get_active_minute_pack_by_slug(pack_slug)
     pricing = resolve_minute_pack_price(pack, current_user)
 
-    duplicate_cutoff = datetime.now() - timedelta(minutes=2)
     existing_order = find_pending_minute_pack_order(
         pack_id=pack.id,
         amount=pricing.amount,
         provider=current_user.preferred_payment,
         email=current_user.email,
-        duplicate_cutoff=duplicate_cutoff,
+        duplicate_cutoff=_duplicate_order_cutoff(),
         user_id=current_user.id,
     )
     if existing_order:

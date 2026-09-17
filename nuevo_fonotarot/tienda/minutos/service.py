@@ -9,7 +9,14 @@ from flask_babel import _, get_locale
 from sqlalchemy import and_
 from sqlalchemy.orm import selectinload
 
-from ...models import MinutePack, MinutePackRolePrice, Order, OrderItem, OrderItemType, OrderStatus
+from ...models import (
+    MinutePack,
+    MinutePackRolePrice,
+    Order,
+    OrderItem,
+    OrderItemType,
+    OrderStatus,
+)
 
 
 @dataclass(frozen=True)
@@ -64,7 +71,7 @@ def resolve_minute_pack_price(
 ) -> ResolvedMinutePackPrice:
     """Return the effective price for *pack* for the supplied user."""
     base_resolved = _base_resolved_price(pack)
-    now = at or datetime.now()
+    now = at or _now()
 
     if not getattr(user, "is_authenticated", False):
         return base_resolved
@@ -168,7 +175,7 @@ def _base_resolved_price(pack: MinutePack) -> ResolvedMinutePackPrice:
 
 
 def _current_role_prices(pack: MinutePack, at: datetime | None = None) -> dict[str, MinutePackRolePrice]:
-    now = at or datetime.now()
+    now = at or _now()
     current_by_role: dict[str, MinutePackRolePrice] = {}
     for candidate in list(getattr(pack, "role_prices", [])):
         if not candidate.is_active or candidate.starts_at > now:
@@ -190,3 +197,7 @@ def _schedule_timestamp_key(value: datetime | None) -> float:
     if value is None:
         return float("-inf")
     return value.timestamp()
+
+
+def _now() -> datetime:
+    return datetime.now()  # noqa: DTZ005

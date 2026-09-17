@@ -335,7 +335,7 @@ def _complete_succeeded_order_admin_flow(order: Order, label: str) -> bool:
             sync_ok = topup_ok
     if requires_firenze and not sync_ok:
         logger.warning(
-            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"  # noqa
+            f"_complete_succeeded_order_admin_flow: Firenze sync failed for order={order.id} — order fulfillment incomplete"
         )
         _send_firenze_failure_email(order)
         return False
